@@ -1,4 +1,4 @@
-package nl.mpi.kinnate.plugins.metadatasearch;
+package nl.mpi.kinnate.plugins.metadatasearchV0;
 
 import javax.swing.JPanel;
 import nl.mpi.arbil.plugin.ArbilWindowPlugin;
@@ -17,7 +17,7 @@ import nl.mpi.kinnate.plugin.BasePlugin;
 public class SearchPlugin implements BasePlugin, ArbilWindowPlugin {
 
     public String getName() {
-        return "XML DB Search Plugin";
+        return "XML DB Search Plugin 0-0 (good-with-few-files)";
     }
 
     public int getMajorVersionNumber() {

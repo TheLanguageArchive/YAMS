@@ -1,4 +1,4 @@
-package nl.mpi.kinnate.plugins.metadatasearch.ui;
+package nl.mpi.kinnate.plugins.metadatasearchV0.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -8,11 +8,11 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.SearchNegator;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.SearchOption;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.SearchType;
-import nl.mpi.kinnate.plugins.metadatasearch.db.MetadataFileType;
+import nl.mpi.kinnate.plugins.metadatasearchV0.db.ArbilDatabase;
+import nl.mpi.kinnate.plugins.metadatasearchV0.db.ArbilDatabase.SearchNegator;
+import nl.mpi.kinnate.plugins.metadatasearchV0.db.ArbilDatabase.SearchOption;
+import nl.mpi.kinnate.plugins.metadatasearchV0.db.ArbilDatabase.SearchType;
+import nl.mpi.kinnate.plugins.metadatasearchV0.db.MetadataFileType;
 
 /**
  * Document : SearchCriterionPanel <br> Created on Aug 31, 2012, 4:23:32 PM <br>

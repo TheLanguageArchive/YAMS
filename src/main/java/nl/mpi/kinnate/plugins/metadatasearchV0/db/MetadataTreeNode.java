@@ -1,4 +1,4 @@
-package nl.mpi.kinnate.plugins.metadatasearch.db;
+package nl.mpi.kinnate.plugins.metadatasearchV0.db;
 
 import java.net.URI;
 import java.util.Enumeration;

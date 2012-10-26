@@ -1,4 +1,4 @@
-package nl.mpi.kinnate.plugins.metadatasearch;
+package nl.mpi.kinnate.plugins.metadatasearchV0;
 
 import javax.swing.JPanel;
 import nl.mpi.arbil.plugin.ArbilWindowPlugin;
@@ -8,7 +8,7 @@ import nl.mpi.arbil.plugin.PluginDialogHandler;
 import nl.mpi.arbil.plugin.PluginException;
 import nl.mpi.arbil.plugin.PluginSessionStorage;
 import nl.mpi.kinnate.plugin.BasePlugin;
-import nl.mpi.kinnate.plugins.metadatasearch.ui.FacetedTreePanel;
+import nl.mpi.kinnate.plugins.metadatasearchV0.ui.FacetedTreePanel;
 
 /**
  * Document : FacetedPlugin <br> Created on Sep 10, 2012, 5:13:47 PM <br>
@@ -18,7 +18,7 @@ import nl.mpi.kinnate.plugins.metadatasearch.ui.FacetedTreePanel;
 public class FacetedPlugin implements BasePlugin, ArbilWindowPlugin {
 
     public String getName() {
-        return "Faceted Tree Plugin";
+        return "Faceted Tree Plugin 0-0 (good-with-few-files)";
     }
 
     public int getMajorVersionNumber() {

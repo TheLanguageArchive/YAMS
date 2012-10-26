@@ -1,4 +1,4 @@
-package nl.mpi.kinnate.plugins.metadatasearch.ui;
+package nl.mpi.kinnate.plugins.metadatasearchV0.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -19,10 +19,10 @@ import nl.mpi.arbil.ui.ArbilWindowManager;
 import nl.mpi.arbil.userstorage.ArbilSessionStorage;
 import nl.mpi.arbil.util.BugCatcherManager;
 import nl.mpi.kinnate.entityindexer.QueryException;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.CriterionJoinType;
-import nl.mpi.kinnate.plugins.metadatasearch.db.MetadataFileType;
-import nl.mpi.kinnate.plugins.metadatasearch.db.SearchParameters;
+import nl.mpi.kinnate.plugins.metadatasearchV0.db.ArbilDatabase;
+import nl.mpi.kinnate.plugins.metadatasearchV0.db.ArbilDatabase.CriterionJoinType;
+import nl.mpi.kinnate.plugins.metadatasearchV0.db.MetadataFileType;
+import nl.mpi.kinnate.plugins.metadatasearchV0.db.SearchParameters;
 
 /**
  * Document : SearchPanel Created on : Jul 31, 2012, 6:34:07 PM

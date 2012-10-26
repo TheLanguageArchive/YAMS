@@ -1,2 +1,2 @@
- nl.mpi.kinnate.plugins.metadatasearch.FacetedPlugin
- nl.mpi.kinnate.plugins.metadatasearch.SearchPlugin
+ nl.mpi.kinnate.plugins.metadatasearchV0.FacetedPlugin
+ nl.mpi.kinnate.plugins.metadatasearchV0.SearchPlugin
