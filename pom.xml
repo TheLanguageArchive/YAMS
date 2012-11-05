@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>nl.mpi</groupId>
-    <artifactId>metedata-search</artifactId>
+    <artifactId>metedata-search-V0-0</artifactId>
     <!--    Either use the snapshot version of manually enter the current build number. 
     The build number is only required when depending on the output in other projects or building to the server.-->
     <!--<version>${plugin.majorVersion}.${plugin.minorVersion}-${plugin.branch}-SNAPSHOT</version>-->
@@ -76,6 +76,7 @@
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>arbil</artifactId>
+<!--             todo: remove this dependancy-->
             <version>2.5-pretesting-SNAPSHOT</version>
         </dependency>
         <!--        <dependency>
@@ -86,7 +87,7 @@
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>plugins-core</artifactId>
-            <version>0.0.33656-pretesting</version>
+            <version>0.0.33986-pretesting</version>
         </dependency>
         <dependency>
             <groupId>org.basex</groupId>

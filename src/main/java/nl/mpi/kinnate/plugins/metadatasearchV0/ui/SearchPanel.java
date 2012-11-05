@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import nl.mpi.arbil.plugin.PluginArbilDataNodeLoader;
 import nl.mpi.arbil.plugin.PluginDialogHandler;
 import nl.mpi.arbil.ui.ArbilWindowManager;
 import nl.mpi.arbil.userstorage.ArbilSessionStorage;
@@ -40,9 +41,11 @@ public class SearchPanel extends JPanel implements ActionListener {
     final private JComboBox criterionJoinComboBox;
     private MetadataFileType[] metadataPathTypes;
     private MetadataFileType[] metadataFieldTypes;
+    final private PluginArbilDataNodeLoader arbilDataNodeLoader;
 
-    public SearchPanel() {
-        arbilWindowManager = new ArbilWindowManager();
+    public SearchPanel(final PluginArbilDataNodeLoader arbilDataNodeLoader, final PluginDialogHandler dialogHandler) {
+        this.arbilDataNodeLoader = arbilDataNodeLoader;
+        this.arbilWindowManager = dialogHandler;
         arbilDatabase = new ArbilDatabase(new ArbilSessionStorage(), arbilWindowManager, BugCatcherManager.getBugCatcher());
         this.setLayout(new BorderLayout());
 //        ArbilNodeSearchColumnComboBox.setSessionStorage(new ArbilSessionStorage());
@@ -100,7 +103,7 @@ public class SearchPanel extends JPanel implements ActionListener {
     static public void main(String[] args) {
         JFrame jFrame = new JFrame("Search Panel Test");
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        SearchPanel searchPanel = new SearchPanel();
+        SearchPanel searchPanel = new SearchPanel(null, new ArbilWindowManager());
         jFrame.setContentPane(searchPanel);
         jFrame.pack();
         jFrame.setVisible(true);
