@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -20,20 +19,14 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import nl.mpi.arbil.ArbilDesktopInjector;
-import nl.mpi.arbil.ArbilVersion;
-import nl.mpi.arbil.data.ArbilDataNode;
-import nl.mpi.arbil.data.ArbilDataNodeLoader;
-import nl.mpi.arbil.data.ArbilTreeHelper;
+import nl.mpi.arbil.plugin.PluginArbilDataNode;
 import nl.mpi.arbil.plugin.PluginArbilDataNodeLoader;
+import nl.mpi.arbil.plugin.PluginArbilTable;
+import nl.mpi.arbil.plugin.PluginArbilTableModel;
+import nl.mpi.arbil.plugin.PluginBugCatcher;
 import nl.mpi.arbil.plugin.PluginDialogHandler;
-import nl.mpi.arbil.ui.ArbilTable;
-import nl.mpi.arbil.ui.ArbilTableModel;
-import nl.mpi.arbil.ui.ArbilWindowManager;
-import nl.mpi.arbil.userstorage.ArbilSessionStorage;
-import nl.mpi.arbil.util.ApplicationVersionManager;
-import nl.mpi.arbil.util.ArbilMimeHashQueue;
-import nl.mpi.arbil.util.BugCatcherManager;
+import nl.mpi.arbil.plugin.PluginSessionStorage;
+import nl.mpi.arbil.plugin.PluginWidgetFactory;
 import nl.mpi.kinnate.entityindexer.QueryException;
 import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
 import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.CriterionJoinType;
@@ -59,16 +52,16 @@ public class SearchPanel extends JPanel implements ActionListener {
     private MetadataFileType[] metadataFieldTypes;
     final private JTree resultsTree;
     final private DefaultTreeModel defaultTreeModel;
-    final private ArbilTable arbilTable;
-    final private ArbilTableModel arbilTableModel;
+    final private PluginArbilTable arbilTable;
+    final private PluginArbilTableModel arbilTableModel;
     final private PluginArbilDataNodeLoader arbilDataNodeLoader;
     final private PluginDialogHandler arbilWindowManager;
     private int actionProgressCounter = 0;
 
-    public SearchPanel(final PluginArbilDataNodeLoader arbilDataNodeLoader, final PluginDialogHandler dialogHandler) {
+    public SearchPanel(final PluginArbilDataNodeLoader arbilDataNodeLoader, final PluginDialogHandler dialogHandler, final PluginBugCatcher pluginBugCatcher, PluginSessionStorage pluginSessionStorage, PluginWidgetFactory pluginWidgetFactory) {
         this.arbilDataNodeLoader = arbilDataNodeLoader;
         this.arbilWindowManager = dialogHandler;
-        arbilDatabase = new ArbilDatabase(new ArbilSessionStorage(), arbilWindowManager, BugCatcherManager.getBugCatcher());
+        arbilDatabase = new ArbilDatabase(pluginSessionStorage, arbilWindowManager, pluginBugCatcher);
         this.setLayout(new BorderLayout());
 //        ArbilNodeSearchColumnComboBox.setSessionStorage(new ArbilSessionStorage());
 //        this.add(new ArbilNodeSearchPanel(null, null, new ArbilNode[0]), BorderLayout.PAGE_END);
@@ -125,13 +118,13 @@ public class SearchPanel extends JPanel implements ActionListener {
         resultsTree.setCellRenderer(new SearchTreeCellRenderer());
         resultsTree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent tse) {
-                ArrayList<ArbilDataNode> arbilDataNodeList = new ArrayList<ArbilDataNode>();
+                ArrayList<PluginArbilDataNode> arbilDataNodeList = new ArrayList<PluginArbilDataNode>();
                 final TreePath[] selectionPaths = resultsTree.getSelectionPaths();
                 if (selectionPaths != null) {
                     for (TreePath treePath : selectionPaths) {
                         final Object lastPathComponent = treePath.getLastPathComponent();
                         if (lastPathComponent instanceof MetadataTreeNode) {
-                            final ArbilDataNode arbilNode = ((MetadataTreeNode) lastPathComponent).getArbilNode();
+                            final PluginArbilDataNode arbilNode = ((MetadataTreeNode) lastPathComponent).getArbilNode();
                             if (arbilNode != null) {
                                 arbilDataNodeList.add(arbilNode);
                             }
@@ -139,33 +132,32 @@ public class SearchPanel extends JPanel implements ActionListener {
                     }
                 }
                 arbilTableModel.removeAllArbilDataNodeRows();
-                arbilTableModel.addArbilDataNodes(arbilDataNodeList.toArray(new ArbilDataNode[0]));
+                arbilTableModel.addArbilDataNodes(arbilDataNodeList.toArray(new PluginArbilDataNode[0]));
             }
         });
 
-        arbilTableModel = new ArbilTableModel(null);
-        arbilTable = new ArbilTable(arbilTableModel, "FacetedTreeSelectionTable");
-        JSplitPane jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(resultsTree), new JScrollPane(arbilTable));
+        arbilTableModel = pluginWidgetFactory.createTableModel();
+        arbilTable = pluginWidgetFactory.createTable(arbilTableModel, "FacetedTreeSelectionTable");
+        JSplitPane jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(resultsTree), new JScrollPane((Component) arbilTable));
 
         centerPanel.add(jSplitPane, BorderLayout.CENTER);
         this.add(centerPanel, BorderLayout.CENTER);
     }
 
-    static public void main(String[] args) {
-        final ArbilDesktopInjector injector = new ArbilDesktopInjector();
-        injector.injectHandlers(new ApplicationVersionManager(new ArbilVersion()));
-        JFrame jFrame = new JFrame("Search Panel Test");
-        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage(); // todo: this is should use the same session storage as the injector but it is either not clear how to get it or it is not possible without changes
-        final ArbilWindowManager arbilWindowManager = new ArbilWindowManager();
-        final ArbilDataNodeLoader arbilDataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
-        SearchPanel searchPanel = new SearchPanel(arbilDataNodeLoader, arbilWindowManager);
-        jFrame.setContentPane(searchPanel);
-        jFrame.pack();
-        jFrame.setVisible(true);
-        searchPanel.initOptions();
-    }
-
+//    static public void main(String[] args) {
+//        final ArbilDesktopInjector injector = new ArbilDesktopInjector();
+//        injector.injectHandlers(new ApplicationVersionManager(new ArbilVersion()));
+//        JFrame jFrame = new JFrame("Search Panel Test");
+//        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage(); // todo: this is should use the same session storage as the injector but it is either not clear how to get it or it is not possible without changes
+//        final ArbilWindowManager arbilWindowManager = new ArbilWindowManager();
+//        final ArbilDataNodeLoader arbilDataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
+//        SearchPanel searchPanel = new SearchPanel(arbilDataNodeLoader, arbilWindowManager);
+//        jFrame.setContentPane(searchPanel);
+//        jFrame.pack();
+//        jFrame.setVisible(true);
+//        searchPanel.initOptions();
+//    }
     public void actionPerformed(ActionEvent e) {
         actionProgressCounter++;
         SwingUtilities.invokeLater(new Runnable() {

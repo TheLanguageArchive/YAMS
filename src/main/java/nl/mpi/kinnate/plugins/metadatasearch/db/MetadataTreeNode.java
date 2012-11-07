@@ -6,23 +6,22 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 import javax.xml.bind.annotation.XmlElement;
-import nl.mpi.arbil.data.ArbilDataNode;
-import nl.mpi.arbil.data.ArbilDataNodeContainer;
-import nl.mpi.arbil.data.ArbilNode;
+import nl.mpi.arbil.plugin.PluginArbilDataNode;
+import nl.mpi.arbil.plugin.PluginDataNodeContainer;
 
 /**
  * Document : MetadataTreeNode <br> Created on Sep 6, 2012, 3:52:56 PM <br>
  *
  * @author Peter Withers <br>
  */
-public class MetadataTreeNode extends AbstractDbTreeNode implements ArbilDataNodeContainer {
+public class MetadataTreeNode extends AbstractDbTreeNode implements PluginDataNodeContainer {
 
     @XmlElement(name = "FileUri")
     private URI fileUri = null;
     @XmlElement(name = "FileUriPath")
     private String fileUriPath = null;
-    private ArbilDataNode arbilDataNode = null;
-    private ArbilDataNode arbilDomDataNode = null;
+    private PluginArbilDataNode arbilDataNode = null;
+    private PluginArbilDataNode arbilDomDataNode = null;
     private String imdiApiPath = null;
     private String labelString = null;
 
@@ -95,7 +94,7 @@ public class MetadataTreeNode extends AbstractDbTreeNode implements ArbilDataNod
         return getArbilNode().getIcon();
     }
 
-    public ArbilDataNode getArbilNode() {
+    public PluginArbilDataNode getArbilNode() {
         boolean nodeNeedsUpdating = false;
 //        System.out.println("getArbilNode-fileUri: " + fileUri);
         if (arbilDomDataNode == null) {
@@ -107,7 +106,7 @@ public class MetadataTreeNode extends AbstractDbTreeNode implements ArbilDataNod
                 URI projectUri = arbilDatabase.getDatabaseProjectDirectory(databaseName).toURI();
                 fileDbNameUri = projectUri.resolve(uriPath);
             }
-            arbilDomDataNode = (ArbilDataNode) arbilDataNodeLoader.getPluginArbilDataNode(MetadataTreeNode.this, fileDbNameUri);
+            arbilDomDataNode = (PluginArbilDataNode) arbilDataNodeLoader.getPluginArbilDataNode(MetadataTreeNode.this, fileDbNameUri);
 //            arbilDataNode.registerContainer(this);
             nodeNeedsUpdating = true;
         }
@@ -119,7 +118,7 @@ public class MetadataTreeNode extends AbstractDbTreeNode implements ArbilDataNod
             while (matchingChildFound) {
                 matchingChildFound = false;
                 String lastMatchedImdiApiPath = "";
-                for (ArbilDataNode arbilChildDataNode : arbilDataNode.getChildArray()) {
+                for (PluginArbilDataNode arbilChildDataNode : arbilDataNode.getChildArray()) {
                     String fragmentString = arbilChildDataNode.getURI().getFragment();
                     String currentImdiApiPath;
                     if (fragmentString != null) {
@@ -159,11 +158,11 @@ public class MetadataTreeNode extends AbstractDbTreeNode implements ArbilDataNod
 //        }
     }
 
-    public void dataNodeRemoved(ArbilNode dataNode) {
+    public void dataNodeRemoved(PluginArbilDataNode dataNode) {
 //        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void dataNodeIconCleared(ArbilNode dataNode) {
+    public void dataNodeIconCleared(PluginArbilDataNode dataNode) {
         // update the label string and the target data node
         //System.out.println("dataNodeIconCleared");
         getArbilNode();
@@ -183,7 +182,7 @@ public class MetadataTreeNode extends AbstractDbTreeNode implements ArbilDataNod
         });
     }
 
-    public void dataNodeChildAdded(ArbilNode destination, ArbilNode newChildNode) {
+    public void dataNodeChildAdded(PluginArbilDataNode destination, PluginArbilDataNode newChildNode) {
 //        throw new UnsupportedOperationException("Not supported yet.");
     }
 

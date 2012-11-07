@@ -5,12 +5,12 @@
 package nl.mpi.kinnate.plugins.metadatasearch.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -21,20 +21,14 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import nl.mpi.arbil.ArbilDesktopInjector;
-import nl.mpi.arbil.ArbilVersion;
-import nl.mpi.arbil.data.ArbilDataNode;
-import nl.mpi.arbil.data.ArbilDataNodeLoader;
-import nl.mpi.arbil.data.ArbilTreeHelper;
+import nl.mpi.arbil.plugin.PluginArbilDataNode;
 import nl.mpi.arbil.plugin.PluginArbilDataNodeLoader;
+import nl.mpi.arbil.plugin.PluginArbilTable;
+import nl.mpi.arbil.plugin.PluginArbilTableModel;
+import nl.mpi.arbil.plugin.PluginBugCatcher;
 import nl.mpi.arbil.plugin.PluginDialogHandler;
-import nl.mpi.arbil.ui.ArbilTable;
-import nl.mpi.arbil.ui.ArbilTableModel;
-import nl.mpi.arbil.ui.ArbilWindowManager;
-import nl.mpi.arbil.userstorage.ArbilSessionStorage;
-import nl.mpi.arbil.util.ApplicationVersionManager;
-import nl.mpi.arbil.util.ArbilMimeHashQueue;
-import nl.mpi.arbil.util.BugCatcherManager;
+import nl.mpi.arbil.plugin.PluginSessionStorage;
+import nl.mpi.arbil.plugin.PluginWidgetFactory;
 import nl.mpi.kinnate.entityindexer.QueryException;
 import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
 import nl.mpi.kinnate.plugins.metadatasearch.db.DbTreeNode;
@@ -56,15 +50,15 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
     private int actionProgressCounter = 0;
     final private JTree resultsTree;
     final private DefaultTreeModel defaultTreeModel;
-    final private ArbilTable arbilTable;
-    final private ArbilTableModel arbilTableModel;
+    final private PluginArbilTable arbilTable;
+    final private PluginArbilTableModel arbilTableModel;
     final private JPanel criterionPanel;
     private MetadataFileType[] metadataFieldTypes = null;
 
-    public FacetedTreePanel(final PluginArbilDataNodeLoader arbilDataNodeLoader, final PluginDialogHandler dialogHandler) {
+    public FacetedTreePanel(final PluginArbilDataNodeLoader arbilDataNodeLoader, final PluginDialogHandler dialogHandler, final PluginBugCatcher pluginBugCatcher, PluginSessionStorage pluginSessionStorage, PluginWidgetFactory pluginWidgetFactory) {
         this.arbilDataNodeLoader = arbilDataNodeLoader;
         arbilWindowManager = dialogHandler;
-        arbilDatabase = new ArbilDatabase(new ArbilSessionStorage(), arbilWindowManager, BugCatcherManager.getBugCatcher());
+        arbilDatabase = new ArbilDatabase(pluginSessionStorage, arbilWindowManager, pluginBugCatcher);
         this.setLayout(new BorderLayout());
         criterionPanel = new JPanel();
         criterionPanel.setLayout(new FlowLayout());
@@ -121,13 +115,13 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
         resultsTree.setCellRenderer(new SearchTreeCellRenderer());
         resultsTree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent tse) {
-                ArrayList<ArbilDataNode> arbilDataNodeList = new ArrayList<ArbilDataNode>();
+                ArrayList<PluginArbilDataNode> arbilDataNodeList = new ArrayList<PluginArbilDataNode>();
                 final TreePath[] selectionPaths = resultsTree.getSelectionPaths();
                 if (selectionPaths != null) {
                     for (TreePath treePath : selectionPaths) {
                         final Object lastPathComponent = treePath.getLastPathComponent();
                         if (lastPathComponent instanceof MetadataTreeNode) {
-                            final ArbilDataNode arbilNode = ((MetadataTreeNode) lastPathComponent).getArbilNode();
+                            final PluginArbilDataNode arbilNode = ((MetadataTreeNode) lastPathComponent).getArbilNode();
                             if (arbilNode != null) {
                                 arbilDataNodeList.add(arbilNode);
                             }
@@ -135,50 +129,49 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
                     }
                 }
                 arbilTableModel.removeAllArbilDataNodeRows();
-                arbilTableModel.addArbilDataNodes(arbilDataNodeList.toArray(new ArbilDataNode[0]));
+                arbilTableModel.addArbilDataNodes(arbilDataNodeList.toArray(new PluginArbilDataNode[0]));
             }
         });
         centerPanel.add(new JScrollPane(resultsTree), BorderLayout.CENTER);
 
-        arbilTableModel = new ArbilTableModel(null);
-        arbilTable = new ArbilTable(arbilTableModel, "FacetedTreeSelectionTable");
-        JSplitPane jSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, centerPanel, new JScrollPane(arbilTable));
+        arbilTableModel = pluginWidgetFactory.createTableModel();
+        arbilTable = pluginWidgetFactory.createTable(arbilTableModel, "FacetedTreeSelectionTable");
+        JSplitPane jSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, centerPanel, new JScrollPane((Component) arbilTable));
 
         this.add(jSplitPane, BorderLayout.CENTER);
     }
 
-    static public void main(String[] args) {
-//        ArbilIcons.setVersionManager(new ApplicationVersionManager(new ArbilVersion()));
-//        final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
-//        ArbilNodeSearchColumnComboBox.setSessionStorage(arbilSessionStorage);
-//        ArbilFieldViews.setSessionStorage(arbilSessionStorage);
-//        MetadataReader.setSessionStorage(arbilSessionStorage);
-//        ArbilTemplateManager.setSessionStorage(arbilSessionStorage);
-//        ArbilField.setSessionStorage(arbilSessionStorage);
-//        ArbilVocabularies.setSessionStorage(arbilSessionStorage);
-        final ArbilDesktopInjector injector = new ArbilDesktopInjector();
-        injector.injectHandlers(new ApplicationVersionManager(new ArbilVersion()));
-//        final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
+//    static public void main(String[] args) {
+////        ArbilIcons.setVersionManager(new ApplicationVersionManager(new ArbilVersion()));
+////        final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
+////        ArbilNodeSearchColumnComboBox.setSessionStorage(arbilSessionStorage);
+////        ArbilFieldViews.setSessionStorage(arbilSessionStorage);
+////        MetadataReader.setSessionStorage(arbilSessionStorage);
+////        ArbilTemplateManager.setSessionStorage(arbilSessionStorage);
+////        ArbilField.setSessionStorage(arbilSessionStorage);
+////        ArbilVocabularies.setSessionStorage(arbilSessionStorage);
 //        final ArbilDesktopInjector injector = new ArbilDesktopInjector();
-//        injector.injectHandlers(versionManager);
-        final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage(); // todo: this is should use the same session storage as the injector but it is either not clear how to get it or it is not possible without changes
-
-
-//        ArbilTableModel.setMessageDialogHandler(new ArbilWindowManager());
-//        ArbilTable.set
-        JFrame jFrame = new JFrame("Faceted Tree Panel Test");
-        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        final ArbilWindowManager arbilWindowManager = new ArbilWindowManager();
-        final ArbilDataNodeLoader arbilDataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
-        final FacetedTreePanel facetedTreePanel = new FacetedTreePanel(arbilDataNodeLoader, arbilWindowManager);
-        jFrame.setContentPane(facetedTreePanel);
-        jFrame.pack();
-        jFrame.setVisible(true);
-        // trigger the facets to load
-//        new Thread(facetedTreePanel.getRunnable("add")).start();
-        new Thread(facetedTreePanel.getRunnable("options")).start();
-    }
-
+//        injector.injectHandlers(new ApplicationVersionManager(new ArbilVersion()));
+////        final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
+////        final ArbilDesktopInjector injector = new ArbilDesktopInjector();
+////        injector.injectHandlers(versionManager);
+//        final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage(); // todo: this is should use the same session storage as the injector but it is either not clear how to get it or it is not possible without changes
+//
+//
+////        ArbilTableModel.setMessageDialogHandler(new ArbilWindowManager());
+////        ArbilTable.set
+//        JFrame jFrame = new JFrame("Faceted Tree Panel Test");
+//        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        final ArbilWindowManager arbilWindowManager = new ArbilWindowManager();
+//        final ArbilDataNodeLoader arbilDataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
+//        final FacetedTreePanel facetedTreePanel = new FacetedTreePanel(arbilDataNodeLoader, arbilWindowManager);
+//        jFrame.setContentPane(facetedTreePanel);
+//        jFrame.pack();
+//        jFrame.setVisible(true);
+//        // trigger the facets to load
+////        new Thread(facetedTreePanel.getRunnable("add")).start();
+//        new Thread(facetedTreePanel.getRunnable("options")).start();
+//    }
     public void actionPerformed(ActionEvent e) {
         actionProgressCounter++;
         SwingUtilities.invokeLater(new Runnable() {

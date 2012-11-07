@@ -7,6 +7,7 @@ import nl.mpi.arbil.plugin.PluginBugCatcher;
 import nl.mpi.arbil.plugin.PluginDialogHandler;
 import nl.mpi.arbil.plugin.PluginException;
 import nl.mpi.arbil.plugin.PluginSessionStorage;
+import nl.mpi.arbil.plugin.PluginWidgetFactory;
 import nl.mpi.kinnate.plugin.AbstractBasePlugin;
 import nl.mpi.kinnate.plugins.metadatasearch.ui.SearchPanel;
 
@@ -21,8 +22,8 @@ public class SearchPlugin extends AbstractBasePlugin implements ArbilWindowPlugi
         super("XML DB Search Plugin", "A plugin for Arbil that provides a XML DB search.", "nl.mpi.kinnate.plugins.metadatasearch");
     }
 
-    public JPanel getUiPanel(PluginDialogHandler dialogHandler, PluginSessionStorage sessionStorage, PluginBugCatcher bugCatcher, PluginArbilDataNodeLoader arbilDataNodeLoader) throws PluginException {
-        SearchPanel searchPanel = new SearchPanel(arbilDataNodeLoader, dialogHandler);
+    public JPanel getUiPanel(PluginDialogHandler dialogHandler, PluginSessionStorage sessionStorage, PluginBugCatcher bugCatcher, PluginArbilDataNodeLoader arbilDataNodeLoader, PluginWidgetFactory pluginWidgetFactory) throws PluginException {
+        SearchPanel searchPanel = new SearchPanel(arbilDataNodeLoader, dialogHandler, bugCatcher, sessionStorage, pluginWidgetFactory);
         searchPanel.initOptions();
         return searchPanel;
     }
