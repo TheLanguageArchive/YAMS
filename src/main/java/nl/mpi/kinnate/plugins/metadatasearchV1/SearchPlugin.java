@@ -18,7 +18,7 @@ import nl.mpi.kinnate.plugins.metadatasearchV1.ui.SearchPanel;
 public class SearchPlugin extends AbstractBasePlugin implements ArbilWindowPlugin {
 
     public SearchPlugin() throws PluginException {
-        super("XML DB Search Plugin", "A plugin for Arbil that provides a XML DB search.", "nl.mpi.kinnate.plugins.metadatasearch");
+        super("XML DB Search Plugin 0-1 (good-with-more-files)", "A plugin for Arbil that provides a XML DB search.", "nl.mpi.kinnate.plugins.metadatasearch");
     }
 
     public JPanel getUiPanel(PluginDialogHandler dialogHandler, PluginSessionStorage sessionStorage, PluginBugCatcher bugCatcher, PluginArbilDataNodeLoader arbilDataNodeLoader) throws PluginException {
