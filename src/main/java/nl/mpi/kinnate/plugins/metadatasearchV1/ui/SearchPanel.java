@@ -1,4 +1,4 @@
-package nl.mpi.kinnate.plugins.metadatasearch.ui;
+package nl.mpi.kinnate.plugins.metadatasearchV1.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -35,12 +35,12 @@ import nl.mpi.arbil.util.ApplicationVersionManager;
 import nl.mpi.arbil.util.ArbilMimeHashQueue;
 import nl.mpi.arbil.util.BugCatcherManager;
 import nl.mpi.kinnate.entityindexer.QueryException;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.CriterionJoinType;
-import nl.mpi.kinnate.plugins.metadatasearch.db.DbTreeNode;
-import nl.mpi.kinnate.plugins.metadatasearch.db.MetadataFileType;
-import nl.mpi.kinnate.plugins.metadatasearch.db.MetadataTreeNode;
-import nl.mpi.kinnate.plugins.metadatasearch.db.SearchParameters;
+import nl.mpi.kinnate.plugins.metadatasearchV1.db.ArbilDatabase;
+import nl.mpi.kinnate.plugins.metadatasearchV1.db.ArbilDatabase.CriterionJoinType;
+import nl.mpi.kinnate.plugins.metadatasearchV1.db.DbTreeNode;
+import nl.mpi.kinnate.plugins.metadatasearchV1.db.MetadataFileType;
+import nl.mpi.kinnate.plugins.metadatasearchV1.db.MetadataTreeNode;
+import nl.mpi.kinnate.plugins.metadatasearchV1.db.SearchParameters;
 
 /**
  * Document : SearchPanel Created on : Jul 31, 2012, 6:34:07 PM

@@ -1,4 +1,4 @@
-package nl.mpi.kinnate.plugins.metadatasearch.db;
+package nl.mpi.kinnate.plugins.metadatasearchV1.db;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;

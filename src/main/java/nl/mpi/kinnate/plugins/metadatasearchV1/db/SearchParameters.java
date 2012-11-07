@@ -1,4 +1,4 @@
-package nl.mpi.kinnate.plugins.metadatasearch.db;
+package nl.mpi.kinnate.plugins.metadatasearchV1.db;
 
 /**
  * Document : SearchParameters <br> Created on Sep 11, 2012, 4:55:09 PM <br>

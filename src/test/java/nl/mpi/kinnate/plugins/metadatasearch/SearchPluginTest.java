@@ -1,5 +1,6 @@
 package nl.mpi.kinnate.plugins.metadatasearch;
 
+import nl.mpi.kinnate.plugins.metadatasearchV1.SearchPlugin;
 import junit.framework.TestCase;
 import nl.mpi.arbil.plugin.PluginException;
 
