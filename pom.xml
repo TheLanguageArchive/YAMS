@@ -86,7 +86,7 @@
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>plugins-core</artifactId>
-            <version>0.0.33986-pretesting</version>
+            <version>0.0.34108-pretesting</version>
         </dependency>
         <dependency>
             <groupId>org.basex</groupId>
