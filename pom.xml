@@ -3,14 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>nl.mpi</groupId>
-    <artifactId>metedata-search</artifactId>
+    <artifactId>metedata-search-V0-1</artifactId>
     <!--    Either use the snapshot version of manually enter the current build number. 
     The build number is only required when depending on the output in other projects or building to the server.-->
-    <version>${plugin.majorVersion}.${plugin.minorVersion}-${plugin.branch}-SNAPSHOT</version>
-    <!--<version>${plugin.majorVersion}.${plugin.minorVersion}.33422-${plugin.branch}</version>-->
+    <!--<version>${plugin.majorVersion}.${plugin.minorVersion}-${plugin.branch}-SNAPSHOT</version>-->
+    <version>${plugin.majorVersion}.${plugin.minorVersion}.34170-${plugin.branch}</version>
     <packaging>jar</packaging>
-
-    <name>metedata-search-V0-1</name>
+    <name>metedata-search-0-1</name>
     <url>http://maven.apache.org</url>
     <build>
         <resources>
