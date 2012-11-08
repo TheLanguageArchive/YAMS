@@ -6,6 +6,7 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 import javax.xml.bind.annotation.XmlElement;
+import nl.mpi.arbil.plugin.WrongNodeTypeException;
 import nl.mpi.arbil.plugin.PluginArbilDataNode;
 import nl.mpi.arbil.plugin.PluginDataNodeContainer;
 
@@ -112,25 +113,29 @@ public class MetadataTreeNode extends AbstractDbTreeNode implements PluginDataNo
         }
         labelString = arbilDomDataNode.toString();
         arbilDataNode = arbilDomDataNode;
-        if (!arbilDomDataNode.isLoading()) { // && imdiApiPath == null
+        if (!arbilDataNodeLoader.isNodeLoading(arbilDomDataNode)) { // && imdiApiPath == null
             imdiApiPath = getImdiApiPath();
             boolean matchingChildFound = true;
             while (matchingChildFound) {
                 matchingChildFound = false;
                 String lastMatchedImdiApiPath = "";
                 for (PluginArbilDataNode arbilChildDataNode : arbilDataNode.getChildArray()) {
-                    String fragmentString = arbilChildDataNode.getURI().getFragment();
-                    String currentImdiApiPath;
-                    if (fragmentString != null) {
-                        currentImdiApiPath = fragmentString.replace("(1)", "");
-                    } else {
-                        currentImdiApiPath = "";
-                    }
-                    if (imdiApiPath.startsWith(currentImdiApiPath) && lastMatchedImdiApiPath.length() < currentImdiApiPath.length()) {
-                        lastMatchedImdiApiPath = currentImdiApiPath;
-                        arbilDataNode = arbilChildDataNode;
-                        labelString = labelString + " / " + arbilChildDataNode.toString();
-                        matchingChildFound = true;
+                    try {
+                        String fragmentString = arbilDataNodeLoader.getNodeURI(arbilChildDataNode).getFragment();
+                        String currentImdiApiPath;
+                        if (fragmentString != null) {
+                            currentImdiApiPath = fragmentString.replace("(1)", "");
+                        } else {
+                            currentImdiApiPath = "";
+                        }
+                        if (imdiApiPath.startsWith(currentImdiApiPath) && lastMatchedImdiApiPath.length() < currentImdiApiPath.length()) {
+                            lastMatchedImdiApiPath = currentImdiApiPath;
+                            arbilDataNode = arbilChildDataNode;
+                            labelString = labelString + " / " + arbilChildDataNode.toString();
+                            matchingChildFound = true;
+                        }
+                    } catch (WrongNodeTypeException exception) {
+                        // of this node does not provide a URI then it is of no interest here and can be ignored
                     }
                 }
             }
