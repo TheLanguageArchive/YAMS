@@ -62,7 +62,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <plugin.majorVersion>0</plugin.majorVersion> 
-        <plugin.minorVersion>2</plugin.minorVersion> 
+        <plugin.minorVersion>3</plugin.minorVersion> 
         <plugin.branch>pretesting</plugin.branch> 
     </properties>
 
