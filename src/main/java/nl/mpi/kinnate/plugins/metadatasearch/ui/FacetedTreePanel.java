@@ -31,9 +31,9 @@ import nl.mpi.arbil.plugin.PluginSessionStorage;
 import nl.mpi.arbil.plugin.PluginWidgetFactory;
 import nl.mpi.kinnate.entityindexer.QueryException;
 import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
-import nl.mpi.kinnate.plugins.metadatasearch.db.DbTreeNode;
-import nl.mpi.kinnate.plugins.metadatasearch.db.MetadataFileType;
-import nl.mpi.kinnate.plugins.metadatasearch.db.MetadataTreeNode;
+import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
+import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataFileType;
+import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataTreeNode;
 
 /**
  * Document : FacetedTreePanel <br> Created on Aug 23, 2012, 3:20:13 PM <br>

@@ -30,9 +30,9 @@ import nl.mpi.arbil.plugin.PluginWidgetFactory;
 import nl.mpi.kinnate.entityindexer.QueryException;
 import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
 import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.CriterionJoinType;
-import nl.mpi.kinnate.plugins.metadatasearch.db.DbTreeNode;
-import nl.mpi.kinnate.plugins.metadatasearch.db.MetadataFileType;
-import nl.mpi.kinnate.plugins.metadatasearch.db.MetadataTreeNode;
+import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
+import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataFileType;
+import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataTreeNode;
 import nl.mpi.kinnate.plugins.metadatasearch.db.SearchParameters;
 
 /**

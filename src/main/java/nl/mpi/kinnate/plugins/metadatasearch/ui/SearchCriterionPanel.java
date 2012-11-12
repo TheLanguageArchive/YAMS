@@ -12,7 +12,7 @@ import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
 import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.SearchNegator;
 import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.SearchOption;
 import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.SearchType;
-import nl.mpi.kinnate.plugins.metadatasearch.db.MetadataFileType;
+import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataFileType;
 
 /**
  * Document : SearchCriterionPanel <br> Created on Aug 31, 2012, 4:23:32 PM <br>

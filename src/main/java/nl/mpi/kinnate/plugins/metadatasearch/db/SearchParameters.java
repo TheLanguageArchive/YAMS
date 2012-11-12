@@ -1,5 +1,7 @@
 package nl.mpi.kinnate.plugins.metadatasearch.db;
 
+import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataFileType;
+
 /**
  * Document : SearchParameters <br> Created on Sep 11, 2012, 4:55:09 PM <br>
  *

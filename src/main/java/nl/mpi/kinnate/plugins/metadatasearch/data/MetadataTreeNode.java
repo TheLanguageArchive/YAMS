@@ -1,4 +1,4 @@
-package nl.mpi.kinnate.plugins.metadatasearch.db;
+package nl.mpi.kinnate.plugins.metadatasearch.data;
 
 import java.net.URI;
 import java.util.Enumeration;
@@ -6,9 +6,9 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 import javax.xml.bind.annotation.XmlElement;
-import nl.mpi.arbil.plugin.WrongNodeTypeException;
 import nl.mpi.arbil.plugin.PluginArbilDataNode;
 import nl.mpi.arbil.plugin.PluginDataNodeContainer;
+import nl.mpi.arbil.plugin.WrongNodeTypeException;
 
 /**
  * Document : MetadataTreeNode <br> Created on Sep 6, 2012, 3:52:56 PM <br>

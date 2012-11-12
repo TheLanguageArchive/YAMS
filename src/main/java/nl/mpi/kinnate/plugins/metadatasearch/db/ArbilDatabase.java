@@ -12,6 +12,8 @@ import nl.mpi.arbil.plugin.PluginDialogHandler;
 import nl.mpi.arbil.plugin.PluginException;
 import nl.mpi.arbil.plugin.PluginSessionStorage;
 import nl.mpi.kinnate.entityindexer.QueryException;
+import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
+import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataFileType;
 import org.basex.core.BaseXException;
 import org.basex.core.Context;
 import org.basex.core.cmd.Close;

@@ -4,7 +4,7 @@ import java.awt.Component;
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import nl.mpi.kinnate.plugins.metadatasearch.db.MetadataTreeNode;
+import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataTreeNode;
 
 /**
  * Document : SearchTreeCellRenderer <br> Created on Sep 6, 2012, 4:46:55 PM
