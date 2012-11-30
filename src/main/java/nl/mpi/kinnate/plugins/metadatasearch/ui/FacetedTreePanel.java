@@ -9,16 +9,24 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Map;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import nl.mpi.arbil.plugin.PluginArbilDataNode;
@@ -27,13 +35,15 @@ import nl.mpi.arbil.plugin.PluginArbilTable;
 import nl.mpi.arbil.plugin.PluginArbilTableModel;
 import nl.mpi.arbil.plugin.PluginBugCatcher;
 import nl.mpi.arbil.plugin.PluginDialogHandler;
+import nl.mpi.arbil.plugin.PluginException;
 import nl.mpi.arbil.plugin.PluginSessionStorage;
 import nl.mpi.arbil.plugin.PluginWidgetFactory;
+import nl.mpi.arbil.plugin.WrongNodeTypeException;
 import nl.mpi.kinnate.entityindexer.QueryException;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
 import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
 import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataFileType;
 import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataTreeNode;
+import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
 
 /**
  * Document : FacetedTreePanel <br> Created on Aug 23, 2012, 3:20:13 PM <br>
@@ -141,37 +151,99 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
         this.add(jSplitPane, BorderLayout.CENTER);
     }
 
-//    static public void main(String[] args) {
-////        ArbilIcons.setVersionManager(new ApplicationVersionManager(new ArbilVersion()));
-////        final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
-////        ArbilNodeSearchColumnComboBox.setSessionStorage(arbilSessionStorage);
-////        ArbilFieldViews.setSessionStorage(arbilSessionStorage);
-////        MetadataReader.setSessionStorage(arbilSessionStorage);
-////        ArbilTemplateManager.setSessionStorage(arbilSessionStorage);
-////        ArbilField.setSessionStorage(arbilSessionStorage);
-////        ArbilVocabularies.setSessionStorage(arbilSessionStorage);
-//        final ArbilDesktopInjector injector = new ArbilDesktopInjector();
-//        injector.injectHandlers(new ApplicationVersionManager(new ArbilVersion()));
-////        final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
-////        final ArbilDesktopInjector injector = new ArbilDesktopInjector();
-////        injector.injectHandlers(versionManager);
-//        final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage(); // todo: this is should use the same session storage as the injector but it is either not clear how to get it or it is not possible without changes
-//
-//
-////        ArbilTableModel.setMessageDialogHandler(new ArbilWindowManager());
-////        ArbilTable.set
-//        JFrame jFrame = new JFrame("Faceted Tree Panel Test");
-//        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        final ArbilWindowManager arbilWindowManager = new ArbilWindowManager();
-//        final ArbilDataNodeLoader arbilDataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
-//        final FacetedTreePanel facetedTreePanel = new FacetedTreePanel(arbilDataNodeLoader, arbilWindowManager);
-//        jFrame.setContentPane(facetedTreePanel);
-//        jFrame.pack();
-//        jFrame.setVisible(true);
-//        // trigger the facets to load
-////        new Thread(facetedTreePanel.getRunnable("add")).start();
-//        new Thread(facetedTreePanel.getRunnable("options")).start();
-//    }
+    static public void main(String[] args) {
+        JFrame jFrame = new JFrame("Faceted Tree Panel Test");
+        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        final PluginSessionStorage sessionStorage = new PluginSessionStorage() {
+            public File getApplicationSettingsDirectory() {
+                return new File("/Users/petwit2/.arbil/");
+            }
+
+            public File getProjectDirectory() {
+                return new File("/Users/petwit2/.arbil/");
+            }
+
+            public File getProjectWorkingDirectory() {
+                return new File("/Users/petwit2/.arbil/ArbilWorkingFiles/");
+            }
+        };
+        final PluginArbilDataNodeLoader dataNodeLoader = new PluginArbilDataNodeLoader() {
+            public PluginArbilDataNode getPluginArbilDataNode(Object registeringObject, URI localUri) {
+                return new PluginArbilDataNode() {
+                    public ImageIcon getIcon() {
+                        return null;
+                    }
+
+                    public PluginArbilDataNode[] getChildArray() {
+                        return new PluginArbilDataNode[0];
+                    }
+                };
+            }
+
+            public URI getNodeURI(PluginArbilDataNode dataNode) throws WrongNodeTypeException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public boolean isNodeLoading(PluginArbilDataNode dataNode) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+        PluginDialogHandler dialogHandler = new PluginDialogHandler() {
+            public void addMessageDialogToQueue(String messageString, String messageTitle) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public boolean showConfirmDialogBox(String messageString, String messageTitle) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public int showDialogBox(String message, String title, int optionType, int messageType) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public int showDialogBox(String message, String title, int optionType, int messageType, Object[] options, Object initialValue) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public File[] showFileSelectBox(String titleText, boolean directorySelectOnly, boolean multipleSelect, Map<String, FileFilter> fileFilterMap, PluginDialogHandler.DialogueType dialogueType, JComponent customAccessory) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+        PluginBugCatcher bugCatcher = new PluginBugCatcher() {
+            public void logException(PluginException exception) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+        PluginWidgetFactory widgetFactory = new PluginWidgetFactory() {
+            public PluginArbilTable createTable(PluginArbilTableModel pluginArbilTableModel, String tableName) {
+                class mockTable extends JTable implements PluginArbilTable {
+                };
+                return new mockTable();
+            }
+
+            public PluginArbilTableModel createTableModel() {
+                return new PluginArbilTableModel() {
+                    public void removeAllArbilDataNodeRows() {
+//                        throw new UnsupportedOperationException("Not supported yet.");
+                    }
+
+                    public void addArbilDataNodes(PluginArbilDataNode[] pluginArbilDataNodes) {
+//                        throw new UnsupportedOperationException("Not supported yet.");
+                    }
+                };
+            }
+        };
+
+        final FacetedTreePanel facetedTreePanel = new FacetedTreePanel(dataNodeLoader, dialogHandler, bugCatcher, sessionStorage, widgetFactory);
+        jFrame.setContentPane(facetedTreePanel);
+        jFrame.pack();
+        jFrame.setVisible(true);
+        // trigger the facets to load
+//        new Thread(facetedTreePanel.getRunnable("add")).start();
+        new Thread(facetedTreePanel.getRunnable("options")).start();
+    }
+
     public void actionPerformed(ActionEvent e) {
         actionProgressCounter++;
         SwingUtilities.invokeLater(new Runnable() {
