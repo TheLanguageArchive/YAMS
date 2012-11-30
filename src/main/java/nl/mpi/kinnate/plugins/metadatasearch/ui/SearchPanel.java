@@ -10,6 +10,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -172,7 +173,15 @@ public class SearchPanel extends JPanel implements ActionListener {
         };
         final PluginArbilDataNodeLoader dataNodeLoader = new PluginArbilDataNodeLoader() {
             public PluginArbilDataNode getPluginArbilDataNode(Object registeringObject, URI localUri) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                return new PluginArbilDataNode() {
+                    public ImageIcon getIcon() {
+                        return null;
+                    }
+
+                    public PluginArbilDataNode[] getChildArray() {
+                        return new PluginArbilDataNode[0];
+                    }
+                };
             }
 
             public URI getNodeURI(PluginArbilDataNode dataNode) throws WrongNodeTypeException {
