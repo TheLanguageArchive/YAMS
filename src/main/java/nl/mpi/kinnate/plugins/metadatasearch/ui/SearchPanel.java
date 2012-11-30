@@ -172,7 +172,7 @@ public class SearchPanel extends JPanel implements ActionListener {
             }
         };
         final PluginArbilDataNodeLoader dataNodeLoader = new PluginArbilDataNodeLoader() {
-            public PluginArbilDataNode getPluginArbilDataNode(Object registeringObject, URI localUri) {
+            public PluginArbilDataNode getPluginArbilDataNode(Object registeringObject, final URI localUri) {
                 return new PluginArbilDataNode() {
                     public ImageIcon getIcon() {
                         return null;
@@ -180,6 +180,11 @@ public class SearchPanel extends JPanel implements ActionListener {
 
                     public PluginArbilDataNode[] getChildArray() {
                         return new PluginArbilDataNode[0];
+                    }
+
+                    @Override
+                    public String toString() {
+                        return localUri.toString();
                     }
                 };
             }
@@ -189,7 +194,7 @@ public class SearchPanel extends JPanel implements ActionListener {
             }
 
             public boolean isNodeLoading(PluginArbilDataNode dataNode) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                return false;
             }
         };
         PluginDialogHandler dialogHandler = new PluginDialogHandler() {
