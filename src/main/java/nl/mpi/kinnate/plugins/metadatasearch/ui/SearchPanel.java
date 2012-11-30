@@ -38,15 +38,15 @@ import nl.mpi.arbil.plugin.PluginSessionStorage;
 import nl.mpi.arbil.plugin.PluginWidgetFactory;
 import nl.mpi.arbil.plugin.WrongNodeTypeException;
 import nl.mpi.kinnate.entityindexer.QueryException;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.CriterionJoinType;
 import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
 import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataFileType;
 import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataTreeNode;
+import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
+import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.CriterionJoinType;
 import nl.mpi.kinnate.plugins.metadatasearch.db.SearchParameters;
 
 /**
- * Document : SearchPanel Created on : Jul 31, 2012, 6:34:07 PM
+ * Created on : Jul 31, 2012, 6:34:07 PM
  *
  * @author Peter Withers
  */
