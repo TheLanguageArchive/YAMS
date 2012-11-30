@@ -103,7 +103,9 @@ public class ArbilDatabase {
         this.bugCatcher = bugCatcher;
         try {
             synchronized (databaseLock) {
-                new Set("dbpath", new File(sessionStorage.getApplicationSettingsDirectory(), "BaseXData")).execute(context);
+                final File dbPathFile = new File(sessionStorage.getApplicationSettingsDirectory(), "BaseXData");
+                System.out.println("dbpath: " + dbPathFile.toString());
+                new Set("dbpath", dbPathFile).execute(context);
                 new Open(databaseName).execute(context);
                 new Close().execute(context);
             }
