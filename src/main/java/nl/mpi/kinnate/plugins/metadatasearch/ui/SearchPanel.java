@@ -5,18 +5,25 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Map;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import nl.mpi.arbil.plugin.PluginArbilDataNode;
@@ -25,8 +32,11 @@ import nl.mpi.arbil.plugin.PluginArbilTable;
 import nl.mpi.arbil.plugin.PluginArbilTableModel;
 import nl.mpi.arbil.plugin.PluginBugCatcher;
 import nl.mpi.arbil.plugin.PluginDialogHandler;
+import nl.mpi.arbil.plugin.PluginDialogHandler.DialogueType;
+import nl.mpi.arbil.plugin.PluginException;
 import nl.mpi.arbil.plugin.PluginSessionStorage;
 import nl.mpi.arbil.plugin.PluginWidgetFactory;
+import nl.mpi.arbil.plugin.WrongNodeTypeException;
 import nl.mpi.kinnate.entityindexer.QueryException;
 import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
 import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.CriterionJoinType;
@@ -144,20 +154,87 @@ public class SearchPanel extends JPanel implements ActionListener {
         this.add(centerPanel, BorderLayout.CENTER);
     }
 
-//    static public void main(String[] args) {
-//        final ArbilDesktopInjector injector = new ArbilDesktopInjector();
-//        injector.injectHandlers(new ApplicationVersionManager(new ArbilVersion()));
-//        JFrame jFrame = new JFrame("Search Panel Test");
-//        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage(); // todo: this is should use the same session storage as the injector but it is either not clear how to get it or it is not possible without changes
-//        final ArbilWindowManager arbilWindowManager = new ArbilWindowManager();
-//        final ArbilDataNodeLoader arbilDataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
-//        SearchPanel searchPanel = new SearchPanel(arbilDataNodeLoader, arbilWindowManager);
-//        jFrame.setContentPane(searchPanel);
-//        jFrame.pack();
-//        jFrame.setVisible(true);
-//        searchPanel.initOptions();
-//    }
+    static public void main(String[] args) {
+        JFrame jFrame = new JFrame("Search Panel Test");
+        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        final PluginSessionStorage sessionStorage = new PluginSessionStorage() {
+            public File getApplicationSettingsDirectory() {
+                return new File("/Users/petwit2/.arbil/");
+            }
+
+            public File getProjectDirectory() {
+                return new File("/Users/petwit2/.arbil/");
+            }
+
+            public File getProjectWorkingDirectory() {
+                return new File("/Users/petwit2/.arbil/ArbilWorkingFiles/");
+            }
+        };
+        final PluginArbilDataNodeLoader dataNodeLoader = new PluginArbilDataNodeLoader() {
+            public PluginArbilDataNode getPluginArbilDataNode(Object registeringObject, URI localUri) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public URI getNodeURI(PluginArbilDataNode dataNode) throws WrongNodeTypeException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public boolean isNodeLoading(PluginArbilDataNode dataNode) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+        PluginDialogHandler dialogHandler = new PluginDialogHandler() {
+            public void addMessageDialogToQueue(String messageString, String messageTitle) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public boolean showConfirmDialogBox(String messageString, String messageTitle) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public int showDialogBox(String message, String title, int optionType, int messageType) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public int showDialogBox(String message, String title, int optionType, int messageType, Object[] options, Object initialValue) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public File[] showFileSelectBox(String titleText, boolean directorySelectOnly, boolean multipleSelect, Map<String, FileFilter> fileFilterMap, DialogueType dialogueType, JComponent customAccessory) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+        PluginBugCatcher bugCatcher = new PluginBugCatcher() {
+            public void logException(PluginException exception) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+        PluginWidgetFactory widgetFactory = new PluginWidgetFactory() {
+            public PluginArbilTable createTable(PluginArbilTableModel pluginArbilTableModel, String tableName) {
+                class mockTable extends JTable implements PluginArbilTable {
+                };
+                return new mockTable();
+            }
+
+            public PluginArbilTableModel createTableModel() {
+                return new PluginArbilTableModel() {
+                    public void removeAllArbilDataNodeRows() {
+//                        throw new UnsupportedOperationException("Not supported yet.");
+                    }
+
+                    public void addArbilDataNodes(PluginArbilDataNode[] pluginArbilDataNodes) {
+//                        throw new UnsupportedOperationException("Not supported yet.");
+                    }
+                };
+            }
+        };
+        SearchPanel searchPanel = new SearchPanel(dataNodeLoader, dialogHandler, bugCatcher, sessionStorage, widgetFactory);
+        jFrame.setContentPane(searchPanel);
+        jFrame.pack();
+        jFrame.setVisible(true);
+        searchPanel.initOptions();
+    }
+
     public void actionPerformed(ActionEvent e) {
         actionProgressCounter++;
         SwingUtilities.invokeLater(new Runnable() {
