@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>nl.mpi</groupId>
+    <artifactId>yass-parent</artifactId>
+    <name>YASS Parent</name>
+    <packaging>pom</packaging>
+    <version>1.0</version>
+    <description>Parent pom for the metadata search YASS</description>
+    <modules>
+        <module>swing</module>
+        <module>common</module>
+        <module>web</module>
+    </modules>
+    
+    <!--    <scm>
+        <developerConnection>scm:svn:https://svn.mpi.nl/LAT/Kinnate/trunk/</developerConnection>
+        <url>https://trac.mpi.nl/wiki/KinOath</url>
+    </scm>-->
+    <organization> 
+        <name>Max Planck Institute for Psycholinguistics</name> 
+        <url>http://tla.mpi.nl/tools/tla-tools</url>
+    </organization>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <plugin.majorVersion>1</plugin.majorVersion>
+        <plugin.minorVersion>1</plugin.minorVersion>
+        <plugin.branch>pretesting</plugin.branch>
+        <netbeans.hint.license>gpl20</netbeans.hint.license>
+        <plugin.license.copyrightYear>2012</plugin.license.copyrightYear>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.9.0</version> 
+                <configuration>
+                    <header>${project.parent.basedir}/license-header.txt</header>
+                    <strictCheck>false</strictCheck>
+                    <properties>
+                        <year>${plugin.license.copyrightYear}</year>
+                        <organization>${project.organization.name}</organization>
+                    </properties>
+                    <mapping>
+                        <svg>XML_STYLE</svg>
+                        <imdi>XML_STYLE</imdi>
+                        <cmdi>XML_STYLE</cmdi>
+                    </mapping>
+                    <excludes>
+                        <exclude>**/*.txt</exclude>
+                        <exclude>**/*.icns</exclude>
+                        <exclude>**/*.php</exclude>
+                        <exclude>installer/**</exclude>
+                        <exclude>**/nbactions.xml</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <distributionManagement>
+        <snapshotRepository>
+            <id>MPI-Snapshots</id>
+            <url>https://lux15.mpi.nl/nexus/content/repositories/MPI-Snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>MPI</id>
+            <name>MPI Repository</name>
+            <url>https://lux15.mpi.nl/nexus/content/repositories/MPI</url>
+        </repository>
+    </distributionManagement>
+</project>
+
