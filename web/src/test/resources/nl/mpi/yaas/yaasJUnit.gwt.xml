@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <!-- Inherit our applications main module.                      -->
+  <inherits name='nl.mpi.yaas.yaas' />
+
+  <!-- Specify the path to any remote services.                   -->
+  <servlet path="/yaas/greet" class="nl.mpi.yaas.server.GreetingServiceImpl" />
+
+</module>
