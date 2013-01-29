@@ -1,4 +1,4 @@
-package nl.mpi.kinnate.plugins.metadatasearch.data;
+package nl.mpi.yaas.common.data;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

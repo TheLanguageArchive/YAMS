@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <name>yaas-common</name>
+    <name>YAAS Common</name>
     <groupId>nl.mpi</groupId>
     <artifactId>yaas-common</artifactId>
     <version>${plugin.majorVersion}.${plugin.minorVersion}.0000000-${plugin.branch}</version>
@@ -112,6 +112,11 @@
             <artifactId>pluginloader</artifactId>
             <version>0.1.34202-pretesting</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.basex</groupId>
+            <artifactId>basex</artifactId>
+            <version>7.3.1</version>
         </dependency>
     </dependencies>
     <repositories>

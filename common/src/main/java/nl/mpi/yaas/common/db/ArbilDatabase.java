@@ -1,4 +1,4 @@
-package nl.mpi.kinnate.plugins.metadatasearch.db;
+package nl.mpi.yaas.common.db;
 
 import java.io.File;
 import java.io.StringReader;
@@ -7,13 +7,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-import nl.mpi.flap.kinnate.entityindexer.QueryException;
-import nl.mpi.flap.plugin.PluginBugCatcher;
-import nl.mpi.flap.plugin.PluginDialogHandler;
-import nl.mpi.flap.plugin.PluginException;
-import nl.mpi.flap.plugin.PluginSessionStorage;
+import nl.mpi.arbil.plugin.PluginBugCatcher;
+import nl.mpi.arbil.plugin.PluginDialogHandler;
+import nl.mpi.arbil.plugin.PluginException;
+import nl.mpi.arbil.plugin.PluginSessionStorage;
+import nl.mpi.kinnate.entityindexer.QueryException;
 import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
-import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataFileType;
+import nl.mpi.yaas.common.data.MetadataFileType;
 import org.basex.core.BaseXException;
 import org.basex.core.Context;
 import org.basex.core.cmd.Close;
