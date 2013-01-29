@@ -27,18 +27,18 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import nl.mpi.arbil.plugin.PluginArbilDataNode;
-import nl.mpi.arbil.plugin.PluginArbilDataNodeLoader;
-import nl.mpi.arbil.plugin.PluginArbilTable;
-import nl.mpi.arbil.plugin.PluginArbilTableModel;
-import nl.mpi.arbil.plugin.PluginBugCatcher;
-import nl.mpi.arbil.plugin.PluginDialogHandler;
-import nl.mpi.arbil.plugin.PluginDialogHandler.DialogueType;
-import nl.mpi.arbil.plugin.PluginException;
-import nl.mpi.arbil.plugin.PluginSessionStorage;
-import nl.mpi.arbil.plugin.PluginWidgetFactory;
-import nl.mpi.arbil.plugin.WrongNodeTypeException;
-import nl.mpi.kinnate.entityindexer.QueryException;
+import nl.mpi.flap.kinnate.entityindexer.QueryException;
+import nl.mpi.flap.plugin.PluginArbilDataNode;
+import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
+import nl.mpi.flap.plugin.PluginArbilTable;
+import nl.mpi.flap.plugin.PluginArbilTableModel;
+import nl.mpi.flap.plugin.PluginBugCatcher;
+import nl.mpi.flap.plugin.PluginDialogHandler;
+import nl.mpi.flap.plugin.PluginDialogHandler.DialogueType;
+import nl.mpi.flap.plugin.PluginException;
+import nl.mpi.flap.plugin.PluginSessionStorage;
+import nl.mpi.flap.plugin.PluginWidgetFactory;
+import nl.mpi.flap.plugin.WrongNodeTypeException;
 import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
 import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataFileType;
 import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataTreeNode;
@@ -185,6 +185,10 @@ public class SearchPanel extends JPanel implements ActionListener {
                     @Override
                     public String toString() {
                         return localUri.toString();
+                    }
+
+                    public String getID() {
+                        throw new UnsupportedOperationException("Not supported yet.");
                     }
                 };
             }

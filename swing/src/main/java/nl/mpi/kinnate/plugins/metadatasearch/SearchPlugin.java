@@ -1,14 +1,14 @@
 package nl.mpi.kinnate.plugins.metadatasearch;
 
 import javax.swing.JPanel;
-import nl.mpi.arbil.plugin.ArbilWindowPlugin;
-import nl.mpi.arbil.plugin.PluginArbilDataNodeLoader;
-import nl.mpi.arbil.plugin.PluginBugCatcher;
-import nl.mpi.arbil.plugin.PluginDialogHandler;
-import nl.mpi.arbil.plugin.PluginException;
-import nl.mpi.arbil.plugin.PluginSessionStorage;
-import nl.mpi.arbil.plugin.PluginWidgetFactory;
-import nl.mpi.kinnate.plugin.AbstractBasePlugin;
+import nl.mpi.flap.plugin.AbstractBasePlugin;
+import nl.mpi.flap.plugin.ArbilWindowPlugin;
+import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
+import nl.mpi.flap.plugin.PluginBugCatcher;
+import nl.mpi.flap.plugin.PluginDialogHandler;
+import nl.mpi.flap.plugin.PluginException;
+import nl.mpi.flap.plugin.PluginSessionStorage;
+import nl.mpi.flap.plugin.PluginWidgetFactory;
 import nl.mpi.kinnate.plugins.metadatasearch.ui.SearchPanel;
 
 /**

@@ -6,9 +6,9 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 import javax.xml.bind.annotation.XmlElement;
-import nl.mpi.arbil.plugin.PluginArbilDataNode;
-import nl.mpi.arbil.plugin.PluginDataNodeContainer;
-import nl.mpi.arbil.plugin.WrongNodeTypeException;
+import nl.mpi.flap.plugin.PluginArbilDataNode;
+import nl.mpi.flap.plugin.PluginDataNodeContainer;
+import nl.mpi.flap.plugin.WrongNodeTypeException;
 
 /**
  * Document : MetadataTreeNode <br> Created on Sep 6, 2012, 3:52:56 PM <br>
