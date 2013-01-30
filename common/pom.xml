@@ -4,7 +4,10 @@
     <name>YAAS Common</name>
     <groupId>nl.mpi</groupId>
     <artifactId>yaas-common</artifactId>
-    <version>${plugin.majorVersion}.${plugin.minorVersion}.0000000-${plugin.branch}</version>
+    <!--    Either use the snapshot version of manually enter the current build number. 
+    The build number is only required when depending on the output in other projects or building to the server.-->
+    <version>${plugin.majorVersion}.${plugin.minorVersion}-${plugin.branch}-SNAPSHOT</version>
+<!--    <version>${plugin.majorVersion}.${plugin.minorVersion}.34200-${plugin.branch}</version>-->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <plugin.majorVersion>0</plugin.majorVersion>
@@ -97,26 +100,26 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>nl.mpi</groupId>
-            <artifactId>plugins-core</artifactId>
-            <version>1.0.34524-stable</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>nl.mpi</groupId>
-            <artifactId>pluginloader</artifactId>
-            <version>0.1.34202-pretesting</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.basex</groupId>
             <artifactId>basex</artifactId>
             <version>7.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>nl.mpi</groupId>
+            <artifactId>plugins-core</artifactId>
+            <version>1.1-pretesting-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>pluginloader</artifactId>
+            <version>1.1-pretesting-SNAPSHOT</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <repositories>

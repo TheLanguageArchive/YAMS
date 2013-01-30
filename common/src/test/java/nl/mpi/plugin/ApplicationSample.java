@@ -1,19 +1,19 @@
 /**
  * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.plugin;
 
@@ -27,9 +27,9 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import nl.mpi.arbil.plugin.ActivatablePlugin;
-import nl.mpi.arbil.plugin.PluginException;
-import nl.mpi.kinnate.plugin.BasePlugin;
+import nl.mpi.flap.module.BaseModule;
+import nl.mpi.flap.plugin.ActivatablePlugin;
+import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.pluginloader.PluginManager;
 import nl.mpi.pluginloader.PluginService;
 import nl.mpi.pluginloader.ui.PluginMenu;
@@ -38,7 +38,6 @@ import nl.mpi.pluginloader.ui.PluginMenu;
  * Created on : Nov 07, 2012, 12:01:34 PM
  *
  * 
- * add javadoc here about Im a runnable...
  * @author Peter Withers
  */
 public class ApplicationSample {
@@ -60,7 +59,7 @@ public class ApplicationSample {
         }
         final JTextArea jTextArea = new JTextArea(stringBuilder.toString());
         PluginManager pluginManager = new PluginManager() {
-            public boolean isActivated(BasePlugin kinOathPlugin) {
+            public boolean isActivated(BaseModule kinOathPlugin) {
                 try {
                     if (kinOathPlugin instanceof ActivatablePlugin) {
                         return ((ActivatablePlugin) kinOathPlugin).getIsActivated();
@@ -71,7 +70,7 @@ public class ApplicationSample {
                 return false;
             }
 
-            public void activatePlugin(BasePlugin kinOathPlugin) {
+            public void activatePlugin(BaseModule kinOathPlugin) {
                 try {
                     if (kinOathPlugin instanceof ActivatablePlugin) {
                         ((ActivatablePlugin) kinOathPlugin).activatePlugin(null, null);
@@ -84,7 +83,7 @@ public class ApplicationSample {
                 }
             }
 
-            public void deactivatePlugin(BasePlugin kinOathPlugin) {
+            public void deactivatePlugin(BaseModule kinOathPlugin) {
                 try {
                     if (kinOathPlugin instanceof ActivatablePlugin) {
                         ((ActivatablePlugin) kinOathPlugin).deactivatePlugin(null, null);

@@ -17,17 +17,17 @@
  */
 package nl.mpi.yaas.common;
 
-import nl.mpi.arbil.plugin.ActivatablePlugin;
-import nl.mpi.arbil.plugin.PluginDialogHandler;
-import nl.mpi.arbil.plugin.PluginException;
-import nl.mpi.arbil.plugin.PluginSessionStorage;
-import nl.mpi.kinnate.plugin.BasePlugin;
-import nl.mpi.pluginloader.PluginSettings;
+import nl.mpi.flap.plugin.ActivatablePlugin;
+import nl.mpi.flap.module.BaseModule;
+import nl.mpi.flap.plugin.PluginDialogHandler;
+import nl.mpi.flap.plugin.PluginException;
+import nl.mpi.flap.plugin.PluginSessionStorage;
+import nl.mpi.flap.plugin.PluginSettings;
 
 /**
  * Hello world activatable plugin
  */
-public class HelloWorldActivatablePlugin implements BasePlugin, PluginSettings, ActivatablePlugin {
+public class HelloWorldActivatablePlugin implements BaseModule, PluginSettings, ActivatablePlugin {
 
     private boolean activated = false;
 

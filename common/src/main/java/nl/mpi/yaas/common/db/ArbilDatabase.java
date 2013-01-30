@@ -7,13 +7,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-import nl.mpi.arbil.plugin.PluginBugCatcher;
-import nl.mpi.arbil.plugin.PluginDialogHandler;
-import nl.mpi.arbil.plugin.PluginException;
-import nl.mpi.arbil.plugin.PluginSessionStorage;
-import nl.mpi.kinnate.entityindexer.QueryException;
-import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
+import nl.mpi.flap.kinnate.entityindexer.QueryException;
+import nl.mpi.flap.plugin.PluginBugCatcher;
+import nl.mpi.flap.plugin.PluginDialogHandler;
+import nl.mpi.flap.plugin.PluginException;
+import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.data.YassDataNode;
 import org.basex.core.BaseXException;
 import org.basex.core.Context;
 import org.basex.core.cmd.Close;
@@ -461,7 +461,7 @@ public class ArbilDatabase {
                 + "}</MetadataFileType>";
     }
 
-    public DbTreeNode getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) {
+    public YassDataNode getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) {
         StringBuilder queryStringBuilder = new StringBuilder();
         queryStringBuilder.append("<TreeNode>{\n");
         int parameterCounter = 0;
@@ -522,7 +522,7 @@ public class ArbilDatabase {
                 + "return <FileUriPath>{path($entityNode)}</FileUriPath>\n"
                 + "}</MetadataTreeNode>\n"
                 + "}</TreeNode>\n");
-        final DbTreeNode metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
+        final YassDataNode metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
         return metadataTypesString;
     }
 
@@ -589,15 +589,15 @@ public class ArbilDatabase {
 //        final String queryString = getTreeQuery(treeBranchTypeList);
 //        return getDbTreeNode(queryString);
 //    }
-    public DbTreeNode getTreeData(final ArrayList<MetadataFileType> treeBranchTypeList) {
+    public YassDataNode getTreeData(final ArrayList<MetadataFileType> treeBranchTypeList) {
         final String queryString = getTreeQuery(treeBranchTypeList);
         return getDbTreeNode(queryString);
     }
 
-    private DbTreeNode getDbTreeNode(String queryString) {
+    private YassDataNode getDbTreeNode(String queryString) {
         long startTime = System.currentTimeMillis();
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(DbTreeNode.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(YassDataNode.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             synchronized (databaseLock) {
@@ -605,7 +605,7 @@ public class ArbilDatabase {
                 queryResult = new XQuery(queryString).execute(context);
             }
             System.out.println("queryResult: " + queryResult);
-            DbTreeNode rootTreeNode = (DbTreeNode) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), DbTreeNode.class).getValue();
+            YassDataNode rootTreeNode = (YassDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), YassDataNode.class).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
             int resultCount = 0;
             if (rootTreeNode != null) {
@@ -621,7 +621,7 @@ public class ArbilDatabase {
             bugCatcher.logException(new PluginException(exception.getMessage()));
             dialogHandler.addMessageDialogToQueue("Error getting search options", "Search Options");
         }
-        return new DbTreeNode();
+        return new YassDataNode();
     }
 
     private MetadataFileType[] getMetadataTypes(final String queryString) {
