@@ -1,7 +1,7 @@
 package nl.mpi.kinnate.plugins.metadatasearch;
 
 import javax.swing.JPanel;
-import nl.mpi.flap.plugin.AbstractBasePlugin;
+import nl.mpi.flap.module.AbstractBaseModule;
 import nl.mpi.flap.plugin.ArbilWindowPlugin;
 import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
 import nl.mpi.flap.plugin.PluginBugCatcher;
@@ -16,7 +16,7 @@ import nl.mpi.kinnate.plugins.metadatasearch.ui.SearchPanel;
  *
  * @author Peter Withers <br>
  */
-public class SearchPlugin extends AbstractBasePlugin implements ArbilWindowPlugin {
+public class SearchPlugin extends AbstractBaseModule implements ArbilWindowPlugin {
 
     public SearchPlugin() throws PluginException {
         super("XML DB Search Plugin", "A plugin for Arbil that provides a XML DB search.", "nl.mpi.kinnate.plugins.metadatasearch");

@@ -6,7 +6,7 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeNode;
 import javax.xml.bind.annotation.XmlElement;
-import nl.mpi.flap.plugin.PluginArbilDataNode;
+import nl.mpi.flap.model.PluginArbilDataNode;
 import nl.mpi.flap.plugin.PluginDataNodeContainer;
 import nl.mpi.flap.plugin.WrongNodeTypeException;
 

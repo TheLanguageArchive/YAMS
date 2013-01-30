@@ -1,7 +1,7 @@
 package nl.mpi.kinnate.plugins.metadatasearch;
 
 import nl.mpi.flap.kinnate.KinOathEntity;
-import nl.mpi.flap.plugin.AbstractBasePlugin;
+import nl.mpi.flap.module.AbstractBaseModule;
 import nl.mpi.flap.plugin.KinOathEntityProviderPlugin;
 import nl.mpi.flap.plugin.PluginBugCatcher;
 import nl.mpi.flap.plugin.PluginDialogHandler;
@@ -13,7 +13,7 @@ import nl.mpi.flap.plugin.PluginSessionStorage;
  *
  * @author Peter Withers <br>
  */
-public class FacetedEntityProvider extends AbstractBasePlugin implements KinOathEntityProviderPlugin {
+public class FacetedEntityProvider extends AbstractBaseModule implements KinOathEntityProviderPlugin {
 
     public FacetedEntityProvider() throws PluginException {
         super("Faceted Entity Provider Plugin", "A plugin that provides a faceted tree of the current XML DB as a directed graph.", "nl.mpi.kinnate.plugins.metadatasearch");

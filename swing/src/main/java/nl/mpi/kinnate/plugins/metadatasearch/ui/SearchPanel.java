@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -28,7 +29,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
-import nl.mpi.flap.plugin.PluginArbilDataNode;
+import nl.mpi.flap.model.PluginArbilDataNode;
 import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
 import nl.mpi.flap.plugin.PluginArbilTable;
 import nl.mpi.flap.plugin.PluginArbilTableModel;
@@ -40,11 +41,11 @@ import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.flap.plugin.PluginWidgetFactory;
 import nl.mpi.flap.plugin.WrongNodeTypeException;
 import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
-import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataFileType;
 import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataTreeNode;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.CriterionJoinType;
-import nl.mpi.kinnate.plugins.metadatasearch.db.SearchParameters;
+import nl.mpi.yaas.common.db.ArbilDatabase;
+import nl.mpi.yaas.common.db.ArbilDatabase.CriterionJoinType;
+import nl.mpi.yaas.common.db.SearchParameters;
+import nl.mpi.yaas.common.data.MetadataFileType;
 
 /**
  * Created on : Jul 31, 2012, 6:34:07 PM
@@ -53,18 +54,18 @@ import nl.mpi.kinnate.plugins.metadatasearch.db.SearchParameters;
  */
 public class SearchPanel extends JPanel implements ActionListener {
 
-    final private ArbilDatabase arbilDatabase;
-    final private JProgressBar jProgressBar;
+    private ArbilDatabase<DbTreeNode> arbilDatabase;
+    private JProgressBar jProgressBar;
 //    final private JTextArea resultsTextArea;
-    final private ArrayList<SearchCriterionPanel> criterionPanelArray;
-    final private JPanel criterionArrayPanel;
-    final private JComboBox criterionJoinComboBox;
+    private ArrayList<SearchCriterionPanel> criterionPanelArray;
+    private JPanel criterionArrayPanel;
+    private JComboBox criterionJoinComboBox;
     private MetadataFileType[] metadataPathTypes;
     private MetadataFileType[] metadataFieldTypes;
-    final private JTree resultsTree;
-    final private DefaultTreeModel defaultTreeModel;
-    final private PluginArbilTable arbilTable;
-    final private PluginArbilTableModel arbilTableModel;
+    private JTree resultsTree;
+    private DefaultTreeModel defaultTreeModel;
+    private PluginArbilTable arbilTable;
+    private PluginArbilTableModel arbilTableModel;
     final private PluginArbilDataNodeLoader arbilDataNodeLoader;
     final private PluginDialogHandler arbilWindowManager;
     private int actionProgressCounter = 0;
@@ -72,7 +73,12 @@ public class SearchPanel extends JPanel implements ActionListener {
     public SearchPanel(final PluginArbilDataNodeLoader arbilDataNodeLoader, final PluginDialogHandler dialogHandler, final PluginBugCatcher pluginBugCatcher, PluginSessionStorage pluginSessionStorage, PluginWidgetFactory pluginWidgetFactory) {
         this.arbilDataNodeLoader = arbilDataNodeLoader;
         this.arbilWindowManager = dialogHandler;
-        arbilDatabase = new ArbilDatabase(pluginSessionStorage, arbilWindowManager, pluginBugCatcher);
+        try {
+            arbilDatabase = new ArbilDatabase<DbTreeNode>(DbTreeNode.class, pluginSessionStorage);
+        } catch (QueryException exception) {
+            this.add(new JLabel(exception.getMessage()), BorderLayout.CENTER);
+            return;
+        }
         this.setLayout(new BorderLayout());
 //        ArbilNodeSearchColumnComboBox.setSessionStorage(new ArbilSessionStorage());
 //        this.add(new ArbilNodeSearchPanel(null, null, new ArbilNode[0]), BorderLayout.PAGE_END);
@@ -310,22 +316,32 @@ public class SearchPanel extends JPanel implements ActionListener {
                 } else if ("add".equals(actionCommand)) {
                     // store the types so a query is not required each time
                     if (metadataFieldTypes == null || metadataPathTypes == null) {
-                        System.out.println("run query");
-                        metadataPathTypes = arbilDatabase.getMetadataTypes(null);
-                        System.out.println("done");
-                        System.out.println("run query");
-                        metadataFieldTypes = arbilDatabase.getFieldMetadataTypes(null);
-                        System.out.println("done");
+                        try {
+                            System.out.println("run query");
+                            metadataPathTypes = arbilDatabase.getMetadataTypes(null);
+                            System.out.println("done");
+                            System.out.println("run query");
+                            metadataFieldTypes = arbilDatabase.getFieldMetadataTypes(null);
+                            System.out.println("done");
+                        } catch (QueryException exception) {
+                            arbilWindowManager.addMessageDialogToQueue(exception.getMessage(), "Database Error");
+                            metadataFieldTypes = new MetadataFileType[0];
+                        }
                     }
                     final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this, metadataPathTypes, metadataFieldTypes, criterionPanelArray.size());
                     criterionPanelArray.add(searchCriterionPanel);
                     criterionArrayPanel.add(searchCriterionPanel);
                     SearchPanel.this.revalidate();
                 } else if ("paths".equals(actionCommand)) {
-                    System.out.println("run query");
-                    MetadataFileType[] metadataFieldTypes = arbilDatabase.getFieldMetadataTypes(eventCriterionPanel.getMetadataFileType());
-                    System.out.println("done");
-                    eventCriterionPanel.setFieldOptions(metadataFieldTypes);
+                    try {
+                        System.out.println("run query");
+                        MetadataFileType[] metadataFieldTypes = arbilDatabase.getFieldMetadataTypes(eventCriterionPanel.getMetadataFileType());
+                        System.out.println("done");
+                        eventCriterionPanel.setFieldOptions(metadataFieldTypes);
+                    } catch (QueryException exception) {
+                        arbilWindowManager.addMessageDialogToQueue(exception.getMessage(), "Database Error");
+                        eventCriterionPanel.setFieldOptions(new MetadataFileType[0]);
+                    }
                 } else if ("fields".equals(actionCommand)) {
                     // todo: get controlled vocabulary of field values for the search text area
                 } else if ("search".equals(actionCommand)) {
@@ -335,14 +351,20 @@ public class SearchPanel extends JPanel implements ActionListener {
                     for (SearchCriterionPanel eventCriterionPanel : criterionPanelArray) {
                         searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
                     }
-                    final DbTreeNode rootTreeNode = arbilDatabase.getSearchResult(criterionJoinType, searchParametersList);
-
+                    DbTreeNode rootTreeNode;
+                    try {
+                        rootTreeNode = arbilDatabase.getSearchResult(criterionJoinType, searchParametersList);
+                    } catch (QueryException exception) {
+                        arbilWindowManager.addMessageDialogToQueue(exception.getMessage(), "Database Error");
+                        rootTreeNode = new DbTreeNode();
+                    }
+                    final DbTreeNode rootTreeNodeFinal = rootTreeNode;
                     System.out.println("run query");
 //        final DbTreeNode rootTreeNode = arbilDatabase.getTreeData(treeBranchTypeList);
                     rootTreeNode.setParentDbTreeNode(null, defaultTreeModel, arbilDataNodeLoader, arbilDatabase);
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
-                            defaultTreeModel.setRoot(rootTreeNode);
+                            defaultTreeModel.setRoot(rootTreeNodeFinal);
                         }
                     });
                     System.out.println("done");

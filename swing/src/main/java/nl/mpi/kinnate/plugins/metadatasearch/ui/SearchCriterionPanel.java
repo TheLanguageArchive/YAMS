@@ -8,11 +8,11 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.SearchNegator;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.SearchOption;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase.SearchType;
-import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataFileType;
+import nl.mpi.yaas.common.db.ArbilDatabase;
+import nl.mpi.yaas.common.db.ArbilDatabase.SearchNegator;
+import nl.mpi.yaas.common.db.ArbilDatabase.SearchOption;
+import nl.mpi.yaas.common.db.ArbilDatabase.SearchType;
+import nl.mpi.yaas.common.data.MetadataFileType;
 
 /**
  * Document : SearchCriterionPanel <br> Created on Aug 31, 2012, 4:23:32 PM <br>

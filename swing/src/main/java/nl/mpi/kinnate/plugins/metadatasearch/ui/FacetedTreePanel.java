@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -30,7 +31,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
-import nl.mpi.flap.plugin.PluginArbilDataNode;
+import nl.mpi.flap.model.PluginArbilDataNode;
 import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
 import nl.mpi.flap.plugin.PluginArbilTable;
 import nl.mpi.flap.plugin.PluginArbilTableModel;
@@ -41,9 +42,9 @@ import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.flap.plugin.PluginWidgetFactory;
 import nl.mpi.flap.plugin.WrongNodeTypeException;
 import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
-import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataFileType;
 import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataTreeNode;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
+import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.db.ArbilDatabase;
 
 /**
  * Document : FacetedTreePanel <br> Created on Aug 23, 2012, 3:20:13 PM <br>
@@ -52,24 +53,29 @@ import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
  */
 public class FacetedTreePanel extends JPanel implements ActionListener {
 
-    final private ArbilDatabase arbilDatabase;
+    private ArbilDatabase<DbTreeNode> arbilDatabase;
     final private PluginDialogHandler arbilWindowManager;
     final private PluginArbilDataNodeLoader arbilDataNodeLoader;
-    final private ArrayList<SearchOptionBox> searchPathOptionBoxList;
-    final private JProgressBar jProgressBar;
+    private ArrayList<SearchOptionBox> searchPathOptionBoxList;
+    private JProgressBar jProgressBar;
     private int actionProgressCounter = 0;
-    final private JTree resultsTree;
-    final private DefaultTreeModel defaultTreeModel;
-    final private PluginArbilTable arbilTable;
-    final private PluginArbilTableModel arbilTableModel;
-    final private JPanel criterionPanel;
+    private JTree resultsTree;
+    private DefaultTreeModel defaultTreeModel;
+    private PluginArbilTable arbilTable;
+    private PluginArbilTableModel arbilTableModel;
+    private JPanel criterionPanel;
     private MetadataFileType[] metadataFieldTypes = null;
 
     public FacetedTreePanel(final PluginArbilDataNodeLoader arbilDataNodeLoader, final PluginDialogHandler dialogHandler, final PluginBugCatcher pluginBugCatcher, PluginSessionStorage pluginSessionStorage, PluginWidgetFactory pluginWidgetFactory) {
         this.arbilDataNodeLoader = arbilDataNodeLoader;
         arbilWindowManager = dialogHandler;
-        arbilDatabase = new ArbilDatabase(pluginSessionStorage, arbilWindowManager, pluginBugCatcher);
         this.setLayout(new BorderLayout());
+        try {
+            arbilDatabase = new ArbilDatabase<DbTreeNode>(DbTreeNode.class, pluginSessionStorage);
+        } catch (QueryException exception) {
+            this.add(new JLabel(exception.getMessage()), BorderLayout.CENTER);
+            return;
+        }
         criterionPanel = new JPanel();
         criterionPanel.setLayout(new FlowLayout());
 
@@ -279,11 +285,18 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
             }
         }
         System.out.println("run query");
-        final DbTreeNode rootTreeNode = arbilDatabase.getTreeData(treeBranchTypeList);
+        DbTreeNode rootTreeNode;
+        try {
+            rootTreeNode = arbilDatabase.getTreeData(treeBranchTypeList);
+        } catch (QueryException exception) {
+            arbilWindowManager.addMessageDialogToQueue(exception.getMessage(), "Database Error");
+            rootTreeNode = new DbTreeNode();
+        }
+        final DbTreeNode rootTreeNodeFinal = rootTreeNode;
         rootTreeNode.setParentDbTreeNode(null, defaultTreeModel, arbilDataNodeLoader, arbilDatabase);
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                defaultTreeModel.setRoot(rootTreeNode);
+                defaultTreeModel.setRoot(rootTreeNodeFinal);
             }
         });
         System.out.println("done");
@@ -304,17 +317,22 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
                         exception.printStackTrace();
                     }
                 } else if ("options".equals(actionCommand)) {
-                    System.out.println("run fast options query");
-                    metadataFieldTypes = arbilDatabase.getTreeFieldTypes(null, true);
-                    System.out.println("done fast options query");
-                    for (SearchOptionBox searchOptionBox : searchPathOptionBoxList) {
-                        searchOptionBox.setTypes(metadataFieldTypes);
-                    }
-                    System.out.println("run detailed options query");
-                    metadataFieldTypes = arbilDatabase.getTreeFieldTypes(null, false);
-                    System.out.println("done detailed options query");
-                    for (SearchOptionBox searchOptionBox : searchPathOptionBoxList) {
-                        searchOptionBox.setTypes(metadataFieldTypes);
+                    try {
+                        System.out.println("run fast options query");
+                        metadataFieldTypes = arbilDatabase.getTreeFieldTypes(null, true);
+                        System.out.println("done fast options query");
+                        for (SearchOptionBox searchOptionBox : searchPathOptionBoxList) {
+                            searchOptionBox.setTypes(metadataFieldTypes);
+                        }
+                        System.out.println("run detailed options query");
+                        metadataFieldTypes = arbilDatabase.getTreeFieldTypes(null, false);
+                        System.out.println("done detailed options query");
+                        for (SearchOptionBox searchOptionBox : searchPathOptionBoxList) {
+                            searchOptionBox.setTypes(metadataFieldTypes);
+                        }
+                    } catch (QueryException exception) {
+                        arbilWindowManager.addMessageDialogToQueue(exception.getMessage(), "Database Error");
+                        metadataFieldTypes = new MetadataFileType[0];
                     }
                 } else if ("treechange".equals(actionCommand)) {
                     updateTree();

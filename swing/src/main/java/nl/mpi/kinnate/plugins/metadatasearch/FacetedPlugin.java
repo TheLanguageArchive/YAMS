@@ -1,7 +1,7 @@
 package nl.mpi.kinnate.plugins.metadatasearch;
 
 import javax.swing.JPanel;
-import nl.mpi.flap.plugin.AbstractBasePlugin;
+import nl.mpi.flap.module.AbstractBaseModule;
 import nl.mpi.flap.plugin.ArbilWindowPlugin;
 import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
 import nl.mpi.flap.plugin.PluginBugCatcher;
@@ -16,7 +16,7 @@ import nl.mpi.kinnate.plugins.metadatasearch.ui.FacetedTreePanel;
  *
  * @author Peter Withers <br>
  */
-public class FacetedPlugin extends AbstractBasePlugin implements ArbilWindowPlugin {
+public class FacetedPlugin extends AbstractBaseModule implements ArbilWindowPlugin {
 
     public FacetedPlugin() throws PluginException {
         super("Faceted Tree Plugin", "A plugin for Arbil that provides a faceted tree via a XML DB.", "nl.mpi.kinnate.plugins.metadatasearch");

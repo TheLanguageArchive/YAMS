@@ -3,7 +3,7 @@ package nl.mpi.kinnate.plugins.metadatasearch.data;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
-import nl.mpi.kinnate.plugins.metadatasearch.db.ArbilDatabase;
+import nl.mpi.yaas.common.db.ArbilDatabase;
 
 /**
  * Document : AbstractDbTreeNode <br> Created on Sep 6, 2012, 4:20:23 PM <br>
