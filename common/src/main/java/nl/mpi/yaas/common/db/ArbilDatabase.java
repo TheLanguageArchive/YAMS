@@ -1,3 +1,20 @@
+/**
+ * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 package nl.mpi.yaas.common.db;
 
 import java.io.File;
@@ -8,12 +25,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
-import nl.mpi.flap.plugin.PluginBugCatcher;
-import nl.mpi.flap.plugin.PluginDialogHandler;
-import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.common.data.MetadataFileType;
-import nl.mpi.yaas.common.data.YassDataNode;
 import org.basex.core.BaseXException;
 import org.basex.core.Context;
 import org.basex.core.cmd.Close;
@@ -22,20 +35,21 @@ import org.basex.core.cmd.DropDB;
 import org.basex.core.cmd.Open;
 import org.basex.core.cmd.Set;
 import org.basex.core.cmd.XQuery;
+import org.slf4j.LoggerFactory;
 
 /**
  * Document : ArbilDatabase Created on : Aug 6, 2012, 11:39:33 AM
  *
  * @author Peter Withers
  */
-public class ArbilDatabase {
+public class ArbilDatabase<DataNodeType> {
 
+    final private Class<DataNodeType> dataNodeType;
     static Context context = new Context();
     static final Object databaseLock = new Object();
     private final String databaseName = "ArbilDatabase";
     final private PluginSessionStorage sessionStorage;
-    final private PluginDialogHandler dialogHandler;
-    final private PluginBugCatcher bugCatcher;
+    final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
 
     public enum SearchOption {
 
@@ -97,10 +111,9 @@ public class ArbilDatabase {
         }
     }
 
-    public ArbilDatabase(PluginSessionStorage sessionStorage, PluginDialogHandler dialogHandler, PluginBugCatcher bugCatcher) {
+    public ArbilDatabase(Class<DataNodeType> dataNodeType, PluginSessionStorage sessionStorage) throws QueryException {
+        this.dataNodeType = dataNodeType;
         this.sessionStorage = sessionStorage;
-        this.dialogHandler = dialogHandler;
-        this.bugCatcher = bugCatcher;
         try {
             synchronized (databaseLock) {
                 final File dbPathFile = new File(sessionStorage.getApplicationSettingsDirectory(), "BaseXData");
@@ -115,7 +128,8 @@ public class ArbilDatabase {
                     new CreateDB(databaseName).execute(context);
                 }
             } catch (BaseXException baseXException2) {
-                bugCatcher.logException(new PluginException(baseXException2.getMessage()));
+                logger.error(baseXException2.getMessage());
+                throw new QueryException(baseXException2.getMessage());
             }
         }
     }
@@ -461,7 +475,7 @@ public class ArbilDatabase {
                 + "}</MetadataFileType>";
     }
 
-    public YassDataNode getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) {
+    public DataNodeType getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws QueryException {
         StringBuilder queryStringBuilder = new StringBuilder();
         queryStringBuilder.append("<TreeNode>{\n");
         int parameterCounter = 0;
@@ -522,7 +536,7 @@ public class ArbilDatabase {
                 + "return <FileUriPath>{path($entityNode)}</FileUriPath>\n"
                 + "}</MetadataTreeNode>\n"
                 + "}</TreeNode>\n");
-        final YassDataNode metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
+        final DataNodeType metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
         return metadataTypesString;
     }
 
@@ -565,22 +579,22 @@ public class ArbilDatabase {
 //        final DbTreeNode metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
 //        return metadataTypesString;
 //    }
-    public MetadataFileType[] getPathMetadataTypes(MetadataFileType metadataFileType) {
+    public MetadataFileType[] getPathMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getPopulatedPaths();
         return getMetadataTypes(queryString);
     }
 
-    public MetadataFileType[] getFieldMetadataTypes(MetadataFileType metadataFileType) {
+    public MetadataFileType[] getFieldMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getPopulatedFieldNames(metadataFileType);
         return getMetadataTypes(queryString);
     }
 
-    public MetadataFileType[] getMetadataTypes(MetadataFileType metadataFileType) {
+    public MetadataFileType[] getMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataTypes();
         return getMetadataTypes(queryString);
     }
 
-    public MetadataFileType[] getTreeFieldTypes(MetadataFileType metadataFileType, boolean fastQuery) {
+    public MetadataFileType[] getTreeFieldTypes(MetadataFileType metadataFileType, boolean fastQuery) throws QueryException {
         final String queryString = getTreeFieldNames(metadataFileType, fastQuery);
         return getMetadataTypes(queryString);
     }
@@ -589,15 +603,15 @@ public class ArbilDatabase {
 //        final String queryString = getTreeQuery(treeBranchTypeList);
 //        return getDbTreeNode(queryString);
 //    }
-    public YassDataNode getTreeData(final ArrayList<MetadataFileType> treeBranchTypeList) {
+    public DataNodeType getTreeData(final ArrayList<MetadataFileType> treeBranchTypeList) throws QueryException {
         final String queryString = getTreeQuery(treeBranchTypeList);
         return getDbTreeNode(queryString);
     }
 
-    private YassDataNode getDbTreeNode(String queryString) {
+    private DataNodeType getDbTreeNode(String queryString) throws QueryException {
         long startTime = System.currentTimeMillis();
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(YassDataNode.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(dataNodeType);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             synchronized (databaseLock) {
@@ -605,7 +619,7 @@ public class ArbilDatabase {
                 queryResult = new XQuery(queryString).execute(context);
             }
             System.out.println("queryResult: " + queryResult);
-            YassDataNode rootTreeNode = (YassDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), YassDataNode.class).getValue();
+            DataNodeType rootTreeNode = (DataNodeType) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), dataNodeType).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
             int resultCount = 0;
             if (rootTreeNode != null) {
@@ -615,16 +629,15 @@ public class ArbilDatabase {
             System.out.println(queryTimeString);
             return rootTreeNode;
         } catch (JAXBException exception) {
-            bugCatcher.logException(new PluginException(exception.getMessage()));
-            dialogHandler.addMessageDialogToQueue("Error getting search options", "Search Options");
+            logger.debug(exception.getMessage());
+            throw new QueryException("Error getting search options");
         } catch (BaseXException exception) {
-            bugCatcher.logException(new PluginException(exception.getMessage()));
-            dialogHandler.addMessageDialogToQueue("Error getting search options", "Search Options");
+            logger.debug(exception.getMessage());
+            throw new QueryException("Error getting search options");
         }
-        return new YassDataNode();
     }
 
-    private MetadataFileType[] getMetadataTypes(final String queryString) {
+    private MetadataFileType[] getMetadataTypes(final String queryString) throws QueryException {
         long startTime = System.currentTimeMillis();
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(MetadataFileType.class);
@@ -647,12 +660,11 @@ public class ArbilDatabase {
 //            selectedEntity.appendTempLabel(queryTimeString);
             return foundEntities.getChildMetadataTypes();
         } catch (JAXBException exception) {
-            bugCatcher.logException(new PluginException(exception.getMessage()));
-            dialogHandler.addMessageDialogToQueue("Error getting search options", "Search Options");
+            logger.debug(exception.getMessage());
+            throw new QueryException("Error getting search options");
         } catch (BaseXException exception) {
-            bugCatcher.logException(new PluginException(exception.getMessage()));
-            dialogHandler.addMessageDialogToQueue("Error getting search options", "Search Options");
+            logger.debug(exception.getMessage());
+            throw new QueryException("Error getting search options");
         }
-        return new MetadataFileType[]{};
     }
 }

@@ -17,8 +17,8 @@
  */
 package nl.mpi.yaas.common;
 
-import nl.mpi.flap.plugin.ActivatablePlugin;
 import nl.mpi.flap.module.BaseModule;
+import nl.mpi.flap.plugin.ActivatablePlugin;
 import nl.mpi.flap.plugin.PluginDialogHandler;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
