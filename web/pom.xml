@@ -52,6 +52,16 @@
       <classifier>sources</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>nl.mpi</groupId>
+      <artifactId>plugins-core</artifactId>
+      <version>1.1-pretesting-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>nl.mpi</groupId>
+      <artifactId>yaas-common</artifactId>
+      <version>0.1-pretesting-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>

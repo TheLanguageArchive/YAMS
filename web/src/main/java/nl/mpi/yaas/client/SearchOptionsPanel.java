@@ -4,8 +4,11 @@
  */
 package nl.mpi.yaas.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
@@ -20,6 +23,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Peter Withers <peter.withers@mpi.nl>
  */
 public class SearchOptionsPanel extends VerticalPanel {
+
+    private final SearchOptionsServiceAsync searchOptionsService = GWT.create(SearchOptionsService.class);
 
     public SearchOptionsPanel() {
         final VerticalPanel verticalPanel = new VerticalPanel();
@@ -42,21 +47,27 @@ public class SearchOptionsPanel extends VerticalPanel {
             }
         });
         SuggestBox suggestbox = new SuggestBox(createCountriesOracle());
-        horizontalPanel.add(getListBox(true));
-        horizontalPanel.add(getListBox(false));
+        horizontalPanel.add(getSearchOptionsListBox(true));
+        horizontalPanel.add(getSearchOptionsListBox(false));
         horizontalPanel.add(suggestbox);
         horizontalPanel.add(removeRowButton);
         return horizontalPanel;
     }
 
-    private ListBox getListBox(boolean dropdown) {
-        ListBox widget = new ListBox();
+    private ListBox getSearchOptionsListBox(boolean dropdown) {
+        final ListBox widget = new ListBox();
         widget.addStyleName("demo-ListBox");
-        widget.addItem("One");
-        widget.addItem("Two");
-        widget.addItem("Three");
-        widget.addItem("Four");
-        widget.addItem("Five");
+        searchOptionsService.getSearchOptions(new AsyncCallback<String[]>() {
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+            }
+
+            public void onSuccess(String[] result) {
+                for (String searchOption : result) {
+                    widget.addItem(searchOption.toString());
+                };
+            }
+        });
         if (!dropdown) {
             widget.setVisibleItemCount(3);
         }
