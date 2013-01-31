@@ -46,14 +46,35 @@ public class SearchOptionsPanel extends VerticalPanel {
                 verticalPanel.remove(horizontalPanel);
             }
         });
-        SuggestBox suggestbox = new SuggestBox(createCountriesOracle());
-        horizontalPanel.add(getSearchOptionsListBox(true));
-        horizontalPanel.add(getSearchOptionsListBox(false));
-        horizontalPanel.add(suggestbox);
         horizontalPanel.add(removeRowButton);
+        SuggestBox suggestbox = new SuggestBox(createCountriesOracle());
+        horizontalPanel.add(getTypesOptionsListBox(true));
+        horizontalPanel.add(getSearchOptionsListBox(true));
+        horizontalPanel.add(getSearchOptionsListBox(true));
+        horizontalPanel.add(suggestbox);
         return horizontalPanel;
     }
 
+    private ListBox getTypesOptionsListBox(boolean dropdown) {
+        final ListBox widget = new ListBox();
+        widget.addStyleName("demo-ListBox");
+        searchOptionsService.getTypeOptions(new AsyncCallback<String[]>() {
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+            }
+
+            public void onSuccess(String[] result) {
+                for (String searchOption : result) {
+                    widget.addItem(searchOption.toString());
+                };
+            }
+        });
+        if (!dropdown) {
+            widget.setVisibleItemCount(3);
+        }
+        return widget;
+    }
+    
     private ListBox getSearchOptionsListBox(boolean dropdown) {
         final ListBox widget = new ListBox();
         widget.addStyleName("demo-ListBox");

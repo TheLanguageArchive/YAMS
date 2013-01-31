@@ -6,6 +6,7 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import nl.mpi.yaas.shared.WebQueryException;
 
 /**
  * Created on : Jan 30, 2013, 5:21:01 PM
@@ -14,6 +15,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("searchoptions")
 public interface SearchOptionsService extends RemoteService {
+
+    String[] getTypeOptions() throws WebQueryException;
 
     String[] getSearchOptions();
 }
