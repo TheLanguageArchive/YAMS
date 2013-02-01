@@ -17,8 +17,9 @@
  */
 package nl.mpi.yaas.common.data;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+//import java.util.regex.Matcher;
+//import java.util.regex.Pattern;
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -28,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Peter Withers
  */
 @XmlRootElement(name = "MetadataFileType")
-public class MetadataFileType {
+public class MetadataFileType implements Serializable {
 
     @XmlElement(name = "ImdiType")
     private String imdiType = null;
@@ -75,11 +76,12 @@ public class MetadataFileType {
 
     public String getProfileIdString() {
         if (profileString != null) {
-            Pattern regexPattern = Pattern.compile(".*(clarin.eu:cr1:p_[0-9]+).*");
-            Matcher matcher = regexPattern.matcher(profileString);
-            while (matcher.find()) {
-                return matcher.group(1);
-            }
+//            Pattern regexPattern = Pattern.compile(".*(clarin.eu:cr1:p_[0-9]+).*");
+//            Matcher matcher = regexPattern.matcher(profileString);
+//            while (matcher.find()) {
+//                return matcher.group(1);
+//            }
+            return profileString;
         }
         return null;
     }

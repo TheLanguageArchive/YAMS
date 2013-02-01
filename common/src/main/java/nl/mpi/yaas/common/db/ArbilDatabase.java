@@ -42,9 +42,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Peter Withers
  */
-public class ArbilDatabase<DataNodeType> {
+public class ArbilDatabase<D, M> {
 
-    final private Class<DataNodeType> dataNodeType;
+    final private Class<D> dClass;
+    final private Class<M> mClass;
     static Context context = new Context();
     static final Object databaseLock = new Object();
     private final String databaseName = "ArbilDatabase";
@@ -111,8 +112,9 @@ public class ArbilDatabase<DataNodeType> {
         }
     }
 
-    public ArbilDatabase(Class<DataNodeType> dataNodeType, PluginSessionStorage sessionStorage) throws QueryException {
-        this.dataNodeType = dataNodeType;
+    public ArbilDatabase(Class<D> dClass, Class<M> mClass, PluginSessionStorage sessionStorage) throws QueryException {
+        this.dClass = dClass;
+        this.mClass = mClass;
         this.sessionStorage = sessionStorage;
         try {
             synchronized (databaseLock) {
@@ -475,7 +477,7 @@ public class ArbilDatabase<DataNodeType> {
                 + "}</MetadataFileType>";
     }
 
-    public DataNodeType getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws QueryException {
+    public D getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws QueryException {
         StringBuilder queryStringBuilder = new StringBuilder();
         queryStringBuilder.append("<TreeNode>{\n");
         int parameterCounter = 0;
@@ -536,7 +538,7 @@ public class ArbilDatabase<DataNodeType> {
                 + "return <FileUriPath>{path($entityNode)}</FileUriPath>\n"
                 + "}</MetadataTreeNode>\n"
                 + "}</TreeNode>\n");
-        final DataNodeType metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
+        final D metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
         return metadataTypesString;
     }
 
@@ -579,22 +581,22 @@ public class ArbilDatabase<DataNodeType> {
 //        final DbTreeNode metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
 //        return metadataTypesString;
 //    }
-    public MetadataFileType[] getPathMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
+    public M[] getPathMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getPopulatedPaths();
         return getMetadataTypes(queryString);
     }
 
-    public MetadataFileType[] getFieldMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
+    public M[] getFieldMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getPopulatedFieldNames(metadataFileType);
         return getMetadataTypes(queryString);
     }
 
-    public MetadataFileType[] getMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
+    public M[] getMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataTypes();
         return getMetadataTypes(queryString);
     }
 
-    public MetadataFileType[] getTreeFieldTypes(MetadataFileType metadataFileType, boolean fastQuery) throws QueryException {
+    public M[] getTreeFieldTypes(MetadataFileType metadataFileType, boolean fastQuery) throws QueryException {
         final String queryString = getTreeFieldNames(metadataFileType, fastQuery);
         return getMetadataTypes(queryString);
     }
@@ -603,15 +605,15 @@ public class ArbilDatabase<DataNodeType> {
 //        final String queryString = getTreeQuery(treeBranchTypeList);
 //        return getDbTreeNode(queryString);
 //    }
-    public DataNodeType getTreeData(final ArrayList<MetadataFileType> treeBranchTypeList) throws QueryException {
+    public D getTreeData(final ArrayList<MetadataFileType> treeBranchTypeList) throws QueryException {
         final String queryString = getTreeQuery(treeBranchTypeList);
         return getDbTreeNode(queryString);
     }
 
-    private DataNodeType getDbTreeNode(String queryString) throws QueryException {
+    private D getDbTreeNode(String queryString) throws QueryException {
         long startTime = System.currentTimeMillis();
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(dataNodeType);
+            JAXBContext jaxbContext = JAXBContext.newInstance(dClass);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             synchronized (databaseLock) {
@@ -619,7 +621,7 @@ public class ArbilDatabase<DataNodeType> {
                 queryResult = new XQuery(queryString).execute(context);
             }
             System.out.println("queryResult: " + queryResult);
-            DataNodeType rootTreeNode = (DataNodeType) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), dataNodeType).getValue();
+            D rootTreeNode = (D) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), dClass).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
             int resultCount = 0;
             if (rootTreeNode != null) {
@@ -637,10 +639,10 @@ public class ArbilDatabase<DataNodeType> {
         }
     }
 
-    private MetadataFileType[] getMetadataTypes(final String queryString) throws QueryException {
+    private M[] getMetadataTypes(final String queryString) throws QueryException {
         long startTime = System.currentTimeMillis();
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(MetadataFileType.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(mClass);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             synchronized (databaseLock) {
@@ -648,9 +650,9 @@ public class ArbilDatabase<DataNodeType> {
                 queryResult = new XQuery(queryString).execute(context);
             }
             System.out.println("queryResult: " + queryResult);
-            MetadataFileType foundEntities = (MetadataFileType) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), MetadataFileType.class).getValue();
+            M foundEntities = (M) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), MetadataFileType.class).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
-            final MetadataFileType[] entityDataArray = foundEntities.getChildMetadataTypes();
+            final M[] entityDataArray = (M[]) ((MetadataFileType) foundEntities).getChildMetadataTypes();
             int resultCount = 0;
             if (entityDataArray != null) {
                 resultCount = entityDataArray.length;
@@ -658,7 +660,7 @@ public class ArbilDatabase<DataNodeType> {
             String queryTimeString = "Query time: " + queryMils + "ms for " + resultCount + " entities";
             System.out.println(queryTimeString);
 //            selectedEntity.appendTempLabel(queryTimeString);
-            return foundEntities.getChildMetadataTypes();
+            return (M[]) ((MetadataFileType) foundEntities).getChildMetadataTypes();
         } catch (JAXBException exception) {
             logger.debug(exception.getMessage());
             throw new QueryException("Error getting search options");
