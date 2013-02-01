@@ -24,7 +24,7 @@ import nl.mpi.yaas.shared.WebQueryException;
 @SuppressWarnings("serial")
 public class SearchOptionsServiceImpl extends RemoteServiceServlet implements SearchOptionsService {
 
-    public String[] getTypeOptions() throws WebQueryException {
+    private ArbilDatabase<DataNode, MetadataFileType> getDatabase() throws QueryException {
         // todo: this version of the Arbil database is not intended to multi entry and will be replaced by a rest version when it is written
         final PluginSessionStorage pluginSessionStorage = new PluginSessionStorage() {
             public File getApplicationSettingsDirectory() {
@@ -39,14 +39,34 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
                 return new File("/Users/petwit2/.arbil/ArbilWorkingFiles/");
             }
         };
+        return new ArbilDatabase<DataNode, MetadataFileType>(DataNode.class, MetadataFileType.class, pluginSessionStorage);
+    }
+
+    public MetadataFileType[] getTypeOptions() throws WebQueryException {
         try {
-            ArbilDatabase<DataNode> arbilDatabase = new ArbilDatabase<DataNode>(DataNode.class, pluginSessionStorage);
+            ArbilDatabase<DataNode, MetadataFileType> arbilDatabase = getDatabase();
             MetadataFileType[] metadataPathTypes = arbilDatabase.getMetadataTypes(null);
-            ArrayList<String> returnList = new ArrayList<String>();
-            for (MetadataFileType metadataFileType : metadataPathTypes) {
-                returnList.add(metadataFileType.getFieldName());
-            };
-            return returnList.toArray(new String[0]);
+            return metadataPathTypes;
+//            ArrayList<String> returnList = new ArrayList<String>();
+//            for (WebMetadataFileType metadataFileType : metadataPathTypes) {
+//                returnList.add(metadataFileType.getFieldName());
+//            };
+//            return returnList.toArray(new String[0]);
+        } catch (QueryException exception) {
+            throw new WebQueryException(exception.getMessage());
+        }
+    }
+
+    public MetadataFileType[] getFieldOptions() throws WebQueryException {
+        try {
+            ArbilDatabase<DataNode, MetadataFileType> arbilDatabase = getDatabase();
+            MetadataFileType[] metadataFieldTypes = arbilDatabase.getFieldMetadataTypes(null);
+            return metadataFieldTypes;
+//            ArrayList<String> returnList = new ArrayList<String>();
+//            for (WebMetadataFileType metadataFileType : metadataFieldTypes) {
+//                returnList.add(metadataFileType.getFieldName());
+//            };
+//            return returnList.toArray(new String[0]);
         } catch (QueryException exception) {
             throw new WebQueryException(exception.getMessage());
         }

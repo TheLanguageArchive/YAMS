@@ -6,6 +6,7 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.shared.WebQueryException;
 
 /**
@@ -16,7 +17,9 @@ import nl.mpi.yaas.shared.WebQueryException;
 @RemoteServiceRelativePath("searchoptions")
 public interface SearchOptionsService extends RemoteService {
 
-    String[] getTypeOptions() throws WebQueryException;
+    MetadataFileType[] getTypeOptions() throws WebQueryException;
+
+    MetadataFileType[] getFieldOptions() throws WebQueryException;
 
     String[] getSearchOptions();
 }

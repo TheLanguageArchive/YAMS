@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import nl.mpi.yaas.common.data.MetadataFileType;
 
 /**
  * Created on : Jan 29, 2013, 2:50:44 PM
@@ -49,22 +50,42 @@ public class SearchOptionsPanel extends VerticalPanel {
         horizontalPanel.add(removeRowButton);
         SuggestBox suggestbox = new SuggestBox(createCountriesOracle());
         horizontalPanel.add(getTypesOptionsListBox(true));
-        horizontalPanel.add(getSearchOptionsListBox(true));
+        horizontalPanel.add(getFieldsOptionsListBox(true));
         horizontalPanel.add(getSearchOptionsListBox(true));
         horizontalPanel.add(suggestbox);
         return horizontalPanel;
     }
 
-    private ListBox getTypesOptionsListBox(boolean dropdown) {
+        private ListBox getFieldsOptionsListBox(boolean dropdown) {
         final ListBox widget = new ListBox();
         widget.addStyleName("demo-ListBox");
-        searchOptionsService.getTypeOptions(new AsyncCallback<String[]>() {
+        searchOptionsService.getFieldOptions(new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
             }
 
-            public void onSuccess(String[] result) {
-                for (String searchOption : result) {
+            public void onSuccess(MetadataFileType[] result) {
+                for (MetadataFileType searchOption : result) {
+                    widget.addItem(searchOption.toString());
+                };
+            }
+        });
+        if (!dropdown) {
+            widget.setVisibleItemCount(3);
+        }
+        return widget;
+    }
+        
+    private ListBox getTypesOptionsListBox(boolean dropdown) {
+        final ListBox widget = new ListBox();
+        widget.addStyleName("demo-ListBox");
+        searchOptionsService.getTypeOptions(new AsyncCallback<MetadataFileType[]>() {
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+            }
+
+            public void onSuccess(MetadataFileType[] result) {
+                for (MetadataFileType searchOption : result) {
                     widget.addItem(searchOption.toString());
                 };
             }
