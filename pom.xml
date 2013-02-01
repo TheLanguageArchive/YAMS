@@ -4,15 +4,15 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>nl.mpi</groupId>
-    <artifactId>yass-parent</artifactId>
-    <name>YASS Parent</name>
+    <artifactId>yaas-parent</artifactId>
+    <name>YAAS Parent</name>
     <packaging>pom</packaging>
     <version>1.0</version>
-    <description>Parent pom for the metadata search YASS</description>
+    <description>Parent pom for the metadata search YAAS</description>
     <modules>
         <module>swing</module>
-        <module>common</module>
         <module>web</module>
+        <module>common</module>
     </modules>
     
     <!--    <scm>
