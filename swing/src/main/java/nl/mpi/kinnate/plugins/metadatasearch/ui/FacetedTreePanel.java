@@ -53,7 +53,7 @@ import nl.mpi.yaas.common.db.ArbilDatabase;
  */
 public class FacetedTreePanel extends JPanel implements ActionListener {
 
-    private ArbilDatabase<DbTreeNode> arbilDatabase;
+    private ArbilDatabase<DbTreeNode, MetadataFileType> arbilDatabase;
     final private PluginDialogHandler arbilWindowManager;
     final private PluginArbilDataNodeLoader arbilDataNodeLoader;
     private ArrayList<SearchOptionBox> searchPathOptionBoxList;
@@ -71,7 +71,7 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
         arbilWindowManager = dialogHandler;
         this.setLayout(new BorderLayout());
         try {
-            arbilDatabase = new ArbilDatabase<DbTreeNode>(DbTreeNode.class, pluginSessionStorage);
+            arbilDatabase = new ArbilDatabase<DbTreeNode, MetadataFileType>(DbTreeNode.class, MetadataFileType.class, pluginSessionStorage);
         } catch (QueryException exception) {
             this.add(new JLabel(exception.getMessage()), BorderLayout.CENTER);
             return;

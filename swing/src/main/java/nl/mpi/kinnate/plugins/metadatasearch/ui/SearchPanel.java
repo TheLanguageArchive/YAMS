@@ -42,10 +42,10 @@ import nl.mpi.flap.plugin.PluginWidgetFactory;
 import nl.mpi.flap.plugin.WrongNodeTypeException;
 import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
 import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataTreeNode;
+import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.db.ArbilDatabase;
 import nl.mpi.yaas.common.db.ArbilDatabase.CriterionJoinType;
 import nl.mpi.yaas.common.db.SearchParameters;
-import nl.mpi.yaas.common.data.MetadataFileType;
 
 /**
  * Created on : Jul 31, 2012, 6:34:07 PM
@@ -54,7 +54,7 @@ import nl.mpi.yaas.common.data.MetadataFileType;
  */
 public class SearchPanel extends JPanel implements ActionListener {
 
-    private ArbilDatabase<DbTreeNode> arbilDatabase;
+    private ArbilDatabase<DbTreeNode, MetadataFileType> arbilDatabase;
     private JProgressBar jProgressBar;
 //    final private JTextArea resultsTextArea;
     private ArrayList<SearchCriterionPanel> criterionPanelArray;
@@ -74,7 +74,7 @@ public class SearchPanel extends JPanel implements ActionListener {
         this.arbilDataNodeLoader = arbilDataNodeLoader;
         this.arbilWindowManager = dialogHandler;
         try {
-            arbilDatabase = new ArbilDatabase<DbTreeNode>(DbTreeNode.class, pluginSessionStorage);
+            arbilDatabase = new ArbilDatabase<DbTreeNode, MetadataFileType>(DbTreeNode.class, MetadataFileType.class, pluginSessionStorage);
         } catch (QueryException exception) {
             this.add(new JLabel(exception.getMessage()), BorderLayout.CENTER);
             return;
