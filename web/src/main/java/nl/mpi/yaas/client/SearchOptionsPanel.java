@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.data.QueryDataStructures.SearchOption;
 
 /**
  * Created on : Jan 29, 2013, 2:50:44 PM
@@ -26,6 +27,7 @@ import nl.mpi.yaas.common.data.MetadataFileType;
 public class SearchOptionsPanel extends VerticalPanel {
 
     private final SearchOptionsServiceAsync searchOptionsService = GWT.create(SearchOptionsService.class);
+    final SearchOption[] searchOptions = SearchOption.values();
 
     public SearchOptionsPanel() {
         final VerticalPanel verticalPanel = new VerticalPanel();
@@ -56,7 +58,7 @@ public class SearchOptionsPanel extends VerticalPanel {
         return horizontalPanel;
     }
 
-        private ListBox getFieldsOptionsListBox(boolean dropdown) {
+    private ListBox getFieldsOptionsListBox(boolean dropdown) {
         final ListBox widget = new ListBox();
         widget.addStyleName("demo-ListBox");
         searchOptionsService.getFieldOptions(new AsyncCallback<MetadataFileType[]>() {
@@ -75,7 +77,7 @@ public class SearchOptionsPanel extends VerticalPanel {
         }
         return widget;
     }
-        
+
     private ListBox getTypesOptionsListBox(boolean dropdown) {
         final ListBox widget = new ListBox();
         widget.addStyleName("demo-ListBox");
@@ -95,21 +97,13 @@ public class SearchOptionsPanel extends VerticalPanel {
         }
         return widget;
     }
-    
+
     private ListBox getSearchOptionsListBox(boolean dropdown) {
         final ListBox widget = new ListBox();
         widget.addStyleName("demo-ListBox");
-        searchOptionsService.getSearchOptions(new AsyncCallback<String[]>() {
-            public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
-            }
-
-            public void onSuccess(String[] result) {
-                for (String searchOption : result) {
-                    widget.addItem(searchOption.toString());
-                };
-            }
-        });
+        for (SearchOption searchOption : searchOptions) {
+            widget.addItem(searchOption.toString());
+        };
         if (!dropdown) {
             widget.setVisibleItemCount(3);
         }

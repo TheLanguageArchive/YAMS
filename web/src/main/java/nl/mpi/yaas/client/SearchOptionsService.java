@@ -20,6 +20,4 @@ public interface SearchOptionsService extends RemoteService {
     MetadataFileType[] getTypeOptions() throws WebQueryException;
 
     MetadataFileType[] getFieldOptions() throws WebQueryException;
-
-    String[] getSearchOptions();
 }

@@ -6,13 +6,11 @@ package nl.mpi.yaas.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import java.io.File;
-import java.util.ArrayList;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.client.SearchOptionsService;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.db.ArbilDatabase;
-import nl.mpi.yaas.common.db.ArbilDatabase.SearchOption;
 import nl.mpi.yaas.shared.DataNode;
 import nl.mpi.yaas.shared.WebQueryException;
 
@@ -70,13 +68,5 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         } catch (QueryException exception) {
             throw new WebQueryException(exception.getMessage());
         }
-    }
-
-    public String[] getSearchOptions() {
-        ArrayList<String> returnList = new ArrayList<String>();
-        for (SearchOption searchOption : SearchOption.values()) {
-            returnList.add(searchOption.toString());
-        };
-        return returnList.toArray(new String[0]);
     }
 }
