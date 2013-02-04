@@ -72,27 +72,8 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public YaasDataNode[] performSearch() throws WebQueryException {
         return new YaasDataNode[]{
-                    new YaasDataNode() {
-                        @Override
-                        public String getName() {
-                            return "a result";
-                        }
-
-                        @Override
-                        public String getID() {
-                            return "";
-                        }
-
-                        @Override
-                        public String getUrlString() {
-                            return "";
-                        }
-
-                        @Override
-                        public String getIconId() {
-                            return "";
-                        }
-                    }
+                    new YaasDataNode("a result"),
+                    new YaasDataNode("b result")
                 };
     }
 }
