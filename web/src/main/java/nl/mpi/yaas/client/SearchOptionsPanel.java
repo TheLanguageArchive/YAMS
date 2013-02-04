@@ -10,14 +10,18 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchOption;
+import nl.mpi.yaas.shared.YaasDataNode;
 
 /**
  * Created on : Jan 29, 2013, 2:50:44 PM
@@ -28,8 +32,13 @@ public class SearchOptionsPanel extends VerticalPanel {
 
     private final SearchOptionsServiceAsync searchOptionsService = GWT.create(SearchOptionsService.class);
     final SearchOption[] searchOptions = SearchOption.values();
+    final CriterionJoinType[] joinTypes = CriterionJoinType.values();
+    private Button searchButton;
+    private SearchHandler searchHandler;
+    private final DataNodeTree dataNodeTree;
 
-    public SearchOptionsPanel() {
+    public SearchOptionsPanel(DataNodeTree dataNodeTree) {
+        this.dataNodeTree = dataNodeTree;
         final VerticalPanel verticalPanel = new VerticalPanel();
         verticalPanel.add(getSearchRow(verticalPanel));
         Button addRowButton = new Button("add search term", new ClickHandler() {
@@ -39,7 +48,43 @@ public class SearchOptionsPanel extends VerticalPanel {
             }
         });
         this.add(verticalPanel);
+        final HorizontalPanel buttonsPanel = new HorizontalPanel();
         this.add(addRowButton);
+        buttonsPanel.add(getJoinTypeListBox(true));
+        buttonsPanel.add(getSearchButton());
+        this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
+        this.add(buttonsPanel);
+    }
+
+    private Widget getSearchButton() {
+        searchButton = new Button("Search");
+        searchButton.addStyleName("sendButton");
+
+        searchHandler = new SearchHandler() {
+            @Override
+            void performSearch() {
+                searchButton.setEnabled(false);
+                searchOptionsService.performSearch(new AsyncCallback<YaasDataNode[]>() {
+                    public void onFailure(Throwable caught) {
+                        Window.alert(caught.getMessage());
+                        searchHandler.signalSearchDone();
+                        searchButton.setEnabled(true);
+                    }
+
+                    public void onSuccess(YaasDataNode[] result) {
+                        for (YaasDataNode foundNode : result) {
+                            final TreeItem treeItem = new TreeItem();
+                            treeItem.setText(foundNode.getName());
+                            dataNodeTree.setRootNode(treeItem);
+                        }
+                        searchHandler.signalSearchDone();
+                        searchButton.setEnabled(true);
+                    }
+                });
+            }
+        };
+        searchButton.addClickHandler(searchHandler);
+        return searchButton;
     }
 
     private Widget getSearchRow(final VerticalPanel verticalPanel) {
@@ -107,6 +152,19 @@ public class SearchOptionsPanel extends VerticalPanel {
         if (!dropdown) {
             widget.setVisibleItemCount(3);
         }
+        return widget;
+    }
+
+    private ListBox getJoinTypeListBox(boolean dropdown) {
+        final ListBox widget = new ListBox();
+        widget.addStyleName("demo-ListBox");
+        for (CriterionJoinType searchOption : joinTypes) {
+            widget.addItem(searchOption.toString());
+        };
+        if (!dropdown) {
+            widget.setVisibleItemCount(3);
+        }
+        widget.setSelectedIndex(1); // this should really find the index of CriterionJoinType.intersect in joinTypes
         return widget;
     }
 

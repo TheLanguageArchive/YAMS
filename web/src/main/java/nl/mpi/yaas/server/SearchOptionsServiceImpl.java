@@ -11,8 +11,8 @@ import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.client.SearchOptionsService;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.db.ArbilDatabase;
-import nl.mpi.yaas.shared.DataNode;
 import nl.mpi.yaas.shared.WebQueryException;
+import nl.mpi.yaas.shared.YaasDataNode;
 
 /**
  * Created on : Jan 30, 2013, 5:23:13 PM
@@ -22,7 +22,7 @@ import nl.mpi.yaas.shared.WebQueryException;
 @SuppressWarnings("serial")
 public class SearchOptionsServiceImpl extends RemoteServiceServlet implements SearchOptionsService {
 
-    private ArbilDatabase<DataNode, MetadataFileType> getDatabase() throws QueryException {
+    private ArbilDatabase<YaasDataNode, MetadataFileType> getDatabase() throws QueryException {
         // todo: this version of the Arbil database is not intended to multi entry and will be replaced by a rest version when it is written
         final PluginSessionStorage pluginSessionStorage = new PluginSessionStorage() {
             public File getApplicationSettingsDirectory() {
@@ -37,12 +37,12 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
                 return new File("/Users/petwit2/.arbil/ArbilWorkingFiles/");
             }
         };
-        return new ArbilDatabase<DataNode, MetadataFileType>(DataNode.class, MetadataFileType.class, pluginSessionStorage);
+        return new ArbilDatabase<YaasDataNode, MetadataFileType>(YaasDataNode.class, MetadataFileType.class, pluginSessionStorage);
     }
 
     public MetadataFileType[] getTypeOptions() throws WebQueryException {
         try {
-            ArbilDatabase<DataNode, MetadataFileType> arbilDatabase = getDatabase();
+            ArbilDatabase<YaasDataNode, MetadataFileType> arbilDatabase = getDatabase();
             MetadataFileType[] metadataPathTypes = arbilDatabase.getMetadataTypes(null);
             return metadataPathTypes;
 //            ArrayList<String> returnList = new ArrayList<String>();
@@ -57,7 +57,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public MetadataFileType[] getFieldOptions() throws WebQueryException {
         try {
-            ArbilDatabase<DataNode, MetadataFileType> arbilDatabase = getDatabase();
+            ArbilDatabase<YaasDataNode, MetadataFileType> arbilDatabase = getDatabase();
             MetadataFileType[] metadataFieldTypes = arbilDatabase.getFieldMetadataTypes(null);
             return metadataFieldTypes;
 //            ArrayList<String> returnList = new ArrayList<String>();
@@ -68,5 +68,31 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         } catch (QueryException exception) {
             throw new WebQueryException(exception.getMessage());
         }
+    }
+
+    public YaasDataNode[] performSearch() throws WebQueryException {
+        return new YaasDataNode[]{
+                    new YaasDataNode() {
+                        @Override
+                        public String getName() {
+                            return "a result";
+                        }
+
+                        @Override
+                        public String getID() {
+                            return "";
+                        }
+
+                        @Override
+                        public String getUrlString() {
+                            return "";
+                        }
+
+                        @Override
+                        public String getIconId() {
+                            return "";
+                        }
+                    }
+                };
     }
 }

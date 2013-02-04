@@ -29,4 +29,8 @@ public class DataNodeTree extends Tree {
 
         this.addItem(root);
     }
+
+    public void setRootNode(TreeItem treeItem) {
+        this.addItem(treeItem);
+    }
 }

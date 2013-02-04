@@ -16,6 +16,7 @@
 
     <!-- Other module inherits                                      -->
     <inherits name="nl.mpi.yaas.Common"/>
+    <inherits name="nl.mpi.flap.Flap"/>
     <!-- Specify the app entry point class.                         -->
     <entry-point class='nl.mpi.yaas.client.yaas' />
 

@@ -8,6 +8,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.shared.WebQueryException;
+import nl.mpi.yaas.shared.YaasDataNode;
 
 /**
  * Created on : Jan 30, 2013, 5:21:01 PM
@@ -20,4 +21,6 @@ public interface SearchOptionsService extends RemoteService {
     MetadataFileType[] getTypeOptions() throws WebQueryException;
 
     MetadataFileType[] getFieldOptions() throws WebQueryException;
+
+    YaasDataNode[] performSearch() throws WebQueryException;
 }

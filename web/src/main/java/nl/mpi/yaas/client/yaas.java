@@ -46,7 +46,7 @@ public class yaas implements EntryPoint {
         nameField.setText(messages.nameField());
         final Label errorLabel = new Label();
         final DataNodeTree dataNodeTree = new DataNodeTree();
-        final SearchOptionsPanel searchOptionsPanel = new SearchOptionsPanel();
+        final SearchOptionsPanel searchOptionsPanel = new SearchOptionsPanel(dataNodeTree);
         // We can add style names to widgets
         sendButton.addStyleName("sendButton");
 
