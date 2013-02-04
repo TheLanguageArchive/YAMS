@@ -18,6 +18,8 @@
 package nl.mpi.yaas.common.db;
 
 import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
+import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
 
 /**
  * Document : SearchParameters <br> Created on Sep 11, 2012, 4:55:09 PM <br>
@@ -28,11 +30,11 @@ public class SearchParameters {
 
     MetadataFileType fileType;
     MetadataFileType fieldType;
-    ArbilDatabase.SearchNegator searchNegator;
-    ArbilDatabase.SearchType searchType;
+    SearchNegator searchNegator;
+    SearchType searchType;
     String searchString;
 
-    public SearchParameters(MetadataFileType fileType, MetadataFileType fieldType, ArbilDatabase.SearchNegator searchNegator, ArbilDatabase.SearchType searchType, String searchString) {
+    public SearchParameters(MetadataFileType fileType, MetadataFileType fieldType, SearchNegator searchNegator, SearchType searchType, String searchString) {
         this.fileType = fileType;
         this.fieldType = fieldType;
         this.searchNegator = searchNegator;

@@ -27,6 +27,9 @@ import javax.xml.transform.stream.StreamSource;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
+import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
+import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
 import org.basex.core.BaseXException;
 import org.basex.core.Context;
 import org.basex.core.cmd.Close;
@@ -51,66 +54,6 @@ public class ArbilDatabase<D, M> {
     private final String databaseName = "ArbilDatabase";
     final private PluginSessionStorage sessionStorage;
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
-
-    public enum SearchOption {
-
-        contains(SearchType.contains, SearchNegator.is, "Contains"),
-        notcontains(SearchType.contains, SearchNegator.not, "Does not contain"),
-        equals(SearchType.equals, SearchNegator.is, "Equals"),
-        notequals(SearchType.equals, SearchNegator.not, "Does not equal"),
-        fuzzy(SearchType.fuzzy, SearchNegator.is, "Fuzzy match");
-
-        private SearchOption(SearchType searchType, SearchNegator searchNegator, String displayName) {
-            this.searchType = searchType;
-            this.searchNegator = searchNegator;
-            this.displayName = displayName;
-        }
-        final SearchType searchType;
-        final SearchNegator searchNegator;
-        final String displayName;
-
-        public SearchType getSearchType() {
-            return searchType;
-        }
-
-        public SearchNegator getSearchNegator() {
-            return searchNegator;
-        }
-
-        @Override
-        public String toString() {
-            return displayName;
-        }
-    }
-
-    public enum SearchType {
-
-        contains,
-        equals,
-        //        like,
-        fuzzy,
-//        regex
-    }
-
-    public enum SearchNegator {
-
-        is, not
-    }
-
-    public enum CriterionJoinType {
-
-        union("Union"), intersect("Interesection"); //, except("Difference");
-        final private String displayName;
-
-        private CriterionJoinType(String displayName) {
-            this.displayName = displayName;
-        }
-
-        @Override
-        public String toString() {
-            return displayName;
-        }
-    }
 
     public ArbilDatabase(Class<D> dClass, Class<M> mClass, PluginSessionStorage sessionStorage) throws QueryException {
         this.dClass = dClass;
