@@ -8,11 +8,10 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import nl.mpi.yaas.common.db.ArbilDatabase;
-import nl.mpi.yaas.common.db.ArbilDatabase.SearchNegator;
-import nl.mpi.yaas.common.db.ArbilDatabase.SearchOption;
-import nl.mpi.yaas.common.db.ArbilDatabase.SearchType;
 import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
+import nl.mpi.yaas.common.data.QueryDataStructures.SearchOption;
+import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
 
 /**
  * Document : SearchCriterionPanel <br> Created on Aug 31, 2012, 4:23:32 PM <br>
@@ -33,12 +32,12 @@ public class SearchCriterionPanel extends JPanel {
         criterionPanel.setLayout(new FlowLayout());
 
 //        if (shownCriterionCount > 0) {
-            JButton removeButton = new JButton("-");
-            removeButton.setToolTipText("Remove this criterion");
-            removeButton.setActionCommand("remove");
-            removeButton.addActionListener(actionListener);
-            removeButton.setPreferredSize(new Dimension(removeButton.getPreferredSize().height, removeButton.getPreferredSize().height));
-            criterionPanel.add(removeButton);
+        JButton removeButton = new JButton("-");
+        removeButton.setToolTipText("Remove this criterion");
+        removeButton.setActionCommand("remove");
+        removeButton.addActionListener(actionListener);
+        removeButton.setPreferredSize(new Dimension(removeButton.getPreferredSize().height, removeButton.getPreferredSize().height));
+        criterionPanel.add(removeButton);
 //        } else {
 //            JButton addExtraButton = new JButton("+");
 //            addExtraButton.setToolTipText("Add another criterion");
@@ -64,7 +63,7 @@ public class SearchCriterionPanel extends JPanel {
         searchFieldOptionBox.setActionCommand("fields");
         criterionPanel.add(searchFieldOptionBox);
 
-        searchTypeOption = new JComboBox(ArbilDatabase.SearchOption.values());
+        searchTypeOption = new JComboBox(SearchOption.values());
         criterionPanel.add(searchTypeOption);
 
         searchText = new JTextField();
@@ -91,7 +90,7 @@ public class SearchCriterionPanel extends JPanel {
     }
 
     public SearchOption getSearchOption() {
-        return ArbilDatabase.SearchOption.values()[searchTypeOption.getSelectedIndex()];
+        return SearchOption.values()[searchTypeOption.getSelectedIndex()];
     }
 
     public SearchNegator getSearchNegator() {

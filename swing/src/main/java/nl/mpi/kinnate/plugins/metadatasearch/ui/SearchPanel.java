@@ -43,8 +43,8 @@ import nl.mpi.flap.plugin.WrongNodeTypeException;
 import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
 import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataTreeNode;
 import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.db.ArbilDatabase;
-import nl.mpi.yaas.common.db.ArbilDatabase.CriterionJoinType;
 import nl.mpi.yaas.common.db.SearchParameters;
 
 /**
