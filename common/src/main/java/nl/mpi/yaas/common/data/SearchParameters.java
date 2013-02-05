@@ -15,9 +15,9 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package nl.mpi.yaas.common.db;
+package nl.mpi.yaas.common.data;
 
-import nl.mpi.yaas.common.data.MetadataFileType;
+import java.io.Serializable;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
 
@@ -26,13 +26,16 @@ import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
  *
  * @author Peter Withers <br>
  */
-public class SearchParameters {
+public class SearchParameters implements Serializable {
 
-    MetadataFileType fileType;
-    MetadataFileType fieldType;
-    SearchNegator searchNegator;
-    SearchType searchType;
-    String searchString;
+    private MetadataFileType fileType;
+    private MetadataFileType fieldType;
+    private SearchNegator searchNegator;
+    private SearchType searchType;
+    private String searchString;
+
+    public SearchParameters() {
+    }
 
     public SearchParameters(MetadataFileType fileType, MetadataFileType fieldType, SearchNegator searchNegator, SearchType searchType, String searchString) {
         this.fileType = fileType;
@@ -40,5 +43,25 @@ public class SearchParameters {
         this.searchNegator = searchNegator;
         this.searchType = searchType;
         this.searchString = searchString;
+    }
+
+    public MetadataFileType getFileType() {
+        return fileType;
+    }
+
+    public MetadataFileType getFieldType() {
+        return fieldType;
+    }
+
+    public SearchNegator getSearchNegator() {
+        return searchNegator;
+    }
+
+    public SearchType getSearchType() {
+        return searchType;
+    }
+
+    public String getSearchString() {
+        return searchString;
     }
 }

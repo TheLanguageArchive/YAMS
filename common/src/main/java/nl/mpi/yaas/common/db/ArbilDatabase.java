@@ -30,6 +30,7 @@ import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
+import nl.mpi.yaas.common.data.SearchParameters;
 import org.basex.core.BaseXException;
 import org.basex.core.Context;
 import org.basex.core.cmd.Close;
@@ -284,16 +285,16 @@ public class ArbilDatabase<D, M> {
     }
 
     private String getSearchFieldConstraint(SearchParameters searchParameters) {
-        String fieldConstraint = getFieldConstraint(searchParameters.fieldType);
-        String searchTextConstraint = getSearchTextConstraint(searchParameters.searchNegator, searchParameters.searchType, searchParameters.searchString);
+        String fieldConstraint = getFieldConstraint(searchParameters.getFieldType());
+        String searchTextConstraint = getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString());
         return fieldConstraint + searchTextConstraint;
     }
 
     private String getSearchConstraint(SearchParameters searchParameters) {
-        String typeConstraint = getTypeConstraint(searchParameters.fileType);
-        String fieldConstraint = getFieldConstraint(searchParameters.fieldType);
+        String typeConstraint = getTypeConstraint(searchParameters.getFileType());
+        String fieldConstraint = getFieldConstraint(searchParameters.getFieldType());
         // todo: add to query: boolean searchNot, SearchType searchType, String searchString
-        String searchTextConstraint = getSearchTextConstraint(searchParameters.searchNegator, searchParameters.searchType, searchParameters.searchString);
+        String searchTextConstraint = getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString());
 
         return //"for $nameString in distinct-values(\n"
                 "collection('" + databaseName + "')[" + typeConstraint + "//" + fieldConstraint + searchTextConstraint + "]\n";
