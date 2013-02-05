@@ -74,6 +74,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
     }
 
     public YaasDataNode performSearch(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException {
+//        return new YaasDataNode(criterionJoinType.name());
         try {
             ArbilDatabase<YaasDataNode, MetadataFileType> arbilDatabase = getDatabase();
             YaasDataNode yaasDataNode = arbilDatabase.getSearchResult(criterionJoinType, searchParametersList);

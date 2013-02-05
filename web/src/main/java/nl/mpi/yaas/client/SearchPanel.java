@@ -38,9 +38,9 @@ public class SearchPanel extends VerticalPanel {
     private Button searchButton;
     private SearchHandler searchHandler;
     private final DataNodeTree dataNodeTree;
-    final ValueListBox<CriterionJoinType> joinTypeListBox;
-    final VerticalPanel verticalPanel;
-    final ArrayList<SearchCriterionPanel> criterionPanelList = new ArrayList<SearchCriterionPanel>();
+    private final ValueListBox<CriterionJoinType> joinTypeListBox;
+    private final VerticalPanel verticalPanel;
+    private final ArrayList<SearchCriterionPanel> criterionPanelList = new ArrayList<SearchCriterionPanel>();
 
     public SearchPanel(DataNodeTree dataNodeTree) {
         this.dataNodeTree = dataNodeTree;
