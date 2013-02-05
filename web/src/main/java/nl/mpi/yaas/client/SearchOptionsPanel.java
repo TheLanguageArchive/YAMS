@@ -7,20 +7,25 @@ package nl.mpi.yaas.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.text.shared.Renderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.ValueListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchOption;
+import nl.mpi.yaas.common.data.SearchParameters;
 import nl.mpi.yaas.shared.YaasDataNode;
 
 /**
@@ -31,11 +36,10 @@ import nl.mpi.yaas.shared.YaasDataNode;
 public class SearchOptionsPanel extends VerticalPanel {
 
     private final SearchOptionsServiceAsync searchOptionsService = GWT.create(SearchOptionsService.class);
-    final SearchOption[] searchOptions = SearchOption.values();
-    final CriterionJoinType[] joinTypes = CriterionJoinType.values();
     private Button searchButton;
     private SearchHandler searchHandler;
     private final DataNodeTree dataNodeTree;
+    final ValueListBox<CriterionJoinType> joinTypeListBox;
 
     public SearchOptionsPanel(DataNodeTree dataNodeTree) {
         this.dataNodeTree = dataNodeTree;
@@ -43,14 +47,14 @@ public class SearchOptionsPanel extends VerticalPanel {
         verticalPanel.add(getSearchRow(verticalPanel));
         Button addRowButton = new Button("add search term", new ClickHandler() {
             public void onClick(ClickEvent event) {
-//                Window.alert("How high?");
                 verticalPanel.add(getSearchRow(verticalPanel));
             }
         });
         this.add(verticalPanel);
         final HorizontalPanel buttonsPanel = new HorizontalPanel();
         this.add(addRowButton);
-        buttonsPanel.add(getJoinTypeListBox(true));
+        joinTypeListBox = getJoinTypeListBox();
+        buttonsPanel.add(joinTypeListBox);
         buttonsPanel.add(getSearchButton());
         this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         this.add(buttonsPanel);
@@ -64,23 +68,30 @@ public class SearchOptionsPanel extends VerticalPanel {
             @Override
             void performSearch() {
                 searchButton.setEnabled(false);
-                searchOptionsService.performSearch(new AsyncCallback<YaasDataNode[]>() {
-                    public void onFailure(Throwable caught) {
-                        Window.alert(caught.getMessage());
-                        searchHandler.signalSearchDone();
-                        searchButton.setEnabled(true);
-                    }
 
-                    public void onSuccess(YaasDataNode[] result) {
-                        for (YaasDataNode foundNode : result) {
-                            final TreeItem treeItem = new TreeItem();
-                            treeItem.setText(foundNode.getName());
-                            dataNodeTree.setRootNode(treeItem);
-                        }
-                        searchHandler.signalSearchDone();
-                        searchButton.setEnabled(true);
-                    }
-                });
+
+                ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
+//                    for (SearchCriterionPanel eventCriterionPanel : criterionPanelArray) {
+//                        searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
+//                    }
+
+                searchOptionsService.performSearch(joinTypeListBox.getValue(), null,
+                        new AsyncCallback<YaasDataNode>() {
+                            public void onFailure(Throwable caught) {
+                                Window.alert(caught.getMessage());
+                                searchHandler.signalSearchDone();
+                                searchButton.setEnabled(true);
+                            }
+
+                            public void onSuccess(YaasDataNode result) {
+                                final TreeItem treeItem = new TreeItem();
+                                treeItem.setText(result.getName());
+                                dataNodeTree.setRootNode(treeItem);
+                                dataNodeTree.setRootNode(treeItem);
+                                searchHandler.signalSearchDone();
+                                searchButton.setEnabled(true);
+                            }
+                        });
             }
         };
         searchButton.addClickHandler(searchHandler);
@@ -96,15 +107,29 @@ public class SearchOptionsPanel extends VerticalPanel {
         });
         horizontalPanel.add(removeRowButton);
         SuggestBox suggestbox = new SuggestBox(createCountriesOracle());
-        horizontalPanel.add(getTypesOptionsListBox(true));
-        horizontalPanel.add(getFieldsOptionsListBox(true));
-        horizontalPanel.add(getSearchOptionsListBox(true));
+        horizontalPanel.add(getTypesOptionsListBox());
+        horizontalPanel.add(getFieldsOptionsListBox());
+        horizontalPanel.add(getSearchOptionsListBox());
         horizontalPanel.add(suggestbox);
         return horizontalPanel;
     }
 
-    private ListBox getFieldsOptionsListBox(boolean dropdown) {
-        final ListBox widget = new ListBox();
+    private ValueListBox getFieldsOptionsListBox() {
+        final ValueListBox<MetadataFileType> widget = new ValueListBox<MetadataFileType>(new Renderer<MetadataFileType>() {
+            public String render(MetadataFileType object) {
+                if (object == null) {
+                    return "<no value>";
+                } else {
+                    return object.toString();
+                }
+            }
+
+            public void render(MetadataFileType object, Appendable appendable) throws IOException {
+                if (object != null) {
+                    appendable.append(object.toString());
+                }
+            }
+        });
         widget.addStyleName("demo-ListBox");
         searchOptionsService.getFieldOptions(new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
@@ -112,19 +137,28 @@ public class SearchOptionsPanel extends VerticalPanel {
             }
 
             public void onSuccess(MetadataFileType[] result) {
-                for (MetadataFileType searchOption : result) {
-                    widget.addItem(searchOption.toString());
-                };
+                widget.setAcceptableValues(Arrays.asList(result));
             }
         });
-        if (!dropdown) {
-            widget.setVisibleItemCount(3);
-        }
         return widget;
     }
 
-    private ListBox getTypesOptionsListBox(boolean dropdown) {
-        final ListBox widget = new ListBox();
+    private ValueListBox getTypesOptionsListBox() {
+        final ValueListBox<MetadataFileType> widget = new ValueListBox<MetadataFileType>(new Renderer<MetadataFileType>() {
+            public String render(MetadataFileType object) {
+                if (object == null) {
+                    return "<no value>";
+                } else {
+                    return object.toString();
+                }
+            }
+
+            public void render(MetadataFileType object, Appendable appendable) throws IOException {
+                if (object != null) {
+                    appendable.append(object.toString());
+                }
+            }
+        });
         widget.addStyleName("demo-ListBox");
         searchOptionsService.getTypeOptions(new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
@@ -132,39 +166,52 @@ public class SearchOptionsPanel extends VerticalPanel {
             }
 
             public void onSuccess(MetadataFileType[] result) {
-                for (MetadataFileType searchOption : result) {
-                    widget.addItem(searchOption.toString());
-                };
+                widget.setAcceptableValues(Arrays.asList(result));
             }
         });
-        if (!dropdown) {
-            widget.setVisibleItemCount(3);
-        }
         return widget;
     }
 
-    private ListBox getSearchOptionsListBox(boolean dropdown) {
-        final ListBox widget = new ListBox();
+    private ValueListBox getSearchOptionsListBox() {
+        final ValueListBox<SearchOption> widget = new ValueListBox<SearchOption>(new Renderer<SearchOption>() {
+            public String render(SearchOption object) {
+                if (object == null) {
+                    return "<no value>";
+                } else {
+                    return object.toString();
+                }
+            }
+
+            public void render(SearchOption object, Appendable appendable) throws IOException {
+                if (object != null) {
+                    appendable.append(object.toString());
+                }
+            }
+        });
         widget.addStyleName("demo-ListBox");
-        for (SearchOption searchOption : searchOptions) {
-            widget.addItem(searchOption.toString());
-        };
-        if (!dropdown) {
-            widget.setVisibleItemCount(3);
-        }
+        widget.setAcceptableValues(Arrays.asList(SearchOption.values()));
         return widget;
     }
 
-    private ListBox getJoinTypeListBox(boolean dropdown) {
-        final ListBox widget = new ListBox();
+    private ValueListBox getJoinTypeListBox() {
+        final ValueListBox<CriterionJoinType> widget = new ValueListBox<CriterionJoinType>(new Renderer<CriterionJoinType>() {
+            public String render(CriterionJoinType object) {
+                if (object == null) {
+                    return "<no value>";
+                } else {
+                    return object.toString();
+                }
+            }
+
+            public void render(CriterionJoinType object, Appendable appendable) throws IOException {
+                if (object != null) {
+                    appendable.append(object.toString());
+                }
+            }
+        });
         widget.addStyleName("demo-ListBox");
-        for (CriterionJoinType searchOption : joinTypes) {
-            widget.addItem(searchOption.toString());
-        };
-        if (!dropdown) {
-            widget.setVisibleItemCount(3);
-        }
-        widget.setSelectedIndex(1); // this should really find the index of CriterionJoinType.intersect in joinTypes
+        widget.setAcceptableValues(Arrays.asList(CriterionJoinType.values()));
+        widget.setValue(CriterionJoinType.intersect);
         return widget;
     }
 

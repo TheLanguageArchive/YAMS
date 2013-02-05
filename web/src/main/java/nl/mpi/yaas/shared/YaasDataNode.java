@@ -26,9 +26,9 @@ public class YaasDataNode extends AbstractDataNode {
     public YaasDataNode(String nodeName) {
         this.nodeName = nodeName;
     }
-
     List<FieldGroup> fieldGroups;
     AbstractDataNode[] childArray;
+
     @Override
     public String getName() {
         return nodeName;
@@ -48,10 +48,12 @@ public class YaasDataNode extends AbstractDataNode {
     public String getIconId() {
         return nodeIconId;
     }
+
     @Override
     public List<FieldGroup> getFieldGroups() {
         return fieldGroups;
     }
+
     @Override
     public AbstractDataNode[] getChildArray() {
         return childArray;

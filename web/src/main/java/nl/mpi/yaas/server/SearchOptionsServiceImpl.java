@@ -6,10 +6,13 @@ package nl.mpi.yaas.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import java.io.File;
+import java.util.ArrayList;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.client.SearchOptionsService;
 import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.data.QueryDataStructures;
+import nl.mpi.yaas.common.data.SearchParameters;
 import nl.mpi.yaas.common.db.ArbilDatabase;
 import nl.mpi.yaas.shared.WebQueryException;
 import nl.mpi.yaas.shared.YaasDataNode;
@@ -70,10 +73,18 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    public YaasDataNode[] performSearch() throws WebQueryException {
-        return new YaasDataNode[]{
-                    new YaasDataNode("a result"),
-                    new YaasDataNode("b result")
-                };
+    public YaasDataNode performSearch(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException {
+        try {
+            ArbilDatabase<YaasDataNode, MetadataFileType> arbilDatabase = getDatabase();
+            YaasDataNode yaasDataNode = arbilDatabase.getSearchResult(criterionJoinType, searchParametersList);
+            return yaasDataNode;
+//            ArrayList<String> returnList = new ArrayList<String>();
+//            for (WebMetadataFileType metadataFileType : metadataFieldTypes) {
+//                returnList.add(metadataFileType.getFieldName());
+//            };
+//            return returnList.toArray(new String[0]);
+        } catch (QueryException exception) {
+            throw new WebQueryException(exception.getMessage());
+        }
     }
 }

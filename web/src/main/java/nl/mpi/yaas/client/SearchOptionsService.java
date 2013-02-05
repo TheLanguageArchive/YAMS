@@ -6,7 +6,10 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import java.util.ArrayList;
 import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.data.QueryDataStructures;
+import nl.mpi.yaas.common.data.SearchParameters;
 import nl.mpi.yaas.shared.WebQueryException;
 import nl.mpi.yaas.shared.YaasDataNode;
 
@@ -22,5 +25,5 @@ public interface SearchOptionsService extends RemoteService {
 
     MetadataFileType[] getFieldOptions() throws WebQueryException;
 
-    YaasDataNode[] performSearch() throws WebQueryException;
+    YaasDataNode performSearch(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException;
 }
