@@ -33,7 +33,7 @@ import nl.mpi.yaas.shared.YaasDataNode;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class SearchOptionsPanel extends VerticalPanel {
+public class SearchPanel extends VerticalPanel {
 
     private final SearchOptionsServiceAsync searchOptionsService = GWT.create(SearchOptionsService.class);
     private Button searchButton;
@@ -41,7 +41,7 @@ public class SearchOptionsPanel extends VerticalPanel {
     private final DataNodeTree dataNodeTree;
     final ValueListBox<CriterionJoinType> joinTypeListBox;
 
-    public SearchOptionsPanel(DataNodeTree dataNodeTree) {
+    public SearchPanel(DataNodeTree dataNodeTree) {
         this.dataNodeTree = dataNodeTree;
         final VerticalPanel verticalPanel = new VerticalPanel();
         verticalPanel.add(getSearchRow(verticalPanel));
