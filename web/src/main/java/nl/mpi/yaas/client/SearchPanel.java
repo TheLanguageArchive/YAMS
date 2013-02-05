@@ -14,7 +14,6 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
-import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.ValueListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -40,14 +39,18 @@ public class SearchPanel extends VerticalPanel {
     private SearchHandler searchHandler;
     private final DataNodeTree dataNodeTree;
     final ValueListBox<CriterionJoinType> joinTypeListBox;
+    final VerticalPanel verticalPanel;
+    final ArrayList<SearchCriterionPanel> criterionPanelList = new ArrayList<SearchCriterionPanel>();
 
     public SearchPanel(DataNodeTree dataNodeTree) {
         this.dataNodeTree = dataNodeTree;
-        final VerticalPanel verticalPanel = new VerticalPanel();
-        verticalPanel.add(getSearchRow(verticalPanel));
+        verticalPanel = new VerticalPanel();
+        final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this);
+        verticalPanel.add(searchCriterionPanel);
+        criterionPanelList.add(searchCriterionPanel);
         Button addRowButton = new Button("add search term", new ClickHandler() {
             public void onClick(ClickEvent event) {
-                verticalPanel.add(getSearchRow(verticalPanel));
+                addSearchCriterionPanel(new SearchCriterionPanel(SearchPanel.this));
             }
         });
         this.add(verticalPanel);
@@ -60,6 +63,16 @@ public class SearchPanel extends VerticalPanel {
         this.add(buttonsPanel);
     }
 
+    protected void addSearchCriterionPanel(SearchCriterionPanel criterionPanel) {
+        criterionPanelList.add(criterionPanel);
+        verticalPanel.add(criterionPanel);
+    }
+
+    protected void removeSearchCriterionPanel(SearchCriterionPanel criterionPanel) {
+        criterionPanelList.remove(criterionPanel);
+        verticalPanel.remove(criterionPanel);
+    }
+
     private Widget getSearchButton() {
         searchButton = new Button("Search");
         searchButton.addStyleName("sendButton");
@@ -68,14 +81,11 @@ public class SearchPanel extends VerticalPanel {
             @Override
             void performSearch() {
                 searchButton.setEnabled(false);
-
-
                 ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
-//                    for (SearchCriterionPanel eventCriterionPanel : criterionPanelArray) {
-//                        searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
-//                    }
-
-                searchOptionsService.performSearch(joinTypeListBox.getValue(), null,
+                for (SearchCriterionPanel eventCriterionPanel : criterionPanelList) {
+                    searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
+                }
+                searchOptionsService.performSearch(joinTypeListBox.getValue(), searchParametersList,
                         new AsyncCallback<YaasDataNode>() {
                             public void onFailure(Throwable caught) {
                                 Window.alert(caught.getMessage());
@@ -98,23 +108,7 @@ public class SearchPanel extends VerticalPanel {
         return searchButton;
     }
 
-    private Widget getSearchRow(final VerticalPanel verticalPanel) {
-        final HorizontalPanel horizontalPanel = new HorizontalPanel();
-        Button removeRowButton = new Button("remove", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                verticalPanel.remove(horizontalPanel);
-            }
-        });
-        horizontalPanel.add(removeRowButton);
-        SuggestBox suggestbox = new SuggestBox(createCountriesOracle());
-        horizontalPanel.add(getTypesOptionsListBox());
-        horizontalPanel.add(getFieldsOptionsListBox());
-        horizontalPanel.add(getSearchOptionsListBox());
-        horizontalPanel.add(suggestbox);
-        return horizontalPanel;
-    }
-
-    private ValueListBox getFieldsOptionsListBox() {
+    protected ValueListBox getFieldsOptionsListBox() {
         final ValueListBox<MetadataFileType> widget = new ValueListBox<MetadataFileType>(new Renderer<MetadataFileType>() {
             public String render(MetadataFileType object) {
                 if (object == null) {
@@ -143,7 +137,7 @@ public class SearchPanel extends VerticalPanel {
         return widget;
     }
 
-    private ValueListBox getTypesOptionsListBox() {
+    protected ValueListBox getTypesOptionsListBox() {
         final ValueListBox<MetadataFileType> widget = new ValueListBox<MetadataFileType>(new Renderer<MetadataFileType>() {
             public String render(MetadataFileType object) {
                 if (object == null) {
@@ -172,7 +166,7 @@ public class SearchPanel extends VerticalPanel {
         return widget;
     }
 
-    private ValueListBox getSearchOptionsListBox() {
+    protected ValueListBox getSearchOptionsListBox() {
         final ValueListBox<SearchOption> widget = new ValueListBox<SearchOption>(new Renderer<SearchOption>() {
             public String render(SearchOption object) {
                 if (object == null) {
@@ -215,7 +209,7 @@ public class SearchPanel extends VerticalPanel {
         return widget;
     }
 
-    private MultiWordSuggestOracle createCountriesOracle() {
+    protected MultiWordSuggestOracle createCountriesOracle() {
         MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 
         oracle.add("Afghanistan");
