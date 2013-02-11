@@ -38,6 +38,7 @@ import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
 import nl.mpi.yaas.common.data.SearchParameters;
 import org.basex.core.BaseXException;
 import org.basex.core.Context;
+import org.basex.core.cmd.Add;
 import org.basex.core.cmd.Close;
 import org.basex.core.cmd.CreateDB;
 import org.basex.core.cmd.DropDB;
@@ -60,6 +61,7 @@ public class ArbilDatabase<D, M> {
     final private String databaseName;
     final private PluginSessionStorage sessionStorage;
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
+    final static public String defaultDataBase = "yaas-data";
 
     public ArbilDatabase(Class<D> dClass, Class<M> mClass, PluginSessionStorage sessionStorage, String databaseName) throws QueryException {
         this.dClass = dClass;
@@ -112,7 +114,7 @@ public class ArbilDatabase<D, M> {
         }
     }
 
-    public void insertIntoDatabase(AbstractDataNode dataNode, Class fieldClass) throws PluginException {
+    public void insertIntoDatabase(AbstractDataNode dataNode, Class fieldClass) throws PluginException, QueryException {
         // use JAXB to serialise and insert the data node into the database
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(AbstractDataNode.class, AbstractField.class);
@@ -121,6 +123,16 @@ public class ArbilDatabase<D, M> {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(dataNode, stringWriter);
             System.out.println("stringWriter:\n" + stringWriter.toString());
+            try {
+                synchronized (databaseLock) {
+                    new Open(databaseName).execute(context);
+                    new Add(dataNode.getID(), stringWriter.toString()).execute(context);
+                    new Close().execute(context);
+                }
+            } catch (BaseXException baseXException2) {
+                logger.error(baseXException2.getMessage());
+                throw new QueryException(baseXException2.getMessage());
+            }
         } catch (JAXBException exception) {
             System.err.println("jaxb error:" + exception.getMessage());
             throw new PluginException(exception.getMessage());
@@ -188,8 +200,8 @@ public class ArbilDatabase<D, M> {
         return inputString.replace("&", "&amp;").replace("\"", "&quot;").replace("'", "&apos;");
     }
     /*
-     * let $elementSet0 := for $nameString0 in collection('ArbilDatabase')//*:Address[count(*) = 0] order by $nameString0 return $nameString0
-     let $elementSet1 := for $nameString0 in collection('ArbilDatabase')//*:Region[count(*) = 0] order by $nameString0 return $nameString0
+     * let $elementSet0 := for $nameString0 in collection('" + defaultDataBase + "')//*:Address[count(*) = 0] order by $nameString0 return $nameString0
+     let $elementSet1 := for $nameString0 in collection('" + defaultDataBase + "')//*:Region[count(*) = 0] order by $nameString0 return $nameString0
      return
      <TreeNode><DisplayString>All</DisplayString>
      {
@@ -271,7 +283,7 @@ public class ArbilDatabase<D, M> {
 //        if (fastQuery) {
 //            countClause = "";
 //        } else {
-//            countClause = "<RecordCount>{count(distinct-values(collection('ArbilDatabase')/descendant-or-self::*[name() = $nameString]/text()))}</RecordCount>";
+//            countClause = "<RecordCount>{count(distinct-values(collection('" + defaultDataBase + "')/descendant-or-self::*[name() = $nameString]/text()))}</RecordCount>";
 //        }
 //        String typeConstraint = getTypeConstraint(fileType);
 //        String noChildClause = "[count(*) = 0]";
@@ -295,7 +307,7 @@ public class ArbilDatabase<D, M> {
                  * the query below takes:
                  * 9.82 ms (varies per run)
                  */
-                + "for $facetEntry in index:facets('ArbilDatabase', 'flat')//element[entry/text() != '']\n"
+                + "for $facetEntry in index:facets('" + defaultDataBase + "', 'flat')//element[entry/text() != '']\n"
                 + "return\n"
                 + "<MetadataFileType>\n"
                 + "<fieldName>{string($facetEntry/@name)}</fieldName>\n"
@@ -333,8 +345,8 @@ public class ArbilDatabase<D, M> {
     }
 
     private String getPopulatedFieldNames(MetadataFileType fileType) {
-        String typeConstraint = getTypeConstraint(fileType);
-        return "let $allFieldNames := index:facets('ArbilDatabase')//element[text/@type = 'text']\n"
+        String typeConstraint = getTypeConstraint(fileType); // todo: the type constraint is now unused, this should be renabled
+        return "let $allFieldNames := index:facets('" + defaultDataBase + "')/document-node/element/element[@name='FieldGroup']/attribute[@name='Label']/entry\n"
                 + "return <MetadataFileType>\n"
                 + "<MetadataFileType><displayString>All Fields</displayString>"
                 //                + "<RecordCount>{sum($allFieldNames/text/@count)}</RecordCount>\n"
@@ -347,7 +359,7 @@ public class ArbilDatabase<D, M> {
                 //                + "return\n"
                 //                + "<MetadataFileType>"
                 //                + "<fieldName>{$nameString}</fieldName>"
-                //                + "<RecordCount>{count(collection('ArbilDatabase')/descendant-or-self::*[name() = $nameString]/text())}</RecordCount>"
+                //                + "<RecordCount>{count(collection('" + defaultDataBase + "')/descendant-or-self::*[name() = $nameString]/text())}</RecordCount>"
                 //                + "</MetadataFileType>\n"
                 /*
                  * optimised this query 2012-10-17
@@ -357,7 +369,7 @@ public class ArbilDatabase<D, M> {
                  * 12.39 ms (varies per run)
                  */
                 + "{\nfor $facetEntry in $allFieldNames\n"
-                + "let $nameString := $facetEntry/@name\n"
+                + "let $nameString := $facetEntry/text()\n"
                 + "group by $nameString\n"
                 + "order by $nameString\n"
                 + "return\n"
@@ -365,7 +377,7 @@ public class ArbilDatabase<D, M> {
                 + "<fieldName>{$nameString}</fieldName>\n"
                 //                + "<RecordCount>{string($facetEntry/@count)}</RecordCount>\n"
                 //                + "<ValueCount>{count($facetEntry/entry)}</ValueCount>\n"
-                + "<RecordCount>{sum($facetEntry/text/@count)}</RecordCount>\n"
+                + "<RecordCount>{string($facetEntry/@count)}</RecordCount>\n"
                 + "</MetadataFileType>\n"
                 + "}</MetadataFileType>";
     }
@@ -380,15 +392,15 @@ public class ArbilDatabase<D, M> {
         return "<MetadataFileType>\n"
                 + "<MetadataFileType>\n"
                 + "<displayString>All Types</displayString>\n"
-                + "<RecordCount>{count(collection('ArbilDatabase'))}</RecordCount>\n"
+                + "<RecordCount>{count(collection('" + defaultDataBase + "'))}</RecordCount>\n"
                 + "</MetadataFileType>\n"
                 + "{\n"
-                //                + "for $imdiType in distinct-values(collection('ArbilDatabase')/*:METATRANSCRIPT/*/name())\n"
+                //                + "for $imdiType in distinct-values(collection('" + defaultDataBase + "')/*:METATRANSCRIPT/*/name())\n"
                 //                + "order by $imdiType\n"
                 //                + "return\n"
                 //                + "<MetadataFileType>\n"
                 //                + "<ImdiType>{$imdiType}</ImdiType>\n"
-                //                + "<RecordCount>{count(collection('ArbilDatabase')/*:METATRANSCRIPT/*[name()=$imdiType])}</RecordCount>\n"
+                //                + "<RecordCount>{count(collection('" + defaultDataBase + "')/*:METATRANSCRIPT/*[name()=$imdiType])}</RecordCount>\n"
                 //                + "</MetadataFileType>\n"
                 //                + "},{"
                 //                + "for $profileString in distinct-values(collection('" + databaseName + "')/*:CMD/@*:schemaLocation)\n"
@@ -405,14 +417,14 @@ public class ArbilDatabase<D, M> {
                  * the query below takes:
                  * 11.8 ms (varies per run)
                  */
-                + "for $profileInfo in index:facets('ArbilDatabase')/document-node/element[@name='METATRANSCRIPT']/element[@name!='History']\n"
+                + "for $profileInfo in index:facets('" + defaultDataBase + "')/document-node/element[@name='METATRANSCRIPT']/element[@name!='History']\n"
                 + "return\n"
                 + "<MetadataFileType>\n"
                 + "<fieldName>{string($profileInfo/@name)}</fieldName>\n"
                 + "<RecordCount>{string($profileInfo/@count)}</RecordCount>\n"
                 + "</MetadataFileType>"
                 + "},{"
-                + "for $profileInfo in index:facets('ArbilDatabase')/document-node/element[@name='CMD']/element[@name='Header']/element[@name='MdProfile']/text/entry\n"
+                + "for $profileInfo in index:facets('" + defaultDataBase + "')/document-node/element[@name='CMD']/element[@name='Header']/element[@name='MdProfile']/text/entry\n"
                 + "return\n"
                 + "<MetadataFileType>\n"
                 + "<fieldName>{string($profileInfo)}</fieldName>\n"
@@ -476,7 +488,7 @@ public class ArbilDatabase<D, M> {
                 /*
                  * 15041
                  * <TreeNode>{
-                 for $fieldNode in collection('ArbilDatabase')//.[(text() contains text 'pu6') or (name() = 'Name' and text() contains text 'pu8')]
+                 for $fieldNode in collection('" + defaultDataBase + "')//.[(text() contains text 'pu6') or (name() = 'Name' and text() contains text 'pu8')]
                  let $documentFile := base-uri($fieldNode)
                  group by $documentFile
                  return
