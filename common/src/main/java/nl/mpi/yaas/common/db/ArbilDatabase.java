@@ -423,7 +423,7 @@ public class ArbilDatabase<D, M> {
 
     public D getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws QueryException {
         StringBuilder queryStringBuilder = new StringBuilder();
-        queryStringBuilder.append("<TreeNode>{\n");
+        queryStringBuilder.append("<DataNode> {\n");
         int parameterCounter = 0;
         for (SearchParameters searchParameters : searchParametersList) {
             queryStringBuilder.append("let $documentSet");
@@ -441,9 +441,8 @@ public class ArbilDatabase<D, M> {
         }
         queryStringBuilder.append("\n"
                 + "for $documentNode in $returnSet\n"
-                + "return\n"
-                + "<MetadataTreeNode>\n"
-                + "<FileUri>{base-uri($documentNode)}</FileUri>\n"
+                + "return\n"                
+                + "<DataNode NodeURI=\"{base-uri($documentNode)}\" Label=\"a resutA\">\n"
                 + "{\n"
                 /*
                  * This query currently takes 18348.54 ms
@@ -479,9 +478,9 @@ public class ArbilDatabase<D, M> {
             queryStringBuilder.append(getSearchFieldConstraint(searchParameters));
         }
         queryStringBuilder.append("]\n"
-                + "return <FileUriPath>{path($entityNode)}</FileUriPath>\n"
-                + "}</MetadataTreeNode>\n"
-                + "}</TreeNode>\n");
+                + "return <DataNode NodeURI=\"{path($entityNode)}\" Label=\"a resutB\"/>\n"
+                + "}</DataNode>\n"
+                + "}</DataNode>\n");
         final D metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
         return metadataTypesString;
     }
