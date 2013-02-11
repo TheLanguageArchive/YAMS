@@ -18,10 +18,26 @@
 package nl.mpi.yaas.common.db;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import junit.framework.TestCase;
+import nl.mpi.arbil.ArbilDesktopInjector;
+import nl.mpi.arbil.ArbilVersion;
+import nl.mpi.arbil.data.ArbilDataNode;
+import nl.mpi.arbil.data.ArbilDataNodeContainer;
+import nl.mpi.arbil.data.ArbilDataNodeLoader;
+import nl.mpi.arbil.data.ArbilField;
+import nl.mpi.arbil.data.ArbilTreeHelper;
+import nl.mpi.arbil.ui.ArbilWindowManager;
 import nl.mpi.arbil.userstorage.ArbilSessionStorage;
+import nl.mpi.arbil.util.ApplicationVersionManager;
+import nl.mpi.arbil.util.ArbilMimeHashQueue;
+import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.AbstractDataNode;
+import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
+import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures;
@@ -34,7 +50,7 @@ import nl.mpi.yaas.common.data.SearchParameters;
  */
 public class ArbilDatabaseTest extends TestCase {
 
-//    String projectDatabaseName = "unit-test-database";
+    String projectDatabaseName = "unit-test-database";
 //
 //    public ArbilDatabaseTest(String testName) {
 //        super(testName);
@@ -62,33 +78,108 @@ public class ArbilDatabaseTest extends TestCase {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
+
     private PluginSessionStorage getPluginSessionStorage() {
         return new PluginSessionStorage() {
-            // todo: remove this user home directory for a temp directory and copy some metadata files from the test resources into the temp directory
+            private File tempWorkingDir;
+
             public File getApplicationSettingsDirectory() {
-                return new File("/Users/petwit2/.arbil/");
+                if (tempWorkingDir == null) {
+                    try {
+                        tempWorkingDir = File.createTempFile("yaas-db", Long.toString(System.nanoTime()));
+                        if (tempWorkingDir.exists()) {
+                            if (!tempWorkingDir.delete()) {
+                                throw new RuntimeException("Cannot create temp dir!");
+                            }
+                        }
+                        if (tempWorkingDir.mkdir()) {
+                            tempWorkingDir.deleteOnExit();
+                        } else {
+                            fail("Cannot create temp dir!");
+                        }
+                        System.out.println("Using working directory: " + tempWorkingDir.getAbsolutePath());
+                    } catch (IOException exception) {
+                        fail(exception.getMessage());
+                    }
+                }
+                return tempWorkingDir;
             }
 
             public File getProjectDirectory() {
-                return new File("/Users/petwit2/.arbil/");
+                return getApplicationSettingsDirectory();
             }
 
             public File getProjectWorkingDirectory() {
-                return new File("/Users/petwit2/.arbil/ArbilWorkingFiles/");
+                return new File(getApplicationSettingsDirectory(), "WorkingFiles");
             }
         };
     }
 
-//    /**
-//     * Test of createDatabase method, of class ArbilDatabase.
-//     */
-//    public void testCreateDatabase() throws Exception {
-//        System.out.println("createDatabase");
-//        ArbilDatabase instance = new ArbilDatabase(AbstractDataNode.class, null, getPluginSessionStorage());
-//        instance.createDatabase();
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    /**
+     * Test of createDatabase method, of class ArbilDatabase.
+     */
+    public void testCreateDatabase() throws Exception {
+        System.out.println("createDatabase");
+        final ArbilDatabase instance = new ArbilDatabase(AbstractDataNode.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+        instance.createDatabase();
+    }
+
+    /**
+     * Test of insertIntoDatabase method by waling a tree of metadata and
+     * inserting it into the database.
+     */
+    public void testInsertIntoDatabase() {
+        System.out.println("walkTreeInsertingNodes");
+        final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
+        final ArbilDesktopInjector injector = new ArbilDesktopInjector();
+        injector.injectHandlers(versionManager);
+
+        final ArbilWindowManager arbilWindowManager = injector.getWindowManager();
+        final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
+        PluginArbilDataNodeLoader dataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
+        try {
+            final ArbilDatabase instance = new ArbilDatabase(AbstractDataNode.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+            URI startURI = new URI("http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi");
+            ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
+//                public void dataNodeRemoved(ArbilNode dataNode) {
+////                    throw new UnsupportedOperationException("Not supported yet.");
+//                }
+//
+//                public void dataNodeIconCleared(ArbilNode dataNode) {
+//                    if (dataNode.isDataLoaded()) {
+//                        try {
+//                            instance.insertIntoDatabase(dataNode);
+//                        } catch (PluginException exception) {
+//                            fail(exception.getMessage());
+//                        }
+//                    }
+//                }
+//
+//                public void dataNodeChildAdded(ArbilNode destination, ArbilNode newChildNode) {
+////                    throw new UnsupportedOperationException("Not supported yet.");
+//                }
+//
+//                public boolean isFullyLoadedNodeRequired() {
+//                    return true;
+//                }
+//            };
+            ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
+            loadChildNodes(dataNodeLoader, dataNode);
+            instance.insertIntoDatabase(dataNode, ArbilField.class);
+
+            // TODO review the generated test code and remove the default call to fail.
+//            fail("The test case is a prototype.");
+        } catch (URISyntaxException exception) {
+            fail(exception.getMessage());
+        } catch (InterruptedException exception) {
+            fail(exception.getMessage());
+        } catch (PluginException exception) {
+            fail(exception.getMessage());
+        } catch (QueryException exception) {
+            fail(exception.getMessage());
+        }
+    }
+
     /**
      * Test of getSearchResult method, of class ArbilDatabase.
      */
@@ -99,7 +190,7 @@ public class ArbilDatabaseTest extends TestCase {
         searchParametersList.add(new SearchParameters(new MetadataFileType(), new MetadataFileType(), QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.equals, ""));
         //todo: add various search parameters
 //        searchParametersList.add(new SearchParameters(new MetadataFileType(), new MetadataFileType(), QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.equals, ""));
-        ArbilDatabase instance = new ArbilDatabase(AbstractDataNode.class, MetadataFileType.class, getPluginSessionStorage());
+        ArbilDatabase instance = new ArbilDatabase(AbstractDataNode.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
         String expResult = "a resutl";
         AbstractDataNode result = (AbstractDataNode) instance.getSearchResult(criterionJoinType, searchParametersList);
         System.out.println("result:" + result.toString());
@@ -173,4 +264,22 @@ public class ArbilDatabaseTest extends TestCase {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
+    private int numberToLoad = 10;
+
+    private void loadChildNodes(PluginArbilDataNodeLoader dataNodeLoader, ArbilDataNode dataNode) throws InterruptedException {
+        System.out.println("Loading: " + numberToLoad);
+        if (numberToLoad < 0) {
+            return;
+        }
+        if (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
+            dataNode.reloadNode();
+        }
+        while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
+            Thread.sleep(100);
+        }
+        numberToLoad--;
+        for (ArbilDataNode childNode : dataNode.getChildArray()) {
+            loadChildNodes(dataNodeLoader, childNode);
+        }
+    }
 }
