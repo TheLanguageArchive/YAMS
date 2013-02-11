@@ -29,6 +29,7 @@ import javax.xml.transform.stream.StreamSource;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.AbstractDataNode;
 import nl.mpi.flap.model.AbstractField;
+import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.common.data.MetadataFileType;
@@ -114,10 +115,10 @@ public class ArbilDatabase<D, M> {
         }
     }
 
-    public void insertIntoDatabase(AbstractDataNode dataNode, Class fieldClass) throws PluginException, QueryException {
+    public void insertIntoDatabase(AbstractDataNode dataNode) throws PluginException, QueryException {
         // use JAXB to serialise and insert the data node into the database
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(AbstractDataNode.class, AbstractField.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(AbstractDataNode.class, AbstractField.class, FieldGroup.class);
             Marshaller marshaller = jaxbContext.createMarshaller();
             StringWriter stringWriter = new StringWriter();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
