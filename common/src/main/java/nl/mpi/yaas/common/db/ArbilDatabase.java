@@ -19,12 +19,17 @@ package nl.mpi.yaas.common.db;
 
 import java.io.File;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
+import nl.mpi.flap.model.AbstractDataNode;
+import nl.mpi.flap.model.AbstractField;
+import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
@@ -52,13 +57,14 @@ public class ArbilDatabase<D, M> {
     final private Class<M> mClass;
     static Context context = new Context();
     static final Object databaseLock = new Object();
-    private final String databaseName = "ArbilDatabase";
+    final private String databaseName;
     final private PluginSessionStorage sessionStorage;
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
 
-    public ArbilDatabase(Class<D> dClass, Class<M> mClass, PluginSessionStorage sessionStorage) throws QueryException {
+    public ArbilDatabase(Class<D> dClass, Class<M> mClass, PluginSessionStorage sessionStorage, String databaseName) throws QueryException {
         this.dClass = dClass;
         this.mClass = mClass;
+        this.databaseName = databaseName;
         this.sessionStorage = sessionStorage;
         try {
             synchronized (databaseLock) {
@@ -93,15 +99,31 @@ public class ArbilDatabase<D, M> {
 //    new DropIndex("attribute").execute(context);
 //    new DropIndex("fulltext").execute(context);
                 new DropDB(databaseName).execute(context);
-                new Set("CREATEFILTER", suffixFilter).execute(context);
-                final File cacheDirectory = getDatabaseProjectDirectory(databaseName);
-                System.out.println("cacheDirectory: " + cacheDirectory);
-                new CreateDB(databaseName, cacheDirectory.toString()).execute(context);
+//                new Set("CREATEFILTER", suffixFilter).execute(context);
+//                final File cacheDirectory = getDatabaseProjectDirectory(databaseName);
+//                System.out.println("cacheDirectory: " + cacheDirectory);
+//                new CreateDB(databaseName, cacheDirectory.toString()).execute(context);
+                new CreateDB(databaseName).execute(context);
 //                System.out.println("Create full text index");
 //                new CreateIndex("fulltext").execute(context); // note that the indexes appear to be created by default, so this step might be redundant
             }
         } catch (BaseXException exception) {
             throw new QueryException(exception.getMessage());
+        }
+    }
+
+    public void insertIntoDatabase(AbstractDataNode dataNode, Class fieldClass) throws PluginException {
+        // use JAXB to serialise and insert the data node into the database
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(AbstractDataNode.class, AbstractField.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            StringWriter stringWriter = new StringWriter();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.marshal(dataNode, stringWriter);
+            System.out.println("stringWriter:\n" + stringWriter.toString());
+        } catch (JAXBException exception) {
+            System.err.println("jaxb error:" + exception.getMessage());
+            throw new PluginException(exception.getMessage());
         }
     }
 
@@ -441,7 +463,7 @@ public class ArbilDatabase<D, M> {
         }
         queryStringBuilder.append("\n"
                 + "for $documentNode in $returnSet\n"
-                + "return\n"                
+                + "return\n"
                 + "<DataNode NodeURI=\"{base-uri($documentNode)}\" Label=\"a resutA\">\n"
                 + "{\n"
                 /*
