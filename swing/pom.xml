@@ -50,7 +50,7 @@
                 <configuration>
                     <entries>
                         <entry>
-                            <path>${basedir}/src/main</path>
+                            <path>${basedir}/src</path>
                             <!-- this will populate "plugin.version.revision" -->
                             <prefix>plugin.version</prefix>
                         </entry>
