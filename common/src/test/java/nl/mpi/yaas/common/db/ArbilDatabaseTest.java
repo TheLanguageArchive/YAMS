@@ -28,6 +28,7 @@ import junit.framework.TestCase;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.DataNodeType;
+import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.common.data.MetadataFileType;
@@ -108,7 +109,7 @@ public class ArbilDatabaseTest extends TestCase {
      */
     public void testCreateDatabase() throws Exception {
         System.out.println("createDatabase");
-        final ArbilDatabase instance = new ArbilDatabase<MockDataNode, DataField, MetadataFileType>(MockDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+        final ArbilDatabase instance = new ArbilDatabase<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
         instance.createDatabase();
     }
 
@@ -116,23 +117,15 @@ public class ArbilDatabaseTest extends TestCase {
      * Test of insertIntoDatabase method by waling a tree of metadata and
      * inserting it into the database.
      */
-    public void testInsertIntoDatabase() {
+    public void testInsertIntoDatabase() throws JAXBException, PluginException, QueryException {
         System.out.println("walkTreeInsertingNodes");
-        try {
-            final ArbilDatabase instance = new ArbilDatabase(MockDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
-            JAXBContext jaxbContext = JAXBContext.newInstance(MockDataNode.class, DataField.class, DataField.class, DataNodeType.class);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            for (String dataXmlString : TestData.testData) {
-                System.out.println("dataXmlString: " + dataXmlString);
-                MockDataNode dataNode = (MockDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(dataXmlString)), MockDataNode.class).getValue();
-//                instance.insertIntoDatabase(dataNode);
-            }
-        } catch (JAXBException exception) {
-            fail(exception.getMessage());
-//        } catch (PluginException exception) {
-//            fail(exception.getMessage());
-        } catch (QueryException exception) {
-            fail(exception.getMessage());
+        final ArbilDatabase instance = new ArbilDatabase(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+        JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        for (String dataXmlString : TestData.testData) {
+            System.out.println("dataXmlString: " + dataXmlString);
+            SerialisableDataNode dataNode = (SerialisableDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(dataXmlString)), SerialisableDataNode.class).getValue();
+            instance.insertIntoDatabase(dataNode);
         }
     }
     /**

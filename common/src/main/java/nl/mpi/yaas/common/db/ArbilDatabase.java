@@ -27,8 +27,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
-import nl.mpi.flap.model.AbstractDataNode;
-import nl.mpi.flap.model.FieldGroup;
+import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.common.data.MetadataFileType;
@@ -116,10 +115,10 @@ public class ArbilDatabase<D, F, M> {
         }
     }
 
-    public void insertIntoDatabase(AbstractDataNode dataNode) throws PluginException, QueryException {
+    public void insertIntoDatabase(SerialisableDataNode dataNode) throws PluginException, QueryException {
         // use JAXB to serialise and insert the data node into the database
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(dClass, fClass, FieldGroup.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(dClass, fClass, mClass);
             Marshaller marshaller = jaxbContext.createMarshaller();
             StringWriter stringWriter = new StringWriter();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -137,7 +136,7 @@ public class ArbilDatabase<D, F, M> {
             }
         } catch (JAXBException exception) {
             System.err.println("jaxb error:" + exception.getMessage());
-            throw new PluginException(exception.getMessage());
+            throw new PluginException(exception);
         }
     }
 
