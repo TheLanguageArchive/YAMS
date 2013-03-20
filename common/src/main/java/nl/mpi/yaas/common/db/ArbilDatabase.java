@@ -28,7 +28,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.AbstractDataNode;
-import nl.mpi.flap.model.AbstractField;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
@@ -53,9 +52,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Peter Withers
  */
-public class ArbilDatabase<D, M> {
+public class ArbilDatabase<D, F, M> {
 
     final private Class<D> dClass;
+    final private Class<F> fClass;
     final private Class<M> mClass;
     static Context context = new Context();
     static final Object databaseLock = new Object();
@@ -64,8 +64,9 @@ public class ArbilDatabase<D, M> {
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
     final static public String defaultDataBase = "yaas-data";
 
-    public ArbilDatabase(Class<D> dClass, Class<M> mClass, PluginSessionStorage sessionStorage, String databaseName) throws QueryException {
+    public ArbilDatabase(Class<D> dClass, Class<F> fClass, Class<M> mClass, PluginSessionStorage sessionStorage, String databaseName) throws QueryException {
         this.dClass = dClass;
+        this.fClass = fClass;
         this.mClass = mClass;
         this.databaseName = databaseName;
         this.sessionStorage = sessionStorage;
@@ -94,7 +95,7 @@ public class ArbilDatabase<D, M> {
     }
 
     public void createDatabase() throws QueryException {
-        String suffixFilter = "*.*mdi";
+//        String suffixFilter = "*.*mdi";
         try {
             synchronized (databaseLock) {
 //    System.out.print(new InfoDB().execute(context));
@@ -118,7 +119,7 @@ public class ArbilDatabase<D, M> {
     public void insertIntoDatabase(AbstractDataNode dataNode) throws PluginException, QueryException {
         // use JAXB to serialise and insert the data node into the database
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(AbstractDataNode.class, AbstractField.class, FieldGroup.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(dClass, fClass, FieldGroup.class);
             Marshaller marshaller = jaxbContext.createMarshaller();
             StringWriter stringWriter = new StringWriter();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -159,7 +160,7 @@ public class ArbilDatabase<D, M> {
         if (fieldType != null) {
             final String fieldNameString = fieldType.getFieldName();
             if (fieldNameString != null) {
-                fieldConstraint = "name() = '" + fieldNameString + "' and ";
+                fieldConstraint = "FieldGroup/@Label = '" + fieldNameString + "' and ";
             }
         }
         return fieldConstraint;
@@ -174,14 +175,14 @@ public class ArbilDatabase<D, M> {
                     // when the user has not entered any string then return all, but allow the negator to still be used
                     returnString = "1=1";
                 } else {
-                    returnString = "text() contains text '" + escapedSearchString + "'";
+                    returnString = "FieldGroup/FieldData/@FieldValue contains text '" + escapedSearchString + "'";
                 }
                 break;
             case equals:
-                returnString = "text() = '" + escapedSearchString + "'";
+                returnString = "FieldGroup/FieldData/@FieldValue = '" + escapedSearchString + "'";
                 break;
             case fuzzy:
-                returnString = "text() contains text '" + escapedSearchString + "' using fuzzy";
+                returnString = "FieldGroup/FieldData/@FieldValue contains text '" + escapedSearchString + "' using fuzzy";
                 break;
         }
         switch (searchNegator) {
@@ -332,7 +333,7 @@ public class ArbilDatabase<D, M> {
         String searchTextConstraint = getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString());
 
         return //"for $nameString in distinct-values(\n"
-                "collection('" + databaseName + "')[" + typeConstraint + "//" + fieldConstraint + searchTextConstraint + "]\n";
+                "collection('" + databaseName + "')//*[" + typeConstraint + fieldConstraint + searchTextConstraint + "]\n";
 //                + "return\n"
 //                + "<MetadataTreeNode>\n"
 //                + "<FileUri>{base-uri($entityNode)}</FileUri>\n"
@@ -458,7 +459,7 @@ public class ArbilDatabase<D, M> {
 
     public D getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws QueryException {
         StringBuilder queryStringBuilder = new StringBuilder();
-        queryStringBuilder.append("<DataNode> {\n");
+        queryStringBuilder.append("<DataNode Label=\"Search Results\"> {\n");
         int parameterCounter = 0;
         for (SearchParameters searchParameters : searchParametersList) {
             queryStringBuilder.append("let $documentSet");
@@ -477,8 +478,6 @@ public class ArbilDatabase<D, M> {
         queryStringBuilder.append("\n"
                 + "for $documentNode in $returnSet\n"
                 + "return\n"
-                + "<DataNode NodeURI=\"{base-uri($documentNode)}\" Label=\"a resutA\">\n"
-                + "{\n"
                 /*
                  * This query currently takes 18348.54 ms
                  * the loop over the return set takes 15000 ms or so
@@ -502,7 +501,7 @@ public class ArbilDatabase<D, M> {
                  </MetadataTreeNode>
                  }</TreeNode>
                  */
-                + "for $entityNode in $documentNode//*[");
+                + "for $entityNode in $documentNode[");
         boolean firstConstraint = true;
         for (SearchParameters searchParameters : searchParametersList) {
             if (firstConstraint) {
@@ -513,8 +512,7 @@ public class ArbilDatabase<D, M> {
             queryStringBuilder.append(getSearchFieldConstraint(searchParameters));
         }
         queryStringBuilder.append("]\n"
-                + "return <DataNode NodeURI=\"{path($entityNode)}\" Label=\"a resutB\"/>\n"
-                + "}</DataNode>\n"
+                + "return $entityNode\n"
                 + "}</DataNode>\n");
         final D metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
         return metadataTypesString;
