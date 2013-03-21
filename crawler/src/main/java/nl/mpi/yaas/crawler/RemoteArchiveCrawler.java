@@ -93,11 +93,14 @@ public class RemoteArchiveCrawler {
         } catch (QueryException exception) {
             System.out.println(exception.getMessage());
             System.exit(-1);
+        } catch (CrawlerException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
         }
     }
     private int numberToLoad = 10;
 
-    private void loadChildNodes(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException {
+    private void loadChildNodes(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException, CrawlerException {
         System.out.println("Loading: " + numberToLoad);
         if (numberToLoad < 0) {
             return;
@@ -116,7 +119,9 @@ public class RemoteArchiveCrawler {
         }
         if (!dataNode.fileNotFound && !dataNode.isChildNode()) {
             System.out.println("Inserting into the database");
-            arbilDatabase.insertIntoDatabase(new ArbilDataNodeWrapper(dataNode));
+            final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
+            arbilDataNodeWrapper.checkChildNodesLoaded();
+            arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper);
         }
         for (ArbilDataNode childNode : dataNode.getChildArray()) {
             loadChildNodes(arbilDatabase, childNode);

@@ -37,6 +37,14 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
         this.arbilDataNode = arbilDataNode;
     }
 
+    public void checkChildNodesLoaded() throws CrawlerException {
+        for (ArbilDataNode childNode : arbilDataNode.getChildArray()) {
+            if (!childNode.isDataLoaded()) {
+                throw new CrawlerException("Child node not loaded, cannot continue.");
+            }
+        }
+    }
+
     @Override
     public String getID() {
         if (!arbilDataNode.isChildNode()) {
