@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,8 +21,8 @@ import java.io.StringWriter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import nl.mpi.flap.model.AbstractDataNode;
-import nl.mpi.flap.model.AbstractField;
+import nl.mpi.flap.model.DataField;
+import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 
 /**
@@ -30,12 +30,13 @@ import nl.mpi.flap.plugin.PluginException;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
+@Deprecated
 public class DataBaseManager {
 
-    public void insertIntoDatabase(AbstractDataNode dataNode, Class fieldClass) throws PluginException {
+    public void insertIntoDatabase(SerialisableDataNode dataNode, Class fieldClass) throws PluginException {
         // use JAXB to serialise and insert the data node into the database
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(AbstractDataNode.class, AbstractField.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class);
             Marshaller marshaller = jaxbContext.createMarshaller();
             StringWriter stringWriter = new StringWriter();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);

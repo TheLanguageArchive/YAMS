@@ -94,13 +94,21 @@
                     </entries>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <showDeprecation>true</showDeprecation>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>plugins-core</artifactId>
-            <version>1.1-pretesting-SNAPSHOT</version>
+            <version>1.2-pretesting-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -108,21 +116,36 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>pluginloader</artifactId>
-            <version>1.1-pretesting-SNAPSHOT</version>
+            <version>1.2-pretesting-SNAPSHOT</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>arbil</artifactId>
             <version>2.5-pretesting-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>arbil-help</artifactId>
+                    <groupId>nl.mpi</groupId>
+                </exclusion>
+                <!--                <exclusion>
+                    <artifactId>arbil-localisation</artifactId>
+                    <groupId>nl.mpi</groupId>
+                </exclusion>-->
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.basex</groupId>
             <artifactId>basex</artifactId>
             <version>7.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>nl.mpi</groupId>
+            <artifactId>yaas-common</artifactId>
+            <version>0.1-pretesting-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <repositories>

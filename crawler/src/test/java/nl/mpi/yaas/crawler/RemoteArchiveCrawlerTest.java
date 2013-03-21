@@ -19,32 +19,27 @@ package nl.mpi.yaas.crawler;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import junit.framework.TestCase;
 
 /**
- * Created on : Feb 6, 2013, 2:02:48 PM
+ * Created on : Feb 11, 2013, 21:02 PM
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class Main {
+public class RemoteArchiveCrawlerTest extends TestCase {
 
-    static public void main(String[] args) {
-//        if (System.getProperty("java.util.logging.config.file") == null) {
-//            try {
-//                LogManager.getLogManager().readConfiguration(Main.class.getResourceAsStream("/logging-initial.properties"));
-//            } catch (IOException exception) {
-//                System.out.println("Could not configure initial logging");
-//                System.out.println(exception.getMessage());
-//                System.exit(-1);
-//            } catch (SecurityException exception) {
-//                System.out.println("Could not configure initial logging");
-//                System.out.println(exception.getMessage());
-//                System.exit(-1);
-//            }
-//        }
+    public RemoteArchiveCrawlerTest(String testName) {
+        super(testName);
+    }
+
+    /**
+     * Test of crawl method, of class RemoteArchiveCrawler.
+     */
+    public void testCrawl() {
         RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler();
         try {
-            URI startURI = new URI("http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi");
-//            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
+//            URI startURI = new URI("http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi");
+            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
             archiveCrawler.crawl(startURI);
         } catch (URISyntaxException exception) {
             System.out.println(exception.getMessage());

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,20 +18,24 @@
 package nl.mpi.yaas.crawler;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import nl.mpi.arbil.ArbilDesktopInjector;
 import nl.mpi.arbil.ArbilVersion;
 import nl.mpi.arbil.data.ArbilDataNode;
 import nl.mpi.arbil.data.ArbilDataNodeContainer;
 import nl.mpi.arbil.data.ArbilDataNodeLoader;
-import nl.mpi.arbil.data.ArbilField;
 import nl.mpi.arbil.data.ArbilTreeHelper;
 import nl.mpi.arbil.ui.ArbilWindowManager;
 import nl.mpi.arbil.userstorage.ArbilSessionStorage;
 import nl.mpi.arbil.util.ApplicationVersionManager;
+import nl.mpi.arbil.util.ArbilLogConfigurer;
 import nl.mpi.arbil.util.ArbilMimeHashQueue;
+import nl.mpi.flap.kinnate.entityindexer.QueryException;
+import nl.mpi.flap.model.DataField;
+import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
 import nl.mpi.flap.plugin.PluginException;
+import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.db.ArbilDatabase;
 
 /**
  * Created on : Feb 6, 2013, 2:04:40 PM
@@ -44,13 +48,14 @@ public class RemoteArchiveCrawler {
         System.out.println("walkTreeInsertingNodes");
         final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
         final ArbilDesktopInjector injector = new ArbilDesktopInjector();
-        injector.injectHandlers(versionManager);
+        injector.injectHandlers(versionManager, new ArbilLogConfigurer(versionManager.getApplicationVersion(), "yaas"));
 
         final ArbilWindowManager arbilWindowManager = injector.getWindowManager();
         final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
         PluginArbilDataNodeLoader dataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
         try {
-            final DataBaseManager dataBaseManager = new DataBaseManager();
+            final ArbilDatabase<SerialisableDataNode, DataField, MetadataFileType> arbilDatabase = new ArbilDatabase<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, arbilSessionStorage, ArbilDatabase.defaultDataBase);
+//            final DataBaseManager dataBaseManager = new DataBaseManager();
             ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
 //                public void dataNodeRemoved(ArbilNode dataNode) {
 ////                    throw new UnsupportedOperationException("Not supported yet.");
@@ -75,8 +80,7 @@ public class RemoteArchiveCrawler {
 //                }
 //            };
             ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
-            loadChildNodes(dataNodeLoader, dataNode);
-            dataBaseManager.insertIntoDatabase(dataNode, ArbilField.class);
+            loadChildNodes(arbilDatabase, dataNode);
 
             // TODO review the generated test code and remove the default call to fail.
 //            fail("The test case is a prototype.");
@@ -86,24 +90,37 @@ public class RemoteArchiveCrawler {
         } catch (PluginException exception) {
             System.out.println(exception.getMessage());
             System.exit(-1);
+        } catch (QueryException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
         }
     }
     private int numberToLoad = 10;
 
-    private void loadChildNodes(PluginArbilDataNodeLoader dataNodeLoader, ArbilDataNode dataNode) throws InterruptedException {
+    private void loadChildNodes(ArbilDatabase arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException {
         System.out.println("Loading: " + numberToLoad);
         if (numberToLoad < 0) {
             return;
         }
-        if (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
-            dataNode.reloadNode();
-        }
         while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
             Thread.sleep(100);
         }
+        System.out.println("Loaded, now loading child nodes");
+        for (ArbilDataNode childNode : dataNode.getChildArray()) {
+            if (childNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
+                childNode.reloadNode();
+            }
+            while (childNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
+                Thread.sleep(100);
+            }
+        }
+        if (!dataNode.fileNotFound && !dataNode.isChildNode()) {
+            System.out.println("Inserting into the database");
+            arbilDatabase.insertIntoDatabase(new ArbilDataNodeWrapper(dataNode));
+        }
+        for (ArbilDataNode childNode : dataNode.getChildArray()) {
+            loadChildNodes(arbilDatabase, childNode);
+        }
         numberToLoad--;
-//        for (ArbilDataNode childNode : dataNode.getChildArray()) {
-//            loadChildNodes(dataNodeLoader, childNode);
-//        }
     }
 }
