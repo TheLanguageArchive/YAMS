@@ -37,11 +37,11 @@ import nl.mpi.yaas.common.data.MetadataFileType;
  *
  * @author petwit2
  */
-public class ArbilDatabaseTest extends TestCase {
+public class DataBaseManagerTest extends TestCase {
 
     String projectDatabaseName = "unit-test-database";
 //
-//    public ArbilDatabaseTest(String testName) {
+//    public DataBaseManagerTest(String testName) {
 //        super(testName);
 //    }
 //
@@ -56,11 +56,11 @@ public class ArbilDatabaseTest extends TestCase {
 //    }
 //
 //    /**
-//     * Test of getDatabaseProjectDirectory method, of class ArbilDatabase.
+//     * Test of getDatabaseProjectDirectory method, of class DataBaseManager.
 //     */
 //    public void testGetDatabaseProjectDirectory() {
 //        System.out.println("getDatabaseProjectDirectory");
-//        ArbilDatabase instance = null;
+//        DataBaseManager instance = null;
 //        File expResult = null;
 //        File result = instance.getDatabaseProjectDirectory(projectDatabaseName);
 //        assertEquals(expResult, result);
@@ -105,11 +105,11 @@ public class ArbilDatabaseTest extends TestCase {
     }
 
     /**
-     * Test of createDatabase method, of class ArbilDatabase.
+     * Test of createDatabase method, of class DataBaseManager.
      */
     public void testCreateDatabase() throws Exception {
         System.out.println("createDatabase");
-        final ArbilDatabase instance = new ArbilDatabase<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+        final DataBaseManager instance = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
         instance.createDatabase();
     }
 
@@ -119,7 +119,7 @@ public class ArbilDatabaseTest extends TestCase {
      */
     public void testInsertIntoDatabase() throws JAXBException, PluginException, QueryException {
         System.out.println("walkTreeInsertingNodes");
-        final ArbilDatabase instance = new ArbilDatabase(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
         JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         for (String dataXmlString : TestData.testData) {
@@ -129,7 +129,7 @@ public class ArbilDatabaseTest extends TestCase {
         }
     }
     /**
-     * Test of getSearchResult method, of class ArbilDatabase.
+     * Test of getSearchResult method, of class DataBaseManager.
      */
 //    public void testGetSearchResult() throws Exception {
 //        System.out.println("getSearchResult");
@@ -138,7 +138,7 @@ public class ArbilDatabaseTest extends TestCase {
 //        searchParametersList.add(new SearchParameters(new MetadataFileType(), new MetadataFileType(), QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.equals, ""));
 //        //todo: add various search parameters
 ////        searchParametersList.add(new SearchParameters(new MetadataFileType(), new MetadataFileType(), QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.equals, ""));
-//        ArbilDatabase instance = new ArbilDatabase(AbstractDataNode.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+//        DataBaseManager instance = new DataBaseManager(AbstractDataNode.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
 //        String expResult = "a resutl";
 //        AbstractDataNode result = (AbstractDataNode) instance.getSearchResult(criterionJoinType, searchParametersList);
 //        System.out.println("result:" + result.toString());
@@ -147,12 +147,12 @@ public class ArbilDatabaseTest extends TestCase {
 //        fail("The test case is a prototype.");
 //    }
 //    /**
-//     * Test of getPathMetadataTypes method, of class ArbilDatabase.
+//     * Test of getPathMetadataTypes method, of class DataBaseManager.
 //     */
 //    public void testGetPathMetadataTypes() throws Exception {
 //        System.out.println("getPathMetadataTypes");
 //        MetadataFileType metadataFileType = null;
-//        ArbilDatabase instance = null;
+//        DataBaseManager instance = null;
 //        Object[] expResult = null;
 //        Object[] result = instance.getPathMetadataTypes(metadataFileType);
 //        assertEquals(expResult, result);
@@ -160,12 +160,12 @@ public class ArbilDatabaseTest extends TestCase {
 //        fail("The test case is a prototype.");
 //    }
 //    /**
-//     * Test of getFieldMetadataTypes method, of class ArbilDatabase.
+//     * Test of getFieldMetadataTypes method, of class DataBaseManager.
 //     */
 //    public void testGetFieldMetadataTypes() throws Exception {
 //        System.out.println("getFieldMetadataTypes");
 //        MetadataFileType metadataFileType = null;
-//        ArbilDatabase instance = null;
+//        DataBaseManager instance = null;
 //        Object[] expResult = null;
 //        Object[] result = instance.getFieldMetadataTypes(metadataFileType);
 //        assertEquals(expResult, result);
@@ -173,12 +173,12 @@ public class ArbilDatabaseTest extends TestCase {
 //        fail("The test case is a prototype.");
 //    }
 //    /**
-//     * Test of getMetadataTypes method, of class ArbilDatabase.
+//     * Test of getMetadataTypes method, of class DataBaseManager.
 //     */
 //    public void testGetMetadataTypes() throws Exception {
 //        System.out.println("getMetadataTypes");
 //        MetadataFileType metadataFileType = null;
-//        ArbilDatabase instance = null;
+//        DataBaseManager instance = null;
 //        Object[] expResult = null;
 //        Object[] result = instance.getMetadataTypes(metadataFileType);
 //        assertEquals(expResult, result);
@@ -186,13 +186,13 @@ public class ArbilDatabaseTest extends TestCase {
 //        fail("The test case is a prototype.");
 //    }
 //    /**
-//     * Test of getTreeFieldTypes method, of class ArbilDatabase.
+//     * Test of getTreeFieldTypes method, of class DataBaseManager.
 //     */
 //    public void testGetTreeFieldTypes() throws Exception {
 //        System.out.println("getTreeFieldTypes");
 //        MetadataFileType metadataFileType = null;
 //        boolean fastQuery = false;
-//        ArbilDatabase instance = null;
+//        DataBaseManager instance = null;
 //        Object[] expResult = null;
 //        Object[] result = instance.getTreeFieldTypes(metadataFileType, fastQuery);
 //        assertEquals(expResult, result);
@@ -200,12 +200,12 @@ public class ArbilDatabaseTest extends TestCase {
 //        fail("The test case is a prototype.");
 //    }
 //    /**
-//     * Test of getTreeData method, of class ArbilDatabase.
+//     * Test of getTreeData method, of class DataBaseManager.
 //     */
 //    public void testGetTreeData() throws Exception {
 //        System.out.println("getTreeData");
 //        ArrayList<MetadataFileType> treeBranchTypeList = null;
-//        ArbilDatabase instance = null;
+//        DataBaseManager instance = null;
 //        Object expResult = null;
 //        Object result = instance.getTreeData(treeBranchTypeList);
 //        assertEquals(expResult, result);

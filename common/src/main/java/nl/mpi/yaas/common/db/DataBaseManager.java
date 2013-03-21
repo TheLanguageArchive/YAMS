@@ -47,11 +47,11 @@ import org.basex.core.cmd.XQuery;
 import org.slf4j.LoggerFactory;
 
 /**
- * Document : ArbilDatabase Created on : Aug 6, 2012, 11:39:33 AM
+ * Document : DataBaseManager Created on : Aug 6, 2012, 11:39:33 AM
  *
  * @author Peter Withers
  */
-public class ArbilDatabase<D, F, M> {
+public class DataBaseManager<D, F, M> {
 
     final private Class<D> dClass;
     final private Class<F> fClass;
@@ -63,7 +63,7 @@ public class ArbilDatabase<D, F, M> {
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
     final static public String defaultDataBase = "yaas-data";
 
-    public ArbilDatabase(Class<D> dClass, Class<F> fClass, Class<M> mClass, PluginSessionStorage sessionStorage, String databaseName) throws QueryException {
+    public DataBaseManager(Class<D> dClass, Class<F> fClass, Class<M> mClass, PluginSessionStorage sessionStorage, String databaseName) throws QueryException {
         this.dClass = dClass;
         this.fClass = fClass;
         this.mClass = mClass;
