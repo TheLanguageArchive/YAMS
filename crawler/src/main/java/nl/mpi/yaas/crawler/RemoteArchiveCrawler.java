@@ -35,7 +35,7 @@ import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.MetadataFileType;
-import nl.mpi.yaas.common.db.ArbilDatabase;
+import nl.mpi.yaas.common.db.DataBaseManager;
 
 /**
  * Created on : Feb 6, 2013, 2:04:40 PM
@@ -54,7 +54,7 @@ public class RemoteArchiveCrawler {
         final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
         PluginArbilDataNodeLoader dataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
         try {
-            final ArbilDatabase<SerialisableDataNode, DataField, MetadataFileType> arbilDatabase = new ArbilDatabase<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, arbilSessionStorage, ArbilDatabase.defaultDataBase);
+            final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> arbilDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, arbilSessionStorage, DataBaseManager.defaultDataBase);
 //            final DataBaseManager dataBaseManager = new DataBaseManager();
             ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
 //                public void dataNodeRemoved(ArbilNode dataNode) {
@@ -97,7 +97,7 @@ public class RemoteArchiveCrawler {
     }
     private int numberToLoad = 10;
 
-    private void loadChildNodes(ArbilDatabase arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException {
+    private void loadChildNodes(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException {
         System.out.println("Loading: " + numberToLoad);
         if (numberToLoad < 0) {
             return;
