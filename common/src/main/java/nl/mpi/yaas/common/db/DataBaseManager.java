@@ -115,6 +115,24 @@ public class DataBaseManager<D, F, M> {
         }
     }
 
+    public String[] getHandlesOfMissing() throws PluginException, QueryException {
+        try {
+            synchronized (databaseLock) {
+                new Open(databaseName).execute(context);
+                String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
+                        + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
+                        + "let $missingIds := for $testId in $childIds where not ($knownIds = $testId) return $testId\n"
+                        + "return distinct-values($missingIds)\n";
+                String queryResult = new XQuery(queryString).execute(context);
+                new Close().execute(context);
+                return queryResult.split(" ");
+            }
+        } catch (BaseXException baseXException2) {
+            logger.error(baseXException2.getMessage());
+            throw new QueryException(baseXException2.getMessage());
+        }
+    }
+
     public void insertIntoDatabase(SerialisableDataNode dataNode) throws PluginException, QueryException {
         // use JAXB to serialise and insert the data node into the database
         try {
