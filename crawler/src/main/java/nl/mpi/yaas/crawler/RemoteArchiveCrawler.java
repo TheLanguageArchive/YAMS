@@ -37,6 +37,7 @@ import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.db.DataBaseManager;
+import nl.mpi.yaas.common.db.DataBaseManager.IterableResult;
 
 /**
  * Created on : Feb 6, 2013, 2:04:40 PM
@@ -69,7 +70,8 @@ public class RemoteArchiveCrawler {
         numberInserted = 0;
         System.out.println("FindAndInsertMissingNodes");
         try {
-            for (String targetHandle : arbilDatabase.getHandlesOfMissing()) {
+            final IterableResult handlesOfMissing = arbilDatabase.getHandlesOfMissing();
+            for (String targetHandle = handlesOfMissing.getNext(); targetHandle != null;) {
                 if (numberInserted >= numberToInsert) {
                     break;
                 }
@@ -170,6 +172,22 @@ public class RemoteArchiveCrawler {
             Thread.sleep(100);
         }
         totalLoaded++;
+//        loadChildNodes(dataNode);
+        if (!dataNode.fileNotFound && !dataNode.isChildNode()) {
+            System.out.println("Inserting into the database");
+            System.out.println("URL: " + dataNode.getUrlString());
+            final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
+            //            arbilDataNodeWrapper.checkChildNodesLoaded();
+            if (arbilDataNodeWrapper.getID() != null && !arbilDataNodeWrapper.getID().isEmpty()) {
+                arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper);
+                numberInserted++;
+            } else {
+                throw new CrawlerException("No ID found");
+            }
+        }
+    }
+
+    private void loadChildNodes(ArbilDataNode dataNode) throws InterruptedException {
         for (ArbilDataNode childNode : dataNode.getChildArray()) {
             if (childNode.getLoadingState() == ArbilDataNode.LoadingState.UNLOADED) {
                 System.out.println("loading child node for: " + numberInserted + ". total loaded: " + totalLoaded);
@@ -181,18 +199,6 @@ public class RemoteArchiveCrawler {
             }
             System.out.println(childNode.getLoadingState().name());
             totalLoaded++;
-        }
-        if (!dataNode.fileNotFound && !dataNode.isChildNode()) {
-            System.out.println("Inserting into the database");
-            System.out.println("URL: " + dataNode.getUrlString());
-            final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
-            arbilDataNodeWrapper.checkChildNodesLoaded();
-            if (arbilDataNodeWrapper.getID() != null && !arbilDataNodeWrapper.getID().isEmpty()) {
-                arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper);
-                numberInserted++;
-            } else {
-                throw new CrawlerException("No ID found");
-            }
         }
     }
 }

@@ -49,7 +49,7 @@ public class Main {
             System.out.println("Dropping and Crawing");
             archiveCrawler.crawl(startURI, 1);
             System.out.println("Restarting Crawl");
-            archiveCrawler.update(1);
+            archiveCrawler.update(10);
             System.exit(0);
         } catch (URISyntaxException exception) {
             System.out.println(exception.getMessage());
