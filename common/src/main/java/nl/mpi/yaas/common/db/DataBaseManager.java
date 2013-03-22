@@ -44,6 +44,9 @@ import org.basex.core.cmd.DropDB;
 import org.basex.core.cmd.Open;
 import org.basex.core.cmd.Set;
 import org.basex.core.cmd.XQuery;
+import org.basex.query.QueryProcessor;
+import org.basex.query.iter.Iter;
+import org.basex.query.value.item.Item;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -115,19 +118,49 @@ public class DataBaseManager<D, F, M> {
         }
     }
 
-    public String[] getHandlesOfMissing() throws PluginException, QueryException {
+    public class IterableResult {
+
+        final QueryProcessor proc;
+        final Iter iter;
+
+        public IterableResult(QueryProcessor proc) throws org.basex.query.QueryException {
+            this.proc = proc;
+            iter = proc.iter();
+        }
+
+        public void close() {
+            proc.close();
+        }
+
+        public String getNext() throws PluginException {
+            try {
+                Item item = iter.next();
+                if (item != null) {
+                    return item.toJava().toString();
+                } else {
+                    return null;
+                }
+            } catch (org.basex.query.QueryException exception) {
+                throw new PluginException(exception);
+            }
+        }
+    }
+
+    public IterableResult getHandlesOfMissing() throws PluginException, QueryException {
         try {
             synchronized (databaseLock) {
-                new Open(databaseName).execute(context);
+                long startTime = System.currentTimeMillis();
                 String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
                         + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                         + "let $missingIds := for $testId in $childIds where not ($knownIds = $testId) return $testId\n"
                         + "return distinct-values($missingIds)\n";
-                String queryResult = new XQuery(queryString).execute(context);
-                new Close().execute(context);
-                return queryResult.split(" ");
+                QueryProcessor proc = new QueryProcessor(queryString, context);
+                long queryMils = System.currentTimeMillis() - startTime;
+                String queryTimeString = "Query time: " + queryMils + "ms";
+                System.out.println(queryTimeString);
+                return new IterableResult(proc);
             }
-        } catch (BaseXException baseXException2) {
+        } catch (org.basex.query.QueryException baseXException2) {
             logger.error(baseXException2.getMessage());
             throw new QueryException(baseXException2.getMessage());
         }
@@ -141,7 +174,7 @@ public class DataBaseManager<D, F, M> {
             StringWriter stringWriter = new StringWriter();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(dataNode, stringWriter);
-            System.out.println("Data to be inserted:\n" + stringWriter.toString());
+//            System.out.println("Data to be inserted:\n" + stringWriter.toString());
             try {
                 synchronized (databaseLock) {
                     new Open(databaseName).execute(context);
