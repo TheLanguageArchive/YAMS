@@ -80,8 +80,11 @@ public class RemoteArchiveCrawler {
 //                }
 //            };
             ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
+            System.out.println("Dropping old DB and creating a new DB");
+            arbilDatabase.createDatabase(); // this will drop the old database
             loadChildNodes(arbilDatabase, dataNode);
-
+            System.out.println("Update complete");
+            System.exit(0);
             // TODO review the generated test code and remove the default call to fail.
 //            fail("The test case is a prototype.");
         } catch (InterruptedException exception) {
@@ -98,34 +101,45 @@ public class RemoteArchiveCrawler {
             System.exit(-1);
         }
     }
-    private int numberToLoad = 10;
+    private int numberToInsert = 10;
+    private int numberInserted = 0;
+    private int totalLoaded = 0;
 
     private void loadChildNodes(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException, CrawlerException {
-        System.out.println("Loading: " + numberToLoad);
-        if (numberToLoad < 0) {
+        if (numberInserted > numberToInsert) {
             return;
         }
+        System.out.println("Loading: " + numberInserted);
+        dataNode.reloadNode();
         while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
             Thread.sleep(100);
         }
-        System.out.println("Loaded, now loading child nodes");
+        totalLoaded++;
         for (ArbilDataNode childNode : dataNode.getChildArray()) {
-            if (childNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
+            System.out.println("loading child node for: " + numberInserted + ". total loaded: " + totalLoaded);
+            System.out.println("Child URL: " + childNode.getUrlString());
+            if (childNode.getLoadingState() == ArbilDataNode.LoadingState.UNLOADED) {
                 childNode.reloadNode();
             }
-            while (childNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
+            while (childNode.getLoadingState() == ArbilDataNode.LoadingState.UNLOADED) {
                 Thread.sleep(100);
             }
+            totalLoaded++;
         }
         if (!dataNode.fileNotFound && !dataNode.isChildNode()) {
             System.out.println("Inserting into the database");
+            System.out.println("URL: " + dataNode.getUrlString());
             final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
             arbilDataNodeWrapper.checkChildNodesLoaded();
-            arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper);
+            if (arbilDataNodeWrapper.getID() != null && !arbilDataNodeWrapper.getID().isEmpty()) {
+                arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper);
+                numberInserted++;
+            } else {
+                throw new CrawlerException("No ID found");
+            }
         }
         for (ArbilDataNode childNode : dataNode.getChildArray()) {
             loadChildNodes(arbilDatabase, childNode);
         }
-        numberToLoad--;
     }
 }

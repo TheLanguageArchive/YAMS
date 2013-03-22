@@ -39,8 +39,8 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
 
     public void checkChildNodesLoaded() throws CrawlerException {
         for (ArbilDataNode childNode : arbilDataNode.getChildArray()) {
-            if (!childNode.isDataLoaded()) {
-                throw new CrawlerException("Child node not loaded, cannot continue.");
+            if (!childNode.isDataLoaded() && !childNode.isDataPartiallyLoaded()) {
+                throw new CrawlerException("Child node not adequatly loaded, cannot continue.");
             }
         }
     }
@@ -48,7 +48,11 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     @Override
     public String getID() {
         if (!arbilDataNode.isChildNode()) {
-            return arbilDataNode.getID();
+            String iD = arbilDataNode.getID();
+//            if (iD.isEmpty()) {
+//                iD = arbilDataNode.getUrlString();
+//            }
+            return iD;
         } else {
             return null;
         }
