@@ -101,7 +101,7 @@ public class RemoteArchiveCrawler {
             System.exit(-1);
         }
     }
-    private int numberToInsert = 10;
+    private int numberToInsert = 1000;
     private int numberInserted = 0;
     private int totalLoaded = 0;
 
@@ -116,14 +116,15 @@ public class RemoteArchiveCrawler {
         }
         totalLoaded++;
         for (ArbilDataNode childNode : dataNode.getChildArray()) {
-            System.out.println("loading child node for: " + numberInserted + ". total loaded: " + totalLoaded);
-            System.out.println("Child URL: " + childNode.getUrlString());
             if (childNode.getLoadingState() == ArbilDataNode.LoadingState.UNLOADED) {
-                childNode.reloadNode();
+                System.out.println("loading child node for: " + numberInserted + ". total loaded: " + totalLoaded);
+                System.out.println("Child URL: " + childNode.getUrlString());
+                childNode.reloadNodeShallowly();
             }
             while (childNode.getLoadingState() == ArbilDataNode.LoadingState.UNLOADED) {
                 Thread.sleep(100);
             }
+            System.out.println(childNode.getLoadingState().name());
             totalLoaded++;
         }
         if (!dataNode.fileNotFound && !dataNode.isChildNode()) {
