@@ -123,7 +123,7 @@ public class DataBaseManager<D, F, M> {
             StringWriter stringWriter = new StringWriter();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(dataNode, stringWriter);
-            System.out.println("stringWriter:\n" + stringWriter.toString());
+            System.out.println("Data to be inserted:\n" + stringWriter.toString());
             try {
                 synchronized (databaseLock) {
                     new Open(databaseName).execute(context);
