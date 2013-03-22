@@ -48,7 +48,9 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     @Override
     public String getID() {
         if (!arbilDataNode.isChildNode()) {
-            String iD = arbilDataNode.getID();
+            // not all documents have an archive handle, so we are making things sinpler by using the URI asn the ID
+            // String iD = arbilDataNode.getID();
+            String iD = arbilDataNode.getUrlString();
 //            if (iD.isEmpty()) {
 //                iD = arbilDataNode.getUrlString();
 //            }
@@ -77,8 +79,9 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     public List<String> getChildIds() {
         List<String> childIds = new ArrayList<String>();
         for (ArbilDataNode childNode : arbilDataNode.getChildArray()) {
-            if (!childNode.isChildNode()) {
-                childIds.add(childNode.getID());
+            if (!childNode.isChildNode() && childNode.isMetaDataNode()) {
+                // not all documents have an archive handle, so we are making things sinpler by using the URI asn the ID
+                childIds.add(childNode.getUrlString());
             }
         }
         return childIds;

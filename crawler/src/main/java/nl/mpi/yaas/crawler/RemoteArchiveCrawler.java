@@ -18,6 +18,7 @@
 package nl.mpi.yaas.crawler;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import nl.mpi.arbil.ArbilDesktopInjector;
 import nl.mpi.arbil.ArbilVersion;
 import nl.mpi.arbil.data.ArbilDataNode;
@@ -44,17 +45,68 @@ import nl.mpi.yaas.common.db.DataBaseManager;
  */
 public class RemoteArchiveCrawler {
 
-    public void crawl(URI startURI) {
-        System.out.println("walkTreeInsertingNodes");
+    final PluginArbilDataNodeLoader dataNodeLoader;
+    final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> arbilDatabase;
+    private int numberToInsert = 0;
+    private int numberInserted = 0;
+    private int totalLoaded = 0;
+    public static final String HANDLE_SERVER_URI = "http://hdl.handle.net/";
+
+    public RemoteArchiveCrawler() throws QueryException {
         final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
         final ArbilDesktopInjector injector = new ArbilDesktopInjector();
         injector.injectHandlers(versionManager, new ArbilLogConfigurer(versionManager.getApplicationVersion(), "yaas"));
 
         final ArbilWindowManager arbilWindowManager = injector.getWindowManager();
         final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
-        PluginArbilDataNodeLoader dataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
+        dataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
+
+        arbilDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, arbilSessionStorage, DataBaseManager.defaultDataBase);
+    }
+
+    public void update(int numberToInsert) {
+        this.numberToInsert = numberToInsert;
+        numberInserted = 0;
+        System.out.println("FindAndInsertMissingNodes");
         try {
-            final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> arbilDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, arbilSessionStorage, DataBaseManager.defaultDataBase);
+            for (String targetHandle : arbilDatabase.getHandlesOfMissing()) {
+                if (numberInserted >= numberToInsert) {
+                    break;
+                }
+                System.out.println("targetHandle: " + targetHandle);
+                URI targetUri = new URI(targetHandle.replace("hdl:", HANDLE_SERVER_URI));
+                System.out.println("targetUri: " + targetUri);
+                ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
+                ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, new URI(targetHandle));
+                loadAndInsert(arbilDatabase, dataNode);
+
+            }
+            System.out.println("Update complete");
+            // TODO review the generated test code and remove the default call to fail.
+//            fail("The test case is a prototype.");
+        } catch (URISyntaxException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        } catch (InterruptedException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        } catch (PluginException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        } catch (QueryException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        } catch (CrawlerException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        }
+    }
+
+    public void crawl(URI startURI, int numberToInsert) {
+        this.numberToInsert = numberToInsert;
+        numberInserted = 0;
+        System.out.println("walkTreeInsertingNodes");
+        try {
 //            final DataBaseManager dataBaseManager = new DataBaseManager();
             ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
 //                public void dataNodeRemoved(ArbilNode dataNode) {
@@ -83,8 +135,7 @@ public class RemoteArchiveCrawler {
             System.out.println("Dropping old DB and creating a new DB");
             arbilDatabase.createDatabase(); // this will drop the old database
             loadChildNodes(arbilDatabase, dataNode);
-            System.out.println("Update complete");
-            System.exit(0);
+            System.out.println("Crawl complete");
             // TODO review the generated test code and remove the default call to fail.
 //            fail("The test case is a prototype.");
         } catch (InterruptedException exception) {
@@ -101,14 +152,18 @@ public class RemoteArchiveCrawler {
             System.exit(-1);
         }
     }
-    private int numberToInsert = 1000;
-    private int numberInserted = 0;
-    private int totalLoaded = 0;
 
     private void loadChildNodes(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException, CrawlerException {
-        if (numberInserted > numberToInsert) {
+        if (numberInserted >= numberToInsert) {
             return;
         }
+        loadAndInsert(arbilDatabase, dataNode);
+        for (ArbilDataNode childNode : dataNode.getChildArray()) {
+            loadChildNodes(arbilDatabase, childNode);
+        }
+    }
+
+    private void loadAndInsert(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException, CrawlerException {
         System.out.println("Loading: " + numberInserted);
         dataNode.reloadNode();
         while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
@@ -138,9 +193,6 @@ public class RemoteArchiveCrawler {
             } else {
                 throw new CrawlerException("No ID found");
             }
-        }
-        for (ArbilDataNode childNode : dataNode.getChildArray()) {
-            loadChildNodes(arbilDatabase, childNode);
         }
     }
 }

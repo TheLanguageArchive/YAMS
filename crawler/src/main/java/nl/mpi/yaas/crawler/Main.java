@@ -19,6 +19,7 @@ package nl.mpi.yaas.crawler;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import nl.mpi.flap.kinnate.entityindexer.QueryException;
 
 /**
  * Created on : Feb 6, 2013, 2:02:48 PM
@@ -41,12 +42,19 @@ public class Main {
 //                System.exit(-1);
 //            }
 //        }
-        RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler();
         try {
+            RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler();
             URI startURI = new URI("http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi");
 //            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
-            archiveCrawler.crawl(startURI);
+            System.out.println("Dropping and Crawing");
+            archiveCrawler.crawl(startURI, 1);
+            System.out.println("Restarting Crawl");
+            archiveCrawler.update(1);
+            System.exit(0);
         } catch (URISyntaxException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        } catch (QueryException exception) {
             System.out.println(exception.getMessage());
             System.exit(-1);
         }
