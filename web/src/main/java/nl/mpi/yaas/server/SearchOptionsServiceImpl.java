@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.client.SearchOptionsService;
+import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures;
 import nl.mpi.yaas.common.data.SearchParameters;
-import nl.mpi.yaas.common.db.ArbilDatabase;
+import nl.mpi.yaas.common.db.DataBaseManager;
 import nl.mpi.yaas.shared.WebQueryException;
+import nl.mpi.yaas.shared.YaasDataField;
 import nl.mpi.yaas.shared.YaasDataNode;
 
 /**
@@ -25,7 +27,17 @@ import nl.mpi.yaas.shared.YaasDataNode;
 @SuppressWarnings("serial")
 public class SearchOptionsServiceImpl extends RemoteServiceServlet implements SearchOptionsService {
 
-    private ArbilDatabase<YaasDataNode, MetadataFileType> getDatabase() throws QueryException {
+    public DatabaseStats getDatabaseStats() throws WebQueryException {
+        try {
+            DataBaseManager<YaasDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
+            DatabaseStats databaseStats = arbilDatabase.getDatabaseStats();
+            return databaseStats;
+        } catch (QueryException exception) {
+            throw new WebQueryException(exception);
+        }
+    }
+
+    private DataBaseManager<YaasDataNode, YaasDataField, MetadataFileType> getDatabase() throws QueryException {
         // todo: this version of the Arbil database is not intended to multi entry and will be replaced by a rest version when it is written
         final PluginSessionStorage pluginSessionStorage = new PluginSessionStorage() {
             public File getApplicationSettingsDirectory() {
@@ -40,12 +52,12 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
                 return new File("/Users/petwit2/.arbil/ArbilWorkingFiles/");
             }
         };
-        return new ArbilDatabase<YaasDataNode, MetadataFileType>(YaasDataNode.class, MetadataFileType.class, pluginSessionStorage);
+        return new DataBaseManager<YaasDataNode, YaasDataField, MetadataFileType>(YaasDataNode.class, YaasDataField.class, MetadataFileType.class, pluginSessionStorage, DataBaseManager.defaultDataBase);
     }
 
     public MetadataFileType[] getTypeOptions() throws WebQueryException {
         try {
-            ArbilDatabase<YaasDataNode, MetadataFileType> arbilDatabase = getDatabase();
+            DataBaseManager<YaasDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
             MetadataFileType[] metadataPathTypes = arbilDatabase.getMetadataTypes(null);
             return metadataPathTypes;
 //            ArrayList<String> returnList = new ArrayList<String>();
@@ -60,7 +72,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public MetadataFileType[] getFieldOptions() throws WebQueryException {
         try {
-            ArbilDatabase<YaasDataNode, MetadataFileType> arbilDatabase = getDatabase();
+            DataBaseManager<YaasDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
             MetadataFileType[] metadataFieldTypes = arbilDatabase.getFieldMetadataTypes(null);
             return metadataFieldTypes;
 //            ArrayList<String> returnList = new ArrayList<String>();
@@ -76,7 +88,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
     public YaasDataNode performSearch(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException {
 //        return new YaasDataNode(criterionJoinType.name());
         try {
-            ArbilDatabase<YaasDataNode, MetadataFileType> arbilDatabase = getDatabase();
+            DataBaseManager<YaasDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
             YaasDataNode yaasDataNode = arbilDatabase.getSearchResult(criterionJoinType, searchParametersList);
             return yaasDataNode;
 //            ArrayList<String> returnList = new ArrayList<String>();
