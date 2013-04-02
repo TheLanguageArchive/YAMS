@@ -35,7 +35,8 @@ public class yaas implements EntryPoint {
 //        final TextBox nameField = new TextBox();
 //        nameField.setText(messages.nameField());
         final Label errorLabel = new Label();
-        final DataNodeTree dataNodeTree = new DataNodeTree();
+        final DataNodeTable dataNodeTable = new DataNodeTable();
+        final DataNodeTree dataNodeTree = new DataNodeTree(dataNodeTable);
         final SearchPanel searchOptionsPanel = new SearchPanel(searchOptionsService, dataNodeTree);
         // We can add style names to widgets
 //        sendButton.addStyleName("sendButton");
@@ -43,6 +44,7 @@ public class yaas implements EntryPoint {
         // Add the nameField and sendButton to the RootPanel
         // Use RootPanel.get() to get the entire body element
         RootPanel.get("dataNodeTree").add(dataNodeTree);
+        RootPanel.get("dataNodeTable").add(dataNodeTable);
         RootPanel.get("searchOptionsPanel").add(searchOptionsPanel);
         RootPanel.get("databaseStats").add(new DatabaseStatsPanel(searchOptionsService, dataNodeTree));
 
@@ -101,10 +103,10 @@ public class yaas implements EntryPoint {
 //                }
 //            }
 
-            /**
-             * Send the name from the nameField to the server and wait for a
-             * response.
-             */
+        /**
+         * Send the name from the nameField to the server and wait for a
+         * response.
+         */
 //            private void sendNameToServer() {
 //                // First, we validate the input.
 //                errorLabel.setText("");
@@ -138,7 +140,6 @@ public class yaas implements EntryPoint {
 //                });
 //            }
 //        }
-
         // Add a handler to send the name to the server
 //        MyHandler handler = new MyHandler();
 //        sendButton.addClickHandler(handler);

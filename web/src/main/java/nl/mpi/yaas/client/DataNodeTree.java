@@ -15,7 +15,10 @@ import com.google.gwt.user.client.ui.TreeItem;
  */
 public class DataNodeTree extends Tree {
 
-    public DataNodeTree() {
+    final DataNodeTable dataNodeTable;
+
+    public DataNodeTree(DataNodeTable dataNodeTable) {
+        this.dataNodeTable = dataNodeTable;
         // Create a tree with a few items in it.
         TreeItem root = new TreeItem();
         root.setText("root");
@@ -30,7 +33,8 @@ public class DataNodeTree extends Tree {
         this.addItem(root);
     }
 
-    public void setRootNode(TreeItem treeItem) {
+    public void addResultsToTree(TreeItem treeItem) {
         this.addItem(treeItem);
+        this.addTextItem("addResultsToTree: " + treeItem.getText());
     }
 }
