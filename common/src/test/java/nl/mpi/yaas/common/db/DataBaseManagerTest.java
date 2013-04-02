@@ -31,6 +31,7 @@ import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
+import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
 
 /**
@@ -119,7 +120,8 @@ public class DataBaseManagerTest extends TestCase {
      */
     public void testInsertIntoDatabase() throws JAXBException, PluginException, QueryException {
         System.out.println("walkTreeInsertingNodes");
-        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+        final PluginSessionStorage pluginSessionStorage = getPluginSessionStorage();
+        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, pluginSessionStorage, projectDatabaseName);
         JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         for (String dataXmlString : TestData.testData) {
@@ -127,6 +129,22 @@ public class DataBaseManagerTest extends TestCase {
             SerialisableDataNode dataNode = (SerialisableDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(dataXmlString)), SerialisableDataNode.class).getValue();
             instance.insertIntoDatabase(dataNode);
         }
+        DatabaseStats databaseStats = instance.getDatabaseStats(projectDatabaseName);
+        System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
+        assertEquals(databaseStats.getKnownDocumentsCount(), 55);
+        assertEquals(databaseStats.getMisingDocumentsCount(), 0);
+        assertEquals(databaseStats.getRootDocumentsCount(), 16);
+        assertEquals(databaseStats.getRootDocumentsIDs(), 1);
+    }
+
+    public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException {
+        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+        DatabaseStats databaseStats = instance.getDatabaseStats(projectDatabaseName);
+        System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
+        assertEquals(databaseStats.getKnownDocumentsCount(), 1);
+        assertEquals(databaseStats.getMisingDocumentsCount(), 1);
+        assertEquals(databaseStats.getRootDocumentsCount(), 1);
+        assertEquals(databaseStats.getRootDocumentsIDs(), 1);
     }
     /**
      * Test of getSearchResult method, of class DataBaseManager.

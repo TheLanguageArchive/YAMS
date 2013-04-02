@@ -30,6 +30,7 @@ import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
+import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
@@ -65,6 +66,7 @@ public class DataBaseManager<D, F, M> {
     final private PluginSessionStorage sessionStorage;
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
     final static public String defaultDataBase = "yaas-data";
+    final static public String testDataBase = "yaas-test-data";
 
     public DataBaseManager(Class<D> dClass, Class<F> fClass, Class<M> mClass, PluginSessionStorage sessionStorage, String databaseName) throws QueryException {
         this.dClass = dClass;
@@ -115,6 +117,41 @@ public class DataBaseManager<D, F, M> {
             }
         } catch (BaseXException exception) {
             throw new QueryException(exception.getMessage());
+        }
+    }
+
+    public DatabaseStats getDatabaseStats(String queryString) throws QueryException {
+        long startTime = System.currentTimeMillis();
+        String statsQuery = "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
+                + "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId/text()\n"
+                + "let $missingIds := for $testId in $childIds where not ($knownIds = $testId) return $testId\n"
+                + "let $rootNodes := for $testId in $knownIds where not ($childIds = $testId) return $testId\n"
+                + "return <DatabaseStats>\n"
+                + "<KnownDocuments>{count($knownIds)}</KnownDocuments>\n"
+                + "<MissingDocuments>{count(distinct-values($missingIds))}</MissingDocuments>\n"
+                + "<RootDocuments>{count(distinct-values($rootNodes))}</RootDocuments>\n"
+                + "</DatabaseStats>\n";
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(DatabaseStats.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            String queryResult;
+            synchronized (databaseLock) {
+                System.out.println("queryString: " + statsQuery);
+                queryResult = new XQuery(statsQuery).execute(context);
+            }
+            System.out.println("queryResult: " + queryResult);
+            DatabaseStats databaseStats = (DatabaseStats) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), DatabaseStats.class).getValue();
+            long queryMils = System.currentTimeMillis() - startTime;
+//            String queryTimeString = "DatabaseStats Query time: " + queryMils + "ms";
+            databaseStats.setQueryTimeMS(queryMils);
+//            System.out.println(queryTimeString);
+            return databaseStats;
+        } catch (JAXBException exception) {
+            logger.debug(exception.getMessage());
+            throw new QueryException("Error getting DatabaseStats");
+        } catch (BaseXException exception) {
+            logger.debug(exception.getMessage());
+            throw new QueryException("Error getting DatabaseStats");
         }
     }
 
