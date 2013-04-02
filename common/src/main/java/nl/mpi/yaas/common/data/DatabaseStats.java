@@ -36,7 +36,7 @@ public class DatabaseStats {
     @XmlElement(name = "RootDocuments")
     protected int rootDocumentsCount = -1;
     @XmlElement(name = "RootDocumentID")
-    protected String[] rootDocumentsIDs;
+    protected String[] rootDocumentsIDs = new String[0];
 
     public void setQueryTimeMS(long queryTimeMS) {
         this.queryTimeMS = queryTimeMS;

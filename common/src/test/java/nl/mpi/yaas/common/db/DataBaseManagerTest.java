@@ -33,6 +33,7 @@ import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
+import org.junit.Assert;
 
 /**
  *
@@ -134,17 +135,34 @@ public class DataBaseManagerTest extends TestCase {
         assertEquals(databaseStats.getKnownDocumentsCount(), 55);
         assertEquals(databaseStats.getMisingDocumentsCount(), 0);
         assertEquals(databaseStats.getRootDocumentsCount(), 16);
-        assertEquals(databaseStats.getRootDocumentsIDs(), 1);
+        Assert.assertArrayEquals(databaseStats.getRootDocumentsIDs(), new String[]{
+                    "hdl:1839/00-0000-0000-0001-2A9A-4",
+                    "hdl:1839/00-0000-0000-0001-2A9B-9",
+                    "hdl:1839/00-0000-0000-0001-2AB1-4",
+                    "hdl:1839/00-0000-0000-0001-2FA3-5",
+                    "hdl:1839/00-0000-0000-0001-2FA4-B",
+                    "hdl:1839/00-0000-0000-0008-CAD1-B",
+                    "hdl:1839/00-0000-0000-0008-C805-D",
+                    "hdl:1839/00-0000-0000-0001-2AB4-0",
+                    "hdl:1839/00-0000-0000-0001-2C2D-F",
+                    "hdl:1839/00-0000-0000-000D-B73D-9",
+                    "hdl:1839/00-0000-0000-0001-2AA2-6",
+                    "hdl:1839/00-0000-0000-0004-D511-0",
+                    "hdl:1839/00-0000-0000-0004-D512-F",
+                    "hdl:1839/00-0000-0000-0001-2E76-0",
+                    "hdl:1839/00-0000-0000-000D-B743-0",
+                    "hdl:1839/00-0000-0000-0001-2E77-E"
+                });
     }
 
     public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException {
         final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
         DatabaseStats databaseStats = instance.getDatabaseStats(projectDatabaseName);
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
-        assertEquals(databaseStats.getKnownDocumentsCount(), 1);
-        assertEquals(databaseStats.getMisingDocumentsCount(), 1);
-        assertEquals(databaseStats.getRootDocumentsCount(), 1);
-        assertEquals(databaseStats.getRootDocumentsIDs(), 1);
+        assertEquals(databaseStats.getKnownDocumentsCount(), 0);
+        assertEquals(databaseStats.getMisingDocumentsCount(), 0);
+        assertEquals(databaseStats.getRootDocumentsCount(), 0);
+        Assert.assertArrayEquals(databaseStats.getRootDocumentsIDs(), new String[0]);
     }
     /**
      * Test of getSearchResult method, of class DataBaseManager.

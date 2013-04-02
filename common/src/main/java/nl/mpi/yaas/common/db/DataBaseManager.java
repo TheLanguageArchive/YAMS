@@ -130,6 +130,7 @@ public class DataBaseManager<D, F, M> {
                 + "<KnownDocuments>{count($knownIds)}</KnownDocuments>\n"
                 + "<MissingDocuments>{count(distinct-values($missingIds))}</MissingDocuments>\n"
                 + "<RootDocuments>{count(distinct-values($rootNodes))}</RootDocuments>\n"
+                + "{for $rootDocId in distinct-values($rootNodes) return <RootDocumentID>{$rootDocId}</RootDocumentID>}\n"
                 + "</DatabaseStats>\n";
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(DatabaseStats.class);
