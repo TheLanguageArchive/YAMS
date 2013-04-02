@@ -17,6 +17,7 @@
  */
 package nl.mpi.yaas.common.data;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -26,7 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Peter Withers <peter.withers@mpi.nl>
  */
 @XmlRootElement(name = "DatabaseStats")
-public class DatabaseStats {
+public class DatabaseStats implements Serializable {
 
     private long queryTimeMS = -1;
     @XmlElement(name = "KnownDocuments")
@@ -37,6 +38,9 @@ public class DatabaseStats {
     protected int rootDocumentsCount = -1;
     @XmlElement(name = "RootDocumentID")
     protected String[] rootDocumentsIDs = new String[0];
+
+    public DatabaseStats() {
+    }
 
     public void setQueryTimeMS(long queryTimeMS) {
         this.queryTimeMS = queryTimeMS;

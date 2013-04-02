@@ -30,6 +30,7 @@ import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
+import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
@@ -124,13 +125,16 @@ public class DataBaseManager<D, F, M> {
         long startTime = System.currentTimeMillis();
         String statsQuery = "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                 + "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId/text()\n"
-                + "let $missingIds := for $testId in $childIds where not ($knownIds = $testId) return $testId\n"
-                + "let $rootNodes := for $testId in $knownIds where not ($childIds = $testId) return $testId\n"
+//                 + "let $missingIds := distinct-values(for $testId in $childIds where not ($knownIds = $testId) return $testId)\n"
+//                 + "let $rootNodes := distinct-values(for $testId in $knownIds where not ($childIds = $testId) return $testId)\n"
+                // With 55 documents this change (for loop replaced by "[not(.=") decreased the query from 254ms to 237ms and with zero documents it made no difference, but this was doe with out updating the indexes and running the query only once
+                + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
+                + "let $rootNodes := distinct-values($knownIds[not(.=$childIds)])"
                 + "return <DatabaseStats>\n"
                 + "<KnownDocuments>{count($knownIds)}</KnownDocuments>\n"
-                + "<MissingDocuments>{count(distinct-values($missingIds))}</MissingDocuments>\n"
-                + "<RootDocuments>{count(distinct-values($rootNodes))}</RootDocuments>\n"
-                + "{for $rootDocId in distinct-values($rootNodes) return <RootDocumentID>{$rootDocId}</RootDocumentID>}\n"
+                + "<MissingDocuments>{count($missingIds)}</MissingDocuments>\n"
+                + "<RootDocuments>{count($rootNodes)}</RootDocuments>\n"
+                + "{for $rootDocId in $rootNodes return <RootDocumentID>{$rootDocId}</RootDocumentID>}\n"
                 + "</DatabaseStats>\n";
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(DatabaseStats.class);
@@ -344,6 +348,27 @@ public class DataBaseManager<D, F, M> {
                     //                    + "<DisplayString>&gt;more than " + maxMetadataFileCount + " results, please add more facets&lt;</DisplayString>"
                     + "\n}\n";
         }
+    }
+
+    private String getNodesByIdQuery(final ArrayList<DataNodeId> nodeIDs) {
+        StringBuilder queryStringBuilder = new StringBuilder();
+        queryStringBuilder.append("<DataNode>\n");
+        queryStringBuilder.append("{for $dataNode in collection('");
+        queryStringBuilder.append(databaseName);
+        queryStringBuilder.append("')/DataNode where $dataNode/@ID = (\n");
+        boolean firstLoop = true;
+        for (DataNodeId dataNodeId : nodeIDs) {
+            if (!firstLoop) {
+                queryStringBuilder.append(",");
+            }
+            firstLoop = false;
+            queryStringBuilder.append("'");
+            queryStringBuilder.append(dataNodeId.getIdString());
+            queryStringBuilder.append("'");
+        }
+        queryStringBuilder.append(") return $dataNode}");
+        queryStringBuilder.append("</DataNode>");
+        return queryStringBuilder.toString();
     }
 
     private String getTreeQuery(ArrayList<MetadataFileType> treeBranchTypeList) {
@@ -669,6 +694,11 @@ public class DataBaseManager<D, F, M> {
 //        final String queryString = getTreeQuery(treeBranchTypeList);
 //        return getDbTreeNode(queryString);
 //    }
+    public D getNodeDatasByIDs(final ArrayList<DataNodeId> nodeIDs) throws QueryException {
+        final String queryString = getNodesByIdQuery(nodeIDs);
+        return getDbTreeNode(queryString);
+    }
+
     public D getTreeData(final ArrayList<MetadataFileType> treeBranchTypeList) throws QueryException {
         final String queryString = getTreeQuery(treeBranchTypeList);
         return getDbTreeNode(queryString);

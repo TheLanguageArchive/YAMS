@@ -20,6 +20,7 @@ package nl.mpi.yaas.common.db;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -31,6 +32,7 @@ import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
+import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import org.junit.Assert;
@@ -153,6 +155,10 @@ public class DataBaseManagerTest extends TestCase {
                     "hdl:1839/00-0000-0000-000D-B743-0",
                     "hdl:1839/00-0000-0000-0001-2E77-E"
                 });
+        final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
+        nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
+        SerialisableDataNode dataNode = (SerialisableDataNode) instance.getNodeDatasByIDs(nodeIDs);
+        assertEquals(12, dataNode.getChildList().size());
     }
 
     public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException {
@@ -163,6 +169,14 @@ public class DataBaseManagerTest extends TestCase {
         assertEquals(databaseStats.getMisingDocumentsCount(), 0);
         assertEquals(databaseStats.getRootDocumentsCount(), 0);
         Assert.assertArrayEquals(databaseStats.getRootDocumentsIDs(), new String[0]);
+    }
+
+    public void testGetNodeDatasByIDs() throws QueryException {
+        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+        final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
+        nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
+        SerialisableDataNode dataNode = (SerialisableDataNode) instance.getNodeDatasByIDs(nodeIDs);
+        assertEquals(dataNode.getChildList(), null);
     }
     /**
      * Test of getSearchResult method, of class DataBaseManager.
