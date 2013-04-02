@@ -120,7 +120,7 @@ public class DataBaseManager<D, F, M> {
         }
     }
 
-    public DatabaseStats getDatabaseStats(String queryString) throws QueryException {
+    public DatabaseStats getDatabaseStats() throws QueryException {
         long startTime = System.currentTimeMillis();
         String statsQuery = "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                 + "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId/text()\n"

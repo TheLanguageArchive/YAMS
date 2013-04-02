@@ -130,7 +130,7 @@ public class DataBaseManagerTest extends TestCase {
             SerialisableDataNode dataNode = (SerialisableDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(dataXmlString)), SerialisableDataNode.class).getValue();
             instance.insertIntoDatabase(dataNode);
         }
-        DatabaseStats databaseStats = instance.getDatabaseStats(projectDatabaseName);
+        DatabaseStats databaseStats = instance.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
         assertEquals(databaseStats.getKnownDocumentsCount(), 55);
         assertEquals(databaseStats.getMisingDocumentsCount(), 0);
@@ -157,7 +157,7 @@ public class DataBaseManagerTest extends TestCase {
 
     public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException {
         final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
-        DatabaseStats databaseStats = instance.getDatabaseStats(projectDatabaseName);
+        DatabaseStats databaseStats = instance.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
         assertEquals(databaseStats.getKnownDocumentsCount(), 0);
         assertEquals(databaseStats.getMisingDocumentsCount(), 0);
