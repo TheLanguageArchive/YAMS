@@ -82,6 +82,7 @@ public class RemoteArchiveCrawler {
     }
 
     private void clearAndCalculateDbStats() throws QueryException {
+        System.out.println("Calculating the database statistics");
         arbilDatabase.clearDatabaseStats();
         final DatabaseStats databaseStats = arbilDatabase.getDatabaseStats();
         System.out.println("KnownDocumentsCount: " + databaseStats.getKnownDocumentsCount());
