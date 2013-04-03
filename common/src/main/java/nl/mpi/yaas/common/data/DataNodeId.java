@@ -17,14 +17,22 @@
  */
 package nl.mpi.yaas.common.data;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
+
 /**
  * Created on : Apr 2, 2013, 5:44:48 PM
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
+@XmlRootElement(name = "DataNodeId")
 public class DataNodeId {
 
-    final String idString;
+    @XmlValue
+    String idString = null;
+
+    protected DataNodeId() {
+    }
 
     public DataNodeId(String idString) {
         this.idString = idString;
@@ -32,5 +40,27 @@ public class DataNodeId {
 
     public String getIdString() {
         return idString;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + (this.idString != null ? this.idString.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DataNodeId other = (DataNodeId) obj;
+        if ((this.idString == null) ? (other.idString != null) : !this.idString.equals(other.idString)) {
+            return false;
+        }
+        return true;
     }
 }
