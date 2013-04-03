@@ -159,7 +159,7 @@ public class DataBaseManagerTest extends TestCase {
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
         SerialisableDataNode dataNode = (SerialisableDataNode) instance.getNodeDatasByIDs(nodeIDs);
         assertEquals(12, dataNode.getChildList().size());
-        assertTrue("Query took too long:" + databaseStats.getQueryTimeMS() + "ms", databaseStats.getQueryTimeMS() < 290);
+        assertTrue("Query took too long:" + databaseStats.getQueryTimeMS() + "ms", databaseStats.getQueryTimeMS() < 420);
     }
 
     public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException {
@@ -170,6 +170,13 @@ public class DataBaseManagerTest extends TestCase {
         assertEquals(databaseStats.getMisingDocumentsCount(), 0);
         assertEquals(databaseStats.getRootDocumentsCount(), 0);
         Assert.assertArrayEquals(databaseStats.getRootDocumentsIDs(), new String[0]);
+
+        assertFalse("Cached db stats should not exist at this point", databaseStats.isIsCachedResults());
+        databaseStats = instance.getDatabaseStats();
+        assertTrue("Failed to use the cached db stats", databaseStats.isIsCachedResults());
+        instance.clearDatabaseStats();
+        databaseStats = instance.getDatabaseStats();
+        assertFalse("Failed to clear the db stats cache", databaseStats.isIsCachedResults());
     }
 
     public void testGetNodeDatasByIDs() throws QueryException {

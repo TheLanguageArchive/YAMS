@@ -42,6 +42,7 @@ import org.basex.core.Context;
 import org.basex.core.cmd.Add;
 import org.basex.core.cmd.Close;
 import org.basex.core.cmd.CreateDB;
+import org.basex.core.cmd.Delete;
 import org.basex.core.cmd.DropDB;
 import org.basex.core.cmd.Open;
 import org.basex.core.cmd.Set;
@@ -121,8 +122,25 @@ public class DataBaseManager<D, F, M> {
         }
     }
 
+    public void clearDatabaseStats() throws QueryException {
+        try {
+            synchronized (databaseLock) {
+                new Open(databaseName).execute(context);
+                new Delete("DbStatsDocument").execute(context);
+                new Close().execute(context);
+            }
+        } catch (BaseXException exception) {
+            logger.debug(exception.getMessage());
+            throw new QueryException("Error getting DatabaseStats");
+        }
+    }
+
     public DatabaseStats getDatabaseStats() throws QueryException {
         long startTime = System.currentTimeMillis();
+        String statsCachedQuery = "for $statsDoc in collection(\"" + databaseName + "\")\n"
+                + "where matches(document-uri($statsDoc), 'DbStatsDocument')\n"
+                + "return $statsDoc";
+
         String statsQuery = "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                 + "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n" // removing the "/text()" here reduced the query from 310ms to 290ms with 55 documents
                 //                 + "let $missingIds := distinct-values(for $testId in $childIds where not ($knownIds = $testId) return $testId)\n"
@@ -140,15 +158,28 @@ public class DataBaseManager<D, F, M> {
             JAXBContext jaxbContext = JAXBContext.newInstance(DatabaseStats.class, DataNodeId.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
+            boolean resultsWereCached = true;
             synchronized (databaseLock) {
+                // try getting the cached stats                
                 System.out.println("queryString: " + statsQuery);
-                queryResult = new XQuery(statsQuery).execute(context);
+                queryResult = new XQuery(statsCachedQuery).execute(context);
+                if (queryResult.length() < 2) {
+                    resultsWereCached = false;
+                    // calculate the stats
+                    System.out.println("queryString: " + statsQuery);
+                    queryResult = new XQuery(statsQuery).execute(context);
+                    // insert the stats as a document
+                    new Open(databaseName).execute(context);
+                    new Add("DbStatsDocument", queryResult).execute(context);
+                    new Close().execute(context);
+                }
             }
             System.out.println("queryResult: " + queryResult);
             DatabaseStats databaseStats = (DatabaseStats) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), DatabaseStats.class).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
 //            String queryTimeString = "DatabaseStats Query time: " + queryMils + "ms";
             databaseStats.setQueryTimeMS(queryMils);
+            databaseStats.setIsCachedResults(resultsWereCached);
 //            System.out.println(queryTimeString);
             return databaseStats;
         } catch (JAXBException exception) {
