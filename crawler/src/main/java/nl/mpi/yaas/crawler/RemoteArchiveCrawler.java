@@ -53,7 +53,13 @@ public class RemoteArchiveCrawler {
     private int totalLoaded = 0;
     public static final String HANDLE_SERVER_URI = "http://hdl.handle.net/";
 
-    public RemoteArchiveCrawler() throws QueryException {
+    public enum DbType {
+
+        TestDB,
+        StandardDB
+    }
+
+    public RemoteArchiveCrawler(DbType dbType) throws QueryException {
         final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
         final ArbilDesktopInjector injector = new ArbilDesktopInjector();
         injector.injectHandlers(versionManager, new ArbilLogConfigurer(versionManager.getApplicationVersion(), "yaas"));
@@ -61,8 +67,17 @@ public class RemoteArchiveCrawler {
         final ArbilWindowManager arbilWindowManager = injector.getWindowManager();
         final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
         dataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
-
-        arbilDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, arbilSessionStorage, DataBaseManager.defaultDataBase);
+        String dataBaseName;
+        switch (dbType) {
+            case StandardDB:
+                dataBaseName = DataBaseManager.defaultDataBase;
+                break;
+            default:
+                dataBaseName = DataBaseManager.testDataBase;
+                break;
+        }
+        arbilDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, arbilSessionStorage, dataBaseName);
+        arbilDatabase.clearDatabaseStats();
     }
 
     public void update(int numberToInsert) {
