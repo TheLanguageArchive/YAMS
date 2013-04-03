@@ -14,6 +14,10 @@ public class WebQueryException extends Exception {
     public WebQueryException() {
     }
 
+    public WebQueryException(Throwable thrwbl) {
+        super(thrwbl);
+    }
+
     public WebQueryException(String string) {
         super(string);
     }
