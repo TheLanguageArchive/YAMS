@@ -137,7 +137,7 @@ public class DataBaseManager<D, F, M> {
                 + "{for $rootDocId in $rootNodes return <RootDocumentID>{$rootDocId}</RootDocumentID>}\n"
                 + "</DatabaseStats>\n";
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(DatabaseStats.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(DatabaseStats.class, DataNodeId.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             synchronized (databaseLock) {

@@ -17,6 +17,7 @@
  */
 package nl.mpi.yaas.common.data;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
@@ -26,7 +27,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Peter Withers <peter.withers@mpi.nl>
  */
 @XmlRootElement(name = "DataNodeId")
-public class DataNodeId {
+public class DataNodeId implements Serializable {
 
     @XmlValue
     String idString = null;

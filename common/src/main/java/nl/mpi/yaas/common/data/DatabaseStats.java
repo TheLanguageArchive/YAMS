@@ -37,7 +37,7 @@ public class DatabaseStats implements Serializable {
     @XmlElement(name = "RootDocuments")
     protected int rootDocumentsCount = -1;
     @XmlElement(name = "RootDocumentID")
-    protected String[] rootDocumentsIDs = new String[0];
+    protected DataNodeId[] rootDocumentsIDs = new DataNodeId[0];
 
     public DatabaseStats() {
     }
@@ -62,7 +62,7 @@ public class DatabaseStats implements Serializable {
         return rootDocumentsCount;
     }
 
-    public String[] getRootDocumentsIDs() {
+    public DataNodeId[] getRootDocumentsIDs() {
         return rootDocumentsIDs;
     }
 }
