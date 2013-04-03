@@ -159,7 +159,7 @@ public class DataBaseManagerTest extends TestCase {
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
         SerialisableDataNode dataNode = (SerialisableDataNode) instance.getNodeDatasByIDs(nodeIDs);
         assertEquals(12, dataNode.getChildList().size());
-        assertTrue("Query took too long:" + databaseStats.getQueryTimeMS() + "ms", databaseStats.getQueryTimeMS() < 310);
+        assertTrue("Query took too long:" + databaseStats.getQueryTimeMS() + "ms", databaseStats.getQueryTimeMS() < 290);
     }
 
     public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException {

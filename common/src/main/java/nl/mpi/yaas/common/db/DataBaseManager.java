@@ -124,9 +124,9 @@ public class DataBaseManager<D, F, M> {
     public DatabaseStats getDatabaseStats() throws QueryException {
         long startTime = System.currentTimeMillis();
         String statsQuery = "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
-                + "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId/text()\n"
-//                 + "let $missingIds := distinct-values(for $testId in $childIds where not ($knownIds = $testId) return $testId)\n"
-//                 + "let $rootNodes := distinct-values(for $testId in $knownIds where not ($childIds = $testId) return $testId)\n"
+                + "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n" // removing the "/text()" here reduced the query from 310ms to 290ms with 55 documents
+                //                 + "let $missingIds := distinct-values(for $testId in $childIds where not ($knownIds = $testId) return $testId)\n"
+                //                 + "let $rootNodes := distinct-values(for $testId in $knownIds where not ($childIds = $testId) return $testId)\n"
                 // With 55 documents this change (for loop replaced by "[not(.=") decreased the query from 254ms to 237ms and with zero documents it made no difference, but this was doe with out updating the indexes and running the query only once
                 + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
                 + "let $rootNodes := distinct-values($knownIds[not(.=$childIds)])"
