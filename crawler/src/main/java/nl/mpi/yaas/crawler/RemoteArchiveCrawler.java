@@ -35,6 +35,7 @@ import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
 import nl.mpi.flap.plugin.PluginException;
+import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.db.DataBaseManager;
 import nl.mpi.yaas.common.db.DataBaseManager.IterableResult;
@@ -80,6 +81,14 @@ public class RemoteArchiveCrawler {
         arbilDatabase.clearDatabaseStats();
     }
 
+    private void clearAndCalculateDbStats() throws QueryException {
+        arbilDatabase.clearDatabaseStats();
+        final DatabaseStats databaseStats = arbilDatabase.getDatabaseStats();
+        System.out.println("KnownDocumentsCount: " + databaseStats.getKnownDocumentsCount());
+        System.out.println("MissingDocumentsCount: " + databaseStats.getMisingDocumentsCount());
+        System.out.println("RootDocumentsCount: " + databaseStats.getRootDocumentsCount());
+    }
+
     public void update(int numberToInsert) {
         this.numberToInsert = numberToInsert;
         numberInserted = 0;
@@ -99,8 +108,7 @@ public class RemoteArchiveCrawler {
 
             }
             System.out.println("Update complete");
-            // TODO review the generated test code and remove the default call to fail.
-//            fail("The test case is a prototype.");
+            clearAndCalculateDbStats();
         } catch (URISyntaxException exception) {
             System.out.println(exception.getMessage());
             System.exit(-1);
@@ -153,8 +161,7 @@ public class RemoteArchiveCrawler {
             arbilDatabase.createDatabase(); // this will drop the old database
             loadChildNodes(arbilDatabase, dataNode);
             System.out.println("Crawl complete");
-            // TODO review the generated test code and remove the default call to fail.
-//            fail("The test case is a prototype.");
+            clearAndCalculateDbStats();
         } catch (InterruptedException exception) {
             System.out.println(exception.getMessage());
             System.exit(-1);

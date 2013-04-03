@@ -20,6 +20,7 @@ package nl.mpi.yaas.crawler;
 import java.net.URI;
 import java.net.URISyntaxException;
 import junit.framework.TestCase;
+import nl.mpi.flap.kinnate.entityindexer.QueryException;
 
 /**
  * Created on : Feb 11, 2013, 21:02 PM
@@ -35,15 +36,10 @@ public class RemoteArchiveCrawlerTest extends TestCase {
     /**
      * Test of crawl method, of class RemoteArchiveCrawler.
      */
-//    public void testCrawl() {
-//        RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler();
-//        try {
-////            URI startURI = new URI("http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi");
-//            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
-//            archiveCrawler.crawl(startURI);
-//        } catch (URISyntaxException exception) {
-//            System.out.println(exception.getMessage());
-//            System.exit(-1);
-//        }
-//    }
+    public void testCrawl() throws QueryException, URISyntaxException {
+        RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(RemoteArchiveCrawler.DbType.TestDB);
+        //            URI startURI = new URI("http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi");
+        URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
+        archiveCrawler.crawl(startURI, 3);
+    }
 }

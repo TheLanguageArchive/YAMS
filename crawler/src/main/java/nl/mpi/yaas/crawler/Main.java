@@ -20,6 +20,11 @@ package nl.mpi.yaas.crawler;
 import java.net.URI;
 import java.net.URISyntaxException;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 /**
  * Created on : Feb 6, 2013, 2:02:48 PM
@@ -42,21 +47,49 @@ public class Main {
 //                System.exit(-1);
 //            }
 //        }
+        int defaultNumberToCrawl = 10;
+        String defaultStartUrl = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi";
+        // create the command line parser
+        CommandLineParser parser = new BasicParser(); //DefaultParser();
+        // create the Options
+        Options options = new Options();
+        options.addOption("d", "delete", false, "delete the existing database and recrawl");
+        options.addOption("a", "append", false, "recrawl adding missing documents (this is the default behaviour)");
+        options.addOption("n", "number", true, "number of documents to insert (default is " + defaultNumberToCrawl + ")");
+        options.addOption("u", "url", true, "url of the start documents to crawl (default is " + defaultStartUrl + ")");
         try {
-            RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler();
-            URI startURI = new URI("http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi");
+            // parse the command line arguments
+            CommandLine line = parser.parse(options, args);
+            String startUrl = defaultStartUrl;
+            int numberToCrawl = defaultNumberToCrawl;
+            if (line.hasOption("u")) {
+                startUrl = line.getOptionValue("u");
+            }
+            if (line.hasOption("n")) {
+                numberToCrawl = Integer.parseInt(line.getOptionValue("n"));
+            }
+            try {
+                RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(RemoteArchiveCrawler.DbType.StandardDB);
+                URI startURI = new URI(startUrl);
 //            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
-            System.out.println("Dropping and Crawing");
-            archiveCrawler.crawl(startURI, 1);
-            System.out.println("Restarting Crawl");
-            archiveCrawler.update(10);
-            System.exit(0);
-        } catch (URISyntaxException exception) {
-            System.out.println(exception.getMessage());
-            System.exit(-1);
-        } catch (QueryException exception) {
-            System.out.println(exception.getMessage());
-            System.exit(-1);
+                if (line.hasOption("d")) {
+                    System.out.println("Dropping and crawing from scratch");
+                    archiveCrawler.crawl(startURI, numberToCrawl);
+                } else {
+//                if (line.hasOption("a")) {
+                    System.out.println("Restarting crawl appending new documents");
+                    archiveCrawler.update(numberToCrawl);
+                }
+                System.exit(0); // arbil threads might be requiring this to terminate
+            } catch (URISyntaxException exception) {
+                System.out.println(exception.getMessage());
+                System.exit(-1);
+            } catch (QueryException exception) {
+                System.out.println(exception.getMessage());
+                System.exit(-1);
+            }
+        } catch (ParseException exp) {
+            System.out.println("Cannot parse the command line input:" + exp.getMessage());
         }
     }
 }
