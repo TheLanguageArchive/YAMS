@@ -4,7 +4,6 @@
  */
 package nl.mpi.yaas.client;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.text.shared.Renderer;
@@ -14,18 +13,17 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
-import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.ValueListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchOption;
 import nl.mpi.yaas.common.data.SearchParameters;
-import nl.mpi.yaas.shared.YaasDataNode;
 
 /**
  * Created on : Jan 29, 2013, 2:50:44 PM
@@ -34,7 +32,7 @@ import nl.mpi.yaas.shared.YaasDataNode;
  */
 public class SearchPanel extends VerticalPanel {
 
-    private final SearchOptionsServiceAsync searchOptionsService = GWT.create(SearchOptionsService.class);
+    private final SearchOptionsServiceAsync searchOptionsService;
     private Button searchButton;
     private SearchHandler searchHandler;
     private final DataNodeTree dataNodeTree;
@@ -42,7 +40,8 @@ public class SearchPanel extends VerticalPanel {
     private final VerticalPanel verticalPanel;
     private final ArrayList<SearchCriterionPanel> criterionPanelList = new ArrayList<SearchCriterionPanel>();
 
-    public SearchPanel(DataNodeTree dataNodeTree) {
+    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, DataNodeTree dataNodeTree) {
+        this.searchOptionsService = searchOptionsService;
         this.dataNodeTree = dataNodeTree;
         verticalPanel = new VerticalPanel();
         final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this);
@@ -86,18 +85,16 @@ public class SearchPanel extends VerticalPanel {
                     searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
                 }
                 searchOptionsService.performSearch(joinTypeListBox.getValue(), searchParametersList,
-                        new AsyncCallback<YaasDataNode>() {
+                        new AsyncCallback<SerialisableDataNode>() {
                             public void onFailure(Throwable caught) {
                                 Window.alert(caught.getMessage());
                                 searchHandler.signalSearchDone();
                                 searchButton.setEnabled(true);
                             }
 
-                            public void onSuccess(YaasDataNode result) {
-                                final TreeItem treeItem = new TreeItem();
-                                treeItem.setText(result.getName());
-                                dataNodeTree.setRootNode(treeItem);
-                                dataNodeTree.setRootNode(treeItem);
+                            public void onSuccess(SerialisableDataNode result) {
+//                                final YaasTreeItem yaasTreeItem = new YaasTreeItem(result);
+//                                dataNodeTree.addResultsToTree(yaasTreeItem);
                                 searchHandler.signalSearchDone();
                                 searchButton.setEnabled(true);
                             }

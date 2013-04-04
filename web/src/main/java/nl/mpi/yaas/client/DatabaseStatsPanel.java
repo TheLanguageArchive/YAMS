@@ -16,12 +16,11 @@ import nl.mpi.yaas.common.data.DatabaseStats;
  */
 public class DatabaseStatsPanel extends VerticalPanel {
 
-    final SearchOptionsServiceAsync searchOptionsService;
-    private final DataNodeTree dataNodeTree;
-
-    public DatabaseStatsPanel(SearchOptionsServiceAsync searchOptionsService, DataNodeTree dataNodeTree) {
-        this.searchOptionsService = searchOptionsService;
-        this.dataNodeTree = dataNodeTree;
+//    final private SearchOptionsServiceAsync searchOptionsService;
+//    final private DataNodeTree dataNodeTree;
+    public DatabaseStatsPanel(SearchOptionsServiceAsync searchOptionsService, final DataNodeTree dataNodeTree) {
+//        this.searchOptionsService = searchOptionsService;
+//        this.dataNodeTree = dataNodeTree;
 //        DatabaseStatsPanel.this.add(new Label("Getting Database Stats"));
         searchOptionsService.getDatabaseStats(new AsyncCallback<DatabaseStats>() {
             public void onFailure(Throwable caught) {
@@ -34,8 +33,8 @@ public class DatabaseStatsPanel extends VerticalPanel {
                 DatabaseStatsPanel.this.add(new Label("Root Documents Count: " + result.getRootDocumentsCount()));
                 DatabaseStatsPanel.this.add(new Label("Missing Documents Count: " + result.getMisingDocumentsCount()));
                 DatabaseStatsPanel.this.add(new Label("Query time: " + result.getQueryTimeMS() + "ms"));
-//                final YaasTreeItem yaasTreeItem = new YaasTreeItem(result.getRootDocumentsIDs());
-//                dataNodeTree.addResultsToTree(yaasTreeItem);
+//                final YaasTreeItem yaasTreeItem = new YaasTreeItem();
+                dataNodeTree.addResultsToTree(result.getRootDocumentsIDs());
             }
         });
     }

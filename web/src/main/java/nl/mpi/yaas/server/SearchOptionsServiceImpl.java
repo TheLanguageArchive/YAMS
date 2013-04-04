@@ -7,9 +7,12 @@ package nl.mpi.yaas.server;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
+import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.client.SearchOptionsService;
+import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures;
@@ -17,7 +20,6 @@ import nl.mpi.yaas.common.data.SearchParameters;
 import nl.mpi.yaas.common.db.DataBaseManager;
 import nl.mpi.yaas.shared.WebQueryException;
 import nl.mpi.yaas.shared.YaasDataField;
-import nl.mpi.yaas.shared.YaasDataNode;
 
 /**
  * Created on : Jan 30, 2013, 5:23:13 PM
@@ -29,7 +31,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public DatabaseStats getDatabaseStats() throws WebQueryException {
         try {
-            DataBaseManager<YaasDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
+            DataBaseManager<SerialisableDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
             DatabaseStats databaseStats = arbilDatabase.getDatabaseStats();
             return databaseStats;
         } catch (QueryException exception) {
@@ -37,7 +39,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    private DataBaseManager<YaasDataNode, YaasDataField, MetadataFileType> getDatabase() throws QueryException {
+    private DataBaseManager<SerialisableDataNode, YaasDataField, MetadataFileType> getDatabase() throws QueryException {
         // todo: this version of the Arbil database is not intended to multi entry and will be replaced by a rest version when it is written
         final PluginSessionStorage pluginSessionStorage = new PluginSessionStorage() {
             public File getApplicationSettingsDirectory() {
@@ -52,12 +54,12 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
                 return new File("/Users/petwit2/.arbil/ArbilWorkingFiles/");
             }
         };
-        return new DataBaseManager<YaasDataNode, YaasDataField, MetadataFileType>(YaasDataNode.class, YaasDataField.class, MetadataFileType.class, pluginSessionStorage, DataBaseManager.defaultDataBase);
+        return new DataBaseManager<SerialisableDataNode, YaasDataField, MetadataFileType>(SerialisableDataNode.class, YaasDataField.class, MetadataFileType.class, pluginSessionStorage, DataBaseManager.defaultDataBase);
     }
 
     public MetadataFileType[] getTypeOptions() throws WebQueryException {
         try {
-            DataBaseManager<YaasDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
+            DataBaseManager<SerialisableDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
             MetadataFileType[] metadataPathTypes = arbilDatabase.getMetadataTypes(null);
             return metadataPathTypes;
 //            ArrayList<String> returnList = new ArrayList<String>();
@@ -72,7 +74,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public MetadataFileType[] getFieldOptions() throws WebQueryException {
         try {
-            DataBaseManager<YaasDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
+            DataBaseManager<SerialisableDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
             MetadataFileType[] metadataFieldTypes = arbilDatabase.getFieldMetadataTypes(null);
             return metadataFieldTypes;
 //            ArrayList<String> returnList = new ArrayList<String>();
@@ -85,17 +87,27 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    public YaasDataNode performSearch(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException {
+    public SerialisableDataNode performSearch(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException {
 //        return new YaasDataNode(criterionJoinType.name());
         try {
-            DataBaseManager<YaasDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
-            YaasDataNode yaasDataNode = arbilDatabase.getSearchResult(criterionJoinType, searchParametersList);
+            DataBaseManager<SerialisableDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
+            SerialisableDataNode yaasDataNode = arbilDatabase.getSearchResult(criterionJoinType, searchParametersList);
             return yaasDataNode;
 //            ArrayList<String> returnList = new ArrayList<String>();
 //            for (WebMetadataFileType metadataFileType : metadataFieldTypes) {
 //                returnList.add(metadataFileType.getFieldName());
 //            };
 //            return returnList.toArray(new String[0]);
+        } catch (QueryException exception) {
+            throw new WebQueryException(exception.getMessage());
+        }
+    }
+
+    public List<SerialisableDataNode> getDataNodes(ArrayList<DataNodeId> dataNodeIds) throws WebQueryException {
+        try {
+            DataBaseManager<SerialisableDataNode, YaasDataField, MetadataFileType> arbilDatabase = getDatabase();
+            SerialisableDataNode yaasDataNode = arbilDatabase.getNodeDatasByIDs(dataNodeIds);
+            return (List<SerialisableDataNode>) yaasDataNode.getChildList();
         } catch (QueryException exception) {
             throw new WebQueryException(exception.getMessage());
         }

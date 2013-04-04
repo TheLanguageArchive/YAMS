@@ -4,21 +4,26 @@
  */
 package nl.mpi.yaas.shared;
 
+import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
-import nl.mpi.flap.model.AbstractDataNode;
+import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.FieldGroup;
+import nl.mpi.flap.model.SerialisableDataNode;
 
 /**
  * Created on : Jan 29, 2013, 6:06:24 PM
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class YaasDataNode extends AbstractDataNode {
+@Deprecated
+public class YaasDataNode extends SerialisableDataNode implements Serializable {
 
     String nodeID = null;
     String nodeName = null;
-    String nodeUrl = null;
+    DataNodeType dataNodeType = null;
     String nodeIconId = null;
+    List<FieldGroup> fieldGroups = Collections.EMPTY_LIST;
 
     public YaasDataNode() {
     }
@@ -26,12 +31,15 @@ public class YaasDataNode extends AbstractDataNode {
     public YaasDataNode(String nodeName) {
         this.nodeName = nodeName;
     }
-    List<FieldGroup> fieldGroups;
-    AbstractDataNode[] childArray;
 
     @Override
-    public String getName() {
+    public String getLabel() {
         return nodeName;
+    }
+
+    @Override
+    public void setLabel(String label) {
+        nodeName = label;
     }
 
     @Override
@@ -40,13 +48,18 @@ public class YaasDataNode extends AbstractDataNode {
     }
 
     @Override
-    public String getUrlString() {
-        return nodeUrl;
+    public void setID(String id) {
+        nodeID = id;
     }
 
     @Override
-    public String getIconId() {
-        return nodeIconId;
+    public DataNodeType getType() {
+        return dataNodeType;
+    }
+
+    @Override
+    public void setType(DataNodeType dataNodeType) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -55,7 +68,17 @@ public class YaasDataNode extends AbstractDataNode {
     }
 
     @Override
-    public AbstractDataNode[] getChildArray() {
-        return childArray;
+    public void setFieldGroups(List<FieldGroup> fieldGroups) {
+        this.fieldGroups = fieldGroups;
+    }
+
+    @Override
+    public void setChildIds(List<String> idString) {
+//        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<String> getChildIds() {
+        return Collections.EMPTY_LIST;
     }
 }

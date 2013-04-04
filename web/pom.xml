@@ -55,7 +55,7 @@
     <dependency>
       <groupId>nl.mpi</groupId>
       <artifactId>plugins-core</artifactId>
-      <version>1.1-pretesting-SNAPSHOT</version>
+      <version>1.2-pretesting-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>nl.mpi</groupId>
@@ -118,6 +118,8 @@
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
+          <showDeprecation>true</showDeprecation>
+          <debug>true</debug>
         </configuration>
       </plugin>
     </plugins>
