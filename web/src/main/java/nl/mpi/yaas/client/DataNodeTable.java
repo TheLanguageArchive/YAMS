@@ -33,8 +33,15 @@ public class DataNodeTable extends VerticalPanel {
             final VerticalPanel verticalPanel = new VerticalPanel();
             for (DataField dataField : fieldGroup.getFields()) {
                 verticalPanel.add(new Label(dataField.getFieldValue()));
+//                for (FieldGroup fieldGroup : yaasDataNode.getFieldGroups()) {
+//                        addItem(new Label(fieldGroup.getFieldName()));
+//                        for (DataField dataField : fieldGroup.getFields()) {
+//                            addItem(new Label(dataField.getFieldValue()));
+//                        }
+//                    }
             }
             horizontalPanel.add(verticalPanel);
+            add(horizontalPanel);
         }
     }
 //

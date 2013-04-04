@@ -5,6 +5,7 @@
 package nl.mpi.yaas.client;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TreeItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,35 +20,60 @@ import nl.mpi.yaas.common.data.DataNodeId;
 public class YaasTreeItem extends TreeItem {
 
     private SerialisableDataNode yaasDataNode = null;
-    final private DataNodeId dataNodeId;
+    private DataNodeId dataNodeId = null;
     final private SearchOptionsServiceAsync searchOptionsService;
+    private boolean loadAttempted = false;
+    final Label labelChildrenNotLoaded = new Label("child nodes not loaded");
 
-    public YaasTreeItem(SerialisableDataNode yaasDataNode, DataNodeId dataNodeId, SearchOptionsServiceAsync searchOptionsService) {
-        this.yaasDataNode = yaasDataNode;
+    public YaasTreeItem(DataNodeId dataNodeId, SearchOptionsServiceAsync searchOptionsService) {
         this.dataNodeId = dataNodeId;
         this.searchOptionsService = searchOptionsService;
+        loadDataNode();
+    }
 
-        if (yaasDataNode == null) {
-            loadDataNode();
-        } else {
-            setLabel();
-        }
+    public YaasTreeItem(SerialisableDataNode yaasDataNode, SearchOptionsServiceAsync searchOptionsService) {
+        this.yaasDataNode = yaasDataNode;
+        this.searchOptionsService = searchOptionsService;
+        setLabel();
     }
 
     private void loadDataNode() {
-        setText("loading...");
+        if (loadAttempted == false) {
+            loadAttempted = true;
+            setText("loading...");
+            final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
+            dataNodeIdList.add(dataNodeId);
+            searchOptionsService.getDataNodes(dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
+                public void onFailure(Throwable caught) {
+                    setText("Failure: " + caught.getMessage());
+                }
+
+                public void onSuccess(List<SerialisableDataNode> dataNodeList) {
+                    yaasDataNode = dataNodeList.get(0);
+                    setLabel();
+                    addItem(labelChildrenNotLoaded);
+                }
+            });
+        }
+    }
+
+    public void loadChildNodes() {
         final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
-        dataNodeIdList.add(dataNodeId);
+        for (String childId : yaasDataNode.getChildIds()) {
+            dataNodeIdList.add(new DataNodeId(childId));
+        }
         searchOptionsService.getDataNodes(dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
             public void onFailure(Throwable caught) {
-                setText("Failure: " + caught.getMessage());
+                remove();
+                setText("Loading child nodes failed: " + caught.getMessage());
             }
 
             public void onSuccess(List<SerialisableDataNode> dataNodeList) {
-                setText("setting label");
-                yaasDataNode = dataNodeList.get(0);
-                setLabel();
-//                setText("label set");
+                remove();
+                for (SerialisableDataNode childDataNode : dataNodeList) {
+                    YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService);
+                    addItem(yaasTreeItem);;
+                }
             }
         });
     }
@@ -56,13 +82,8 @@ public class YaasTreeItem extends TreeItem {
         if (yaasDataNode != null) {
             setText(yaasDataNode.getLabel() + "[" + yaasDataNode.getChildIds().size() + "]");
         } else {
-            setText(dataNodeId.getIdString());
+            setText("not loaded");
         }
-    }
-
-    @Override
-    public int getChildCount() {
-        return yaasDataNode.getChildIds().size();
     }
 
     public SerialisableDataNode getYaasDataNode() {

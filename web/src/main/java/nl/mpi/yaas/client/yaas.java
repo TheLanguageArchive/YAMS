@@ -23,8 +23,8 @@ public class yaas implements EntryPoint {
      * Create a remote service proxy to talk to the server-side Greeting
      * service.
      */
-    private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
-    private final Messages messages = GWT.create(Messages.class);
+//    private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
+//    private final Messages messages = GWT.create(Messages.class);
 
     /**
      * This is the entry point method.
@@ -34,7 +34,7 @@ public class yaas implements EntryPoint {
 //        final Button sendButton = new Button(messages.sendButton());
 //        final TextBox nameField = new TextBox();
 //        nameField.setText(messages.nameField());
-        final Label errorLabel = new Label();
+//        final Label errorLabel = new Label();
         final DataNodeTable dataNodeTable = new DataNodeTable();
         final DataNodeTree dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService);
         final SearchPanel searchOptionsPanel = new SearchPanel(searchOptionsService, dataNodeTree);
@@ -57,9 +57,9 @@ public class yaas implements EntryPoint {
 //        nameField.selectAll();
 
         // Create the popup dialog box
-        final DialogBox dialogBox = new DialogBox();
-        dialogBox.setText("Remote Procedure Call");
-        dialogBox.setAnimationEnabled(true);
+//        final DialogBox dialogBox = new DialogBox();
+//        dialogBox.setText("Remote Procedure Call");
+//        dialogBox.setAnimationEnabled(true);
 //        final Button closeButton = new Button("Close");
         // We can set the id of a widget by accessing its Element
 //        closeButton.getElement().setId("closeButton");

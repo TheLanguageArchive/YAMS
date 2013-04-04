@@ -4,6 +4,8 @@
  */
 package nl.mpi.yaas.client;
 
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.Tree;
@@ -35,6 +37,15 @@ public class DataNodeTree extends Tree {
 //        root.addItem(item);
 //
 //        this.addItem(root);
+        addOpenHandler(new OpenHandler<TreeItem>() {
+            public void onOpen(OpenEvent<TreeItem> event) {
+                final Object selectedItem = event.getTarget();
+                if (selectedItem instanceof YaasTreeItem) {
+                    YaasTreeItem yaasTreeItem = (YaasTreeItem) selectedItem;
+                    yaasTreeItem.loadChildNodes();
+                }
+            }
+        });
         addSelectionHandler(new SelectionHandler<TreeItem>() {
             public void onSelection(SelectionEvent event) {
                 final Object selectedItem = event.getSelectedItem();
@@ -48,7 +59,8 @@ public class DataNodeTree extends Tree {
 
     public void addResultsToTree(DataNodeId[] dataNodeIds) {
         for (DataNodeId dataNodeId : dataNodeIds) {
-            this.addItem(new YaasTreeItem(null, dataNodeId, searchOptionsService));
+            final YaasTreeItem yaasTreeItem = new YaasTreeItem(dataNodeId, searchOptionsService);
+            this.addItem(yaasTreeItem);
         }
     }
 }
