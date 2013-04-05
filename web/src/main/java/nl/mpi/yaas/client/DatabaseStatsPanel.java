@@ -32,6 +32,7 @@ public class DatabaseStatsPanel extends VerticalPanel {
                 DatabaseStatsPanel.this.add(new Label("Known Documents Count: " + result.getKnownDocumentsCount()));
                 DatabaseStatsPanel.this.add(new Label("Root Documents Count: " + result.getRootDocumentsCount()));
                 DatabaseStatsPanel.this.add(new Label("Missing Documents Count: " + result.getMisingDocumentsCount()));
+                DatabaseStatsPanel.this.add(new Label("Duplicate Documents Count: " + result.getDuplicateDocumentsCount()));
                 DatabaseStatsPanel.this.add(new Label("Query time: " + result.getQueryTimeMS() + "ms"));
 //                final YaasTreeItem yaasTreeItem = new YaasTreeItem();
                 dataNodeTree.addResultsToTree(result.getRootDocumentsIDs());
