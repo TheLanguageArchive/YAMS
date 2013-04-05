@@ -142,6 +142,7 @@ public class DataBaseManager<D, F, M> {
                 + "return $statsDoc";
 
         String statsQuery = "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
+                + "let $duplicateDocumentCount := count($knownIds) - count(distinct-values($knownIds))\n"
                 + "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n" // removing the "/text()" here reduced the query from 310ms to 290ms with 55 documents
                 //                 + "let $missingIds := distinct-values(for $testId in $childIds where not ($knownIds = $testId) return $testId)\n"
                 //                 + "let $rootNodes := distinct-values(for $testId in $knownIds where not ($childIds = $testId) return $testId)\n"
@@ -151,6 +152,7 @@ public class DataBaseManager<D, F, M> {
                 + "return <DatabaseStats>\n"
                 + "<KnownDocuments>{count($knownIds)}</KnownDocuments>\n"
                 + "<MissingDocuments>{count($missingIds)}</MissingDocuments>\n"
+                + "<DuplicateDocuments>{$duplicateDocumentCount}</DuplicateDocuments>\n"
                 + "<RootDocuments>{count($rootNodes)}</RootDocuments>\n"
                 + "{for $rootDocId in $rootNodes return <RootDocumentID>{$rootDocId}</RootDocumentID>}\n"
                 + "</DatabaseStats>\n";

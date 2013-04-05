@@ -34,6 +34,8 @@ public class DatabaseStats implements Serializable {
     protected int knownDocumentsCount = -1;
     @XmlElement(name = "MissingDocuments")
     protected int misingDocumentsCount = -1;
+    @XmlElement(name = "DuplicateDocuments")
+    protected int duplicateDocumentsCount = -1;
     @XmlElement(name = "RootDocuments")
     protected int rootDocumentsCount = -1;
     @XmlElement(name = "RootDocumentID")
@@ -65,6 +67,10 @@ public class DatabaseStats implements Serializable {
 
     public int getMisingDocumentsCount() {
         return misingDocumentsCount;
+    }
+
+    public int getDuplicateDocumentsCount() {
+        return duplicateDocumentsCount;
     }
 
     public int getRootDocumentsCount() {

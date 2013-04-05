@@ -136,6 +136,7 @@ public class DataBaseManagerTest extends TestCase {
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
         assertEquals(databaseStats.getKnownDocumentsCount(), 55);
         assertEquals(databaseStats.getMisingDocumentsCount(), 0);
+        assertEquals(databaseStats.getDuplicateDocumentsCount(), 39);
         assertEquals(databaseStats.getRootDocumentsCount(), 16);
         Assert.assertArrayEquals(databaseStats.getRootDocumentsIDs(), new DataNodeId[]{
                     new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"),
@@ -168,6 +169,7 @@ public class DataBaseManagerTest extends TestCase {
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
         assertEquals(databaseStats.getKnownDocumentsCount(), 0);
         assertEquals(databaseStats.getMisingDocumentsCount(), 0);
+        assertEquals(databaseStats.getDuplicateDocumentsCount(), 0);
         assertEquals(databaseStats.getRootDocumentsCount(), 0);
         Assert.assertArrayEquals(databaseStats.getRootDocumentsIDs(), new String[0]);
 
