@@ -227,8 +227,9 @@ public class DataBaseManager<D, F, M> {
                 long startTime = System.currentTimeMillis();
                 String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
                         + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
-                        + "let $missingIds := for $testId in $childIds where not ($knownIds = $testId) return $testId\n"
-                        + "return distinct-values($missingIds)\n";
+                        + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
+                        + "return $missingIds\n";
+                System.out.println("getHandlesOfMissing: " + queryString);
                 QueryProcessor proc = new QueryProcessor(queryString, context);
                 long queryMils = System.currentTimeMillis() - startTime;
                 String queryTimeString = "Query time: " + queryMils + "ms";
@@ -240,6 +241,26 @@ public class DataBaseManager<D, F, M> {
             throw new QueryException(baseXException2.getMessage());
         }
     }
+//    public String getFirstHandlesOfMissing() throws PluginException, QueryException {
+//        try {
+//            synchronized (databaseLock) {
+//                long startTime = System.currentTimeMillis();
+//                String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
+//                        + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
+//                        + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
+//                        + "return $missingIds[1]\n";
+//                System.out.println("getHandlesOfMissing: " + queryString);
+//                String singleHandle = new XQuery(queryString).execute(context);
+//                long queryMils = System.currentTimeMillis() - startTime;
+//                String queryTimeString = "Query time: " + queryMils + "ms";
+//                System.out.println(queryTimeString);
+//                return singleHandle;
+//            }
+//        } catch (BaseXException exception) {
+//            logger.error(exception.getMessage());
+//            throw new QueryException(exception);
+//        }
+//    }
 
     public void insertIntoDatabase(SerialisableDataNode dataNode) throws PluginException, QueryException {
         // use JAXB to serialise and insert the data node into the database
@@ -252,6 +273,12 @@ public class DataBaseManager<D, F, M> {
 //            System.out.println("Data to be inserted:\n" + stringWriter.toString());
             try {
                 synchronized (databaseLock) {
+                    // test for existing documents with the same ID and throw if one is found
+                    String existingDocumentQuery = "let $countValue := count(collection(\"" + databaseName + "\")/DataNode[@ID = \"" + dataNode.getID() + "\"])\nreturn $countValue";
+                    String existingDocumentResult = new XQuery(existingDocumentQuery).execute(context);
+                    if (!existingDocumentResult.equals("0")) {
+                        throw new QueryException("Existing document found, count: " + existingDocumentResult);
+                    }
                     new Open(databaseName).execute(context);
                     new Add(dataNode.getID(), stringWriter.toString()).execute(context);
                     new Close().execute(context);
