@@ -6,9 +6,9 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.SerialisableDataNode;
@@ -20,36 +20,62 @@ import nl.mpi.flap.model.SerialisableDataNode;
  */
 public class DataNodeTable extends VerticalPanel {
 
+    final private ArrayList<SerialisableDataNode> dataNodes;
+    final private CellTable<SerialisableDataNode> cellTable;
+    final private ArrayList<String> currentColumns;
+
     public DataNodeTable() {
-        add(new Label("Table"));
+//        add(new Label("Table"));
+        cellTable = new CellTable<SerialisableDataNode>();
+        dataNodes = new ArrayList<SerialisableDataNode>();
+        currentColumns = new ArrayList<String>();
     }
 
     public void removeDataNode(SerialisableDataNode yaasDataNode) {
+        dataNodes.remove(yaasDataNode);
+        updateTable();
     }
 
     public void addDataNode(SerialisableDataNode yaasDataNode) {
-        CellTable<FieldGroup> cellTable;
-        final List<FieldGroup> fieldGroups = yaasDataNode.getFieldGroups();
-        cellTable = new CellTable<FieldGroup>();
-        cellTable.addColumn(new TextColumn<FieldGroup>() {
-            @Override
-            public String getValue(FieldGroup fieldGroup) {
-                return fieldGroup.getFieldName();
+        dataNodes.add(yaasDataNode);
+        updateTable();
+    }
+
+    private HashSet<String> getColumnLabels() {
+        HashSet<String> columnLabels = new HashSet<String>();
+        for (SerialisableDataNode dataNode : dataNodes) {
+            for (FieldGroup fieldGroup : dataNode.getFieldGroups()) {
+                columnLabels.add(fieldGroup.getFieldName());
             }
-        }, "Name");
-        cellTable.addColumn(new TextColumn<FieldGroup>() {
-            @Override
-            public String getValue(FieldGroup fieldGroup) {
-                StringBuilder stringBuilder = new StringBuilder();
-                for (DataField dataField : fieldGroup.getFields()) {
-                    stringBuilder.append(dataField.getFieldValue());
-                    stringBuilder.append("<hr>");
-                };
-                return stringBuilder.toString();
+        }
+        return columnLabels;
+    }
+
+    private void updateTable() {
+        HashSet<String> columnLabels = getColumnLabels();
+        for (final String currentName : columnLabels) {
+            if (!currentColumns.contains(currentName)) {
+                currentColumns.add(currentName);
+                cellTable.addColumn(new TextColumn<SerialisableDataNode>() {
+                    @Override
+                    public String getValue(SerialisableDataNode dataNode) {
+                        for (FieldGroup fieldGroup : dataNode.getFieldGroups()) {
+                            if (fieldGroup.getFieldName().equals(currentName)) {
+                                StringBuilder stringBuilder = new StringBuilder();
+                                for (DataField dataField : fieldGroup.getFields()) {
+                                    stringBuilder.append(dataField.getFieldValue());
+                                    stringBuilder.append("<hr>");
+                                };
+                                return stringBuilder.toString();
+                            }
+                        }
+                        return "<no value>";
+                    }
+                }, currentName);
             }
-        }, "Value");
-        cellTable.setRowCount(fieldGroups.size(), true);
-        cellTable.setRowData(fieldGroups);
+        }
+        cellTable.setRowCount(dataNodes.size(), true);
+        cellTable.setRowData(dataNodes);
         add(cellTable);
     }
 }

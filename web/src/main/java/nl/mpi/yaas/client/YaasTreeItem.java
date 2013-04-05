@@ -121,13 +121,8 @@ public class YaasTreeItem extends TreeItem {
             } else {
 
                 final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
-//        for (String childId : yaasDataNode.getChildIds()) {
-//            if (!childId.equals("http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/all.imdi")) {
-//                dataNodeIdList.add(new DataNodeId(childId));
-//                break;
-//            }
-                for (String sampleId : new String[]{"http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/sexes.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/sexes.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/sexes.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/sexes.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ages.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ages.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ages.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ages.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ages.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ages.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ages.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ages.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ages.imdi", "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ages.imdi"}) {
-                    dataNodeIdList.add(new DataNodeId(sampleId));
+                for (String childId : yaasDataNode.getChildIds()) {
+                    dataNodeIdList.add(new DataNodeId(childId));
                 }
                 searchOptionsService.getDataNodes(dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
                     public void onFailure(Throwable caught) {
@@ -136,11 +131,15 @@ public class YaasTreeItem extends TreeItem {
                     }
 
                     public void onSuccess(List<SerialisableDataNode> dataNodeList) {
-                        setText("Loaded " + dataNodeList.size() + " child nodes");
+//                        setText("Loaded " + dataNodeList.size() + " child nodes");
                         removeItems();
-                        for (SerialisableDataNode childDataNode : dataNodeList) {
-                            YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService, dataNodeTable);
-                            addItem(yaasTreeItem);;
+                        if (dataNodeList == null) {
+                            addItem(new Label("child nodes failed to load"));
+                        } else {
+                            for (SerialisableDataNode childDataNode : dataNodeList) {
+                                YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService, dataNodeTable);
+                                addItem(yaasTreeItem);
+                            }
                         }
                     }
                 });
