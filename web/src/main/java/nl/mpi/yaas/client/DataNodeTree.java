@@ -6,8 +6,6 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import nl.mpi.yaas.common.data.DataNodeId;
@@ -46,20 +44,20 @@ public class DataNodeTree extends Tree {
                 }
             }
         });
-        addSelectionHandler(new SelectionHandler<TreeItem>() {
-            public void onSelection(SelectionEvent event) {
-                final Object selectedItem = event.getSelectedItem();
-                if (selectedItem instanceof YaasTreeItem) {
-                    YaasTreeItem yaasTreeItem = (YaasTreeItem) selectedItem;
-                    dataNodeTable.addDataNode(yaasTreeItem.getYaasDataNode());
-                }
-            }
-        });
+//        addSelectionHandler(new SelectionHandler<TreeItem>() {
+//            public void onSelection(SelectionEvent event) {
+//                final Object selectedItem = event.getSelectedItem();
+//                if (selectedItem instanceof YaasTreeItem) {
+//                    YaasTreeItem yaasTreeItem = (YaasTreeItem) selectedItem;
+//                    dataNodeTable.addDataNode(yaasTreeItem.getYaasDataNode());
+//                }
+//            }
+//        });
     }
 
     public void addResultsToTree(DataNodeId[] dataNodeIds) {
         for (DataNodeId dataNodeId : dataNodeIds) {
-            final YaasTreeItem yaasTreeItem = new YaasTreeItem(dataNodeId, searchOptionsService);
+            final YaasTreeItem yaasTreeItem = new YaasTreeItem(dataNodeId, searchOptionsService, dataNodeTable);
             this.addItem(yaasTreeItem);
         }
     }
