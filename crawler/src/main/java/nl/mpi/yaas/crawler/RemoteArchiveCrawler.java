@@ -96,8 +96,11 @@ public class RemoteArchiveCrawler {
         System.out.println("FindAndInsertMissingNodes");
         try {
             final IterableResult handlesOfMissing = arbilDatabase.getHandlesOfMissing();
-            for (String targetHandle = handlesOfMissing.getNext(); targetHandle != null;) {
-                if (numberInserted >= numberToInsert) {
+            while (numberInserted < numberToInsert) {
+//            for (String targetHandle = arbilDatabase.getFirstHandlesOfMissing(); !targetHandle.isEmpty();) {
+                String targetHandle = handlesOfMissing.getNext();
+                if (targetHandle == null) {
+                    System.out.println("No more missing documents to crawl");
                     break;
                 }
                 System.out.println("targetHandle: " + targetHandle);
@@ -105,6 +108,7 @@ public class RemoteArchiveCrawler {
                 System.out.println("targetUri: " + targetUri);
                 ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
                 ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, new URI(targetHandle));
+                System.out.println("arbil url: " + dataNode.getUrlString());
                 loadAndInsert(arbilDatabase, dataNode);
 
             }

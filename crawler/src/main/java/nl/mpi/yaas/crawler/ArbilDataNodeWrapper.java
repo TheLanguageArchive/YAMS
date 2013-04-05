@@ -48,7 +48,7 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     @Override
     public String getID() {
         if (!arbilDataNode.isChildNode()) {
-            // not all documents have an archive handle, so we are making things sinpler by using the URI asn the ID
+            // not all documents have an archive handle, so we are making things simpler by using the URI as the ID
             // String iD = arbilDataNode.getID();
             String iD = arbilDataNode.getUrlString();
 //            if (iD.isEmpty()) {

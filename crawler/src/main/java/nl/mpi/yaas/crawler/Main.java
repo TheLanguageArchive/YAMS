@@ -47,7 +47,7 @@ public class Main {
 //                System.exit(-1);
 //            }
 //        }
-        int defaultNumberToCrawl = 10;
+        int defaultNumberToCrawl = 100;
         String defaultStartUrl = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi";
         // create the command line parser
         CommandLineParser parser = new BasicParser(); //DefaultParser();
