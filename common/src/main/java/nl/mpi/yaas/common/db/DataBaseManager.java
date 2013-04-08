@@ -62,77 +62,23 @@ public class DataBaseManager<D, F, M> {
     final private Class<D> dClass;
     final private Class<F> fClass;
     final private Class<M> mClass;
-    static Context context = new Context();
-    static final Object databaseLock = new Object();
+    final private DbAdaptor dbAdaptor;
     final private String databaseName;
-    final private PluginSessionStorage sessionStorage;
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
     final static public String defaultDataBase = "yaas-data";
     final static public String testDataBase = "yaas-test-data";
 
-    public DataBaseManager(Class<D> dClass, Class<F> fClass, Class<M> mClass, PluginSessionStorage sessionStorage, String databaseName) throws QueryException {
+    public DataBaseManager(Class<D> dClass, Class<F> fClass, Class<M> mClass, DbAdaptor dbAdaptor, String databaseName) throws QueryException {
+        this.dbAdaptor = dbAdaptor;
         this.dClass = dClass;
         this.fClass = fClass;
         this.mClass = mClass;
         this.databaseName = databaseName;
-        this.sessionStorage = sessionStorage;
-        try {
-            synchronized (databaseLock) {
-                final File dbPathFile = new File(sessionStorage.getApplicationSettingsDirectory(), "BaseXData");
-                System.out.println("dbpath: " + dbPathFile.toString());
-                new Set("dbpath", dbPathFile).execute(context);
-                new Open(databaseName).execute(context);
-                new Close().execute(context);
-            }
-        } catch (BaseXException baseXException) {
-            try {
-                synchronized (databaseLock) {
-                    new CreateDB(databaseName).execute(context);
-                }
-            } catch (BaseXException baseXException2) {
-                logger.error(baseXException2.getMessage());
-                throw new QueryException(baseXException2.getMessage());
-            }
-        }
-    }
-
-    public File getDatabaseProjectDirectory(String projectDatabaseName) {
-        return sessionStorage.getProjectWorkingDirectory();
-    }
-
-    public void createDatabase() throws QueryException {
-//        String suffixFilter = "*.*mdi";
-        try {
-            synchronized (databaseLock) {
-//    System.out.print(new InfoDB().execute(context));
-//    new DropIndex("text").execute(context);
-//    new DropIndex("attribute").execute(context);
-//    new DropIndex("fulltext").execute(context);
-                new DropDB(databaseName).execute(context);
-//                new Set("CREATEFILTER", suffixFilter).execute(context);
-//                final File cacheDirectory = getDatabaseProjectDirectory(databaseName);
-//                System.out.println("cacheDirectory: " + cacheDirectory);
-//                new CreateDB(databaseName, cacheDirectory.toString()).execute(context);
-                new CreateDB(databaseName).execute(context);
-//                System.out.println("Create full text index");
-//                new CreateIndex("fulltext").execute(context); // note that the indexes appear to be created by default, so this step might be redundant
-            }
-        } catch (BaseXException exception) {
-            throw new QueryException(exception.getMessage());
-        }
+        dbAdaptor.checkDbExists(databaseName);
     }
 
     public void clearDatabaseStats() throws QueryException {
-        try {
-            synchronized (databaseLock) {
-                new Open(databaseName).execute(context);
-                new Delete("DbStatsDocument").execute(context);
-                new Close().execute(context);
-            }
-        } catch (BaseXException exception) {
-            logger.debug(exception.getMessage());
-            throw new QueryException("Error getting DatabaseStats");
-        }
+        dbAdaptor.deleteDocument(databaseName, "DbStatsDocument");
     }
 
     public DatabaseStats getDatabaseStats() throws QueryException {
@@ -161,20 +107,13 @@ public class DataBaseManager<D, F, M> {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             boolean resultsWereCached = true;
-            synchronized (databaseLock) {
-                // try getting the cached stats                
-                System.out.println("queryString: " + statsQuery);
-                queryResult = new XQuery(statsCachedQuery).execute(context);
-                if (queryResult.length() < 2) {
-                    resultsWereCached = false;
-                    // calculate the stats
-                    System.out.println("queryString: " + statsQuery);
-                    queryResult = new XQuery(statsQuery).execute(context);
-                    // insert the stats as a document
-                    new Open(databaseName).execute(context);
-                    new Add("DbStatsDocument", queryResult).execute(context);
-                    new Close().execute(context);
-                }
+            queryResult = dbAdaptor.executeQuery(statsCachedQuery);
+            if (queryResult.length() < 2) {
+                resultsWereCached = false;
+                // calculate the stats
+                queryResult = dbAdaptor.executeQuery(statsQuery);
+                // insert the stats as a document
+                dbAdaptor.addDocument(databaseName, "DbStatsDocument", queryResult);
             }
             System.out.println("queryResult: " + queryResult);
             DatabaseStats databaseStats = (DatabaseStats) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), DatabaseStats.class).getValue();
@@ -185,9 +124,6 @@ public class DataBaseManager<D, F, M> {
 //            System.out.println(queryTimeString);
             return databaseStats;
         } catch (JAXBException exception) {
-            logger.debug(exception.getMessage());
-            throw new QueryException("Error getting DatabaseStats");
-        } catch (BaseXException exception) {
             logger.debug(exception.getMessage());
             throw new QueryException("Error getting DatabaseStats");
         }
@@ -223,19 +159,17 @@ public class DataBaseManager<D, F, M> {
 
     public IterableResult getHandlesOfMissing() throws PluginException, QueryException {
         try {
-            synchronized (databaseLock) {
-                long startTime = System.currentTimeMillis();
-                String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
-                        + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
-                        + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
-                        + "return $missingIds\n";
-                System.out.println("getHandlesOfMissing: " + queryString);
-                QueryProcessor proc = new QueryProcessor(queryString, context);
-                long queryMils = System.currentTimeMillis() - startTime;
-                String queryTimeString = "Query time: " + queryMils + "ms";
-                System.out.println(queryTimeString);
-                return new IterableResult(proc);
-            }
+            long startTime = System.currentTimeMillis();
+            String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
+                    + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
+                    + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
+                    + "return $missingIds\n";
+            System.out.println("getHandlesOfMissing: " + queryString);
+            QueryProcessor proc = dbAdaptor.getQueryProcessor(queryString);
+            long queryMils = System.currentTimeMillis() - startTime;
+            String queryTimeString = "Query time: " + queryMils + "ms";
+            System.out.println(queryTimeString);
+            return new IterableResult(proc);
         } catch (org.basex.query.QueryException baseXException2) {
             logger.error(baseXException2.getMessage());
             throw new QueryException(baseXException2.getMessage());
@@ -271,22 +205,13 @@ public class DataBaseManager<D, F, M> {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(dataNode, stringWriter);
 //            System.out.println("Data to be inserted:\n" + stringWriter.toString());
-            try {
-                synchronized (databaseLock) {
-                    // test for existing documents with the same ID and throw if one is found
-                    String existingDocumentQuery = "let $countValue := count(collection(\"" + databaseName + "\")/DataNode[@ID = \"" + dataNode.getID() + "\"])\nreturn $countValue";
-                    String existingDocumentResult = new XQuery(existingDocumentQuery).execute(context);
-                    if (!existingDocumentResult.equals("0")) {
-                        throw new QueryException("Existing document found, count: " + existingDocumentResult);
-                    }
-                    new Open(databaseName).execute(context);
-                    new Add(dataNode.getID(), stringWriter.toString()).execute(context);
-                    new Close().execute(context);
-                }
-            } catch (BaseXException baseXException2) {
-                logger.error(baseXException2.getMessage());
-                throw new QueryException(baseXException2.getMessage());
+            // test for existing documents with the same ID and throw if one is found
+            String existingDocumentQuery = "let $countValue := count(collection(\"" + databaseName + "\")/DataNode[@ID = \"" + dataNode.getID() + "\"])\nreturn $countValue";
+            String existingDocumentResult = dbAdaptor.executeQuery(existingDocumentQuery);
+            if (!existingDocumentResult.equals("0")) {
+                throw new QueryException("Existing document found, count: " + existingDocumentResult);
             }
+            dbAdaptor.addDocument(databaseName, dataNode.getID(), stringWriter.toString());
         } catch (JAXBException exception) {
             System.err.println("jaxb error:" + exception.getMessage());
             throw new PluginException(exception);
@@ -770,11 +695,9 @@ public class DataBaseManager<D, F, M> {
             JAXBContext jaxbContext = JAXBContext.newInstance(dClass);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
-            synchronized (databaseLock) {
-                System.out.println("queryString: " + queryString);
-                queryResult = new XQuery(queryString).execute(context);
-            }
-            System.out.println("queryResult: " + queryResult);
+//                System.out.println("queryString: " + queryString);
+            queryResult = dbAdaptor.executeQuery(queryString);
+//            System.out.println("queryResult: " + queryResult);
             D rootTreeNode = (D) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), dClass).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
             int resultCount = 0;
@@ -787,9 +710,6 @@ public class DataBaseManager<D, F, M> {
         } catch (JAXBException exception) {
             logger.debug(exception.getMessage());
             throw new QueryException("Error getting search options");
-        } catch (BaseXException exception) {
-            logger.debug(exception.getMessage());
-            throw new QueryException("Error getting search options");
         }
     }
 
@@ -799,10 +719,8 @@ public class DataBaseManager<D, F, M> {
             JAXBContext jaxbContext = JAXBContext.newInstance(mClass);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
-            synchronized (databaseLock) {
-                System.out.println("queryString: " + queryString);
-                queryResult = new XQuery(queryString).execute(context);
-            }
+            System.out.println("queryString: " + queryString);
+            queryResult = dbAdaptor.executeQuery(queryString);
             System.out.println("queryResult: " + queryResult);
             M foundEntities = (M) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), MetadataFileType.class).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
@@ -816,9 +734,6 @@ public class DataBaseManager<D, F, M> {
 //            selectedEntity.appendTempLabel(queryTimeString);
             return (M[]) ((MetadataFileType) foundEntities).getChildMetadataTypes();
         } catch (JAXBException exception) {
-            logger.debug(exception.getMessage());
-            throw new QueryException("Error getting search options");
-        } catch (BaseXException exception) {
             logger.debug(exception.getMessage());
             throw new QueryException("Error getting search options");
         }

@@ -113,8 +113,9 @@ public class DataBaseManagerTest extends TestCase {
      */
     public void testCreateDatabase() throws Exception {
         System.out.println("createDatabase");
-        final DataBaseManager instance = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
-        instance.createDatabase();
+        final DbAdaptor dbAdaptor = new LocalDbAdaptor(getPluginSessionStorage());
+        final DataBaseManager instance = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
+//        instance.createDatabase();
     }
 
     /**
@@ -124,7 +125,8 @@ public class DataBaseManagerTest extends TestCase {
     public void testInsertIntoDatabase() throws JAXBException, PluginException, QueryException {
         System.out.println("walkTreeInsertingNodes");
         final PluginSessionStorage pluginSessionStorage = getPluginSessionStorage();
-        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, pluginSessionStorage, projectDatabaseName);
+        final DbAdaptor dbAdaptor = new LocalDbAdaptor(pluginSessionStorage);
+        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         for (String dataXmlString : TestData.testData) {
@@ -164,7 +166,8 @@ public class DataBaseManagerTest extends TestCase {
     }
 
     public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException {
-        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+        final DbAdaptor dbAdaptor = new LocalDbAdaptor(getPluginSessionStorage());
+        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         DatabaseStats databaseStats = instance.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
         assertEquals(databaseStats.getKnownDocumentsCount(), 0);
@@ -182,7 +185,8 @@ public class DataBaseManagerTest extends TestCase {
     }
 
     public void testGetNodeDatasByIDs() throws QueryException {
-        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+        final DbAdaptor dbAdaptor = new LocalDbAdaptor(getPluginSessionStorage());
+        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
         SerialisableDataNode dataNode = (SerialisableDataNode) instance.getNodeDatasByIDs(nodeIDs);
