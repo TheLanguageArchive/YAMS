@@ -39,6 +39,8 @@ import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.db.DataBaseManager;
 import nl.mpi.yaas.common.db.DataBaseManager.IterableResult;
+import nl.mpi.yaas.common.db.DbAdaptor;
+import nl.mpi.yaas.common.db.LocalDbAdaptor;
 
 /**
  * Created on : Feb 6, 2013, 2:04:40 PM
@@ -77,7 +79,8 @@ public class RemoteArchiveCrawler {
                 dataBaseName = DataBaseManager.testDataBase;
                 break;
         }
-        arbilDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, arbilSessionStorage, dataBaseName);
+        final DbAdaptor dbAdaptor = new LocalDbAdaptor(arbilSessionStorage);
+        arbilDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dataBaseName);
         arbilDatabase.clearDatabaseStats();
     }
 
@@ -163,7 +166,7 @@ public class RemoteArchiveCrawler {
 //            };
             ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
             System.out.println("Dropping old DB and creating a new DB");
-            arbilDatabase.createDatabase(); // this will drop the old database
+            arbilDatabase.dropAndRecreateDb(); // this will drop the old database
             loadChildNodes(arbilDatabase, dataNode);
             System.out.println("Crawl complete");
             clearAndCalculateDbStats();
@@ -206,7 +209,7 @@ public class RemoteArchiveCrawler {
             final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
             //            arbilDataNodeWrapper.checkChildNodesLoaded();
             if (arbilDataNodeWrapper.getID() != null && !arbilDataNodeWrapper.getID().isEmpty()) {
-                arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper);
+                arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper, true);
                 numberInserted++;
             } else {
                 throw new CrawlerException("No ID found");
