@@ -31,7 +31,6 @@ import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
-import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
@@ -44,6 +43,12 @@ import org.junit.Assert;
 public class DataBaseManagerTest extends TestCase {
 
     String projectDatabaseName = "unit-test-database";
+    final DbAdaptor dbAdaptor;
+
+    public DataBaseManagerTest() throws IOException, QueryException {
+        dbAdaptor = new LocalDbAdaptor(getTempDirectory());
+    }
+
 //
 //    public DataBaseManagerTest(String testName) {
 //        super(testName);
@@ -71,41 +76,25 @@ public class DataBaseManagerTest extends TestCase {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
+    private File getTempDirectory() throws IOException {
 
-    private PluginSessionStorage getPluginSessionStorage() {
-        return new PluginSessionStorage() {
-            private File tempWorkingDir;
-
-            public File getApplicationSettingsDirectory() {
-                if (tempWorkingDir == null) {
-                    try {
-                        tempWorkingDir = File.createTempFile("yaas-db", Long.toString(System.nanoTime()));
-                        if (tempWorkingDir.exists()) {
-                            if (!tempWorkingDir.delete()) {
-                                throw new RuntimeException("Cannot create temp dir!");
-                            }
-                        }
-                        if (tempWorkingDir.mkdir()) {
-                            tempWorkingDir.deleteOnExit();
-                        } else {
-                            fail("Cannot create temp dir!");
-                        }
-                        System.out.println("Using working directory: " + tempWorkingDir.getAbsolutePath());
-                    } catch (IOException exception) {
-                        fail(exception.getMessage());
-                    }
-                }
-                return tempWorkingDir;
-            }
-
-            public File getProjectDirectory() {
-                return getApplicationSettingsDirectory();
-            }
-
-            public File getProjectWorkingDirectory() {
-                return new File(getApplicationSettingsDirectory(), "WorkingFiles");
-            }
-        };
+//        File tempWorkingDir = File.createTempFile("yaas-db", "-tmp");
+//        File tempWorkingDir = File.createTempFile("yaas-db", Long.toString(System.nanoTime()), new File("./target"));
+        File tempWorkingDir = new File(new File("target").getAbsoluteFile(), "yaas-db");
+//        File tempWorkingDir = File.createTempFile("yaas-db", "", new File("./target"));
+        // todo: resolve why basex cant read long file names and move back the the temp dir and delete the old directory
+//        if (tempWorkingDir.exists()) {
+//            if (!tempWorkingDir.delete()) {
+//                throw new RuntimeException("Cannot create temp dir!");
+//            }
+//        }
+//        if (tempWorkingDir.mkdir()) {
+//            tempWorkingDir.deleteOnExit();
+//        } else {
+//            fail("Cannot create temp dir!");
+//        }
+        System.out.println("Using working directory: " + tempWorkingDir.getAbsolutePath());
+        return tempWorkingDir;
     }
 
     /**
@@ -113,7 +102,6 @@ public class DataBaseManagerTest extends TestCase {
      */
     public void testCreateDatabase() throws Exception {
         System.out.println("createDatabase");
-        final DbAdaptor dbAdaptor = new LocalDbAdaptor(getPluginSessionStorage());
         final DataBaseManager instance = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
 //        instance.createDatabase();
     }
@@ -122,10 +110,8 @@ public class DataBaseManagerTest extends TestCase {
      * Test of insertIntoDatabase method by waling a tree of metadata and
      * inserting it into the database.
      */
-    public void testInsertIntoDatabase() throws JAXBException, PluginException, QueryException {
+    public void testInsertIntoDatabase() throws JAXBException, PluginException, QueryException, IOException {
         System.out.println("walkTreeInsertingNodes");
-        final PluginSessionStorage pluginSessionStorage = getPluginSessionStorage();
-        final DbAdaptor dbAdaptor = new LocalDbAdaptor(pluginSessionStorage);
         dbAdaptor.dropAndRecreateDb(projectDatabaseName);
         final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
@@ -166,8 +152,7 @@ public class DataBaseManagerTest extends TestCase {
         assertTrue("Query took too long:" + databaseStats.getQueryTimeMS() + "ms", databaseStats.getQueryTimeMS() < 420);
     }
 
-    public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException {
-        final DbAdaptor dbAdaptor = new LocalDbAdaptor(getPluginSessionStorage());
+    public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException, IOException {
         dbAdaptor.dropAndRecreateDb(projectDatabaseName);
         final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         DatabaseStats databaseStats = instance.getDatabaseStats();
@@ -186,8 +171,7 @@ public class DataBaseManagerTest extends TestCase {
         assertFalse("Failed to clear the db stats cache", databaseStats.isIsCachedResults());
     }
 
-    public void testGetNodeDatasByIDs() throws QueryException {
-        final DbAdaptor dbAdaptor = new LocalDbAdaptor(getPluginSessionStorage());
+    public void testGetNodeDatasByIDs() throws QueryException, IOException {
         final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));

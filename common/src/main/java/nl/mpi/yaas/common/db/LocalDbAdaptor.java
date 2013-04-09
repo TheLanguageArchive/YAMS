@@ -19,7 +19,6 @@ package nl.mpi.yaas.common.db;
 
 import java.io.File;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
-import nl.mpi.flap.plugin.PluginSessionStorage;
 import org.basex.core.BaseXException;
 import org.basex.core.Context;
 import org.basex.core.cmd.Add;
@@ -29,6 +28,7 @@ import org.basex.core.cmd.Delete;
 import org.basex.core.cmd.DropDB;
 import org.basex.core.cmd.InfoDB;
 import org.basex.core.cmd.Open;
+import org.basex.core.cmd.Set;
 import org.basex.core.cmd.XQuery;
 import org.basex.query.QueryProcessor;
 import org.slf4j.LoggerFactory;
@@ -42,24 +42,22 @@ public class LocalDbAdaptor implements DbAdaptor {
 
     static final private Context context = new Context();
     static final private Object databaseLock = new Object();
-    final private PluginSessionStorage sessionStorage;
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
+    final private File dbPathDir;
 
-    public LocalDbAdaptor(PluginSessionStorage sessionStorage) throws QueryException {
-//        try {
-        this.sessionStorage = sessionStorage;
-//            final File dbPathFile = new File(sessionStorage.getApplicationSettingsDirectory(), "BaseXData");
-////            dbPathFile.mkdir();
-//            System.out.println("dbpath: " + dbPathFile.toString());
-//            System.out.println("dbpath exists: " + dbPathFile.exists());
-//            synchronized (databaseLock) {
-        // it seems that setting the db path to a temp file has not been working for some time if ever
-//                new Set("dbpath", dbPathFile).execute(context);
-//            }
-//        } catch (BaseXException baseXException2) {
-//            logger.error(baseXException2.getMessage());
-//            throw new QueryException(baseXException2.getMessage(), baseXException2);
-//        }
+    public LocalDbAdaptor(File dbPath) throws QueryException {
+        dbPathDir = new File(dbPath, "BaseXData");
+        System.out.println("dbPathDir: " + dbPathDir.toString());
+        dbPathDir.mkdir();
+        try {
+            System.out.println("dbpath exists: " + dbPathDir.exists());
+            synchronized (databaseLock) {
+                new Set("DBPATH", dbPathDir).execute(context);
+            }
+        } catch (BaseXException baseXException2) {
+            logger.error(baseXException2.getMessage());
+            throw new QueryException(baseXException2.getMessage(), baseXException2);
+        }
     }
 
     public void checkDbExists(String databaseName) throws QueryException {
@@ -78,10 +76,6 @@ public class LocalDbAdaptor implements DbAdaptor {
                 throw new QueryException(baseXException2.getMessage(), baseXException2);
             }
         }
-    }
-
-    public File getDatabaseProjectDirectory(String projectDatabaseName) {
-        return sessionStorage.getProjectWorkingDirectory();
     }
 
     public void dropAndRecreateDb(String databaseName) throws QueryException {

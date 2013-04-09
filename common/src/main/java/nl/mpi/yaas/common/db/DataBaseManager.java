@@ -189,6 +189,14 @@ public class DataBaseManager<D, F, M> {
 //    }
 
     public void insertIntoDatabase(SerialisableDataNode dataNode, boolean testForDuplicates) throws PluginException, QueryException {
+        // test for existing documents with the same ID and throw if one is found
+        if (testForDuplicates) {
+            String existingDocumentQuery = "let $countValue := count(collection(\"" + databaseName + "\")/DataNode[@ID = \"" + dataNode.getID() + "\"])\nreturn $countValue";
+            String existingDocumentResult = dbAdaptor.executeQuery(existingDocumentQuery);
+            if (!existingDocumentResult.equals("0")) {
+                throw new QueryException("Existing document found, count: " + existingDocumentResult);
+            }
+        }
         // use JAXB to serialise and insert the data node into the database
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(dClass, fClass, mClass);
@@ -197,14 +205,6 @@ public class DataBaseManager<D, F, M> {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(dataNode, stringWriter);
 //            System.out.println("Data to be inserted:\n" + stringWriter.toString());
-            // test for existing documents with the same ID and throw if one is found
-            if (testForDuplicates) {
-                String existingDocumentQuery = "let $countValue := count(collection(\"" + databaseName + "\")/DataNode[@ID = \"" + dataNode.getID() + "\"])\nreturn $countValue";
-                String existingDocumentResult = dbAdaptor.executeQuery(existingDocumentQuery);
-                if (!existingDocumentResult.equals("0")) {
-                    throw new QueryException("Existing document found, count: " + existingDocumentResult);
-                }
-            }
             dbAdaptor.addDocument(databaseName, dataNode.getID(), stringWriter.toString());
         } catch (JAXBException exception) {
             System.err.println("jaxb error:" + exception.getMessage());
