@@ -126,13 +126,14 @@ public class DataBaseManagerTest extends TestCase {
         System.out.println("walkTreeInsertingNodes");
         final PluginSessionStorage pluginSessionStorage = getPluginSessionStorage();
         final DbAdaptor dbAdaptor = new LocalDbAdaptor(pluginSessionStorage);
+        dbAdaptor.dropAndRecreateDb(projectDatabaseName);
         final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         for (String dataXmlString : TestData.testData) {
             System.out.println("dataXmlString: " + dataXmlString);
             SerialisableDataNode dataNode = (SerialisableDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(dataXmlString)), SerialisableDataNode.class).getValue();
-            instance.insertIntoDatabase(dataNode);
+            instance.insertIntoDatabase(dataNode, false);
         }
         DatabaseStats databaseStats = instance.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
@@ -167,6 +168,7 @@ public class DataBaseManagerTest extends TestCase {
 
     public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException {
         final DbAdaptor dbAdaptor = new LocalDbAdaptor(getPluginSessionStorage());
+        dbAdaptor.dropAndRecreateDb(projectDatabaseName);
         final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         DatabaseStats databaseStats = instance.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");

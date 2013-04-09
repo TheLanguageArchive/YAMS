@@ -27,8 +27,8 @@ import org.basex.core.cmd.Close;
 import org.basex.core.cmd.CreateDB;
 import org.basex.core.cmd.Delete;
 import org.basex.core.cmd.DropDB;
+import org.basex.core.cmd.InfoDB;
 import org.basex.core.cmd.Open;
-import org.basex.core.cmd.Set;
 import org.basex.core.cmd.XQuery;
 import org.basex.query.QueryProcessor;
 import org.slf4j.LoggerFactory;
@@ -45,16 +45,26 @@ public class LocalDbAdaptor implements DbAdaptor {
     final private PluginSessionStorage sessionStorage;
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
 
-    public LocalDbAdaptor(PluginSessionStorage sessionStorage) {
+    public LocalDbAdaptor(PluginSessionStorage sessionStorage) throws QueryException {
+//        try {
         this.sessionStorage = sessionStorage;
+//            final File dbPathFile = new File(sessionStorage.getApplicationSettingsDirectory(), "BaseXData");
+////            dbPathFile.mkdir();
+//            System.out.println("dbpath: " + dbPathFile.toString());
+//            System.out.println("dbpath exists: " + dbPathFile.exists());
+//            synchronized (databaseLock) {
+        // it seems that setting the db path to a temp file has not been working for some time if ever
+//                new Set("dbpath", dbPathFile).execute(context);
+//            }
+//        } catch (BaseXException baseXException2) {
+//            logger.error(baseXException2.getMessage());
+//            throw new QueryException(baseXException2.getMessage(), baseXException2);
+//        }
     }
 
     public void checkDbExists(String databaseName) throws QueryException {
         try {
             synchronized (databaseLock) {
-                final File dbPathFile = new File(sessionStorage.getApplicationSettingsDirectory(), "BaseXData");
-                System.out.println("dbpath: " + dbPathFile.toString());
-                new Set("dbpath", dbPathFile).execute(context);
                 new Open(databaseName).execute(context);
                 new Close().execute(context);
             }
@@ -74,7 +84,7 @@ public class LocalDbAdaptor implements DbAdaptor {
         return sessionStorage.getProjectWorkingDirectory();
     }
 
-    protected void createDatabase(String databaseName) throws QueryException {
+    public void dropAndRecreateDb(String databaseName) throws QueryException {
 //        String suffixFilter = "*.*mdi";
         try {
             synchronized (databaseLock) {
@@ -90,6 +100,7 @@ public class LocalDbAdaptor implements DbAdaptor {
                 new CreateDB(databaseName).execute(context);
 //                System.out.println("Create full text index");
 //                new CreateIndex("fulltext").execute(context); // note that the indexes appear to be created by default, so this step might be redundant
+                System.out.print(new InfoDB().execute(context));
             }
         } catch (BaseXException exception) {
             throw new QueryException(exception.getMessage(), exception);

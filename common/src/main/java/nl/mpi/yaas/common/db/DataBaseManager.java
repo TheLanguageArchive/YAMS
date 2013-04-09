@@ -17,7 +17,6 @@
  */
 package nl.mpi.yaas.common.db;
 
-import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -29,7 +28,6 @@ import javax.xml.transform.stream.StreamSource;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
-import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
@@ -37,16 +35,6 @@ import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
 import nl.mpi.yaas.common.data.SearchParameters;
-import org.basex.core.BaseXException;
-import org.basex.core.Context;
-import org.basex.core.cmd.Add;
-import org.basex.core.cmd.Close;
-import org.basex.core.cmd.CreateDB;
-import org.basex.core.cmd.Delete;
-import org.basex.core.cmd.DropDB;
-import org.basex.core.cmd.Open;
-import org.basex.core.cmd.Set;
-import org.basex.core.cmd.XQuery;
 import org.basex.query.QueryProcessor;
 import org.basex.query.iter.Iter;
 import org.basex.query.value.item.Item;
@@ -75,6 +63,10 @@ public class DataBaseManager<D, F, M> {
         this.mClass = mClass;
         this.databaseName = databaseName;
         dbAdaptor.checkDbExists(databaseName);
+    }
+
+    public void dropAndRecreateDb() throws QueryException {
+        dbAdaptor.dropAndRecreateDb(databaseName);
     }
 
     public void clearDatabaseStats() throws QueryException {
@@ -163,7 +155,7 @@ public class DataBaseManager<D, F, M> {
             String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
                     + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                     + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
-                    + "return $missingIds\n";
+                    + "return $missingIds\n"; //[0:100]\n";   [position() le 3]
             System.out.println("getHandlesOfMissing: " + queryString);
             QueryProcessor proc = dbAdaptor.getQueryProcessor(queryString);
             long queryMils = System.currentTimeMillis() - startTime;
@@ -196,7 +188,7 @@ public class DataBaseManager<D, F, M> {
 //        }
 //    }
 
-    public void insertIntoDatabase(SerialisableDataNode dataNode) throws PluginException, QueryException {
+    public void insertIntoDatabase(SerialisableDataNode dataNode, boolean testForDuplicates) throws PluginException, QueryException {
         // use JAXB to serialise and insert the data node into the database
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(dClass, fClass, mClass);
@@ -206,10 +198,12 @@ public class DataBaseManager<D, F, M> {
             marshaller.marshal(dataNode, stringWriter);
 //            System.out.println("Data to be inserted:\n" + stringWriter.toString());
             // test for existing documents with the same ID and throw if one is found
-            String existingDocumentQuery = "let $countValue := count(collection(\"" + databaseName + "\")/DataNode[@ID = \"" + dataNode.getID() + "\"])\nreturn $countValue";
-            String existingDocumentResult = dbAdaptor.executeQuery(existingDocumentQuery);
-            if (!existingDocumentResult.equals("0")) {
-                throw new QueryException("Existing document found, count: " + existingDocumentResult);
+            if (testForDuplicates) {
+                String existingDocumentQuery = "let $countValue := count(collection(\"" + databaseName + "\")/DataNode[@ID = \"" + dataNode.getID() + "\"])\nreturn $countValue";
+                String existingDocumentResult = dbAdaptor.executeQuery(existingDocumentQuery);
+                if (!existingDocumentResult.equals("0")) {
+                    throw new QueryException("Existing document found, count: " + existingDocumentResult);
+                }
             }
             dbAdaptor.addDocument(databaseName, dataNode.getID(), stringWriter.toString());
         } catch (JAXBException exception) {

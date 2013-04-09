@@ -29,12 +29,14 @@ public interface DbAdaptor {
 
     void checkDbExists(String databaseName) throws QueryException;
 
+    void dropAndRecreateDb(String databaseName) throws QueryException;
+
     void addDocument(String databaseName, String documentName, String documentContents) throws QueryException;
 
     void deleteDocument(String databaseName, String documentName) throws QueryException;
 
     String executeQuery(String queryString) throws QueryException;
-    
+
     // todo: the use of QueryProcessor is not compatable with the rest interface so will have to go
     public QueryProcessor getQueryProcessor(String queryString) throws QueryException;
 }
