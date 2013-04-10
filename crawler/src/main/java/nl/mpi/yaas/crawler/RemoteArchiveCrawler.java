@@ -39,7 +39,6 @@ import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.db.DataBaseManager;
-import nl.mpi.yaas.common.db.DataBaseManager.IterableResult;
 import nl.mpi.yaas.common.db.DbAdaptor;
 import nl.mpi.yaas.common.db.LocalDbAdaptor;
 
@@ -133,22 +132,27 @@ public class RemoteArchiveCrawler {
         System.out.println("FindAndInsertMissingNodes");
         try {
             // todo: change this to a loop that gets more missing document URLs in blocks of 100 from the db until the max
-            final IterableResult handlesOfMissing = arbilDatabase.getHandlesOfMissing();
-            while (numberInserted < numberToInsert) {
-//            for (String targetHandle = arbilDatabase.getFirstHandlesOfMissing(); !targetHandle.isEmpty();) {
-                String targetHandle = handlesOfMissing.getNext();
-                if (targetHandle == null) {
-                    System.out.println("No more missing documents to crawl");
-                    break;
-                }
-                System.out.println("targetHandle: " + targetHandle);
-                URI targetUri = new URI(targetHandle.replace("hdl:", HANDLE_SERVER_URI));
-                System.out.println("targetUri: " + targetUri);
-                ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
-                ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, new URI(targetHandle));
-                System.out.println("arbil url: " + dataNode.getUrlString());
-                loadAndInsert(arbilDatabase, dataNode);
+//            final IterableResult handlesOfMissing = arbilDatabase.getHandlesOfMissing();
+            boolean continueGetting = true;
+            while (continueGetting) {
+                for (String targetHandle : arbilDatabase.getHandlesOfMissing()) {
+                    if (numberInserted >= numberToInsert) {
+                        continueGetting = false;
+                        break;
+                    }
+                    if (targetHandle == null) {
+                        System.out.println("No more missing documents to crawl");
+                        break;
+                    }
+                    System.out.println("targetHandle: " + targetHandle);
+                    URI targetUri = new URI(targetHandle.replace("hdl:", HANDLE_SERVER_URI));
+                    System.out.println("targetUri: " + targetUri);
+                    ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
+                    ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, new URI(targetHandle));
+                    System.out.println("arbil url: " + dataNode.getUrlString());
+                    loadAndInsert(arbilDatabase, dataNode);
 
+                }
             }
             System.out.println("Update complete");
             clearAndCalculateDbStats();
@@ -202,7 +206,7 @@ public class RemoteArchiveCrawler {
         while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
             dataNode.reloadNode();
             dataNode.waitTillLoaded();
-            Thread.sleep(100); // todo: when this sleep is not here there are regular concurrent modification exceptions in the get fields of arbil data node
+//            Thread.sleep(100); // the issue in arbil seems to now be resolved that required this sleep to be here without which there were regular concurrent modification exceptions in the get fields of arbil data node
         }
         totalLoaded++;
 //        loadChildNodes(dataNode);
