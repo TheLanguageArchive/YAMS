@@ -47,13 +47,13 @@ public class Main {
 //                System.exit(-1);
 //            }
 //        }
-        int defaultNumberToCrawl = 100;
+        int defaultNumberToCrawl = 300;
         String defaultStartUrl = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi";
         // create the command line parser
         CommandLineParser parser = new BasicParser(); //DefaultParser();
         // create the Options
         Options options = new Options();
-        options.addOption("d", "delete", false, "delete the existing database and recrawl");
+        options.addOption("d", "drop", false, "drop the existing database and recrawl");
         options.addOption("a", "append", false, "recrawl adding missing documents (this is the default behaviour)");
         options.addOption("n", "number", true, "number of documents to insert (default is " + defaultNumberToCrawl + ")");
         options.addOption("u", "url", true, "url of the start documents to crawl (default is " + defaultStartUrl + ")");
@@ -75,11 +75,11 @@ public class Main {
                 if (line.hasOption("d")) {
                     System.out.println("Dropping and crawing from scratch");
                     archiveCrawler.crawl(startURI, numberToCrawl);
-                } else {
-//                if (line.hasOption("a")) {
-                    System.out.println("Restarting crawl appending new documents");
-                    archiveCrawler.update(numberToCrawl);
                 }
+//                if (line.hasOption("a")) {
+                System.out.println("Restarting crawl appending new documents");
+                archiveCrawler.update(numberToCrawl);
+//                }
                 System.exit(0); // arbil threads might be requiring this to terminate
             } catch (URISyntaxException exception) {
                 System.out.println(exception.getMessage());

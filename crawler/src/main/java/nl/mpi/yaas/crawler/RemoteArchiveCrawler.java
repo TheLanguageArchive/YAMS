@@ -17,6 +17,7 @@
  */
 package nl.mpi.yaas.crawler;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import nl.mpi.arbil.ArbilDesktopInjector;
@@ -29,7 +30,7 @@ import nl.mpi.arbil.ui.ArbilWindowManager;
 import nl.mpi.arbil.userstorage.ArbilSessionStorage;
 import nl.mpi.arbil.util.ApplicationVersionManager;
 import nl.mpi.arbil.util.ArbilLogConfigurer;
-import nl.mpi.arbil.util.ArbilMimeHashQueue;
+import nl.mpi.arbil.util.MimeHashQueue;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.SerialisableDataNode;
@@ -69,7 +70,40 @@ public class RemoteArchiveCrawler {
 
         final ArbilWindowManager arbilWindowManager = injector.getWindowManager();
         final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
-        dataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, new ArbilMimeHashQueue(arbilWindowManager, arbilSessionStorage), new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
+        final MimeHashQueue mockMimeHashQueue = new MimeHashQueue() {
+            public void addToQueue(ArbilDataNode dataNode) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void forceInQueue(ArbilDataNode dataNode) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public boolean isCheckResourcePermissions() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void setCheckResourcePermissions(boolean checkResourcePermissions) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void startMimeHashQueueThread() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void stopMimeHashQueueThread() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public String[] getMimeType(URI fileUri) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            public void terminateQueue() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
+        dataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, mockMimeHashQueue, new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
         String dataBaseName;
         switch (dbType) {
             case StandardDB:
@@ -79,7 +113,7 @@ public class RemoteArchiveCrawler {
                 dataBaseName = DataBaseManager.testDataBase;
                 break;
         }
-        final DbAdaptor dbAdaptor = new LocalDbAdaptor(arbilSessionStorage);
+        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File(System.getProperty("user.dir"), "yaas-data"));
         arbilDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dataBaseName);
         arbilDatabase.clearDatabaseStats();
     }
@@ -98,6 +132,7 @@ public class RemoteArchiveCrawler {
         numberInserted = 0;
         System.out.println("FindAndInsertMissingNodes");
         try {
+            // todo: change this to a loop that gets more missing document URLs in blocks of 100 from the db until the max
             final IterableResult handlesOfMissing = arbilDatabase.getHandlesOfMissing();
             while (numberInserted < numberToInsert) {
 //            for (String targetHandle = arbilDatabase.getFirstHandlesOfMissing(); !targetHandle.isEmpty();) {
@@ -138,36 +173,13 @@ public class RemoteArchiveCrawler {
     public void crawl(URI startURI, int numberToInsert) {
         this.numberToInsert = numberToInsert;
         numberInserted = 0;
-        System.out.println("walkTreeInsertingNodes");
+        System.out.println("crawl");
         try {
-//            final DataBaseManager dataBaseManager = new DataBaseManager();
-            ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
-//                public void dataNodeRemoved(ArbilNode dataNode) {
-////                    throw new UnsupportedOperationException("Not supported yet.");
-//                }
-//
-//                public void dataNodeIconCleared(ArbilNode dataNode) {
-//                    if (dataNode.isDataLoaded()) {
-//                        try {
-//                            instance.insertIntoDatabase(dataNode);
-//                        } catch (PluginException exception) {
-//                            fail(exception.getMessage());
-//                        }
-//                    }
-//                }
-//
-//                public void dataNodeChildAdded(ArbilNode destination, ArbilNode newChildNode) {
-////                    throw new UnsupportedOperationException("Not supported yet.");
-//                }
-//
-//                public boolean isFullyLoadedNodeRequired() {
-//                    return true;
-//                }
-//            };
+            ArbilDataNodeContainer nodeContainer = null;
             ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
             System.out.println("Dropping old DB and creating a new DB");
             arbilDatabase.dropAndRecreateDb(); // this will drop the old database
-            loadChildNodes(arbilDatabase, dataNode);
+            loadAndInsert(arbilDatabase, dataNode);
             System.out.println("Crawl complete");
             clearAndCalculateDbStats();
         } catch (InterruptedException exception) {
@@ -185,21 +197,12 @@ public class RemoteArchiveCrawler {
         }
     }
 
-    private void loadChildNodes(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException, CrawlerException {
-        if (numberInserted >= numberToInsert) {
-            return;
-        }
-        loadAndInsert(arbilDatabase, dataNode);
-        for (ArbilDataNode childNode : dataNode.getChildArray()) {
-            loadChildNodes(arbilDatabase, childNode);
-        }
-    }
-
     private void loadAndInsert(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException, CrawlerException {
         System.out.println("Loading: " + numberInserted);
-        dataNode.reloadNode();
         while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
-            Thread.sleep(100);
+            dataNode.reloadNode();
+            dataNode.waitTillLoaded();
+            Thread.sleep(100); // todo: when this sleep is not here there are regular concurrent modification exceptions in the get fields of arbil data node
         }
         totalLoaded++;
 //        loadChildNodes(dataNode);

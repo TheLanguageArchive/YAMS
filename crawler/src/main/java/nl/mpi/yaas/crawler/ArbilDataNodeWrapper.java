@@ -19,7 +19,9 @@ package nl.mpi.yaas.crawler;
 
 import java.util.ArrayList;
 import java.util.List;
+import nl.mpi.arbil.clarin.profiles.CmdiTemplate;
 import nl.mpi.arbil.data.ArbilDataNode;
+import nl.mpi.arbil.templates.ArbilTemplate;
 import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.SerialisableDataNode;
@@ -62,12 +64,46 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
 
     @Override
     public String getLabel() {
-        return arbilDataNode.getLabel();
+        return arbilDataNode.refreshStringValue();
     }
 
     @Override
     public DataNodeType getType() {
-        return arbilDataNode.getType();
+        final DataNodeType dataNodeType = new DataNodeType();
+        if (arbilDataNode.isCmdiMetaDataNode()) {
+            dataNodeType.setFormat(DataNodeType.FormatType.cmdi);
+            final ArbilTemplate template = arbilDataNode.getNodeTemplate();
+            if (template instanceof CmdiTemplate) {
+                final CmdiTemplate cmdiTemplate = (CmdiTemplate) template;
+                dataNodeType.setName(cmdiTemplate.getTemplateName());
+                dataNodeType.setID(cmdiTemplate.getTemplateName()); // todo: modify Arbil so that the ID and Name are available
+            }
+        } else {
+            dataNodeType.setFormat(DataNodeType.FormatType.imdi);
+            if (arbilDataNode.isCatalogue()) {
+                dataNodeType.setName("Catalogue");
+                dataNodeType.setID("imdi.catalogue");
+            } else if (arbilDataNode.isChildNode()) {
+                dataNodeType.setName("Subnode");
+                dataNodeType.setID("subnode");
+            } else if (arbilDataNode.isContainerNode()) {
+                dataNodeType.setName("Container");
+                dataNodeType.setID("container");
+            } else if (arbilDataNode.isCorpus()) {
+                dataNodeType.setName("Corpus");
+                dataNodeType.setID("imdi.corpus");
+            } else if (arbilDataNode.isDirectory()) {
+                dataNodeType.setName("Directory");
+                dataNodeType.setID("directory");
+            } else if (arbilDataNode.isSession()) {
+                dataNodeType.setName("Session");
+                dataNodeType.setID("imdi.session");
+            } else if (arbilDataNode.hasResource()) {
+                dataNodeType.setName("Resource");
+                dataNodeType.setID("imdi.resource");
+            }
+        }
+        return dataNodeType;
     }
 
     @Override
