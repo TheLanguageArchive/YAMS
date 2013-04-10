@@ -121,51 +121,52 @@ public class DataBaseManager<D, F, M> {
         }
     }
 
-    public class IterableResult {
-
-        final QueryProcessor proc;
-        final Iter iter;
-
-        public IterableResult(QueryProcessor proc) throws org.basex.query.QueryException {
-            this.proc = proc;
-            iter = proc.iter();
-        }
-
-        public void close() {
-            proc.close();
-        }
-
-        public String getNext() throws PluginException {
-            try {
-                Item item = iter.next();
-                if (item != null) {
-                    return item.toJava().toString();
-                } else {
-                    return null;
-                }
-            } catch (org.basex.query.QueryException exception) {
-                throw new PluginException(exception);
-            }
-        }
-    }
-
-    public IterableResult getHandlesOfMissing() throws PluginException, QueryException {
-        try {
-            long startTime = System.currentTimeMillis();
-            String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
-                    + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
-                    + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
-                    + "return $missingIds\n"; //[0:100]\n";   [position() le 3]
-            System.out.println("getHandlesOfMissing: " + queryString);
-            QueryProcessor proc = dbAdaptor.getQueryProcessor(queryString);
-            long queryMils = System.currentTimeMillis() - startTime;
-            String queryTimeString = "Query time: " + queryMils + "ms";
-            System.out.println(queryTimeString);
-            return new IterableResult(proc);
-        } catch (org.basex.query.QueryException baseXException2) {
-            logger.error(baseXException2.getMessage());
-            throw new QueryException(baseXException2.getMessage());
-        }
+//    public class IterableResult {
+//
+//        final QueryProcessor proc;
+//        final Iter iter;
+//
+//        public IterableResult(QueryProcessor proc) throws org.basex.query.QueryException {
+//            this.proc = proc;
+//            iter = proc.iter();
+//        }
+//
+//        public void close() {
+//            proc.close();
+//        }
+//
+//        public String getNext() throws PluginException {
+//            try {
+//                Item item = iter.next();
+//                if (item != null) {
+//                    return item.toJava().toString();
+//                } else {
+//                    return null;
+//                }
+//            } catch (org.basex.query.QueryException exception) {
+//                throw new PluginException(exception);
+//            }
+//        }
+//    }
+    public String[] getHandlesOfMissing() throws PluginException, QueryException {
+//        try {
+        long startTime = System.currentTimeMillis();
+        String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
+                + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
+                + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
+                + "return $missingIds[position() le 100]\n"; // <DataNodeId> </DataNodeId>
+        System.out.println("getHandlesOfMissing: " + queryString);
+//            QueryProcessor proc = dbAdaptor.getQueryProcessor(queryString);
+        String queryResult = dbAdaptor.executeQuery(queryString);
+        long queryMils = System.currentTimeMillis() - startTime;
+        String queryTimeString = "Query time: " + queryMils + "ms";
+        System.out.println(queryTimeString);
+        return queryResult.split(" ");
+//            return new IterableResult(proc);
+//        } catch (org.basex.query.QueryException baseXException2) {
+//            logger.error(baseXException2.getMessage());
+//            throw new QueryException(baseXException2.getMessage());
+//        }
     }
 //    public String getFirstHandlesOfMissing() throws PluginException, QueryException {
 //        try {
