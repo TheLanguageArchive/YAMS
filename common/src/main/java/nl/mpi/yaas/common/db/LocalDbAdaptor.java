@@ -61,6 +61,7 @@ public class LocalDbAdaptor implements DbAdaptor {
     }
 
     public void checkDbExists(String databaseName) throws QueryException {
+        System.out.println("databaseName: " + databaseName);
         try {
             synchronized (databaseLock) {
                 new Open(databaseName).execute(context);

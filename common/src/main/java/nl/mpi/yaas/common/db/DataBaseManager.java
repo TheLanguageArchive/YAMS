@@ -148,20 +148,20 @@ public class DataBaseManager<D, F, M> {
 //            }
 //        }
 //    }
-    public String[] getHandlesOfMissing() throws PluginException, QueryException {
+    public String getHandlesOfMissing() throws PluginException, QueryException {
 //        try {
         long startTime = System.currentTimeMillis();
         String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
                 + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                 + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
-                + "return $missingIds[position() le 100]\n"; // <DataNodeId> </DataNodeId>
-        System.out.println("getHandlesOfMissing: " + queryString);
+                + "return $missingIds[position() le 1000]\n"; // <DataNodeId> </DataNodeId>
+//        System.out.println("getHandlesOfMissing: " + queryString);
 //            QueryProcessor proc = dbAdaptor.getQueryProcessor(queryString);
         String queryResult = dbAdaptor.executeQuery(queryString);
         long queryMils = System.currentTimeMillis() - startTime;
         String queryTimeString = "Query time: " + queryMils + "ms";
         System.out.println(queryTimeString);
-        return queryResult.split(" ");
+        return queryResult; // the results here need to be split on " ", but the string can be very long so it should not be done by String.split().
 //            return new IterableResult(proc);
 //        } catch (org.basex.query.QueryException baseXException2) {
 //            logger.error(baseXException2.getMessage());
