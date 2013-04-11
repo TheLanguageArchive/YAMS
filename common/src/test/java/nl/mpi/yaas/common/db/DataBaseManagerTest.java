@@ -52,33 +52,6 @@ public class DataBaseManagerTest extends TestCase {
         dbManager = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
     }
 
-//
-//    public DataBaseManagerTest(String testName) {
-//        super(testName);
-//    }
-//
-//    @Override
-//    protected void setUp() throws Exception {
-//        super.setUp();
-//    }
-//
-//    @Override
-//    protected void tearDown() throws Exception {
-//        super.tearDown();
-//    }
-//
-//    /**
-//     * Test of getDatabaseProjectDirectory method, of class DataBaseManager.
-//     */
-//    public void testGetDatabaseProjectDirectory() {
-//        System.out.println("getDatabaseProjectDirectory");
-//        DataBaseManager dbManager = null;
-//        File expResult = null;
-//        File result = dbManager.getDatabaseProjectDirectory(projectDatabaseName);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
     private File getTempDirectory() throws IOException {
 
 //        File tempWorkingDir = File.createTempFile("yaas-db", "-tmp");
@@ -126,10 +99,10 @@ public class DataBaseManagerTest extends TestCase {
         }
         DatabaseStats databaseStats = dbManager.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
-        assertEquals(databaseStats.getKnownDocumentsCount(), 55);
-        assertEquals(databaseStats.getMisingDocumentsCount(), 0);
-        assertEquals(databaseStats.getDuplicateDocumentsCount(), 39);
-        assertEquals(databaseStats.getRootDocumentsCount(), 16);
+        assertEquals(55, databaseStats.getKnownDocumentsCount());
+        assertEquals(0, databaseStats.getMisingDocumentsCount());
+        assertEquals(39, databaseStats.getDuplicateDocumentsCount());
+        assertEquals(16, databaseStats.getRootDocumentsCount());
         Assert.assertArrayEquals(databaseStats.getRootDocumentsIDs(), new DataNodeId[]{
                     new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"),
                     new DataNodeId("hdl:1839/00-0000-0000-0001-2A9B-9"),
@@ -160,10 +133,10 @@ public class DataBaseManagerTest extends TestCase {
         final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         DatabaseStats databaseStats = instance.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
-        assertEquals(databaseStats.getKnownDocumentsCount(), 0);
-        assertEquals(databaseStats.getMisingDocumentsCount(), 0);
-        assertEquals(databaseStats.getDuplicateDocumentsCount(), 0);
-        assertEquals(databaseStats.getRootDocumentsCount(), 0);
+        assertEquals(0, databaseStats.getKnownDocumentsCount());
+        assertEquals(0, databaseStats.getMisingDocumentsCount());
+        assertEquals(0, databaseStats.getDuplicateDocumentsCount());
+        assertEquals(0, databaseStats.getRootDocumentsCount());
         Assert.assertArrayEquals(databaseStats.getRootDocumentsIDs(), new String[0]);
 
         assertFalse("Cached db stats should not exist at this point", databaseStats.isIsCachedResults());
@@ -179,7 +152,7 @@ public class DataBaseManagerTest extends TestCase {
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
         SerialisableDataNode dataNode = (SerialisableDataNode) instance.getNodeDatasByIDs(nodeIDs);
-        assertEquals(dataNode.getChildList(), null);
+        assertEquals(null, dataNode.getChildList());
     }
     /**
      * Test of getSearchResult method, of class DataBaseManager.
