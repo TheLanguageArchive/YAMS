@@ -20,6 +20,8 @@ package nl.mpi.yaas.crawler;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
 import nl.mpi.arbil.ArbilDesktopInjector;
 import nl.mpi.arbil.ArbilVersion;
 import nl.mpi.arbil.data.ArbilDataNode;
@@ -134,8 +136,14 @@ public class RemoteArchiveCrawler {
             // todo: change this to a loop that gets more missing document URLs in blocks of 100 from the db until the max
 //            final IterableResult handlesOfMissing = arbilDatabase.getHandlesOfMissing();
             boolean continueGetting = true;
+            StringTokenizer stringTokenizer = null;
             while (continueGetting) {
-                for (String targetHandle : arbilDatabase.getHandlesOfMissing()) {
+                if (stringTokenizer == null) {
+                    String handlesOfMissing = arbilDatabase.getHandlesOfMissing();
+                    stringTokenizer = new StringTokenizer(handlesOfMissing);
+                }
+                try {
+                    String targetHandle = stringTokenizer.nextToken(" ");
                     if (numberInserted >= numberToInsert) {
                         continueGetting = false;
                         break;
@@ -151,7 +159,8 @@ public class RemoteArchiveCrawler {
                     ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, new URI(targetHandle));
                     System.out.println("arbil url: " + dataNode.getUrlString());
                     loadAndInsert(arbilDatabase, dataNode);
-
+                } catch (NoSuchElementException exception) {
+                    stringTokenizer = null;
                 }
             }
             System.out.println("Update complete");
