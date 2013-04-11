@@ -35,6 +35,7 @@ import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import org.junit.Assert;
+import org.junit.Before;
 
 /**
  *
@@ -44,9 +45,11 @@ public class DataBaseManagerTest extends TestCase {
 
     String projectDatabaseName = "unit-test-database";
     final DbAdaptor dbAdaptor;
+    final DataBaseManager dbManager;
 
     public DataBaseManagerTest() throws IOException, QueryException {
         dbAdaptor = new LocalDbAdaptor(getTempDirectory());
+        dbManager = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
     }
 
 //
@@ -69,9 +72,9 @@ public class DataBaseManagerTest extends TestCase {
 //     */
 //    public void testGetDatabaseProjectDirectory() {
 //        System.out.println("getDatabaseProjectDirectory");
-//        DataBaseManager instance = null;
+//        DataBaseManager dbManager = null;
 //        File expResult = null;
-//        File result = instance.getDatabaseProjectDirectory(projectDatabaseName);
+//        File result = dbManager.getDatabaseProjectDirectory(projectDatabaseName);
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -103,25 +106,25 @@ public class DataBaseManagerTest extends TestCase {
     public void testCreateDatabase() throws Exception {
         System.out.println("createDatabase");
         final DataBaseManager instance = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
-//        instance.createDatabase();
+//        dbManager.createDatabase();
     }
 
     /**
      * Test of insertIntoDatabase method by waling a tree of metadata and
      * inserting it into the database.
      */
+    @Before
     public void testInsertIntoDatabase() throws JAXBException, PluginException, QueryException, IOException {
         System.out.println("walkTreeInsertingNodes");
         dbAdaptor.dropAndRecreateDb(projectDatabaseName);
-        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         for (String dataXmlString : TestData.testData) {
             System.out.println("dataXmlString: " + dataXmlString);
             SerialisableDataNode dataNode = (SerialisableDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(dataXmlString)), SerialisableDataNode.class).getValue();
-            instance.insertIntoDatabase(dataNode, false);
+            dbManager.insertIntoDatabase(dataNode, false);
         }
-        DatabaseStats databaseStats = instance.getDatabaseStats();
+        DatabaseStats databaseStats = dbManager.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
         assertEquals(databaseStats.getKnownDocumentsCount(), 55);
         assertEquals(databaseStats.getMisingDocumentsCount(), 0);
@@ -147,7 +150,7 @@ public class DataBaseManagerTest extends TestCase {
                 });
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
-        SerialisableDataNode dataNode = (SerialisableDataNode) instance.getNodeDatasByIDs(nodeIDs);
+        SerialisableDataNode dataNode = (SerialisableDataNode) dbManager.getNodeDatasByIDs(nodeIDs);
         assertEquals(12, dataNode.getChildList().size());
         assertTrue("Query took too long:" + databaseStats.getQueryTimeMS() + "ms", databaseStats.getQueryTimeMS() < 420);
     }
@@ -188,9 +191,9 @@ public class DataBaseManagerTest extends TestCase {
 //        searchParametersList.add(new SearchParameters(new MetadataFileType(), new MetadataFileType(), QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.equals, ""));
 //        //todo: add various search parameters
 ////        searchParametersList.add(new SearchParameters(new MetadataFileType(), new MetadataFileType(), QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.equals, ""));
-//        DataBaseManager instance = new DataBaseManager(AbstractDataNode.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
+//        DataBaseManager dbManager = new DataBaseManager(AbstractDataNode.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
 //        String expResult = "a resutl";
-//        AbstractDataNode result = (AbstractDataNode) instance.getSearchResult(criterionJoinType, searchParametersList);
+//        AbstractDataNode result = (AbstractDataNode) dbManager.getSearchResult(criterionJoinType, searchParametersList);
 //        System.out.println("result:" + result.toString());
 //        assertEquals(expResult, result.getName());
 //        // TODO review the generated test code and remove the default call to fail.
@@ -202,9 +205,9 @@ public class DataBaseManagerTest extends TestCase {
 //    public void testGetPathMetadataTypes() throws Exception {
 //        System.out.println("getPathMetadataTypes");
 //        MetadataFileType metadataFileType = null;
-//        DataBaseManager instance = null;
+//        DataBaseManager dbManager = null;
 //        Object[] expResult = null;
-//        Object[] result = instance.getPathMetadataTypes(metadataFileType);
+//        Object[] result = dbManager.getPathMetadataTypes(metadataFileType);
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -215,9 +218,9 @@ public class DataBaseManagerTest extends TestCase {
 //    public void testGetFieldMetadataTypes() throws Exception {
 //        System.out.println("getFieldMetadataTypes");
 //        MetadataFileType metadataFileType = null;
-//        DataBaseManager instance = null;
+//        DataBaseManager dbManager = null;
 //        Object[] expResult = null;
-//        Object[] result = instance.getFieldMetadataTypes(metadataFileType);
+//        Object[] result = dbManager.getFieldMetadataTypes(metadataFileType);
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -228,9 +231,9 @@ public class DataBaseManagerTest extends TestCase {
 //    public void testGetMetadataTypes() throws Exception {
 //        System.out.println("getMetadataTypes");
 //        MetadataFileType metadataFileType = null;
-//        DataBaseManager instance = null;
+//        DataBaseManager dbManager = null;
 //        Object[] expResult = null;
-//        Object[] result = instance.getMetadataTypes(metadataFileType);
+//        Object[] result = dbManager.getMetadataTypes(metadataFileType);
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -242,9 +245,9 @@ public class DataBaseManagerTest extends TestCase {
 //        System.out.println("getTreeFieldTypes");
 //        MetadataFileType metadataFileType = null;
 //        boolean fastQuery = false;
-//        DataBaseManager instance = null;
+//        DataBaseManager dbManager = null;
 //        Object[] expResult = null;
-//        Object[] result = instance.getTreeFieldTypes(metadataFileType, fastQuery);
+//        Object[] result = dbManager.getTreeFieldTypes(metadataFileType, fastQuery);
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -255,9 +258,9 @@ public class DataBaseManagerTest extends TestCase {
 //    public void testGetTreeData() throws Exception {
 //        System.out.println("getTreeData");
 //        ArrayList<MetadataFileType> treeBranchTypeList = null;
-//        DataBaseManager instance = null;
+//        DataBaseManager dbManager = null;
 //        Object expResult = null;
-//        Object result = instance.getTreeData(treeBranchTypeList);
+//        Object result = dbManager.getTreeData(treeBranchTypeList);
 //        assertEquals(expResult, result);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
