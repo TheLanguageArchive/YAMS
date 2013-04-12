@@ -25,7 +25,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-import junit.framework.TestCase;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.DataNodeType;
@@ -35,28 +34,36 @@ import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import org.junit.Assert;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  *
  * @author petwit2
  */
-public class DataBaseManagerTest extends TestCase {
+public class DataBaseManagerTest {
 
-    String projectDatabaseName = "unit-test-database";
-    final DbAdaptor dbAdaptor;
-    final DataBaseManager dbManager;
+    static String projectDatabaseName = "unit-test-database";
+    static DbAdaptor dbAdaptor;
+    static DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager;
 
-    public DataBaseManagerTest() throws IOException, QueryException {
+    @BeforeClass
+    static public void SetupDataBaseManager() throws IOException, QueryException {
         dbAdaptor = new LocalDbAdaptor(getTempDirectory());
         dbManager = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
     }
 
-    private File getTempDirectory() throws IOException {
+    static private File getTempDirectory() throws IOException {
 
 //        File tempWorkingDir = File.createTempFile("yaas-db", "-tmp");
 //        File tempWorkingDir = File.createTempFile("yaas-db", Long.toString(System.nanoTime()), new File("./target"));
-        File tempWorkingDir = new File(new File("target").getAbsoluteFile(), "yaas-db");
+        File tempWorkingDir = new File(new File("target").getAbsoluteFile(), "yaas-test-db");
 //        File tempWorkingDir = File.createTempFile("yaas-db", "", new File("./target"));
         // todo: resolve why basex cant read long file names and move back the the temp dir and delete the old directory
 //        if (tempWorkingDir.exists()) {
@@ -76,12 +83,11 @@ public class DataBaseManagerTest extends TestCase {
     /**
      * Test of createDatabase method, of class DataBaseManager.
      */
-    public void testCreateDatabase() throws Exception {
-        System.out.println("createDatabase");
-        final DataBaseManager instance = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
+//    public void testCreateDatabase() throws Exception {
+//        System.out.println("createDatabase");
+//        final DataBaseManager instance = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
 //        dbManager.createDatabase();
-    }
-
+//    }
     /**
      * Test of insertIntoDatabase method by waling a tree of metadata and
      * inserting it into the database.
@@ -97,13 +103,14 @@ public class DataBaseManagerTest extends TestCase {
             SerialisableDataNode dataNode = (SerialisableDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(dataXmlString)), SerialisableDataNode.class).getValue();
             dbManager.insertIntoDatabase(dataNode, false);
         }
+        dbManager.createIndexes();
         DatabaseStats databaseStats = dbManager.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
         assertEquals(55, databaseStats.getKnownDocumentsCount());
         assertEquals(0, databaseStats.getMisingDocumentsCount());
         assertEquals(39, databaseStats.getDuplicateDocumentsCount());
         assertEquals(16, databaseStats.getRootDocumentsCount());
-        Assert.assertArrayEquals(databaseStats.getRootDocumentsIDs(), new DataNodeId[]{
+        assertArrayEquals(databaseStats.getRootDocumentsIDs(), new DataNodeId[]{
                     new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"),
                     new DataNodeId("hdl:1839/00-0000-0000-0001-2A9B-9"),
                     new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-4"),
@@ -154,6 +161,7 @@ public class DataBaseManagerTest extends TestCase {
         SerialisableDataNode dataNode = (SerialisableDataNode) instance.getNodeDatasByIDs(nodeIDs);
         assertEquals(null, dataNode.getChildList());
     }
+
     /**
      * Test of getSearchResult method, of class DataBaseManager.
      */
@@ -198,19 +206,19 @@ public class DataBaseManagerTest extends TestCase {
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
-//    /**
-//     * Test of getMetadataTypes method, of class DataBaseManager.
-//     */
-//    public void testGetMetadataTypes() throws Exception {
-//        System.out.println("getMetadataTypes");
-//        MetadataFileType metadataFileType = null;
-//        DataBaseManager dbManager = null;
-//        Object[] expResult = null;
-//        Object[] result = dbManager.getMetadataTypes(metadataFileType);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    /**
+     * Test of getMetadataTypes method, of class DataBaseManager.
+     */
+    @Test
+    public void testGetMetadataTypes() throws Exception {
+        System.out.println("getMetadataTypes");
+        MetadataFileType metadataFileType = null;
+        Object[] expResult = null;
+        MetadataFileType[] result = dbManager.getMetadataTypes(metadataFileType);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
 //    /**
 //     * Test of getTreeFieldTypes method, of class DataBaseManager.
 //     */

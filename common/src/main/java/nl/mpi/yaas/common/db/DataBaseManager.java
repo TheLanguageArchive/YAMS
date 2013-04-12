@@ -73,6 +73,16 @@ public class DataBaseManager<D, F, M> {
         dbAdaptor.deleteDocument(databaseName, "DbStatsDocument");
     }
 
+    public void createIndexes() throws QueryException {
+        long startTime = System.currentTimeMillis();
+        String createIndexesQuery = "db:optimize(\"" + databaseName + "\")\n";
+        String queryResult = dbAdaptor.executeQuery(createIndexesQuery);
+        System.out.println("queryResult: " + queryResult);
+        long queryMils = System.currentTimeMillis() - startTime;
+        String queryTimeString = "Create indexes time: " + queryMils + "ms";
+        System.out.println(queryTimeString);
+    }
+
     public DatabaseStats getDatabaseStats() throws QueryException {
         long startTime = System.currentTimeMillis();
         String statsCachedQuery = "for $statsDoc in collection(\"" + databaseName + "\")\n"
@@ -512,14 +522,14 @@ public class DataBaseManager<D, F, M> {
                  * the query below takes:
                  * 11.8 ms (varies per run)
                  */
-                + "for $profileInfo in index:facets('" + defaultDataBase + "')/document-node/element[@name='METATRANSCRIPT']/element[@name!='History']\n"
+                + "for $profileInfo in index:facets('" + defaultDataBase + "')/document-node/element[@name='DataNode']/element[@name='Type']/attribute[@name='Format']/entry\n"
                 + "return\n"
                 + "<MetadataFileType>\n"
-                + "<fieldName>{string($profileInfo/@name)}</fieldName>\n"
+                + "<fieldName>{string($profileInfo)}</fieldName>\n"
                 + "<RecordCount>{string($profileInfo/@count)}</RecordCount>\n"
                 + "</MetadataFileType>"
-                + "},{"
-                + "for $profileInfo in index:facets('" + defaultDataBase + "')/document-node/element[@name='CMD']/element[@name='Header']/element[@name='MdProfile']/text/entry\n"
+                + "}{"
+                + "for $profileInfo in index:facets('" + defaultDataBase + "')/document-node/element[@name='DataNode']/element[@name='Type']/attribute[@name='Name']/entry\n"
                 + "return\n"
                 + "<MetadataFileType>\n"
                 + "<fieldName>{string($profileInfo)}</fieldName>\n"
