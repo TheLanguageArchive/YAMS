@@ -35,6 +35,7 @@ public class TestData {
         + "<FieldGroup Label=\"Description\">"
         + "<FieldData Path=\".METATRANSCRIPT.Corpus.Description\" FieldValue=\"\"/>"
         + "</FieldGroup>"
+        + " <Type Name=\"Subnode\" ID=\"subnode\" Format=\"imdi\"/>"
         + "</DataNode>",
         "<DataNode Label=\"Sign Language Typology\" ID=\"hdl:1839/00-0000-0000-0001-2A9A-4\">"
         + "<ChildIds>hdl:1839/00-0000-0000-0001-2A9B-9</ChildIds>"
@@ -47,6 +48,7 @@ public class TestData {
         + "<FieldGroup Label=\"Description\">"
         + "<FieldData Path=\".METATRANSCRIPT.Corpus.Description\" FieldValue=\"\"/>"
         + "</FieldGroup>"
+        + "<Type Name=\"Session\" ID=\"imdi.session\" Format=\"imdi\"/>"
         + "</DataNode>",
         "<DataNode Label=\"Sign Language Typology\" ID=\"hdl:1839/00-0000-0000-0001-2A9A-4\">"
         + "<ChildIds>hdl:1839/00-0000-0000-0001-2A9B-9</ChildIds>"
@@ -74,6 +76,7 @@ public class TestData {
         + "<FieldGroup Label=\"Description\">"
         + "<FieldData Path=\".METATRANSCRIPT.Corpus.Description\" FieldValue=\"\"/>"
         + "</FieldGroup>"
+        + "<Type Name=\"Session\" ID=\"imdi.session\" Format=\"imdi\"/>"
         + "</DataNode>",
         "<DataNode Label=\"Sign Language Typology\" ID=\"hdl:1839/00-0000-0000-0001-2A9A-4\">"
         + "<ChildIds>hdl:1839/00-0000-0000-0001-2A9B-9</ChildIds>"
@@ -89,6 +92,7 @@ public class TestData {
         + "<FieldGroup Label=\"Description\">"
         + "<FieldData Path=\".METATRANSCRIPT.Corpus.Description\" FieldValue=\"\"/>"
         + "</FieldGroup>"
+        + " <Type Name=\"Subnode\" ID=\"subnode\" Format=\"imdi\"/>"
         + "</DataNode>",
         "<DataNode Label=\"contact signing\" ID=\"hdl:1839/00-0000-0000-0001-2A9B-9\">"
         + "<ChildIds>hdl:1839/00-0000-0000-0001-2AB1-4</ChildIds>"
@@ -114,6 +118,7 @@ public class TestData {
         + "<FieldGroup Label=\"Description\">"
         + "<FieldData Path=\".METATRANSCRIPT.Corpus.Description\" FieldValue=\"\"/>"
         + "</FieldGroup>"
+        + " <Type Name=\"Subnode\" ID=\"subnode\" Format=\"imdi\"/>"
         + "</DataNode>",
         "<DataNode Label=\"contact signing\" ID=\"hdl:1839/00-0000-0000-0001-2A9B-9\">"
         + "<ChildIds>hdl:1839/00-0000-0000-0001-2AB1-4</ChildIds>"
@@ -128,6 +133,7 @@ public class TestData {
         + "<FieldGroup Label=\"Description\">"
         + "<FieldData Path=\".METATRANSCRIPT.Corpus.Description\" FieldValue=\"\"/>"
         + "</FieldGroup>"
+        + "<Type Name=\"Session\" ID=\"imdi.session\" Format=\"imdi\"/>"
         + "</DataNode>",
         "<DataNode Label=\"contact signing\" ID=\"hdl:1839/00-0000-0000-0001-2A9B-9\">"
         + "<ChildIds>hdl:1839/00-0000-0000-0001-2AB1-4</ChildIds>"
@@ -143,6 +149,7 @@ public class TestData {
         + "<FieldGroup Label=\"Description\">"
         + "<FieldData Path=\".METATRANSCRIPT.Corpus.Description\" FieldValue=\"\"/>"
         + "</FieldGroup>"
+        + " <Type Name=\"Subnode\" ID=\"subnode\" Format=\"imdi\"/>"
         + "</DataNode>",
         "<DataNode Label=\"contact signing\" ID=\"hdl:1839/00-0000-0000-0001-2A9B-9\">"
         + "<ChildIds>hdl:1839/00-0000-0000-0001-2AB1-4</ChildIds>"

@@ -213,11 +213,11 @@ public class DataBaseManagerTest {
     public void testGetMetadataTypes() throws Exception {
         System.out.println("getMetadataTypes");
         MetadataFileType metadataFileType = null;
-        Object[] expResult = null;
         MetadataFileType[] result = dbManager.getMetadataTypes(metadataFileType);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals("All Types (56)", result[0].toString());
+        assertEquals("imdi (7)", result[1].toString());
+        assertEquals("Subnode (4)", result[2].toString());
+        assertEquals("Session (3)", result[3].toString());
     }
 //    /**
 //     * Test of getTreeFieldTypes method, of class DataBaseManager.

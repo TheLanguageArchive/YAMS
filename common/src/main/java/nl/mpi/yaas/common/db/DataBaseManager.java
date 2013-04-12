@@ -284,8 +284,8 @@ public class DataBaseManager<D, F, M> {
         return inputString.replace("&", "&amp;").replace("\"", "&quot;").replace("'", "&apos;");
     }
     /*
-     * let $elementSet0 := for $nameString0 in collection('" + defaultDataBase + "')//*:Address[count(*) = 0] order by $nameString0 return $nameString0
-     let $elementSet1 := for $nameString0 in collection('" + defaultDataBase + "')//*:Region[count(*) = 0] order by $nameString0 return $nameString0
+     * let $elementSet0 := for $nameString0 in collection('" + databaseName + "')//*:Address[count(*) = 0] order by $nameString0 return $nameString0
+     let $elementSet1 := for $nameString0 in collection('" + databaseName + "')//*:Region[count(*) = 0] order by $nameString0 return $nameString0
      return
      <TreeNode><DisplayString>All</DisplayString>
      {
@@ -388,7 +388,7 @@ public class DataBaseManager<D, F, M> {
 //        if (fastQuery) {
 //            countClause = "";
 //        } else {
-//            countClause = "<RecordCount>{count(distinct-values(collection('" + defaultDataBase + "')/descendant-or-self::*[name() = $nameString]/text()))}</RecordCount>";
+//            countClause = "<RecordCount>{count(distinct-values(collection('" + databaseName + "')/descendant-or-self::*[name() = $nameString]/text()))}</RecordCount>";
 //        }
 //        String typeConstraint = getTypeConstraint(fileType);
 //        String noChildClause = "[count(*) = 0]";
@@ -412,7 +412,7 @@ public class DataBaseManager<D, F, M> {
                  * the query below takes:
                  * 9.82 ms (varies per run)
                  */
-                + "for $facetEntry in index:facets('" + defaultDataBase + "', 'flat')//element[entry/text() != '']\n"
+                + "for $facetEntry in index:facets('" + databaseName + "', 'flat')//element[entry/text() != '']\n"
                 + "return\n"
                 + "<MetadataFileType>\n"
                 + "<fieldName>{string($facetEntry/@name)}</fieldName>\n"
@@ -451,7 +451,7 @@ public class DataBaseManager<D, F, M> {
 
     private String getPopulatedFieldNames(MetadataFileType fileType) {
         String typeConstraint = getTypeConstraint(fileType); // todo: the type constraint is now unused, this should be renabled
-        return "let $allFieldNames := index:facets('" + defaultDataBase + "')/document-node/element/element[@name='FieldGroup']/attribute[@name='Label']/entry\n"
+        return "let $allFieldNames := index:facets('" + databaseName + "')/document-node/element/element[@name='FieldGroup']/attribute[@name='Label']/entry\n"
                 + "return <MetadataFileType>\n"
                 + "<MetadataFileType><displayString>All Fields</displayString>"
                 //                + "<RecordCount>{sum($allFieldNames/text/@count)}</RecordCount>\n"
@@ -464,7 +464,7 @@ public class DataBaseManager<D, F, M> {
                 //                + "return\n"
                 //                + "<MetadataFileType>"
                 //                + "<fieldName>{$nameString}</fieldName>"
-                //                + "<RecordCount>{count(collection('" + defaultDataBase + "')/descendant-or-self::*[name() = $nameString]/text())}</RecordCount>"
+                //                + "<RecordCount>{count(collection('" + databaseName + "')/descendant-or-self::*[name() = $nameString]/text())}</RecordCount>"
                 //                + "</MetadataFileType>\n"
                 /*
                  * optimised this query 2012-10-17
@@ -497,15 +497,15 @@ public class DataBaseManager<D, F, M> {
         return "<MetadataFileType>\n"
                 + "<MetadataFileType>\n"
                 + "<displayString>All Types</displayString>\n"
-                + "<RecordCount>{count(collection('" + defaultDataBase + "'))}</RecordCount>\n"
+                + "<RecordCount>{count(collection('" + databaseName + "'))}</RecordCount>\n"
                 + "</MetadataFileType>\n"
                 + "{\n"
-                //                + "for $imdiType in distinct-values(collection('" + defaultDataBase + "')/*:METATRANSCRIPT/*/name())\n"
+                //                + "for $imdiType in distinct-values(collection('" + databaseName + "')/*:METATRANSCRIPT/*/name())\n"
                 //                + "order by $imdiType\n"
                 //                + "return\n"
                 //                + "<MetadataFileType>\n"
                 //                + "<ImdiType>{$imdiType}</ImdiType>\n"
-                //                + "<RecordCount>{count(collection('" + defaultDataBase + "')/*:METATRANSCRIPT/*[name()=$imdiType])}</RecordCount>\n"
+                //                + "<RecordCount>{count(collection('" + databaseName + "')/*:METATRANSCRIPT/*[name()=$imdiType])}</RecordCount>\n"
                 //                + "</MetadataFileType>\n"
                 //                + "},{"
                 //                + "for $profileString in distinct-values(collection('" + databaseName + "')/*:CMD/@*:schemaLocation)\n"
@@ -522,14 +522,14 @@ public class DataBaseManager<D, F, M> {
                  * the query below takes:
                  * 11.8 ms (varies per run)
                  */
-                + "for $profileInfo in index:facets('" + defaultDataBase + "')/document-node/element[@name='DataNode']/element[@name='Type']/attribute[@name='Format']/entry\n"
+                + "for $profileInfo in index:facets('" + databaseName + "')/document-node/element[@name='DataNode']/element[@name='Type']/attribute[@name='Format']/entry\n"
                 + "return\n"
                 + "<MetadataFileType>\n"
                 + "<fieldName>{string($profileInfo)}</fieldName>\n"
                 + "<RecordCount>{string($profileInfo/@count)}</RecordCount>\n"
                 + "</MetadataFileType>"
                 + "}{"
-                + "for $profileInfo in index:facets('" + defaultDataBase + "')/document-node/element[@name='DataNode']/element[@name='Type']/attribute[@name='Name']/entry\n"
+                + "for $profileInfo in index:facets('" + databaseName + "')/document-node/element[@name='DataNode']/element[@name='Type']/attribute[@name='Name']/entry\n"
                 + "return\n"
                 + "<MetadataFileType>\n"
                 + "<fieldName>{string($profileInfo)}</fieldName>\n"
@@ -591,7 +591,7 @@ public class DataBaseManager<D, F, M> {
                 /*
                  * 15041
                  * <TreeNode>{
-                 for $fieldNode in collection('" + defaultDataBase + "')//.[(text() contains text 'pu6') or (name() = 'Name' and text() contains text 'pu8')]
+                 for $fieldNode in collection('" + databaseName + "')//.[(text() contains text 'pu6') or (name() = 'Name' and text() contains text 'pu8')]
                  let $documentFile := base-uri($fieldNode)
                  group by $documentFile
                  return
