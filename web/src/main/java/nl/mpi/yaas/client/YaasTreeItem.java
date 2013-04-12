@@ -55,7 +55,9 @@ public class YaasTreeItem extends TreeItem {
         checkBox = new CheckBox();
         setupWidgets();
         setLabel();
-        addItem(labelChildrenNotLoaded);
+        if (yaasDataNode.getChildList() != null || yaasDataNode.getChildIds() != null) {
+            addItem(labelChildrenNotLoaded);
+        }
     }
 
     private void setupWidgets() {
@@ -104,7 +106,9 @@ public class YaasTreeItem extends TreeItem {
                 public void onSuccess(List<SerialisableDataNode> dataNodeList) {
                     yaasDataNode = dataNodeList.get(0);
                     setLabel();
-                    addItem(labelChildrenNotLoaded);
+                    if (yaasDataNode.getChildList() != null || yaasDataNode.getChildIds() != null) {
+                        addItem(labelChildrenNotLoaded);
+                    }
                 }
             });
         }
@@ -113,20 +117,22 @@ public class YaasTreeItem extends TreeItem {
     public void loadChildNodes() {
         if (yaasDataNode != null) {
             if (yaasDataNode.getChildList() != null) {
+                removeItems();
                 // add the meta child nodes
                 for (SerialisableDataNode childDataNode : yaasDataNode.getChildList()) {
                     YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService, dataNodeTable);
                     addItem(yaasTreeItem);;
                 }
             } else {
-
+                removeItems();
+                addItem(new Label("loading..."));
                 final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
                 for (String childId : yaasDataNode.getChildIds()) {
                     dataNodeIdList.add(new DataNodeId(childId));
                 }
                 searchOptionsService.getDataNodes(dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
                     public void onFailure(Throwable caught) {
-                        remove();
+                        removeItems();
                         setText("Loading child nodes failed: " + caught.getMessage());
                     }
 
@@ -134,7 +140,7 @@ public class YaasTreeItem extends TreeItem {
 //                        setText("Loaded " + dataNodeList.size() + " child nodes");
                         removeItems();
                         if (dataNodeList == null) {
-                            addItem(new Label("child nodes failed to load"));
+                            addItem(new Label("no child nodes found"));
                         } else {
                             for (SerialisableDataNode childDataNode : dataNodeList) {
                                 YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService, dataNodeTable);
@@ -145,13 +151,19 @@ public class YaasTreeItem extends TreeItem {
                 });
             }
         } else {
-            addItem(labelChildrenNotLoaded);
+//            addItem(labelChildrenNotLoaded);
         }
     }
 
     private void setLabel() {
         if (yaasDataNode != null) {
-            setText(yaasDataNode.getLabel() + "[" + yaasDataNode.getChildIds().size() + "]");
+            int childCountsize = -1;
+            if (yaasDataNode.getChildIds() != null) {
+                childCountsize = yaasDataNode.getChildIds().size();
+            } else if (yaasDataNode.getChildList() != null) {
+                childCountsize = yaasDataNode.getChildList().size();
+            }
+            setText(yaasDataNode.getLabel() + "[" + childCountsize + "]");
         } else {
             setText("not loaded");
         }

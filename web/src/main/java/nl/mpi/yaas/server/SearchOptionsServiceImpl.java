@@ -19,6 +19,8 @@ import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures;
 import nl.mpi.yaas.common.data.SearchParameters;
 import nl.mpi.yaas.common.db.DataBaseManager;
+import nl.mpi.yaas.common.db.DbAdaptor;
+import nl.mpi.yaas.common.db.LocalDbAdaptor;
 import nl.mpi.yaas.shared.WebQueryException;
 
 /**
@@ -41,20 +43,10 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     private DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDatabase() throws QueryException {
         // todo: this version of the Arbil database is not intended to multi entry and will be replaced by a rest version when it is written
-        final PluginSessionStorage pluginSessionStorage = new PluginSessionStorage() {
-            public File getApplicationSettingsDirectory() {
-                return new File("/Users/petwit2/.arbil/");
-            }
+//        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File(System.getProperty("user.dir"), "yaas-data"));
+        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File("/Users/petwit2/.arbil/"));
 
-            public File getProjectDirectory() {
-                return new File("/Users/petwit2/.arbil/");
-            }
-
-            public File getProjectWorkingDirectory() {
-                return new File("/Users/petwit2/.arbil/ArbilWorkingFiles/");
-            }
-        };
-        return new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, pluginSessionStorage, DataBaseManager.defaultDataBase);
+        return new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, DataBaseManager.defaultDataBase);
     }
 
     public MetadataFileType[] getTypeOptions() throws WebQueryException {
