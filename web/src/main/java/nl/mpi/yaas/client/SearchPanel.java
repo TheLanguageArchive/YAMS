@@ -13,9 +13,9 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.ValueListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +44,7 @@ public class SearchPanel extends VerticalPanel {
         this.searchOptionsService = searchOptionsService;
         this.dataNodeTree = dataNodeTree;
         verticalPanel = new VerticalPanel();
+        initSearchHandler();
         final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this);
         verticalPanel.add(searchCriterionPanel);
         criterionPanelList.add(searchCriterionPanel);
@@ -57,7 +58,7 @@ public class SearchPanel extends VerticalPanel {
         this.add(addRowButton);
         joinTypeListBox = getJoinTypeListBox();
         buttonsPanel.add(joinTypeListBox);
-        buttonsPanel.add(getSearchButton());
+        buttonsPanel.add(searchButton);
         this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         this.add(buttonsPanel);
     }
@@ -72,7 +73,7 @@ public class SearchPanel extends VerticalPanel {
         verticalPanel.remove(criterionPanel);
     }
 
-    private Widget getSearchButton() {
+    private void initSearchHandler() {
         searchButton = new Button("Search");
         searchButton.addStyleName("sendButton");
 
@@ -102,7 +103,6 @@ public class SearchPanel extends VerticalPanel {
             }
         };
         searchButton.addClickHandler(searchHandler);
-        return searchButton;
     }
 
     protected ValueListBox getFieldsOptionsListBox() {
@@ -128,7 +128,10 @@ public class SearchPanel extends VerticalPanel {
             }
 
             public void onSuccess(MetadataFileType[] result) {
-                widget.setAcceptableValues(Arrays.asList(result));
+                if (result != null && result.length > 0) {
+                    widget.setValue(result[0]);
+                    widget.setAcceptableValues(Arrays.asList(result));
+                }
             }
         });
         return widget;
@@ -157,7 +160,10 @@ public class SearchPanel extends VerticalPanel {
             }
 
             public void onSuccess(MetadataFileType[] result) {
-                widget.setAcceptableValues(Arrays.asList(result));
+                if (result != null && result.length > 0) {
+                    widget.setValue(result[0]);
+                    widget.setAcceptableValues(Arrays.asList(result));
+                }
             }
         });
         return widget;
@@ -180,6 +186,7 @@ public class SearchPanel extends VerticalPanel {
             }
         });
         widget.addStyleName("demo-ListBox");
+        widget.setValue(SearchOption.equals);
         widget.setAcceptableValues(Arrays.asList(SearchOption.values()));
         return widget;
     }
@@ -201,9 +208,15 @@ public class SearchPanel extends VerticalPanel {
             }
         });
         widget.addStyleName("demo-ListBox");
-        widget.setAcceptableValues(Arrays.asList(CriterionJoinType.values()));
         widget.setValue(CriterionJoinType.intersect);
+        widget.setAcceptableValues(Arrays.asList(CriterionJoinType.values()));
         return widget;
+    }
+
+    public SuggestBox getSearchTextBox() {
+        final SuggestBox suggestBox = new SuggestBox(createCountriesOracle());
+        suggestBox.addKeyUpHandler(searchHandler);
+        return suggestBox;
     }
 
     protected MultiWordSuggestOracle createCountriesOracle() {

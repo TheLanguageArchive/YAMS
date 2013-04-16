@@ -34,7 +34,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
             }
         });
         this.add(removeRowButton);
-        searchStringbox = new SuggestBox(searchPanel.createCountriesOracle());
+        searchStringbox = searchPanel.getSearchTextBox();
         typesOptionsListBox = searchPanel.getTypesOptionsListBox();
         this.add(typesOptionsListBox);
         fieldsOptionsListBox = searchPanel.getFieldsOptionsListBox();
