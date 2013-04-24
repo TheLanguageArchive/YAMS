@@ -17,7 +17,6 @@
  */
 package nl.mpi.yaas.common.db;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -38,46 +37,33 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  *
- * @author petwit2
+ * @author Peter Withers
  */
-public class DataBaseManagerTest {
+public abstract class DataBaseManagerTest {
 
     static String projectDatabaseName = "unit-test-database";
-    static DbAdaptor dbAdaptor;
-    static DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager;
 
-    @BeforeClass
-    static public void SetupDataBaseManager() throws IOException, QueryException {
-        dbAdaptor = new LocalDbAdaptor(getTempDirectory());
-        dbManager = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
-    }
+    abstract DbAdaptor getDbAdaptor() throws IOException, QueryException;
 
-    static private File getTempDirectory() throws IOException {
-
-//        File tempWorkingDir = File.createTempFile("yaas-db", "-tmp");
-//        File tempWorkingDir = File.createTempFile("yaas-db", Long.toString(System.nanoTime()), new File("./target"));
-        File tempWorkingDir = new File(new File("target").getAbsoluteFile(), "yaas-test-db");
-//        File tempWorkingDir = File.createTempFile("yaas-db", "", new File("./target"));
-        // todo: resolve why basex cant read long file names and move back the the temp dir and delete the old directory
-//        if (tempWorkingDir.exists()) {
-//            if (!tempWorkingDir.delete()) {
-//                throw new RuntimeException("Cannot create temp dir!");
-//            }
-//        }
-//        if (tempWorkingDir.mkdir()) {
-//            tempWorkingDir.deleteOnExit();
-//        } else {
-//            fail("Cannot create temp dir!");
-//        }
-        System.out.println("Using working directory: " + tempWorkingDir.getAbsolutePath());
-        return tempWorkingDir;
+    public DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDataBaseManager(boolean insertData) throws IOException, QueryException, JAXBException, PluginException {
+        DbAdaptor dbAdaptor = getDbAdaptor();
+        final DataBaseManager dataBaseManager = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
+        dbAdaptor.dropAndRecreateDb(projectDatabaseName);
+        if (insertData) {
+            JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            for (String dataXmlString : TestData.testData) {
+                System.out.println("dataXmlString: " + dataXmlString);
+                SerialisableDataNode dataNode = (SerialisableDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(dataXmlString)), SerialisableDataNode.class).getValue();
+                dataBaseManager.insertIntoDatabase(dataNode, false);
+            }
+        }
+        dataBaseManager.createIndexes();
+        return dataBaseManager;
     }
 
     /**
@@ -92,18 +78,10 @@ public class DataBaseManagerTest {
      * Test of insertIntoDatabase method by waling a tree of metadata and
      * inserting it into the database.
      */
-    @Before
-    public void testInsertIntoDatabase() throws JAXBException, PluginException, QueryException, IOException {
-        System.out.println("walkTreeInsertingNodes");
-        dbAdaptor.dropAndRecreateDb(projectDatabaseName);
-        JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        for (String dataXmlString : TestData.testData) {
-            System.out.println("dataXmlString: " + dataXmlString);
-            SerialisableDataNode dataNode = (SerialisableDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(dataXmlString)), SerialisableDataNode.class).getValue();
-            dbManager.insertIntoDatabase(dataNode, false);
-        }
-        dbManager.createIndexes();
+    @Test
+    public void testSampleData() throws JAXBException, PluginException, QueryException, IOException {
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+
         DatabaseStats databaseStats = dbManager.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
         assertEquals(55, databaseStats.getKnownDocumentsCount());
@@ -111,23 +89,23 @@ public class DataBaseManagerTest {
         assertEquals(39, databaseStats.getDuplicateDocumentsCount());
         assertEquals(16, databaseStats.getRootDocumentsCount());
         assertArrayEquals(databaseStats.getRootDocumentsIDs(), new DataNodeId[]{
-                    new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0001-2A9B-9"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-4"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0001-2FA3-5"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0001-2FA4-B"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0008-CAD1-B"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0008-C805-D"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0001-2AB4-0"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0001-2C2D-F"),
-                    new DataNodeId("hdl:1839/00-0000-0000-000D-B73D-9"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0001-2AA2-6"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0004-D511-0"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0004-D512-F"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0001-2E76-0"),
-                    new DataNodeId("hdl:1839/00-0000-0000-000D-B743-0"),
-                    new DataNodeId("hdl:1839/00-0000-0000-0001-2E77-E")
-                });
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2A9B-9"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-4"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2FA3-5"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2FA4-B"),
+            new DataNodeId("hdl:1839/00-0000-0000-0008-CAD1-B"),
+            new DataNodeId("hdl:1839/00-0000-0000-0008-C805-D"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB4-0"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2C2D-F"),
+            new DataNodeId("hdl:1839/00-0000-0000-000D-B73D-9"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2AA2-6"),
+            new DataNodeId("hdl:1839/00-0000-0000-0004-D511-0"),
+            new DataNodeId("hdl:1839/00-0000-0000-0004-D512-F"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2E76-0"),
+            new DataNodeId("hdl:1839/00-0000-0000-000D-B743-0"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2E77-E")
+        });
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
         SerialisableDataNode dataNode = (SerialisableDataNode) dbManager.getNodeDatasByIDs(nodeIDs);
@@ -135,10 +113,13 @@ public class DataBaseManagerTest {
         assertTrue("Query took too long:" + databaseStats.getQueryTimeMS() + "ms", databaseStats.getQueryTimeMS() < 420);
     }
 
+    @Test
     public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException, IOException {
-        dbAdaptor.dropAndRecreateDb(projectDatabaseName);
-        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
-        DatabaseStats databaseStats = instance.getDatabaseStats();
+//        dbAdaptor.dropAndRecreateDb(projectDatabaseName);
+//        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
+
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(false);
+        DatabaseStats databaseStats = dbManager.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
         assertEquals(0, databaseStats.getKnownDocumentsCount());
         assertEquals(0, databaseStats.getMisingDocumentsCount());
@@ -147,19 +128,21 @@ public class DataBaseManagerTest {
         Assert.assertArrayEquals(databaseStats.getRootDocumentsIDs(), new String[0]);
 
         assertFalse("Cached db stats should not exist at this point", databaseStats.isIsCachedResults());
-        databaseStats = instance.getDatabaseStats();
+        databaseStats = dbManager.getDatabaseStats();
         assertTrue("Failed to use the cached db stats", databaseStats.isIsCachedResults());
-        instance.clearDatabaseStats();
-        databaseStats = instance.getDatabaseStats();
+        dbManager.clearDatabaseStats();
+        databaseStats = dbManager.getDatabaseStats();
         assertFalse("Failed to clear the db stats cache", databaseStats.isIsCachedResults());
     }
 
-    public void testGetNodeDatasByIDs() throws QueryException, IOException {
-        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
+    @Test
+    public void testGetNodeDatasByIDs() throws QueryException, IOException, JAXBException, PluginException {
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+//        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
-        SerialisableDataNode dataNode = (SerialisableDataNode) instance.getNodeDatasByIDs(nodeIDs);
-        assertEquals(null, dataNode.getChildList());
+        SerialisableDataNode dataNode = (SerialisableDataNode) dbManager.getNodeDatasByIDs(nodeIDs);
+        assertEquals(12, dataNode.getChildList().size());
     }
 
     /**
@@ -212,9 +195,10 @@ public class DataBaseManagerTest {
     @Test
     public void testGetMetadataTypes() throws Exception {
         System.out.println("getMetadataTypes");
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         MetadataFileType metadataFileType = null;
         MetadataFileType[] result = dbManager.getMetadataTypes(metadataFileType);
-        assertEquals("All Types (56)", result[0].toString());
+        assertEquals("All Types (55)", result[0].toString());
         assertEquals("imdi (7)", result[1].toString());
         assertEquals("Subnode (4)", result[2].toString());
         assertEquals("Session (3)", result[3].toString());
