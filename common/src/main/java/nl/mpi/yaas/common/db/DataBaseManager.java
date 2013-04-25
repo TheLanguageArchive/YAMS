@@ -35,14 +35,14 @@ import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
 import nl.mpi.yaas.common.data.SearchParameters;
-import org.basex.query.QueryProcessor;
-import org.basex.query.iter.Iter;
-import org.basex.query.value.item.Item;
 import org.slf4j.LoggerFactory;
 
 /**
  * Document : DataBaseManager Created on : Aug 6, 2012, 11:39:33 AM
  *
+ * @param <D> Concrete class of DataNode that will be used in the jaxb deserialising process
+ * @param <F> Concrete class of DataField that will be used in the jaxb deserialising process
+ * @param <M> Concrete class of MetadataFileType that is used as query parameters and in some cases query results via the jaxb deserialising process
  * @author Peter Withers
  */
 public class DataBaseManager<D, F, M> {
@@ -53,9 +53,21 @@ public class DataBaseManager<D, F, M> {
     final private DbAdaptor dbAdaptor;
     final private String databaseName;
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
+    /**
+     * these are two recommended database names, one for testing and the other for production
+     */
     final static public String defaultDataBase = "yaas-data";
     final static public String testDataBase = "yaas-test-data";
 
+    /**
+     *
+     * @param dClass Concrete class of DataNode that will be used in the jaxb deserialising process
+     * @param fClass Concrete class of DataField that will be used in the jaxb deserialising process
+     * @param mClass Concrete class of MetadataFileType that is used as query parameters and in some cases query results via the jaxb deserialising process
+     * @param dbAdaptor an implementation of DbAdaptor which interfaces to either the REST DB or local DB via java bindings
+     * @param databaseName the name of the database that will be connected to
+     * @throws QueryException
+     */
     public DataBaseManager(Class<D> dClass, Class<F> fClass, Class<M> mClass, DbAdaptor dbAdaptor, String databaseName) throws QueryException {
         this.dbAdaptor = dbAdaptor;
         this.dClass = dClass;
@@ -65,14 +77,26 @@ public class DataBaseManager<D, F, M> {
         dbAdaptor.checkDbExists(databaseName);
     }
 
+    /**
+     * Drop the entire database if it exists and create a new empty database
+     * @throws QueryException
+     */
     public void dropAndRecreateDb() throws QueryException {
         dbAdaptor.dropAndRecreateDb(databaseName);
     }
 
+    /**
+     * Remove the database statistics document that is generated after a crawl by getDatabaseStats()
+     * @throws QueryException
+     */
     public void clearDatabaseStats() throws QueryException {
         dbAdaptor.deleteDocument(databaseName, "DbStatsDocument");
     }
 
+    /**
+     * Causes the database to reindex all of its files which is required after an add or delete for instance
+     * @throws QueryException
+     */
     public void createIndexes() throws QueryException {
         long startTime = System.currentTimeMillis();
         dbAdaptor.createIndexes(databaseName);
@@ -82,6 +106,11 @@ public class DataBaseManager<D, F, M> {
         System.out.println(queryTimeString);
     }
 
+    /**
+     * Creates a document in the database that holds information on the contents of the database such as document count and root nodes URLs
+     * @return an object of type DatabaseStats that contains information on the contents of the database 
+     * @throws QueryException
+     */
     public DatabaseStats getDatabaseStats() throws QueryException {
         long startTime = System.currentTimeMillis();
         String statsCachedQuery = "for $statsDoc in collection(\"" + databaseName + "\")\n"
@@ -130,74 +159,33 @@ public class DataBaseManager<D, F, M> {
         }
     }
 
-//    public class IterableResult {
-//
-//        final QueryProcessor proc;
-//        final Iter iter;
-//
-//        public IterableResult(QueryProcessor proc) throws org.basex.query.QueryException {
-//            this.proc = proc;
-//            iter = proc.iter();
-//        }
-//
-//        public void close() {
-//            proc.close();
-//        }
-//
-//        public String getNext() throws PluginException {
-//            try {
-//                Item item = iter.next();
-//                if (item != null) {
-//                    return item.toJava().toString();
-//                } else {
-//                    return null;
-//                }
-//            } catch (org.basex.query.QueryException exception) {
-//                throw new PluginException(exception);
-//            }
-//        }
-//    }
+    /**
+     * Searches the database for missing child nodes for use when crawling missing documents
+     * @return the URLs of the first N missing documents
+     * @throws PluginException
+     * @throws QueryException
+     */
     public String getHandlesOfMissing() throws PluginException, QueryException {
-//        try {
         long startTime = System.currentTimeMillis();
         String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
                 + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                 + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
                 + "return $missingIds[position() le 1000]\n"; // <DataNodeId> </DataNodeId>
 //        System.out.println("getHandlesOfMissing: " + queryString);
-//            QueryProcessor proc = dbAdaptor.getQueryProcessor(queryString);
         String queryResult = dbAdaptor.executeQuery(queryString);
         long queryMils = System.currentTimeMillis() - startTime;
         String queryTimeString = "Query time: " + queryMils + "ms";
         System.out.println(queryTimeString);
         return queryResult; // the results here need to be split on " ", but the string can be very long so it should not be done by String.split().
-//            return new IterableResult(proc);
-//        } catch (org.basex.query.QueryException baseXException2) {
-//            logger.error(baseXException2.getMessage());
-//            throw new QueryException(baseXException2.getMessage());
-//        }
     }
-//    public String getFirstHandlesOfMissing() throws PluginException, QueryException {
-//        try {
-//            synchronized (databaseLock) {
-//                long startTime = System.currentTimeMillis();
-//                String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
-//                        + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
-//                        + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
-//                        + "return $missingIds[1]\n";
-//                System.out.println("getHandlesOfMissing: " + queryString);
-//                String singleHandle = new XQuery(queryString).execute(context);
-//                long queryMils = System.currentTimeMillis() - startTime;
-//                String queryTimeString = "Query time: " + queryMils + "ms";
-//                System.out.println(queryTimeString);
-//                return singleHandle;
-//            }
-//        } catch (BaseXException exception) {
-//            logger.error(exception.getMessage());
-//            throw new QueryException(exception);
-//        }
-//    }
 
+    /**
+     * Inserts a document into the database and optionally checks for existing documents that would constitute a duplicate
+     * @param dataNode the data node to be inserted into the database
+     * @param testForDuplicates if true the database will be searched for the document before inserting 
+     * @throws PluginException
+     * @throws QueryException
+     */
     public void insertIntoDatabase(SerialisableDataNode dataNode, boolean testForDuplicates) throws PluginException, QueryException {
         // test for existing documents with the same ID and throw if one is found
         if (testForDuplicates) {
@@ -559,6 +547,13 @@ public class DataBaseManager<D, F, M> {
                 + "}</MetadataFileType>";
     }
 
+    /**
+     * Searches the database
+     * @param criterionJoinType the type of join that the query will perform
+     * @param searchParametersList the parameters of the search
+     * @return A data node that the results as child nodes plus some query information
+     * @throws QueryException
+     */
     public D getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws QueryException {
         StringBuilder queryStringBuilder = new StringBuilder();
         queryStringBuilder.append("<DataNode Label=\"Search Results\"> {\n");
