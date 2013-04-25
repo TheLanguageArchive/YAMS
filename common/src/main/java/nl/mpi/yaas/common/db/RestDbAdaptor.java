@@ -25,6 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import org.basex.query.QueryProcessor;
+import org.basex.util.Base64;
 
 /**
  * Created on : Apr 8, 2013, 10:48:43 AM
@@ -34,21 +35,72 @@ import org.basex.query.QueryProcessor;
 public class RestDbAdaptor implements DbAdaptor {
 
     final private URL restUrl;
+    final private String encodedPass;
 
-    public RestDbAdaptor(URL restUrl) {
+    public RestDbAdaptor(URL restUrl, String userName, String userPass) {
         this.restUrl = restUrl;
+        // Encode user name and password pair with a base64 implementation.
+        encodedPass = Base64.encode(userName + ":" + userPass);
     }
 
     public void dropAndRecreateDb(String databaseName) throws QueryException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            URL databaseUrl = new URL(restUrl, databaseName);
+            System.out.println("dropAndRecreateDb DELETE: " + databaseUrl);
+            HttpURLConnection conn = (HttpURLConnection) databaseUrl.openConnection();
+            conn.setRequestMethod("DELETE");
+            conn.setRequestProperty("Authorization", "Basic " + encodedPass);
+            final int responseCode = conn.getResponseCode();
+//            System.out.println("HTTP response: " + responseCode);
+            conn.disconnect();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new QueryException("HTTP response: " + responseCode);
+            }
+        } catch (IOException exception) {
+            throw new QueryException(exception);
+        }
+        checkDbExists(databaseName);
     }
 
     public void checkDbExists(String databaseName) throws QueryException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            URL databaseUrl = new URL(restUrl, databaseName);
+            System.out.println("checkDbExists PUT: " + databaseUrl);
+            HttpURLConnection conn = (HttpURLConnection) databaseUrl.openConnection();
+            conn.setRequestMethod("PUT");
+            conn.setRequestProperty("Authorization", "Basic " + encodedPass);
+            final int responseCode = conn.getResponseCode();
+//            System.out.println("HTTP response: " + responseCode);
+            conn.disconnect();
+            if (responseCode != HttpURLConnection.HTTP_CREATED) {
+                throw new QueryException("HTTP response: " + responseCode);
+            }
+        } catch (IOException exception) {
+            throw new QueryException(exception);
+        }
     }
 
     public void addDocument(String databaseName, String documentName, String documentContents) throws QueryException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            URL documentUrl = new URL(restUrl, databaseName + "/" + documentName.replaceAll(":", "-").replaceAll("/", "-"));
+            System.out.println("addDocument PUT: " + documentUrl);
+            HttpURLConnection conn = (HttpURLConnection) documentUrl.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("PUT");
+            conn.setRequestProperty("Authorization", "Basic " + encodedPass);
+            conn.setRequestProperty("Content-Type", "application/query+xml");
+            OutputStream out = conn.getOutputStream();
+            out.write(documentContents.getBytes("UTF-8"));
+            out.close();
+            final int responseCode = conn.getResponseCode();
+//            System.out.println("HTTP response: " + responseCode);
+            conn.disconnect();
+            if (responseCode == HttpURLConnection.HTTP_CREATED) {
+                throw new QueryException("HTTP response: " + responseCode);
+            }
+        } catch (IOException exception) {
+            throw new QueryException(exception);
+        }
     }
 
     public void deleteDocument(String databaseName, String documentName) throws QueryException {
