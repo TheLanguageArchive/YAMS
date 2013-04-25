@@ -141,10 +141,8 @@ public class LocalDbAdaptor implements DbAdaptor {
         }
     }
 
-    public QueryProcessor getQueryProcessor(String queryString) throws QueryException {
-        // todo: the use of QueryProcessor is not compatable with the rest interface so will have to go
-        synchronized (databaseLock) {
-            return new QueryProcessor(queryString, context);
-        }
+    public void createIndexes(String databaseName) throws QueryException {
+        String createIndexesQuery = "db:optimize(\"" + databaseName + "\")\n";
+        String queryResult = executeQuery(createIndexesQuery);
     }
 }

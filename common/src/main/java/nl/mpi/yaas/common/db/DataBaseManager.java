@@ -75,9 +75,8 @@ public class DataBaseManager<D, F, M> {
 
     public void createIndexes() throws QueryException {
         long startTime = System.currentTimeMillis();
-        String createIndexesQuery = "db:optimize(\"" + databaseName + "\")\n";
-        String queryResult = dbAdaptor.executeQuery(createIndexesQuery);
-        System.out.println("queryResult: " + queryResult);
+        dbAdaptor.createIndexes(databaseName);
+//        System.out.println("queryResult: " + queryResult);
         long queryMils = System.currentTimeMillis() - startTime;
         String queryTimeString = "Create indexes time: " + queryMils + "ms";
         System.out.println(queryTimeString);

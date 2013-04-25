@@ -37,6 +37,7 @@ public interface DbAdaptor {
 
     String executeQuery(String queryString) throws QueryException;
 
+    void createIndexes(String databaseName) throws QueryException;
     // todo: the use of QueryProcessor is not compatable with the rest interface so will have to go
-    public QueryProcessor getQueryProcessor(String queryString) throws QueryException;
+//    public QueryProcessor getQueryProcessor(String queryString) throws QueryException;
 }
