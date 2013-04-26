@@ -18,8 +18,10 @@
 package nl.mpi.yaas.crawler;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import nl.mpi.arbil.ArbilDesktopInjector;
@@ -43,6 +45,7 @@ import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.db.DataBaseManager;
 import nl.mpi.yaas.common.db.DbAdaptor;
 import nl.mpi.yaas.common.db.LocalDbAdaptor;
+import nl.mpi.yaas.common.db.RestDbAdaptor;
 
 /**
  * Created on : Feb 6, 2013, 2:04:40 PM
@@ -114,9 +117,13 @@ public class RemoteArchiveCrawler {
                 dataBaseName = DataBaseManager.testDataBase;
                 break;
         }
-        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File(System.getProperty("user.dir"), "yaas-data"));
-        yaasDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dataBaseName);
-        yaasDatabase.clearDatabaseStats();
+        try {
+            final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL("http://192.168.56.101:8080/BaseX76/rest/"), "admin", "admin");
+            yaasDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dataBaseName);
+            yaasDatabase.clearDatabaseStats();
+        } catch (MalformedURLException exception) {
+            throw new QueryException(exception);
+        }
     }
 
     private void clearAndCalculateDbStats() throws QueryException {
@@ -142,6 +149,7 @@ public class RemoteArchiveCrawler {
                 if (stringTokenizer == null) {
                     String handlesOfMissing = yaasDatabase.getHandlesOfMissing();
                     stringTokenizer = new StringTokenizer(handlesOfMissing);
+                    continueGetting = stringTokenizer.hasMoreTokens();
                 }
                 try {
                     String targetHandle = stringTokenizer.nextToken(" ");
@@ -184,6 +192,16 @@ public class RemoteArchiveCrawler {
         }
     }
 
+    public void dropDataBase() {
+        try {
+            System.out.println("Dropping old DB and creating a new DB");
+            yaasDatabase.dropAndRecreateDb(); // this will drop the old database
+        } catch (QueryException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        }
+    }
+
     public void crawl(URI startURI, int numberToInsert) {
         this.numberToInsert = numberToInsert;
         numberInserted = 0;
@@ -191,8 +209,6 @@ public class RemoteArchiveCrawler {
         try {
             ArbilDataNodeContainer nodeContainer = null;
             ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
-            System.out.println("Dropping old DB and creating a new DB");
-            yaasDatabase.dropAndRecreateDb(); // this will drop the old database
             loadAndInsert(yaasDatabase, dataNode);
             System.out.println("Crawl complete");
             clearAndCalculateDbStats();

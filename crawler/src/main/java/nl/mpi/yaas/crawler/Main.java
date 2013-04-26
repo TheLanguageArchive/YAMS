@@ -47,7 +47,7 @@ public class Main {
 //                System.exit(-1);
 //            }
 //        }
-        int defaultNumberToCrawl = 300;
+        int defaultNumberToCrawl = 10000;
         String defaultStartUrl = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi";
         // create the command line parser
         CommandLineParser parser = new BasicParser(); //DefaultParser();
@@ -74,8 +74,9 @@ public class Main {
 //            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
                 if (line.hasOption("d")) {
                     System.out.println("Dropping and crawing from scratch");
-                    archiveCrawler.crawl(startURI, numberToCrawl);
+                    archiveCrawler.dropDataBase();
                 }
+                archiveCrawler.crawl(startURI, numberToCrawl);
 //                if (line.hasOption("a")) {
                 System.out.println("Restarting crawl appending new documents");
                 archiveCrawler.update(numberToCrawl);
