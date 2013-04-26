@@ -69,17 +69,17 @@ public class Main {
                 numberToCrawl = Integer.parseInt(line.getOptionValue("n"));
             }
             try {
-                RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(RemoteArchiveCrawler.DbType.StandardDB);
+                RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(RemoteArchiveCrawler.DbType.StandardDB, numberToCrawl);
                 URI startURI = new URI(startUrl);
 //            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
                 if (line.hasOption("d")) {
                     System.out.println("Dropping and crawing from scratch");
                     archiveCrawler.dropDataBase();
                 }
-                archiveCrawler.crawl(startURI, numberToCrawl);
+                archiveCrawler.crawl(startURI);
 //                if (line.hasOption("a")) {
                 System.out.println("Restarting crawl appending new documents");
-                archiveCrawler.update(numberToCrawl);
+                archiveCrawler.update();
 //                }
                 System.exit(0); // arbil threads might be requiring this to terminate
             } catch (URISyntaxException exception) {

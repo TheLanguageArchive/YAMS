@@ -56,7 +56,7 @@ public class RemoteArchiveCrawler {
 
     final PluginArbilDataNodeLoader dataNodeLoader;
     final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase;
-    private int numberToInsert = 0;
+    private int numberToInsert;
     private int numberInserted = 0;
     private int totalLoaded = 0;
     public static final String HANDLE_SERVER_URI = "http://hdl.handle.net/";
@@ -67,7 +67,8 @@ public class RemoteArchiveCrawler {
         StandardDB
     }
 
-    public RemoteArchiveCrawler(DbType dbType) throws QueryException {
+    public RemoteArchiveCrawler(DbType dbType, int numberToInsert) throws QueryException {
+        this.numberToInsert = numberToInsert;
         final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
         final ArbilDesktopInjector injector = new ArbilDesktopInjector();
         injector.injectHandlers(versionManager, new ArbilLogConfigurer(versionManager.getApplicationVersion(), "yaas"));
@@ -136,8 +137,7 @@ public class RemoteArchiveCrawler {
         System.out.println("RootDocumentsCount: " + databaseStats.getRootDocumentsCount());
     }
 
-    public void update(int numberToInsert) {
-        this.numberToInsert = numberToInsert;
+    public void update() {
         numberInserted = 0;
         System.out.println("FindAndInsertMissingNodes");
         try {
@@ -202,8 +202,7 @@ public class RemoteArchiveCrawler {
         }
     }
 
-    public void crawl(URI startURI, int numberToInsert) {
-        this.numberToInsert = numberToInsert;
+    public void crawl(URI startURI) {
         numberInserted = 0;
         System.out.println("crawl");
         try {
