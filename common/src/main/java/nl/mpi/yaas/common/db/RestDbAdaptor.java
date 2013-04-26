@@ -89,7 +89,7 @@ public class RestDbAdaptor implements DbAdaptor {
 
     public void addDocument(String databaseName, String documentName, String documentContents) throws QueryException {
         try {
-            URL documentUrl = new URL(restUrl, databaseName + "/" + documentName.replaceAll(":", "-").replaceAll("/", "-") + ".xml");
+            URL documentUrl = new URL(restUrl, databaseName + "/" + documentName.replaceAll(":", "-").replaceAll("/", "-"));
             System.out.println("addDocument PUT: " + documentUrl);
             HttpURLConnection conn = (HttpURLConnection) documentUrl.openConnection();
             conn.setDoOutput(true);
@@ -111,7 +111,21 @@ public class RestDbAdaptor implements DbAdaptor {
     }
 
     public void deleteDocument(String databaseName, String documentName) throws QueryException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            URL documentUrl = new URL(restUrl, databaseName + "/" + documentName.replaceAll(":", "-").replaceAll("/", "-"));
+            System.out.println("deleteDocument DELETE: " + documentUrl);
+            HttpURLConnection conn = (HttpURLConnection) documentUrl.openConnection();
+            conn.setRequestMethod("DELETE");
+            conn.setRequestProperty("Authorization", "Basic " + encodedPass);
+            final int responseCode = conn.getResponseCode();
+//            System.out.println("HTTP response: " + responseCode);
+            conn.disconnect();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new QueryException("HTTP response: " + responseCode);
+            }
+        } catch (IOException exception) {
+            throw new QueryException(exception);
+        }
     }
 
     public String executeQuery(String databaseName, String queryString) throws QueryException {
@@ -122,10 +136,10 @@ public class RestDbAdaptor implements DbAdaptor {
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Authorization", "Basic " + encodedPass);
-            conn.setRequestProperty("Content-Type", "application/query+xml");
+            conn.setRequestProperty("Content-Type", "application/xml");
             OutputStream out = conn.getOutputStream();
             String bodyString = "<query xmlns=\"http://basex.org/rest\">\n"
-                    + "  <text>" + queryString + "</text>\n"
+                    + "  <text><![CDATA[" + queryString + "]]></text>\n"
                     + "</query>";
             System.out.println("executeQuery POST: " + restUrl + " : " + bodyString);
             out.write(bodyString.getBytes("UTF-8"));
