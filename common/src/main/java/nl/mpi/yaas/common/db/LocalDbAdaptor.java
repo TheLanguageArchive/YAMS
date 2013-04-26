@@ -30,7 +30,6 @@ import org.basex.core.cmd.InfoDB;
 import org.basex.core.cmd.Open;
 import org.basex.core.cmd.Set;
 import org.basex.core.cmd.XQuery;
-import org.basex.query.QueryProcessor;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -128,7 +127,7 @@ public class LocalDbAdaptor implements DbAdaptor {
         }
     }
 
-    public String executeQuery(String queryString) throws QueryException {
+    public String executeQuery(String databaseName, String queryString) throws QueryException {
         try {
             synchronized (databaseLock) {
                 // try getting the cached stats                
@@ -143,6 +142,6 @@ public class LocalDbAdaptor implements DbAdaptor {
 
     public void createIndexes(String databaseName) throws QueryException {
         String createIndexesQuery = "db:optimize(\"" + databaseName + "\")\n";
-        String queryResult = executeQuery(createIndexesQuery);
+        String queryResult = executeQuery(databaseName, createIndexesQuery);
     }
 }

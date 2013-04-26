@@ -24,7 +24,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
-import org.basex.query.QueryProcessor;
 import org.basex.util.Base64;
 
 /**
@@ -65,15 +64,23 @@ public class RestDbAdaptor implements DbAdaptor {
     public void checkDbExists(String databaseName) throws QueryException {
         try {
             URL databaseUrl = new URL(restUrl, databaseName);
-            System.out.println("checkDbExists PUT: " + databaseUrl);
-            HttpURLConnection conn = (HttpURLConnection) databaseUrl.openConnection();
-            conn.setRequestMethod("PUT");
-            conn.setRequestProperty("Authorization", "Basic " + encodedPass);
-            final int responseCode = conn.getResponseCode();
+            HttpURLConnection connectionGet = (HttpURLConnection) databaseUrl.openConnection();
+            connectionGet.setRequestMethod("GET");
+            connectionGet.setRequestProperty("Authorization", "Basic " + encodedPass);
+            final int getResponseCode = connectionGet.getResponseCode();
 //            System.out.println("HTTP response: " + responseCode);
-            conn.disconnect();
-            if (responseCode != HttpURLConnection.HTTP_CREATED) {
-                throw new QueryException("HTTP response: " + responseCode);
+            connectionGet.disconnect();
+            if (getResponseCode != HttpURLConnection.HTTP_OK) {
+                System.out.println("checkDbExists PUT: " + databaseUrl);
+                HttpURLConnection connectionPut = (HttpURLConnection) databaseUrl.openConnection();
+                connectionPut.setRequestMethod("PUT");
+                connectionPut.setRequestProperty("Authorization", "Basic " + encodedPass);
+                final int putResponseCode = connectionPut.getResponseCode();
+//            System.out.println("HTTP response: " + responseCode);
+                connectionPut.disconnect();
+                if (putResponseCode != HttpURLConnection.HTTP_CREATED) {
+                    throw new QueryException("HTTP response: " + putResponseCode);
+                }
             }
         } catch (IOException exception) {
             throw new QueryException(exception);
@@ -82,13 +89,13 @@ public class RestDbAdaptor implements DbAdaptor {
 
     public void addDocument(String databaseName, String documentName, String documentContents) throws QueryException {
         try {
-            URL documentUrl = new URL(restUrl, databaseName + "/" + documentName.replaceAll(":", "-").replaceAll("/", "-"));
+            URL documentUrl = new URL(restUrl, databaseName + "/" + documentName.replaceAll(":", "-").replaceAll("/", "-") + ".xml");
             System.out.println("addDocument PUT: " + documentUrl);
             HttpURLConnection conn = (HttpURLConnection) documentUrl.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod("PUT");
             conn.setRequestProperty("Authorization", "Basic " + encodedPass);
-            conn.setRequestProperty("Content-Type", "application/query+xml");
+            conn.setRequestProperty("Content-Type", "application/xml");
             OutputStream out = conn.getOutputStream();
             out.write(documentContents.getBytes("UTF-8"));
             out.close();
@@ -107,7 +114,7 @@ public class RestDbAdaptor implements DbAdaptor {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public String executeQuery(String queryString) throws QueryException {
+    public String executeQuery(String databaseName, String queryString) throws QueryException {
         // todo: it would be better to consume the string as it becomes available, however this will get complicated when one query depends on another such as the get missing ID list in the crawler.
         StringBuilder replaceMe = new StringBuilder();
         try {
@@ -125,6 +132,14 @@ public class RestDbAdaptor implements DbAdaptor {
             out.close();
             final int responseCode = conn.getResponseCode();
             final String responseMessage = conn.getResponseMessage();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+                for (String line; (line = bufferedReader.readLine()) != null;) {
+                    System.out.println("response: " + line);
+                    replaceMe.append(line);
+                }
+                bufferedReader.close();
+            }
             conn.disconnect();
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 throw new QueryException("HTTP response: " + responseCode + " " + responseMessage);

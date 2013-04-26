@@ -18,7 +18,6 @@
 package nl.mpi.yaas.common.db;
 
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
-import org.basex.query.QueryProcessor;
 
 /**
  * Created on : Apr 8, 2013, 10:49:05 AM
@@ -35,7 +34,7 @@ public interface DbAdaptor {
 
     void deleteDocument(String databaseName, String documentName) throws QueryException;
 
-    String executeQuery(String queryString) throws QueryException;
+    String executeQuery(String databaseName, String queryString) throws QueryException;
 
     void createIndexes(String databaseName) throws QueryException;
     // todo: the use of QueryProcessor is not compatable with the rest interface so will have to go

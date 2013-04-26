@@ -40,9 +40,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Document : DataBaseManager Created on : Aug 6, 2012, 11:39:33 AM
  *
- * @param <D> Concrete class of DataNode that will be used in the jaxb deserialising process
- * @param <F> Concrete class of DataField that will be used in the jaxb deserialising process
- * @param <M> Concrete class of MetadataFileType that is used as query parameters and in some cases query results via the jaxb deserialising process
+ * @param <D> Concrete class of DataNode that will be used in the jaxb
+ * deserialising process
+ * @param <F> Concrete class of DataField that will be used in the jaxb
+ * deserialising process
+ * @param <M> Concrete class of MetadataFileType that is used as query
+ * parameters and in some cases query results via the jaxb deserialising process
  * @author Peter Withers
  */
 public class DataBaseManager<D, F, M> {
@@ -54,17 +57,23 @@ public class DataBaseManager<D, F, M> {
     final private String databaseName;
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
     /**
-     * these are two recommended database names, one for testing and the other for production
+     * these are two recommended database names, one for testing and the other
+     * for production
      */
     final static public String defaultDataBase = "yaas-data";
     final static public String testDataBase = "yaas-test-data";
 
     /**
      *
-     * @param dClass Concrete class of DataNode that will be used in the jaxb deserialising process
-     * @param fClass Concrete class of DataField that will be used in the jaxb deserialising process
-     * @param mClass Concrete class of MetadataFileType that is used as query parameters and in some cases query results via the jaxb deserialising process
-     * @param dbAdaptor an implementation of DbAdaptor which interfaces to either the REST DB or local DB via java bindings
+     * @param dClass Concrete class of DataNode that will be used in the jaxb
+     * deserialising process
+     * @param fClass Concrete class of DataField that will be used in the jaxb
+     * deserialising process
+     * @param mClass Concrete class of MetadataFileType that is used as query
+     * parameters and in some cases query results via the jaxb deserialising
+     * process
+     * @param dbAdaptor an implementation of DbAdaptor which interfaces to
+     * either the REST DB or local DB via java bindings
      * @param databaseName the name of the database that will be connected to
      * @throws QueryException
      */
@@ -79,6 +88,7 @@ public class DataBaseManager<D, F, M> {
 
     /**
      * Drop the entire database if it exists and create a new empty database
+     *
      * @throws QueryException
      */
     public void dropAndRecreateDb() throws QueryException {
@@ -86,7 +96,9 @@ public class DataBaseManager<D, F, M> {
     }
 
     /**
-     * Remove the database statistics document that is generated after a crawl by getDatabaseStats()
+     * Remove the database statistics document that is generated after a crawl
+     * by getDatabaseStats()
+     *
      * @throws QueryException
      */
     public void clearDatabaseStats() throws QueryException {
@@ -94,7 +106,9 @@ public class DataBaseManager<D, F, M> {
     }
 
     /**
-     * Causes the database to reindex all of its files which is required after an add or delete for instance
+     * Causes the database to reindex all of its files which is required after
+     * an add or delete for instance
+     *
      * @throws QueryException
      */
     public void createIndexes() throws QueryException {
@@ -107,8 +121,11 @@ public class DataBaseManager<D, F, M> {
     }
 
     /**
-     * Creates a document in the database that holds information on the contents of the database such as document count and root nodes URLs
-     * @return an object of type DatabaseStats that contains information on the contents of the database 
+     * Creates a document in the database that holds information on the contents
+     * of the database such as document count and root nodes URLs
+     *
+     * @return an object of type DatabaseStats that contains information on the
+     * contents of the database
      * @throws QueryException
      */
     public DatabaseStats getDatabaseStats() throws QueryException {
@@ -137,11 +154,11 @@ public class DataBaseManager<D, F, M> {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             boolean resultsWereCached = true;
-            queryResult = dbAdaptor.executeQuery(statsCachedQuery);
+            queryResult = dbAdaptor.executeQuery(databaseName, statsCachedQuery);
             if (queryResult.length() < 2) {
                 resultsWereCached = false;
                 // calculate the stats
-                queryResult = dbAdaptor.executeQuery(statsQuery);
+                queryResult = dbAdaptor.executeQuery(databaseName, statsQuery);
                 // insert the stats as a document
                 dbAdaptor.addDocument(databaseName, "DbStatsDocument", queryResult);
             }
@@ -160,7 +177,9 @@ public class DataBaseManager<D, F, M> {
     }
 
     /**
-     * Searches the database for missing child nodes for use when crawling missing documents
+     * Searches the database for missing child nodes for use when crawling
+     * missing documents
+     *
      * @return the URLs of the first N missing documents
      * @throws PluginException
      * @throws QueryException
@@ -172,7 +191,7 @@ public class DataBaseManager<D, F, M> {
                 + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
                 + "return $missingIds[position() le 1000]\n"; // <DataNodeId> </DataNodeId>
 //        System.out.println("getHandlesOfMissing: " + queryString);
-        String queryResult = dbAdaptor.executeQuery(queryString);
+        String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
         long queryMils = System.currentTimeMillis() - startTime;
         String queryTimeString = "Query time: " + queryMils + "ms";
         System.out.println(queryTimeString);
@@ -180,9 +199,12 @@ public class DataBaseManager<D, F, M> {
     }
 
     /**
-     * Inserts a document into the database and optionally checks for existing documents that would constitute a duplicate
+     * Inserts a document into the database and optionally checks for existing
+     * documents that would constitute a duplicate
+     *
      * @param dataNode the data node to be inserted into the database
-     * @param testForDuplicates if true the database will be searched for the document before inserting 
+     * @param testForDuplicates if true the database will be searched for the
+     * document before inserting
      * @throws PluginException
      * @throws QueryException
      */
@@ -190,7 +212,7 @@ public class DataBaseManager<D, F, M> {
         // test for existing documents with the same ID and throw if one is found
         if (testForDuplicates) {
             String existingDocumentQuery = "let $countValue := count(collection(\"" + databaseName + "\")/DataNode[@ID = \"" + dataNode.getID() + "\"])\nreturn $countValue";
-            String existingDocumentResult = dbAdaptor.executeQuery(existingDocumentQuery);
+            String existingDocumentResult = dbAdaptor.executeQuery(databaseName, existingDocumentQuery);
             if (!existingDocumentResult.equals("0")) {
                 throw new QueryException("Existing document found, count: " + existingDocumentResult);
             }
@@ -549,9 +571,11 @@ public class DataBaseManager<D, F, M> {
 
     /**
      * Searches the database
+     *
      * @param criterionJoinType the type of join that the query will perform
      * @param searchParametersList the parameters of the search
-     * @return A data node that the results as child nodes plus some query information
+     * @return A data node that the results as child nodes plus some query
+     * information
      * @throws QueryException
      */
     public D getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws QueryException {
@@ -695,7 +719,7 @@ public class DataBaseManager<D, F, M> {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
 //                System.out.println("queryString: " + queryString);
-            queryResult = dbAdaptor.executeQuery(queryString);
+            queryResult = dbAdaptor.executeQuery(databaseName, queryString);
 //            System.out.println("queryResult: " + queryResult);
             D rootTreeNode = (D) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), dClass).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
@@ -719,7 +743,7 @@ public class DataBaseManager<D, F, M> {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             System.out.println("queryString: " + queryString);
-            queryResult = dbAdaptor.executeQuery(queryString);
+            queryResult = dbAdaptor.executeQuery(databaseName, queryString);
             System.out.println("queryResult: " + queryResult);
             M foundEntities = (M) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), MetadataFileType.class).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
