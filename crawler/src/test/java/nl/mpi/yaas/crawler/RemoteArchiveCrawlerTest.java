@@ -37,9 +37,9 @@ public class RemoteArchiveCrawlerTest extends TestCase {
      * Test of crawl method, of class RemoteArchiveCrawler.
      */
     public void testCrawl() throws QueryException, URISyntaxException {
-        RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(RemoteArchiveCrawler.DbType.TestDB);
+        RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(RemoteArchiveCrawler.DbType.TestDB, 3);
         //            URI startURI = new URI("http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi");
         URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
-        archiveCrawler.crawl(startURI, 3);
+        archiveCrawler.crawl(startURI);
     }
 }
