@@ -52,7 +52,7 @@ import nl.mpi.yaas.common.db.LocalDbAdaptor;
 public class RemoteArchiveCrawler {
 
     final PluginArbilDataNodeLoader dataNodeLoader;
-    final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> arbilDatabase;
+    final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase;
     private int numberToInsert = 0;
     private int numberInserted = 0;
     private int totalLoaded = 0;
@@ -115,14 +115,15 @@ public class RemoteArchiveCrawler {
                 break;
         }
         final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File(System.getProperty("user.dir"), "yaas-data"));
-        arbilDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dataBaseName);
-        arbilDatabase.clearDatabaseStats();
+        yaasDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dataBaseName);
+        yaasDatabase.clearDatabaseStats();
     }
 
     private void clearAndCalculateDbStats() throws QueryException {
         System.out.println("Calculating the database statistics");
-        arbilDatabase.clearDatabaseStats();
-        final DatabaseStats databaseStats = arbilDatabase.getDatabaseStats();
+        yaasDatabase.clearDatabaseStats();
+        yaasDatabase.createIndexes();
+        final DatabaseStats databaseStats = yaasDatabase.getDatabaseStats();
         System.out.println("KnownDocumentsCount: " + databaseStats.getKnownDocumentsCount());
         System.out.println("MissingDocumentsCount: " + databaseStats.getMisingDocumentsCount());
         System.out.println("RootDocumentsCount: " + databaseStats.getRootDocumentsCount());
@@ -134,12 +135,12 @@ public class RemoteArchiveCrawler {
         System.out.println("FindAndInsertMissingNodes");
         try {
             // todo: change this to a loop that gets more missing document URLs in blocks of 100 from the db until the max
-//            final IterableResult handlesOfMissing = arbilDatabase.getHandlesOfMissing();
+//            final IterableResult handlesOfMissing = yaasDatabase.getHandlesOfMissing();
             boolean continueGetting = true;
             StringTokenizer stringTokenizer = null;
             while (continueGetting) {
                 if (stringTokenizer == null) {
-                    String handlesOfMissing = arbilDatabase.getHandlesOfMissing();
+                    String handlesOfMissing = yaasDatabase.getHandlesOfMissing();
                     stringTokenizer = new StringTokenizer(handlesOfMissing);
                 }
                 try {
@@ -158,7 +159,7 @@ public class RemoteArchiveCrawler {
                     ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
                     ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, new URI(targetHandle));
                     System.out.println("arbil url: " + dataNode.getUrlString());
-                    loadAndInsert(arbilDatabase, dataNode);
+                    loadAndInsert(yaasDatabase, dataNode);
                 } catch (NoSuchElementException exception) {
                     stringTokenizer = null;
                 }
@@ -191,8 +192,8 @@ public class RemoteArchiveCrawler {
             ArbilDataNodeContainer nodeContainer = null;
             ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
             System.out.println("Dropping old DB and creating a new DB");
-            arbilDatabase.dropAndRecreateDb(); // this will drop the old database
-            loadAndInsert(arbilDatabase, dataNode);
+            yaasDatabase.dropAndRecreateDb(); // this will drop the old database
+            loadAndInsert(yaasDatabase, dataNode);
             System.out.println("Crawl complete");
             clearAndCalculateDbStats();
         } catch (InterruptedException exception) {
