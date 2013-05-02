@@ -136,7 +136,7 @@ public class DataBaseManager<D, F, M> {
 
         String statsQuery = "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                 + "let $duplicateDocumentCount := count($knownIds) - count(distinct-values($knownIds))\n"
-                + "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n" // removing the "/text()" here reduced the query from 310ms to 290ms with 55 documents
+                + "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildLink/@ID\n" // removing the "/text()" here reduced the query from 310ms to 290ms with 55 documents
                 //                 + "let $missingIds := distinct-values(for $testId in $childIds where not ($knownIds = $testId) return $testId)\n"
                 //                 + "let $rootNodes := distinct-values(for $testId in $knownIds where not ($childIds = $testId) return $testId)\n"
                 // With 55 documents this change (for loop replaced by "[not(.=") decreased the query from 254ms to 237ms and with zero documents it made no difference, but this was doe with out updating the indexes and running the query only once
@@ -186,11 +186,11 @@ public class DataBaseManager<D, F, M> {
      */
     public String getHandlesOfMissing() throws PluginException, QueryException {
         long startTime = System.currentTimeMillis();
-        String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildId\n"
+        String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildLink\n"
                 + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
-                + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
+                + "let $missingIds := distinct-values($childIds[not(.=$knownIds)]/@url)"
                 + "return $missingIds[position() le 1000]\n"; // <DataNodeId> </DataNodeId>
-//        System.out.println("getHandlesOfMissing: " + queryString);
+        System.out.println("getHandlesOfMissing: " + queryString);
         String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
         long queryMils = System.currentTimeMillis() - startTime;
         String queryTimeString = "Query time: " + queryMils + "ms";
