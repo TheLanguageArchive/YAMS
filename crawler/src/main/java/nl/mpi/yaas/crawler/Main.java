@@ -53,17 +53,20 @@ public class Main {
         CommandLineParser parser = new BasicParser(); //DefaultParser();
         // create the Options
         Options options = new Options();
-        options.addOption("d", "drop", false, "drop the existing database and recrawl");
-        options.addOption("a", "append", false, "recrawl adding missing documents (this is the default behaviour)");
-        options.addOption("n", "number", true, "number of documents to insert (default is " + defaultNumberToCrawl + ")");
-        options.addOption("u", "url", true, "url of the start documents to crawl (default is " + defaultStartUrl + ")");
+        options.addOption("d", "drop", false, "Drop the existing database and recrawl. This option implies the c option.");
+        options.addOption("c", "crawl", false, "Crawl the provided url or the default url if not otherwise specified");
+        options.addOption("a", "append", false, "Recrawl adding missing documents (this is the default behaviour)");
+        options.addOption("n", "number", true, "Number of documents to insert (default is " + defaultNumberToCrawl + ")");
+        options.addOption("u", "url", true, "URL of the start documents to crawl (default is " + defaultStartUrl + "). This option implies the c option.");
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
             String startUrl = defaultStartUrl;
             int numberToCrawl = defaultNumberToCrawl;
+            boolean crawlOption = line.hasOption("c");
             if (line.hasOption("u")) {
                 startUrl = line.getOptionValue("u");
+                crawlOption=true;
             }
             if (line.hasOption("n")) {
                 numberToCrawl = Integer.parseInt(line.getOptionValue("n"));
@@ -75,11 +78,14 @@ public class Main {
                 if (line.hasOption("d")) {
                     System.out.println("Dropping and crawing from scratch");
                     archiveCrawler.dropDataBase();
+                    crawlOption=true;
                 }
-                System.out.println("Crawling the start URL: " + startURI);
-                archiveCrawler.crawl(startURI);
+                if (crawlOption) {
+                    System.out.println("Crawling the start URL: " + startURI);
+                    archiveCrawler.crawl(startURI);
+                }
 //                if (line.hasOption("a")) {
-                System.out.println("Crawling appending new documents");
+                System.out.println("Looking for and appending missing documents");
                 archiveCrawler.update();
 //                }
                 System.exit(0); // arbil threads might be requiring this to terminate
