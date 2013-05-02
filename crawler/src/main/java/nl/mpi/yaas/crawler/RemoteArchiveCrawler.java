@@ -120,6 +120,8 @@ public class RemoteArchiveCrawler {
         }
         try {
             final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL("http://192.168.56.101:8080/BaseX76/rest/"), "admin", "admin");
+//          final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL("http://localhost:1984/BaseX76/rest/"), "admin", "admin");
+//        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File());
             yaasDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dataBaseName);
             yaasDatabase.clearDatabaseStats();
         } catch (MalformedURLException exception) {
@@ -138,7 +140,6 @@ public class RemoteArchiveCrawler {
     }
 
     public void update() {
-        numberInserted = 0;
         System.out.println("FindAndInsertMissingNodes");
         try {
             // todo: change this to a loop that gets more missing document URLs in blocks of 100 from the db until the max
@@ -203,7 +204,6 @@ public class RemoteArchiveCrawler {
     }
 
     public void crawl(URI startURI) {
-        numberInserted = 0;
         System.out.println("crawl");
         try {
             ArbilDataNodeContainer nodeContainer = null;
