@@ -67,7 +67,7 @@ public class RemoteArchiveCrawler {
         StandardDB
     }
 
-    public RemoteArchiveCrawler(DbType dbType, int numberToInsert) throws QueryException {
+    public RemoteArchiveCrawler(DbType dbType, int numberToInsert, String databaseUrl, String databaseUser, String databasePassword) throws QueryException {
         this.numberToInsert = numberToInsert;
         final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
         final ArbilDesktopInjector injector = new ArbilDesktopInjector();
@@ -119,8 +119,7 @@ public class RemoteArchiveCrawler {
                 break;
         }
         try {
-            final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL("http://192.168.56.101:8080/BaseX76/rest/"), "admin", "admin");
-//          final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL("http://localhost:1984/BaseX76/rest/"), "admin", "admin");
+            final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(databaseUrl), databaseUser, databasePassword);
 //        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File());
             yaasDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dataBaseName);
             yaasDatabase.clearDatabaseStats();

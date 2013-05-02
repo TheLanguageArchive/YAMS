@@ -48,37 +48,53 @@ public class Main {
 //            }
 //        }
         int defaultNumberToCrawl = 10000;
+        String databaseUrl = "http://192.168.56.101:8080/BaseX76/rest/";
+        String databaseUser = "admin";
+        String databasePassword = "admin";
         String defaultStartUrl = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi";
         // create the command line parser
         CommandLineParser parser = new BasicParser(); //DefaultParser();
         // create the Options
         Options options = new Options();
         options.addOption("d", "drop", false, "Drop the existing database and recrawl. This option implies the c option.");
-        options.addOption("c", "crawl", false, "Crawl the provided url or the default url if not otherwise specified");
-        options.addOption("a", "append", false, "Recrawl adding missing documents (this is the default behaviour)");
-        options.addOption("n", "number", true, "Number of documents to insert (default is " + defaultNumberToCrawl + ")");
-        options.addOption("u", "url", true, "URL of the start documents to crawl (default is " + defaultStartUrl + "). This option implies the c option.");
+        options.addOption("c", "crawl", false, "Crawl the provided url or the default url if not otherwise specified.");
+        options.addOption("a", "append", false, "Recrawl adding missing documents (this is the default behaviour).");
+        options.addOption("n", "number", true, "Number of documents to insert (default is " + defaultNumberToCrawl + ").");
+        options.addOption("t", "target", true, "Target URL of the start documents to crawl (default is " + defaultStartUrl + "). This option implies the c option.");
+        options.addOption("s", "server", true, "Data base server URL, default is " + databaseUrl);
+        options.addOption("u", "user", true, "Data base user name, default is " + databaseUser);
+        options.addOption("p", "password", true, "Data base password, default is " + databasePassword);
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
             String startUrl = defaultStartUrl;
             int numberToCrawl = defaultNumberToCrawl;
             boolean crawlOption = line.hasOption("c");
-            if (line.hasOption("u")) {
-                startUrl = line.getOptionValue("u");
-                crawlOption=true;
+            if (line.hasOption("t")) {
+                startUrl = line.getOptionValue("t");
+                crawlOption = true;
             }
             if (line.hasOption("n")) {
                 numberToCrawl = Integer.parseInt(line.getOptionValue("n"));
             }
+
+            if (line.hasOption("s")) {
+                databaseUrl = line.getOptionValue("s");
+            }
+            if (line.hasOption("u")) {
+                databaseUser = line.getOptionValue("u");
+            }
+            if (line.hasOption("p")) {
+                databasePassword = line.getOptionValue("p");
+            }
             try {
-                RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(RemoteArchiveCrawler.DbType.StandardDB, numberToCrawl);
+                RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(RemoteArchiveCrawler.DbType.StandardDB, numberToCrawl, databaseUrl, databaseUser, databasePassword);
                 URI startURI = new URI(startUrl);
 //            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
                 if (line.hasOption("d")) {
                     System.out.println("Dropping and crawing from scratch");
                     archiveCrawler.dropDataBase();
-                    crawlOption=true;
+                    crawlOption = true;
                 }
                 if (crawlOption) {
                     System.out.println("Crawling the start URL: " + startURI);
