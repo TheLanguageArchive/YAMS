@@ -22,9 +22,11 @@ import java.util.List;
 import nl.mpi.arbil.clarin.profiles.CmdiTemplate;
 import nl.mpi.arbil.data.ArbilDataNode;
 import nl.mpi.arbil.templates.ArbilTemplate;
+import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.plugin.PluginException;
 
 /**
  * Created on : Mar 20, 2013, 5:26:44 PM
@@ -48,11 +50,11 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     }
 
     @Override
-    public String getID() {
+    public String getID() throws PluginException {
         if (!arbilDataNode.isChildNode()) {
             // not all documents have an archive handle, so we are making things simpler by using the URI as the ID
             // String iD = arbilDataNode.getID();
-            String iD = arbilDataNode.getUrlString();
+            String iD = new DataNodeLink(arbilDataNode.getURI()).getIdString();
 //            if (iD.isEmpty()) {
 //                iD = arbilDataNode.getUrlString();
 //            }
@@ -112,12 +114,12 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     }
 
     @Override
-    public List<String> getChildIds() {
-        List<String> childIds = new ArrayList<String>();
+    public List<DataNodeLink> getChildIds() throws PluginException {
+        List<DataNodeLink> childIds = new ArrayList<DataNodeLink>();
         for (ArbilDataNode childNode : arbilDataNode.getChildArray()) {
             if (!childNode.isChildNode() && childNode.isMetaDataNode()) {
                 // not all documents have an archive handle, so we are making things sinpler by using the URI asn the ID
-                childIds.add(childNode.getUrlString());
+                childIds.add(new DataNodeLink(childNode.getURI()));
             }
         }
         return childIds;
@@ -155,7 +157,7 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     }
 
     @Override
-    public void setChildIds(List<String> childIds) {
+    public void setChildIds(List<DataNodeLink> childIds) {
         throw new UnsupportedOperationException("This value cannot be modified");
     }
 

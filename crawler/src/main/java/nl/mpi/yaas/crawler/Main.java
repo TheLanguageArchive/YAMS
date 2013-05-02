@@ -76,9 +76,10 @@ public class Main {
                     System.out.println("Dropping and crawing from scratch");
                     archiveCrawler.dropDataBase();
                 }
+                System.out.println("Crawling the start URL: " + startURI);
                 archiveCrawler.crawl(startURI);
 //                if (line.hasOption("a")) {
-                System.out.println("Restarting crawl appending new documents");
+                System.out.println("Crawling appending new documents");
                 archiveCrawler.update();
 //                }
                 System.exit(0); // arbil threads might be requiring this to terminate
