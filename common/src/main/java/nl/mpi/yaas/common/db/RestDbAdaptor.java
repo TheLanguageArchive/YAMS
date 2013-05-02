@@ -89,7 +89,7 @@ public class RestDbAdaptor implements DbAdaptor {
 
     public void addDocument(String databaseName, String documentName, String documentContents) throws QueryException {
         try {
-            URL documentUrl = new URL(restUrl, databaseName + "/" + documentName.replaceAll(":", "-").replaceAll("/", "-"));
+            URL documentUrl = new URL(restUrl, databaseName + "/" + documentName); //.replaceAll(":", "-").replaceAll("/", "-"));
             System.out.println("addDocument PUT: " + documentUrl);
             HttpURLConnection conn = (HttpURLConnection) documentUrl.openConnection();
             conn.setDoOutput(true);
@@ -112,7 +112,7 @@ public class RestDbAdaptor implements DbAdaptor {
 
     public void deleteDocument(String databaseName, String documentName) throws QueryException {
         try {
-            URL documentUrl = new URL(restUrl, databaseName + "/" + documentName.replaceAll(":", "-").replaceAll("/", "-"));
+            URL documentUrl = new URL(restUrl, databaseName + "/" + documentName); //.replaceAll(":", "-").replaceAll("/", "-"));
             System.out.println("deleteDocument DELETE: " + documentUrl);
             HttpURLConnection conn = (HttpURLConnection) documentUrl.openConnection();
             conn.setRequestMethod("DELETE");
