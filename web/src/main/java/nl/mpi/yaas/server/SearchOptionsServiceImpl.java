@@ -5,13 +5,13 @@
 package nl.mpi.yaas.server;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.yaas.client.SearchOptionsService;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
@@ -20,7 +20,7 @@ import nl.mpi.yaas.common.data.QueryDataStructures;
 import nl.mpi.yaas.common.data.SearchParameters;
 import nl.mpi.yaas.common.db.DataBaseManager;
 import nl.mpi.yaas.common.db.DbAdaptor;
-import nl.mpi.yaas.common.db.LocalDbAdaptor;
+import nl.mpi.yaas.common.db.RestDbAdaptor;
 import nl.mpi.yaas.shared.WebQueryException;
 
 /**
@@ -44,9 +44,12 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
     private DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDatabase() throws QueryException {
         // todo: this version of the Arbil database is not intended to multi entry and will be replaced by a rest version when it is written
 //        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File(System.getProperty("user.dir"), "yaas-data"));
-        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File("/Users/petwit2/.arbil/"));
-
-        return new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, DataBaseManager.defaultDataBase);
+        try {
+            final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL("http://192.168.56.101:8080/BaseX76/rest/"), "webdbuser", "minfc8u4ng6s");
+            return new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, DataBaseManager.defaultDataBase);
+        } catch (MalformedURLException exception) {
+            throw new QueryException(exception);
+        }
     }
 
     public MetadataFileType[] getTypeOptions() throws WebQueryException {
