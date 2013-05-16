@@ -25,6 +25,7 @@ import nl.mpi.arbil.templates.ArbilTemplate;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.FieldGroup;
+import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 
@@ -50,11 +51,11 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     }
 
     @Override
-    public String getID() throws PluginException {
+    public String getID() throws ModelException {
         if (!arbilDataNode.isChildNode()) {
             // not all documents have an archive handle, so we are making things simpler by using the URI as the ID
             // String iD = arbilDataNode.getID();
-            String iD = new DataNodeLink(arbilDataNode.getURI()).getIdString();
+            String iD = new DataNodeLink(arbilDataNode.getURI().toString()).getIdString();
 //            if (iD.isEmpty()) {
 //                iD = arbilDataNode.getUrlString();
 //            }
@@ -114,12 +115,12 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     }
 
     @Override
-    public List<DataNodeLink> getChildIds() throws PluginException {
+    public List<DataNodeLink> getChildIds() throws ModelException {
         List<DataNodeLink> childIds = new ArrayList<DataNodeLink>();
         for (ArbilDataNode childNode : arbilDataNode.getChildArray()) {
             if (!childNode.isChildNode() && childNode.isMetaDataNode()) {
-                // not all documents have an archive handle, so we are making things sinpler by using the URI asn the ID
-                childIds.add(new DataNodeLink(childNode.getURI()));
+                // not all documents have an archive handle, so we are making things simpler by using the URI asn the ID
+                childIds.add(new DataNodeLink(childNode.getUrlString()));
             }
         }
         return childIds;

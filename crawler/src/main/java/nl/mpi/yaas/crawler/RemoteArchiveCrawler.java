@@ -17,6 +17,7 @@
  */
 package nl.mpi.yaas.crawler;
 
+import nl.mpi.yaas.common.data.IconTable;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -37,6 +38,7 @@ import nl.mpi.arbil.util.ArbilLogConfigurer;
 import nl.mpi.arbil.util.MimeHashQueue;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
+import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
 import nl.mpi.flap.plugin.PluginException;
@@ -56,6 +58,7 @@ public class RemoteArchiveCrawler {
 
     final PluginArbilDataNodeLoader dataNodeLoader;
     final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase;
+    final IconTable iconTable;
     private int numberToInsert;
     private int numberInserted = 0;
     private int totalLoaded = 0;
@@ -69,6 +72,7 @@ public class RemoteArchiveCrawler {
 
     public RemoteArchiveCrawler(DbType dbType, int numberToInsert, String databaseUrl, String databaseUser, String databasePassword) throws QueryException {
         this.numberToInsert = numberToInsert;
+        iconTable = new IconTable();
         final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
         final ArbilDesktopInjector injector = new ArbilDesktopInjector();
         injector.injectHandlers(versionManager, new ArbilLogConfigurer(versionManager.getApplicationVersion(), "yaas"));
@@ -128,7 +132,7 @@ public class RemoteArchiveCrawler {
         }
     }
 
-    private void clearAndCalculateDbStats() throws QueryException {
+    public void clearAndCalculateDbStats() throws QueryException {
         System.out.println("Calculating the database statistics");
         yaasDatabase.clearDatabaseStats();
         yaasDatabase.createIndexes();
@@ -136,6 +140,11 @@ public class RemoteArchiveCrawler {
         System.out.println("KnownDocumentsCount: " + databaseStats.getKnownDocumentsCount());
         System.out.println("MissingDocumentsCount: " + databaseStats.getMisingDocumentsCount());
         System.out.println("RootDocumentsCount: " + databaseStats.getRootDocumentsCount());
+    }
+
+    public void insertKnowIcons() throws PluginException, QueryException {
+        System.out.println("Inserting the know icons");
+        yaasDatabase.insertNodeIconsIntoDatabase(iconTable);
     }
 
     public void update() {
@@ -173,7 +182,6 @@ public class RemoteArchiveCrawler {
                 }
             }
             System.out.println("Update complete");
-            clearAndCalculateDbStats();
         } catch (URISyntaxException exception) {
             System.out.println(exception.getMessage());
             System.exit(-1);
@@ -187,6 +195,9 @@ public class RemoteArchiveCrawler {
             System.out.println(exception.getMessage());
             System.exit(-1);
         } catch (CrawlerException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        } catch (ModelException exception) {
             System.out.println(exception.getMessage());
             System.exit(-1);
         }
@@ -209,7 +220,6 @@ public class RemoteArchiveCrawler {
             ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
             loadAndInsert(yaasDatabase, dataNode);
             System.out.println("Crawl complete");
-            clearAndCalculateDbStats();
         } catch (InterruptedException exception) {
             System.out.println(exception.getMessage());
             System.exit(-1);
@@ -222,10 +232,13 @@ public class RemoteArchiveCrawler {
         } catch (CrawlerException exception) {
             System.out.println(exception.getMessage());
             System.exit(-1);
+        } catch (ModelException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
         }
     }
 
-    private void loadAndInsert(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException, CrawlerException {
+    private void loadAndInsert(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException, CrawlerException, ModelException {
         System.out.println("Loading: " + numberInserted);
         while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
             dataNode.reloadNode();
@@ -234,6 +247,7 @@ public class RemoteArchiveCrawler {
         }
         totalLoaded++;
 //        loadChildNodes(dataNode);
+        iconTable.addTypeIcon(dataNode.getType(), dataNode.getIcon());
         if (!dataNode.fileNotFound && !dataNode.isChildNode()) {
             System.out.println("Inserting into the database");
             System.out.println("URL: " + dataNode.getUrlString());

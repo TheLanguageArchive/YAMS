@@ -20,6 +20,7 @@ package nl.mpi.yaas.crawler;
 import java.net.URI;
 import java.net.URISyntaxException;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
+import nl.mpi.flap.plugin.PluginException;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -104,11 +105,16 @@ public class Main {
                 System.out.println("Looking for and appending missing documents");
                 archiveCrawler.update();
 //                }
+                archiveCrawler.clearAndCalculateDbStats();
+                archiveCrawler.insertKnowIcons();
                 System.exit(0); // arbil threads might be requiring this to terminate
             } catch (URISyntaxException exception) {
                 System.out.println(exception.getMessage());
                 System.exit(-1);
             } catch (QueryException exception) {
+                System.out.println(exception.getMessage());
+                System.exit(-1);
+            } catch (PluginException exception) {
                 System.out.println(exception.getMessage());
                 System.exit(-1);
             }
