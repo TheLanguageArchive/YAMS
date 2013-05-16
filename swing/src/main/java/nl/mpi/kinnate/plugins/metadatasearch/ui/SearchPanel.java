@@ -6,11 +6,9 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -29,8 +27,8 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
-import nl.mpi.flap.model.PluginArbilDataNode;
-import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
+import nl.mpi.flap.model.DataField;
+import nl.mpi.flap.model.PluginDataNode;
 import nl.mpi.flap.plugin.PluginArbilTable;
 import nl.mpi.flap.plugin.PluginArbilTableModel;
 import nl.mpi.flap.plugin.PluginBugCatcher;
@@ -39,13 +37,14 @@ import nl.mpi.flap.plugin.PluginDialogHandler.DialogueType;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.flap.plugin.PluginSessionStorage;
 import nl.mpi.flap.plugin.PluginWidgetFactory;
-import nl.mpi.flap.plugin.WrongNodeTypeException;
 import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
 import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataTreeNode;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
-import nl.mpi.yaas.common.db.ArbilDatabase;
-import nl.mpi.yaas.common.db.SearchParameters;
+import nl.mpi.yaas.common.data.SearchParameters;
+import nl.mpi.yaas.common.db.DataBaseManager;
+import nl.mpi.yaas.common.db.DbAdaptor;
+import nl.mpi.yaas.common.db.LocalDbAdaptor;
 
 /**
  * Created on : Jul 31, 2012, 6:34:07 PM
@@ -54,7 +53,7 @@ import nl.mpi.yaas.common.db.SearchParameters;
  */
 public class SearchPanel extends JPanel implements ActionListener {
 
-    private ArbilDatabase<DbTreeNode, MetadataFileType> arbilDatabase;
+    private DataBaseManager<DbTreeNode, DataField, MetadataFileType> yaasDatabase;
     private JProgressBar jProgressBar;
 //    final private JTextArea resultsTextArea;
     private ArrayList<SearchCriterionPanel> criterionPanelArray;
@@ -66,15 +65,14 @@ public class SearchPanel extends JPanel implements ActionListener {
     private DefaultTreeModel defaultTreeModel;
     private PluginArbilTable arbilTable;
     private PluginArbilTableModel arbilTableModel;
-    final private PluginArbilDataNodeLoader arbilDataNodeLoader;
     final private PluginDialogHandler arbilWindowManager;
     private int actionProgressCounter = 0;
 
-    public SearchPanel(final PluginArbilDataNodeLoader arbilDataNodeLoader, final PluginDialogHandler dialogHandler, final PluginBugCatcher pluginBugCatcher, PluginSessionStorage pluginSessionStorage, PluginWidgetFactory pluginWidgetFactory) {
-        this.arbilDataNodeLoader = arbilDataNodeLoader;
+    public SearchPanel(final PluginDialogHandler dialogHandler, final PluginBugCatcher pluginBugCatcher, PluginSessionStorage pluginSessionStorage, PluginWidgetFactory pluginWidgetFactory) {
         this.arbilWindowManager = dialogHandler;
         try {
-            arbilDatabase = new ArbilDatabase<DbTreeNode, MetadataFileType>(DbTreeNode.class, MetadataFileType.class, pluginSessionStorage);
+            final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File(System.getProperty("user.dir"), "yaas-data"));
+            yaasDatabase = new DataBaseManager<DbTreeNode, DataField, MetadataFileType>(DbTreeNode.class, DataField.class, MetadataFileType.class, dbAdaptor, DataBaseManager.defaultDataBase);
         } catch (QueryException exception) {
             this.add(new JLabel(exception.getMessage()), BorderLayout.CENTER);
             return;
@@ -135,13 +133,13 @@ public class SearchPanel extends JPanel implements ActionListener {
         resultsTree.setCellRenderer(new SearchTreeCellRenderer());
         resultsTree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent tse) {
-                ArrayList<PluginArbilDataNode> arbilDataNodeList = new ArrayList<PluginArbilDataNode>();
+                ArrayList<PluginDataNode> arbilDataNodeList = new ArrayList<PluginDataNode>();
                 final TreePath[] selectionPaths = resultsTree.getSelectionPaths();
                 if (selectionPaths != null) {
                     for (TreePath treePath : selectionPaths) {
                         final Object lastPathComponent = treePath.getLastPathComponent();
                         if (lastPathComponent instanceof MetadataTreeNode) {
-                            final PluginArbilDataNode arbilNode = ((MetadataTreeNode) lastPathComponent).getArbilNode();
+                            final PluginDataNode arbilNode = ((MetadataTreeNode) lastPathComponent).getArbilNode();
                             if (arbilNode != null) {
                                 arbilDataNodeList.add(arbilNode);
                             }
@@ -149,7 +147,7 @@ public class SearchPanel extends JPanel implements ActionListener {
                     }
                 }
                 arbilTableModel.removeAllArbilDataNodeRows();
-                arbilTableModel.addArbilDataNodes(arbilDataNodeList.toArray(new PluginArbilDataNode[0]));
+                arbilTableModel.addArbilDataNodes(arbilDataNodeList.toArray(new PluginDataNode[0]));
             }
         });
 
@@ -177,36 +175,36 @@ public class SearchPanel extends JPanel implements ActionListener {
                 return new File("/Users/petwit2/.arbil/ArbilWorkingFiles/");
             }
         };
-        final PluginArbilDataNodeLoader dataNodeLoader = new PluginArbilDataNodeLoader() {
-            public PluginArbilDataNode getPluginArbilDataNode(Object registeringObject, final URI localUri) {
-                return new PluginArbilDataNode() {
-                    public ImageIcon getIcon() {
-                        return null;
-                    }
-
-                    public PluginArbilDataNode[] getChildArray() {
-                        return new PluginArbilDataNode[0];
-                    }
-
-                    @Override
-                    public String toString() {
-                        return localUri.toString();
-                    }
-
-                    public String getID() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                    }
-                };
-            }
-
-            public URI getNodeURI(PluginArbilDataNode dataNode) throws WrongNodeTypeException {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            public boolean isNodeLoading(PluginArbilDataNode dataNode) {
-                return false;
-            }
-        };
+//        final PluginDataNodeLoader dataNodeLoader = new PluginDataNodeLoader() {
+//            public PluginDataNode getPluginArbilDataNode(Object registeringObject, final URI localUri) {
+//                return new PluginDataNode() {
+//                    public String getIconId() {
+//                        return null;
+//                    }
+//
+//                    public PluginDataNode[] getChildArray() {
+//                        return new PluginArbilDataNode[0];
+//                    }
+//
+//                    @Override
+//                    public String toString() {
+//                        return localUri.toString();
+//                    }
+//
+//                    public String getID() {
+//                        throw new UnsupportedOperationException("Not supported yet.");
+//                    }
+//                };
+//            }
+//
+//            public URI getNodeURI(PluginDataNode dataNode) throws WrongNodeTypeException {
+//                throw new UnsupportedOperationException("Not supported yet.");
+//            }
+//
+//            public boolean isNodeLoading(PluginDataNode dataNode) {
+//                return false;
+//            }
+//        };
         PluginDialogHandler dialogHandler = new PluginDialogHandler() {
             public void addMessageDialogToQueue(String messageString, String messageTitle) {
                 throw new UnsupportedOperationException("Not supported yet.");
@@ -246,13 +244,13 @@ public class SearchPanel extends JPanel implements ActionListener {
 //                        throw new UnsupportedOperationException("Not supported yet.");
                     }
 
-                    public void addArbilDataNodes(PluginArbilDataNode[] pluginArbilDataNodes) {
+                    public void addArbilDataNodes(PluginDataNode[] pluginArbilDataNodes) {
 //                        throw new UnsupportedOperationException("Not supported yet.");
                     }
                 };
             }
         };
-        SearchPanel searchPanel = new SearchPanel(dataNodeLoader, dialogHandler, bugCatcher, sessionStorage, widgetFactory);
+        SearchPanel searchPanel = new SearchPanel(dialogHandler, bugCatcher, sessionStorage, widgetFactory);
         jFrame.setContentPane(searchPanel);
         jFrame.pack();
         jFrame.setVisible(true);
@@ -296,20 +294,21 @@ public class SearchPanel extends JPanel implements ActionListener {
         return new Runnable() {
             public void run() {
 //                System.out.println("actionProgressCounter: " + actionProgressCounter);
-                if ("create".equals(actionCommand)) {
-                    try {
-                        System.out.println("create db");
-                        arbilDatabase.createDatabase();
-                        System.out.println("done");
-                    } catch (QueryException exception) {
-                        arbilWindowManager.addMessageDialogToQueue(exception.getMessage(), "Database Error");
-                        exception.printStackTrace();
-                    }
-//                } else if ("options".equals(actionCommand)) {
-                    // todo: when a database update occurs these queries should be run again and the UI updated
-//                    metadataPathTypes = arbilDatabase.getMetadataTypes(null);
-//                    metadataFieldTypes = arbilDatabase.getFieldMetadataTypes(null);
-                } else if ("remove".equals(actionCommand)) {
+//                if ("create".equals(actionCommand)) {
+//                    try {
+//                        System.out.println("create db");
+//                        arbilDatabase.createDatabase();
+//                        System.out.println("done");
+//                    } catch (QueryException exception) {
+//                        arbilWindowManager.addMessageDialogToQueue(exception.getMessage(), "Database Error");
+//                        exception.printStackTrace();
+//                    }
+////                } else if ("options".equals(actionCommand)) {
+//                    // todo: when a database update occurs these queries should be run again and the UI updated
+////                    metadataPathTypes = arbilDatabase.getMetadataTypes(null);
+////                    metadataFieldTypes = arbilDatabase.getFieldMetadataTypes(null);
+//                } else 
+                if ("remove".equals(actionCommand)) {
                     criterionPanelArray.remove(eventCriterionPanel);
                     criterionArrayPanel.remove(eventCriterionPanel);
                     SearchPanel.this.revalidate();
@@ -318,10 +317,10 @@ public class SearchPanel extends JPanel implements ActionListener {
                     if (metadataFieldTypes == null || metadataPathTypes == null) {
                         try {
                             System.out.println("run query");
-                            metadataPathTypes = arbilDatabase.getMetadataTypes(null);
+                            metadataPathTypes = yaasDatabase.getMetadataTypes(null);
                             System.out.println("done");
                             System.out.println("run query");
-                            metadataFieldTypes = arbilDatabase.getFieldMetadataTypes(null);
+                            metadataFieldTypes = yaasDatabase.getFieldMetadataTypes(null);
                             System.out.println("done");
                         } catch (QueryException exception) {
                             arbilWindowManager.addMessageDialogToQueue(exception.getMessage(), "Database Error");
@@ -335,7 +334,7 @@ public class SearchPanel extends JPanel implements ActionListener {
                 } else if ("paths".equals(actionCommand)) {
                     try {
                         System.out.println("run query");
-                        MetadataFileType[] metadataFieldTypes = arbilDatabase.getFieldMetadataTypes(eventCriterionPanel.getMetadataFileType());
+                        MetadataFileType[] metadataFieldTypes = yaasDatabase.getFieldMetadataTypes(eventCriterionPanel.getMetadataFileType());
                         System.out.println("done");
                         eventCriterionPanel.setFieldOptions(metadataFieldTypes);
                     } catch (QueryException exception) {
@@ -353,7 +352,7 @@ public class SearchPanel extends JPanel implements ActionListener {
                     }
                     DbTreeNode rootTreeNode;
                     try {
-                        rootTreeNode = arbilDatabase.getSearchResult(criterionJoinType, searchParametersList);
+                        rootTreeNode = yaasDatabase.getSearchResult(criterionJoinType, searchParametersList);
                     } catch (QueryException exception) {
                         arbilWindowManager.addMessageDialogToQueue(exception.getMessage(), "Database Error");
                         rootTreeNode = new DbTreeNode();
@@ -361,7 +360,7 @@ public class SearchPanel extends JPanel implements ActionListener {
                     final DbTreeNode rootTreeNodeFinal = rootTreeNode;
                     System.out.println("run query");
 //        final DbTreeNode rootTreeNode = arbilDatabase.getTreeData(treeBranchTypeList);
-                    rootTreeNode.setParentDbTreeNode(null, defaultTreeModel, arbilDataNodeLoader, arbilDatabase);
+                    rootTreeNode.setParentDbTreeNode(null, defaultTreeModel, yaasDatabase);
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             defaultTreeModel.setRoot(rootTreeNodeFinal);

@@ -13,7 +13,6 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Map;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -31,8 +30,8 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
-import nl.mpi.flap.model.PluginArbilDataNode;
-import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
+import nl.mpi.flap.model.DataField;
+import nl.mpi.flap.model.PluginDataNode;
 import nl.mpi.flap.plugin.PluginArbilTable;
 import nl.mpi.flap.plugin.PluginArbilTableModel;
 import nl.mpi.flap.plugin.PluginBugCatcher;
@@ -44,7 +43,8 @@ import nl.mpi.flap.plugin.WrongNodeTypeException;
 import nl.mpi.kinnate.plugins.metadatasearch.data.DbTreeNode;
 import nl.mpi.kinnate.plugins.metadatasearch.data.MetadataTreeNode;
 import nl.mpi.yaas.common.data.MetadataFileType;
-import nl.mpi.yaas.common.db.ArbilDatabase;
+import nl.mpi.yaas.common.db.DataBaseManager;
+import nl.mpi.yaas.common.db.LocalDbAdaptor;
 
 /**
  * Document : FacetedTreePanel <br> Created on Aug 23, 2012, 3:20:13 PM <br>
@@ -53,9 +53,8 @@ import nl.mpi.yaas.common.db.ArbilDatabase;
  */
 public class FacetedTreePanel extends JPanel implements ActionListener {
 
-    private ArbilDatabase<DbTreeNode, MetadataFileType> arbilDatabase;
+    private DataBaseManager<DbTreeNode, DataField, MetadataFileType> yaasDatabase;
     final private PluginDialogHandler arbilWindowManager;
-    final private PluginArbilDataNodeLoader arbilDataNodeLoader;
     private ArrayList<SearchOptionBox> searchPathOptionBoxList;
     private JProgressBar jProgressBar;
     private int actionProgressCounter = 0;
@@ -66,12 +65,11 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
     private JPanel criterionPanel;
     private MetadataFileType[] metadataFieldTypes = null;
 
-    public FacetedTreePanel(final PluginArbilDataNodeLoader arbilDataNodeLoader, final PluginDialogHandler dialogHandler, final PluginBugCatcher pluginBugCatcher, PluginSessionStorage pluginSessionStorage, PluginWidgetFactory pluginWidgetFactory) {
-        this.arbilDataNodeLoader = arbilDataNodeLoader;
+    public FacetedTreePanel(final PluginDialogHandler dialogHandler, final PluginBugCatcher pluginBugCatcher, PluginSessionStorage pluginSessionStorage, PluginWidgetFactory pluginWidgetFactory) {
         arbilWindowManager = dialogHandler;
         this.setLayout(new BorderLayout());
         try {
-            arbilDatabase = new ArbilDatabase<DbTreeNode, MetadataFileType>(DbTreeNode.class, MetadataFileType.class, pluginSessionStorage);
+            yaasDatabase = new DataBaseManager<DbTreeNode, DataField, MetadataFileType>(DbTreeNode.class, DataField.class, MetadataFileType.class, new LocalDbAdaptor(pluginSessionStorage.getProjectDirectory()), DataBaseManager.defaultDataBase);
         } catch (QueryException exception) {
             this.add(new JLabel(exception.getMessage()), BorderLayout.CENTER);
             return;
@@ -131,13 +129,13 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
         resultsTree.setCellRenderer(new SearchTreeCellRenderer());
         resultsTree.addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent tse) {
-                ArrayList<PluginArbilDataNode> arbilDataNodeList = new ArrayList<PluginArbilDataNode>();
+                ArrayList<PluginDataNode> arbilDataNodeList = new ArrayList<PluginDataNode>();
                 final TreePath[] selectionPaths = resultsTree.getSelectionPaths();
                 if (selectionPaths != null) {
                     for (TreePath treePath : selectionPaths) {
                         final Object lastPathComponent = treePath.getLastPathComponent();
                         if (lastPathComponent instanceof MetadataTreeNode) {
-                            final PluginArbilDataNode arbilNode = ((MetadataTreeNode) lastPathComponent).getArbilNode();
+                            final PluginDataNode arbilNode = ((MetadataTreeNode) lastPathComponent).getArbilNode();
                             if (arbilNode != null) {
                                 arbilDataNodeList.add(arbilNode);
                             }
@@ -145,7 +143,7 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
                     }
                 }
                 arbilTableModel.removeAllArbilDataNodeRows();
-                arbilTableModel.addArbilDataNodes(arbilDataNodeList.toArray(new PluginArbilDataNode[0]));
+                arbilTableModel.addArbilDataNodes(arbilDataNodeList.toArray(new PluginDataNode[0]));
             }
         });
         centerPanel.add(new JScrollPane(resultsTree), BorderLayout.CENTER);
@@ -174,36 +172,36 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
                 return new File("/Users/petwit2/.arbil/ArbilWorkingFiles/");
             }
         };
-        final PluginArbilDataNodeLoader dataNodeLoader = new PluginArbilDataNodeLoader() {
-            public PluginArbilDataNode getPluginArbilDataNode(Object registeringObject, final URI localUri) {
-                return new PluginArbilDataNode() {
-                    public ImageIcon getIcon() {
-                        return null;
-                    }
+//        final PluginDataNodeLoader dataNodeLoader = new PluginDataNodeLoader() {
+//            public PluginDataNode getPluginDataNode(Object registeringObject, final URI localUri) {
+//                return new PluginDataNode() {
+//                    public String getIconId() {
+//                        return null;
+//                    }
+//
+//                    public PluginDataNode[] getChildArray() {
+//                        return new PluginDataNode[0];
+//                    }
+//
+//                    @Override
+//                    public String toString() {
+//                        return localUri.toString();
+//                    }
+//
+//                    public String getID() {
+//                        throw new UnsupportedOperationException("Not supported yet.");
+//                    }
+//                };
+//            }
 
-                    public PluginArbilDataNode[] getChildArray() {
-                        return new PluginArbilDataNode[0];
-                    }
-
-                    @Override
-                    public String toString() {
-                        return localUri.toString();
-                    }
-
-                    public String getID() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                    }
-                };
-            }
-
-            public URI getNodeURI(PluginArbilDataNode dataNode) throws WrongNodeTypeException {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            public boolean isNodeLoading(PluginArbilDataNode dataNode) {
-                return false;
-            }
-        };
+//            public URI getNodeURI(PluginDataNode dataNode) throws WrongNodeTypeException {
+//                throw new UnsupportedOperationException("Not supported yet.");
+//            }
+//
+//            public boolean isNodeLoading(PluginDataNode dataNode) {
+//                return false;
+//            }
+//        };
         PluginDialogHandler dialogHandler = new PluginDialogHandler() {
             public void addMessageDialogToQueue(String messageString, String messageTitle) {
                 throw new UnsupportedOperationException("Not supported yet.");
@@ -243,14 +241,14 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
 //                        throw new UnsupportedOperationException("Not supported yet.");
                     }
 
-                    public void addArbilDataNodes(PluginArbilDataNode[] pluginArbilDataNodes) {
+                    public void addArbilDataNodes(PluginDataNode[] pluginArbilDataNodes) {
 //                        throw new UnsupportedOperationException("Not supported yet.");
                     }
                 };
             }
         };
 
-        final FacetedTreePanel facetedTreePanel = new FacetedTreePanel(dataNodeLoader, dialogHandler, bugCatcher, sessionStorage, widgetFactory);
+        final FacetedTreePanel facetedTreePanel = new FacetedTreePanel(dialogHandler, bugCatcher, sessionStorage, widgetFactory);
         jFrame.setContentPane(facetedTreePanel);
         jFrame.pack();
         jFrame.setVisible(true);
@@ -287,13 +285,13 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
         System.out.println("run query");
         DbTreeNode rootTreeNode;
         try {
-            rootTreeNode = arbilDatabase.getTreeData(treeBranchTypeList);
+            rootTreeNode = yaasDatabase.getTreeData(treeBranchTypeList);
         } catch (QueryException exception) {
             arbilWindowManager.addMessageDialogToQueue(exception.getMessage(), "Database Error");
             rootTreeNode = new DbTreeNode();
         }
         final DbTreeNode rootTreeNodeFinal = rootTreeNode;
-        rootTreeNode.setParentDbTreeNode(null, defaultTreeModel, arbilDataNodeLoader, arbilDatabase);
+        rootTreeNode.setParentDbTreeNode(null, defaultTreeModel, yaasDatabase);
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 defaultTreeModel.setRoot(rootTreeNodeFinal);
@@ -307,25 +305,26 @@ public class FacetedTreePanel extends JPanel implements ActionListener {
         return new Runnable() {
             public void run() {
                 System.out.println("run: " + actionCommand);
-                if ("create".equals(actionCommand)) {
-                    try {
-                        System.out.println("create db");
-                        arbilDatabase.createDatabase();
-                        System.out.println("done");
-                    } catch (QueryException exception) {
-                        arbilWindowManager.addMessageDialogToQueue(exception.getMessage(), "Database Error");
-                        exception.printStackTrace();
-                    }
-                } else if ("options".equals(actionCommand)) {
+//                if ("create".equals(actionCommand)) {
+//                    try {
+//                        System.out.println("create db");
+//                        arbilDatabase.createDatabase();
+//                        System.out.println("done");
+//                    } catch (QueryException exception) {
+//                        arbilWindowManager.addMessageDialogToQueue(exception.getMessage(), "Database Error");
+//                        exception.printStackTrace();
+//                    }
+//                } else 
+                if ("options".equals(actionCommand)) {
                     try {
                         System.out.println("run fast options query");
-                        metadataFieldTypes = arbilDatabase.getTreeFieldTypes(null, true);
+                        metadataFieldTypes = yaasDatabase.getTreeFieldTypes(null, true);
                         System.out.println("done fast options query");
                         for (SearchOptionBox searchOptionBox : searchPathOptionBoxList) {
                             searchOptionBox.setTypes(metadataFieldTypes);
                         }
                         System.out.println("run detailed options query");
-                        metadataFieldTypes = arbilDatabase.getTreeFieldTypes(null, false);
+                        metadataFieldTypes = yaasDatabase.getTreeFieldTypes(null, false);
                         System.out.println("done detailed options query");
                         for (SearchOptionBox searchOptionBox : searchPathOptionBoxList) {
                             searchOptionBox.setTypes(metadataFieldTypes);

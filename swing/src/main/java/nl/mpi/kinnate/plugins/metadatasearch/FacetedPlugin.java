@@ -23,7 +23,7 @@ public class FacetedPlugin extends AbstractBaseModule implements ArbilWindowPlug
     }
 
     public JPanel getUiPanel(PluginDialogHandler dialogHandler, PluginSessionStorage sessionStorage, PluginBugCatcher bugCatcher, PluginArbilDataNodeLoader arbilDataNodeLoader, PluginWidgetFactory pluginWidgetFactory) throws PluginException {
-        final FacetedTreePanel facetedTreePanel = new FacetedTreePanel(arbilDataNodeLoader, dialogHandler, bugCatcher, sessionStorage, pluginWidgetFactory);
+        final FacetedTreePanel facetedTreePanel = new FacetedTreePanel(dialogHandler, bugCatcher, sessionStorage, pluginWidgetFactory);
         // trigger the facets to load
 //        new Thread(facetedTreePanel.getRunnable("add")).start();
         new Thread(facetedTreePanel.getRunnable("options")).start();

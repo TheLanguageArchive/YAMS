@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
  *
  * @author Peter Withers <br>
  */
+@Deprecated
 public class DbTreeNode extends AbstractDbTreeNode {
 
     @XmlElement(name = "TreeNode")
@@ -33,7 +34,7 @@ public class DbTreeNode extends AbstractDbTreeNode {
 //    }
     public TreeNode getChildAt(int i) {
         final AbstractDbTreeNode selectedChild = getChildList().get(i);
-        selectedChild.setParentDbTreeNode(this, defaultTreeModel, arbilDataNodeLoader, arbilDatabase);
+        selectedChild.setParentDbTreeNode(this, defaultTreeModel, yaasDatabase);
         return selectedChild;
     }
 
@@ -73,12 +74,12 @@ public class DbTreeNode extends AbstractDbTreeNode {
             childList.add(new DbTreeNode("<more than " + maxChildrenToShow + " results, please add more facets>"));
         } else {
             for (DbTreeNode childNode : childTreeNode) {
-                childNode.setParentDbTreeNode(this, defaultTreeModel, arbilDataNodeLoader, arbilDatabase);
+                childNode.setParentDbTreeNode(this, defaultTreeModel, yaasDatabase);
                 childList.add(childNode);
             }
             for (MetadataTreeNode childNode : childMetadataTreeNode) {
                 // todo: sort the metadata child nodes
-                childNode.setParentDbTreeNode(this, defaultTreeModel, arbilDataNodeLoader, arbilDatabase);
+                childNode.setParentDbTreeNode(this, defaultTreeModel, yaasDatabase);
                 childList.add(childNode);
             }
         }

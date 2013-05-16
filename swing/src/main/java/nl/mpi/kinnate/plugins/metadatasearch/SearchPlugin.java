@@ -23,7 +23,7 @@ public class SearchPlugin extends AbstractBaseModule implements ArbilWindowPlugi
     }
 
     public JPanel getUiPanel(PluginDialogHandler dialogHandler, PluginSessionStorage sessionStorage, PluginBugCatcher bugCatcher, PluginArbilDataNodeLoader arbilDataNodeLoader, PluginWidgetFactory pluginWidgetFactory) throws PluginException {
-        SearchPanel searchPanel = new SearchPanel(arbilDataNodeLoader, dialogHandler, bugCatcher, sessionStorage, pluginWidgetFactory);
+        SearchPanel searchPanel = new SearchPanel(dialogHandler, bugCatcher, sessionStorage, pluginWidgetFactory);
         searchPanel.initOptions();
         return searchPanel;
     }
