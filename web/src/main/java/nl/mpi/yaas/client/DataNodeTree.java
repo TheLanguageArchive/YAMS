@@ -60,5 +60,12 @@ public class DataNodeTree extends Tree {
             final YaasTreeItem yaasTreeItem = new YaasTreeItem(dataNodeId, searchOptionsService, dataNodeTable);
             this.addItem(yaasTreeItem);
         }
+        // temp code to add a session
+        //final YaasTreeItem yaasTreeItem = new YaasTreeItem(new DataNodeId("http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800203.imdi"), searchOptionsService, dataNodeTable);
+        //this.addItem(yaasTreeItem);
+    }
+
+    public void addResultsToTree(YaasTreeItem yaasTreeItem) {
+        this.addItem(yaasTreeItem);
     }
 }
