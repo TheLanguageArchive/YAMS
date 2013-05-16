@@ -15,8 +15,8 @@ import com.google.gwt.user.client.ui.TreeItem;
 import java.util.ArrayList;
 import java.util.List;
 import nl.mpi.flap.model.DataNodeLink;
+import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.DataNodeId;
 
 /**
@@ -61,7 +61,7 @@ public class YaasTreeItem extends TreeItem {
             if (yaasDataNode.getChildList() != null || yaasDataNode.getChildIds() != null) {
                 addItem(labelChildrenNotLoaded);
             }
-        } catch (PluginException exception) {
+        } catch (ModelException exception) {
             addItem(new Label("Error getting child nodes: " + exception.getMessage()));
         }
     }
@@ -116,7 +116,7 @@ public class YaasTreeItem extends TreeItem {
                         if (yaasDataNode.getChildList() != null || yaasDataNode.getChildIds() != null) {
                             addItem(labelChildrenNotLoaded);
                         }
-                    } catch (PluginException exception) {
+                    } catch (ModelException exception) {
                         setText("Failure: " + exception.getMessage());
                     }
                 }
@@ -141,7 +141,7 @@ public class YaasTreeItem extends TreeItem {
                     for (DataNodeLink childId : yaasDataNode.getChildIds()) {
                         dataNodeIdList.add(new DataNodeId(childId.getIdString()));
                     }
-                } catch (PluginException exception) {
+                } catch (ModelException exception) {
                     addItem(new Label("Error getting child nodes: " + exception.getMessage()));
                 }
                 searchOptionsService.getDataNodes(dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
@@ -179,7 +179,7 @@ public class YaasTreeItem extends TreeItem {
                     childCountsize = yaasDataNode.getChildList().size();
                 }
                 setText(yaasDataNode.getLabel() + "[" + childCountsize + "]");
-            } catch (PluginException exception) {
+            } catch (ModelException exception) {
                 setText(yaasDataNode.getLabel() + "[" + exception.getMessage() + "]");
             }
         } else {
