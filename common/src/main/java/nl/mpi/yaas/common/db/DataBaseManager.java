@@ -26,11 +26,14 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
+import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
+import nl.mpi.yaas.common.data.IconTable;
 import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.data.NodeTypeImage;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
@@ -199,6 +202,54 @@ public class DataBaseManager<D, F, M> {
     }
 
     /**
+     * Inserts a document of all the known node types and the icons for each
+     * type into the database
+     *
+     * @param iconTable a set of node types and their icons to be inserted into
+     * the database
+     * @throws PluginException
+     * @throws QueryException
+     */
+    public IconTable insertNodeIconsIntoDatabase(IconTable iconTable) throws PluginException, QueryException {
+        final String iconTableDocumentName = "IconTableDocument";
+        String iconTableQuery = "for $statsDoc in collection(\"" + databaseName + "\")\n"
+                + "where matches(document-uri($statsDoc), '" + iconTableDocumentName + "')\n"
+                + "return $statsDoc";
+//
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(IconTable.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            String queryResult;
+            queryResult = dbAdaptor.executeQuery(databaseName, iconTableQuery);
+            System.out.println("queryResult: " + queryResult);
+            IconTable databaseIconTable = (IconTable) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), IconTable.class).getValue();
+            for (NodeTypeImage nodeTypeImage : databaseIconTable.getNodeTypeImageSet()) {
+                // add the known types to the new set
+                iconTable.addTypeIcon(nodeTypeImage);
+            }
+        } catch (JAXBException exception) {
+//            logger.debug(exception.getMessage());
+//            throw new QueryException(
+            System.out.println("Error getting existing IconTableDocument: " + exception.getMessage());
+        }
+        dbAdaptor.deleteDocument(databaseName, iconTableDocumentName);
+        // use JAXB to serialise and insert the IconTable into the database
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(IconTable.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            StringWriter stringWriter = new StringWriter();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.marshal(iconTable, stringWriter);
+            System.out.println("NodeIcons to be inserted:\n" + stringWriter.toString());
+            dbAdaptor.addDocument(databaseName, iconTableDocumentName, stringWriter.toString());
+        } catch (JAXBException exception) {
+            System.err.println("jaxb error:" + exception.getMessage());
+            throw new PluginException(exception);
+        }
+        return iconTable;
+    }
+
+    /**
      * Inserts a document into the database and optionally checks for existing
      * documents that would constitute a duplicate
      *
@@ -208,7 +259,7 @@ public class DataBaseManager<D, F, M> {
      * @throws PluginException
      * @throws QueryException
      */
-    public void insertIntoDatabase(SerialisableDataNode dataNode, boolean testForDuplicates) throws PluginException, QueryException {
+    public void insertIntoDatabase(SerialisableDataNode dataNode, boolean testForDuplicates) throws PluginException, QueryException, ModelException {
         // test for existing documents with the same ID and throw if one is found
         if (testForDuplicates) {
             String existingDocumentQuery = "let $countValue := count(collection(\"" + databaseName + "\")/DataNode[@ID = \"" + dataNode.getID() + "\"])\nreturn $countValue";

@@ -17,9 +17,13 @@
  */
 package nl.mpi.yaas.common.db;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import javax.swing.ImageIcon;
+import javax.swing.ImageIcon;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -27,11 +31,14 @@ import javax.xml.transform.stream.StreamSource;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.DataNodeType;
+import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
+import nl.mpi.yaas.common.data.IconTable;
 import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yaas.common.data.NodeTypeImage;
 import org.junit.Assert;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -49,7 +56,7 @@ public abstract class DataBaseManagerTest {
 
     abstract DbAdaptor getDbAdaptor() throws IOException, QueryException;
 
-    public DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDataBaseManager(boolean insertData) throws IOException, QueryException, JAXBException, PluginException {
+    public DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDataBaseManager(boolean insertData) throws IOException, QueryException, JAXBException, PluginException, ModelException {
         DbAdaptor dbAdaptor = getDbAdaptor();
         final DataBaseManager dataBaseManager = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         dbAdaptor.dropAndRecreateDb(projectDatabaseName);
@@ -67,19 +74,11 @@ public abstract class DataBaseManagerTest {
     }
 
     /**
-     * Test of createDatabase method, of class DataBaseManager.
-     */
-//    public void testCreateDatabase() throws Exception {
-//        System.out.println("createDatabase");
-//        final DataBaseManager instance = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
-//        dbManager.createDatabase();
-//    }
-    /**
      * Test of insertIntoDatabase method by waling a tree of metadata and
      * inserting it into the database.
      */
     @Test
-    public void testSampleData() throws JAXBException, PluginException, QueryException, IOException {
+    public void testSampleData() throws JAXBException, PluginException, QueryException, IOException, ModelException {
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
 
         DatabaseStats databaseStats = dbManager.getDatabaseStats();
@@ -114,7 +113,7 @@ public abstract class DataBaseManagerTest {
     }
 
     @Test
-    public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException, IOException {
+    public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException, IOException, ModelException {
 //        dbAdaptor.dropAndRecreateDb(projectDatabaseName);
 //        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
 
@@ -136,7 +135,7 @@ public abstract class DataBaseManagerTest {
     }
 
     @Test
-    public void testGetNodeDatasByIDs() throws QueryException, IOException, JAXBException, PluginException {
+    public void testGetNodeDatasByIDs() throws QueryException, IOException, JAXBException, PluginException, ModelException {
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
 //        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
@@ -145,50 +144,6 @@ public abstract class DataBaseManagerTest {
         assertEquals(12, dataNode.getChildList().size());
     }
 
-    /**
-     * Test of getSearchResult method, of class DataBaseManager.
-     */
-//    public void testGetSearchResult() throws Exception {
-//        System.out.println("getSearchResult");
-//        CriterionJoinType criterionJoinType = CriterionJoinType.intersect;
-//        ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
-//        searchParametersList.add(new SearchParameters(new MetadataFileType(), new MetadataFileType(), QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.equals, ""));
-//        //todo: add various search parameters
-////        searchParametersList.add(new SearchParameters(new MetadataFileType(), new MetadataFileType(), QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.equals, ""));
-//        DataBaseManager dbManager = new DataBaseManager(AbstractDataNode.class, MetadataFileType.class, getPluginSessionStorage(), projectDatabaseName);
-//        String expResult = "a resutl";
-//        AbstractDataNode result = (AbstractDataNode) dbManager.getSearchResult(criterionJoinType, searchParametersList);
-//        System.out.println("result:" + result.toString());
-//        assertEquals(expResult, result.getName());
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//    /**
-//     * Test of getPathMetadataTypes method, of class DataBaseManager.
-//     */
-//    public void testGetPathMetadataTypes() throws Exception {
-//        System.out.println("getPathMetadataTypes");
-//        MetadataFileType metadataFileType = null;
-//        DataBaseManager dbManager = null;
-//        Object[] expResult = null;
-//        Object[] result = dbManager.getPathMetadataTypes(metadataFileType);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//    /**
-//     * Test of getFieldMetadataTypes method, of class DataBaseManager.
-//     */
-//    public void testGetFieldMetadataTypes() throws Exception {
-//        System.out.println("getFieldMetadataTypes");
-//        MetadataFileType metadataFileType = null;
-//        DataBaseManager dbManager = null;
-//        Object[] expResult = null;
-//        Object[] result = dbManager.getFieldMetadataTypes(metadataFileType);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
     /**
      * Test of getMetadataTypes method, of class DataBaseManager.
      */
@@ -203,31 +158,31 @@ public abstract class DataBaseManagerTest {
         assertEquals("Subnode (4)", result[2].toString());
         assertEquals("Session (3)", result[3].toString());
     }
-//    /**
-//     * Test of getTreeFieldTypes method, of class DataBaseManager.
-//     */
-//    public void testGetTreeFieldTypes() throws Exception {
-//        System.out.println("getTreeFieldTypes");
-//        MetadataFileType metadataFileType = null;
-//        boolean fastQuery = false;
-//        DataBaseManager dbManager = null;
-//        Object[] expResult = null;
-//        Object[] result = dbManager.getTreeFieldTypes(metadataFileType, fastQuery);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//    /**
-//     * Test of getTreeData method, of class DataBaseManager.
-//     */
-//    public void testGetTreeData() throws Exception {
-//        System.out.println("getTreeData");
-//        ArrayList<MetadataFileType> treeBranchTypeList = null;
-//        DataBaseManager dbManager = null;
-//        Object expResult = null;
-//        Object result = dbManager.getTreeData(treeBranchTypeList);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+
+    /**
+     * Test of insertNodeIconsIntoDatabase method, of class DataBaseManager.
+     */
+    @Test
+    public void testInsertNodeIconsIntoDatabase() throws Exception {
+        System.out.println("insertNodeIconsIntoDatabase");
+        BufferedImage bufferedImage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        IconTable iconTable = new IconTable();
+        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("a", "b", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage)));
+        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage)));
+        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage)));
+        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage)));
+
+        IconTable iconTable2 = new IconTable();
+        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("a", "b", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage)));
+        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.xml), new ImageIcon(bufferedImage)));
+        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("s", "c", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage)));
+        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "s", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage)));
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        final IconTable nodeIcons1 = dbManager.insertNodeIconsIntoDatabase(iconTable);
+        // test that all three node dype icons have been added
+        assertEquals(3, nodeIcons1.getNodeTypeImageSet().size());
+        final IconTable nodeIcons2 = dbManager.insertNodeIconsIntoDatabase(iconTable);
+        // test that two additional node type icons have been added and the duplicates have not
+        assertEquals(6, nodeIcons2.getNodeTypeImageSet().size());
+    }
 }

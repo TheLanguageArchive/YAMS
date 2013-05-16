@@ -88,6 +88,7 @@ public class MetadataFileType implements Serializable {
 
     @Override
     public String toString() {
+        // todo: we really don't want to be putting this view code in this data object
         if (displayString == null) {
             if (imdiType != null) {
                 displayString = imdiType.replaceAll("\"[^\"]*\":", "").replaceAll("\\[\\d*\\]", "");

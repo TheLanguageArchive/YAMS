@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URL;
 import javax.xml.bind.JAXBException;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
+import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.plugin.PluginException;
 
 /**
@@ -36,17 +37,17 @@ public class RestDataBaseManagerTest extends DataBaseManagerTest {
     }
 
     @Override
-    public void testSampleData() throws JAXBException, PluginException, QueryException, IOException {
+    public void testSampleData() throws JAXBException, PluginException, QueryException, IOException, ModelException {
         super.testSampleData();
     }
 
     @Override
-    public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException, IOException {
+    public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException, IOException, ModelException {
         super.testGetDatabaseStats();
     }
 
     @Override
-    public void testGetNodeDatasByIDs() throws QueryException, IOException, JAXBException, PluginException {
+    public void testGetNodeDatasByIDs() throws QueryException, IOException, JAXBException, PluginException, ModelException {
         super.testGetNodeDatasByIDs();
     }
 
