@@ -181,7 +181,7 @@ public abstract class DataBaseManagerTest {
         final IconTable nodeIcons1 = dbManager.insertNodeIconsIntoDatabase(iconTable);
         // test that all three node dype icons have been added
         assertEquals(3, nodeIcons1.getNodeTypeImageSet().size());
-        final IconTable nodeIcons2 = dbManager.insertNodeIconsIntoDatabase(iconTable);
+        final IconTable nodeIcons2 = dbManager.insertNodeIconsIntoDatabase(iconTable2);
         // test that two additional node type icons have been added and the duplicates have not
         assertEquals(6, nodeIcons2.getNodeTypeImageSet().size());
     }
