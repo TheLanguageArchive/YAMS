@@ -75,12 +75,23 @@
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>arbil</artifactId>
-            <version>2.5-pretesting-SNAPSHOT</version>
+            <!-- when changing the Arbil version make sure that the JNLP dependencies are also updated -->
+            <version>2.5.33430-pretesting</version>
+            <exclusions>
+                <exclusion>  
+                    <groupId>nl.mpi</groupId>
+                    <artifactId>arbil-help</artifactId>
+                </exclusion>
+                <exclusion> 
+                    <groupId>nl.mpi</groupId>
+                    <artifactId>plugins-core</artifactId>
+                </exclusion>
+            </exclusions> 
         </dependency>
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>plugins-core</artifactId>
-            <version>0.0.34108-pretesting</version>
+            <version>0.0.34174-stable</version>
         </dependency>
         <dependency>
             <groupId>org.basex</groupId>
