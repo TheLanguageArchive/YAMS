@@ -105,6 +105,7 @@ public class LocalDbAdaptor implements DbAdaptor {
         try {
             synchronized (databaseLock) {
                 new Open(databaseName).execute(context);
+                new Delete(documentName).execute(context);
                 new Add(documentName, documentContents).execute(context);
                 new Close().execute(context);
             }
@@ -118,7 +119,7 @@ public class LocalDbAdaptor implements DbAdaptor {
         try {
             synchronized (databaseLock) {
                 new Open(databaseName).execute(context);
-                new Delete("DbStatsDocument").execute(context);
+                new Delete(documentName).execute(context);
                 new Close().execute(context);
             }
         } catch (BaseXException exception) {

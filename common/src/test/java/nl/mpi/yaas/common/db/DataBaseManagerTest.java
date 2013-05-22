@@ -83,24 +83,24 @@ public abstract class DataBaseManagerTest {
 
         DatabaseStats databaseStats = dbManager.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
-        assertEquals(55, databaseStats.getKnownDocumentsCount());
+        assertEquals(16, databaseStats.getKnownDocumentsCount());
         assertEquals(0, databaseStats.getMisingDocumentsCount());
-        assertEquals(39, databaseStats.getDuplicateDocumentsCount());
+        assertEquals(0, databaseStats.getDuplicateDocumentsCount());
         assertEquals(16, databaseStats.getRootDocumentsCount());
         assertArrayEquals(databaseStats.getRootDocumentsIDs(), new DataNodeId[]{
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2A9B-9"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-4"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2FA3-5"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2FA4-B"),
             new DataNodeId("hdl:1839/00-0000-0000-0008-CAD1-B"),
             new DataNodeId("hdl:1839/00-0000-0000-0008-C805-D"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB4-0"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2C2D-F"),
-            new DataNodeId("hdl:1839/00-0000-0000-000D-B73D-9"),
+            new DataNodeId("hdl:1839/00-0000-0000-000D-B73D-9"),            
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2A9B-9"),                       
             new DataNodeId("hdl:1839/00-0000-0000-0001-2AA2-6"),
             new DataNodeId("hdl:1839/00-0000-0000-0004-D511-0"),
             new DataNodeId("hdl:1839/00-0000-0000-0004-D512-F"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB4-0"),            
             new DataNodeId("hdl:1839/00-0000-0000-0001-2E76-0"),
             new DataNodeId("hdl:1839/00-0000-0000-000D-B743-0"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2E77-E")
@@ -108,7 +108,7 @@ public abstract class DataBaseManagerTest {
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
         SerialisableDataNode dataNode = (SerialisableDataNode) dbManager.getNodeDatasByIDs(nodeIDs);
-        assertEquals(12, dataNode.getChildList().size());
+        assertEquals(1, dataNode.getChildList().size());
         assertTrue("Query took too long:" + databaseStats.getQueryTimeMS() + "ms", databaseStats.getQueryTimeMS() < 420);
     }
 
@@ -141,7 +141,7 @@ public abstract class DataBaseManagerTest {
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
         SerialisableDataNode dataNode = (SerialisableDataNode) dbManager.getNodeDatasByIDs(nodeIDs);
-        assertEquals(12, dataNode.getChildList().size());
+        assertEquals(1, dataNode.getChildList().size());
     }
 
     /**
@@ -153,7 +153,7 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         MetadataFileType metadataFileType = null;
         MetadataFileType[] result = dbManager.getMetadataTypes(metadataFileType);
-        assertEquals("All Types (55)", result[0].toString());
+        assertEquals("All Types (16)", result[0].toString());
         assertEquals("imdi (7)", result[1].toString());
         assertEquals("Subnode (4)", result[2].toString());
         assertEquals("Session (3)", result[3].toString());
