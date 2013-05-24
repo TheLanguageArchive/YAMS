@@ -247,11 +247,11 @@ public class RemoteArchiveCrawler {
         }
         totalLoaded++;
 //        loadChildNodes(dataNode);
-        iconTable.addTypeIcon(dataNode.getType(), dataNode.getIcon());
         if (!dataNode.fileNotFound && !dataNode.isChildNode()) {
             System.out.println("Inserting into the database");
             System.out.println("URL: " + dataNode.getUrlString());
             final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
+            iconTable.addTypeIcon(arbilDataNodeWrapper.getType(), dataNode.getIcon());
             //            arbilDataNodeWrapper.checkChildNodesLoaded();
             if (arbilDataNodeWrapper.getID() != null && !arbilDataNodeWrapper.getID().isEmpty()) {
                 arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper, true);
