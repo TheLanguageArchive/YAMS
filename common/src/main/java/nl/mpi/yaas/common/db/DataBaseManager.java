@@ -65,6 +65,7 @@ public class DataBaseManager<D, F, M> {
      */
     final static public String defaultDataBase = "yaas-data";
     final static public String testDataBase = "yaas-test-data";
+    final private String iconTableDocumentName = "IconTableDocument";
 
     /**
      *
@@ -202,6 +203,30 @@ public class DataBaseManager<D, F, M> {
     }
 
     /**
+     * Retrieves the document of all the known node types and the icons for each
+     * type from the database
+     *
+     * @return IconTable a set of node types and their icons
+     * @throws PluginException
+     * @throws QueryException
+     */
+    public IconTable getNodeIcons() throws PluginException, QueryException {
+        String iconTableQuery = "for $statsDoc in collection(\"" + databaseName + "\")\n"
+                + "where matches(document-uri($statsDoc), '" + iconTableDocumentName + "')\n"
+                + "return $statsDoc";
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(IconTable.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            String queryResult;
+            queryResult = dbAdaptor.executeQuery(databaseName, iconTableQuery);
+            System.out.println("queryResult: " + queryResult);
+            return (IconTable) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), IconTable.class).getValue();
+        } catch (JAXBException exception) {
+            throw new PluginException(exception);
+        }
+    }
+
+    /**
      * Inserts a document of all the known node types and the icons for each
      * type into the database
      *
@@ -211,25 +236,14 @@ public class DataBaseManager<D, F, M> {
      * @throws QueryException
      */
     public IconTable insertNodeIconsIntoDatabase(IconTable iconTable) throws PluginException, QueryException {
-        final String iconTableDocumentName = "IconTableDocument";
-        String iconTableQuery = "for $statsDoc in collection(\"" + databaseName + "\")\n"
-                + "where matches(document-uri($statsDoc), '" + iconTableDocumentName + "')\n"
-                + "return $statsDoc";
-//
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(IconTable.class);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            String queryResult;
-            queryResult = dbAdaptor.executeQuery(databaseName, iconTableQuery);
-            System.out.println("queryResult: " + queryResult);
-            IconTable databaseIconTable = (IconTable) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), IconTable.class).getValue();
+            IconTable databaseIconTable = getNodeIcons();
             for (NodeTypeImage nodeTypeImage : databaseIconTable.getNodeTypeImageSet()) {
                 // add the known types to the new set
                 iconTable.addTypeIcon(nodeTypeImage);
             }
-        } catch (JAXBException exception) {
-//            logger.debug(exception.getMessage());
-//            throw new QueryException(
+        } catch (PluginException exception) {
+            // if there is not icon document here that can be normal if it is the first run
             System.out.println("Error getting existing IconTableDocument: " + exception.getMessage());
         }
         dbAdaptor.deleteDocument(databaseName, iconTableDocumentName);
