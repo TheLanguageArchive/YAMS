@@ -94,13 +94,13 @@ public abstract class DataBaseManagerTest {
             new DataNodeId("hdl:1839/00-0000-0000-0008-CAD1-B"),
             new DataNodeId("hdl:1839/00-0000-0000-0008-C805-D"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2C2D-F"),
-            new DataNodeId("hdl:1839/00-0000-0000-000D-B73D-9"),            
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2A9B-9"),                       
+            new DataNodeId("hdl:1839/00-0000-0000-000D-B73D-9"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2A9B-9"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2AA2-6"),
             new DataNodeId("hdl:1839/00-0000-0000-0004-D511-0"),
             new DataNodeId("hdl:1839/00-0000-0000-0004-D512-F"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB4-0"),            
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB4-0"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2E76-0"),
             new DataNodeId("hdl:1839/00-0000-0000-000D-B743-0"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2E77-E")
@@ -167,16 +167,16 @@ public abstract class DataBaseManagerTest {
         System.out.println("insertNodeIconsIntoDatabase");
         BufferedImage bufferedImage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
         IconTable iconTable = new IconTable();
-        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("a", "b", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage)));
-        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage)));
-        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage)));
-        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage)));
+        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("a", "b", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
+        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
+        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage).getImage()));
+        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage).getImage()));
 
         IconTable iconTable2 = new IconTable();
-        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("a", "b", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage)));
-        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.xml), new ImageIcon(bufferedImage)));
-        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("s", "c", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage)));
-        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "s", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage)));
+        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("a", "b", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
+        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.xml), new ImageIcon(bufferedImage).getImage()));
+        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("s", "c", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
+        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "s", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage).getImage()));
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         final IconTable nodeIcons1 = dbManager.insertNodeIconsIntoDatabase(iconTable);
         // test that all three node dype icons have been added

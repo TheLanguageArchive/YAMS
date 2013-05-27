@@ -18,7 +18,6 @@
 package nl.mpi.yaas.common.data;
 
 import java.awt.Image;
-import javax.swing.ImageIcon;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.bind.annotation.XmlValue;
@@ -33,14 +32,15 @@ public class NodeTypeImage {
 
     private DataNodeType dataNodeType;
     private Image imageData;
+    final private String imageFormatString = "image/png";
 
     public NodeTypeImage() {
         dataNodeType = new DataNodeType();
     }
 
-    public NodeTypeImage(DataNodeType dataNodeType, ImageIcon imageIcon) {
+    public NodeTypeImage(DataNodeType dataNodeType, Image imageData) {
         this.dataNodeType = dataNodeType;
-        this.imageData = imageIcon.getImage();
+        this.imageData = imageData;
     }
 
     public DataNodeType getDataNodeType() {
@@ -74,12 +74,16 @@ public class NodeTypeImage {
         dataNodeType.setFormat(formatType);
     }
 
+    public String getInlineImageData() {
+        return "data:" + imageFormatString + ";base64," + imageData.toString();
+    }
+
     public Image getImageData() {
         return imageData;
     }
 
     @XmlValue
-    @XmlMimeType("image/jpeg")
+    @XmlMimeType(imageFormatString)
     public void setImageData(Image imageData) {
         this.imageData = imageData;
     }

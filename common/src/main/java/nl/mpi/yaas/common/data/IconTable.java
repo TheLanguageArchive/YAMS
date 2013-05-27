@@ -17,10 +17,10 @@
  */
 package nl.mpi.yaas.common.data;
 
+import java.awt.Image;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import javax.swing.ImageIcon;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import nl.mpi.flap.model.DataNodeType;
@@ -42,8 +42,8 @@ public class IconTable {
         nodeTypeIconSet = new HashSet<NodeTypeImage>();
     }
 
-    public void addTypeIcon(DataNodeType dataNodeType, ImageIcon imageIcon) {
-        nodeTypeIconSet.add(new NodeTypeImage(dataNodeType, imageIcon));
+    public void addTypeIcon(DataNodeType dataNodeType, Image imageData) {
+        nodeTypeIconSet.add(new NodeTypeImage(dataNodeType, imageData));
     }
 
     public void addTypeIcon(NodeTypeImage nodeTypeImage) {
