@@ -251,7 +251,7 @@ public class RemoteArchiveCrawler {
             System.out.println("Inserting into the database");
             System.out.println("URL: " + dataNode.getUrlString());
             final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
-            iconTable.addTypeIcon(arbilDataNodeWrapper.getType(), dataNode.getIcon());
+            iconTable.addTypeIcon(arbilDataNodeWrapper.getType(), dataNode.getIcon().getImage());
             //            arbilDataNodeWrapper.checkChildNodesLoaded();
             if (arbilDataNodeWrapper.getID() != null && !arbilDataNodeWrapper.getID().isEmpty()) {
                 arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper, true);
