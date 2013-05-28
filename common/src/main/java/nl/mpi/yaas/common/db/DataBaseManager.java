@@ -32,6 +32,7 @@ import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.IconTable;
+import nl.mpi.yaas.common.data.IconTableBase64;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.NodeTypeImage;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
@@ -65,6 +66,10 @@ public class DataBaseManager<D, F, M> {
      */
     final static public String defaultDataBase = "yaas-data";
     final static public String testDataBase = "yaas-test-data";
+//    final static public String guestUser = "guestdbuser";
+//    final static public String guestUserPass = "minfc8u4ng6s";
+    final static public String guestUser = "admin"; // todo: the user name and password for admin and guest users needs to be determined and set
+    final static public String guestUserPass = "admin";
     final private String iconTableDocumentName = "IconTableDocument";
 
     /**
@@ -200,6 +205,31 @@ public class DataBaseManager<D, F, M> {
         String queryTimeString = "Query time: " + queryMils + "ms";
         System.out.println(queryTimeString);
         return queryResult; // the results here need to be split on " ", but the string can be very long so it should not be done by String.split().
+    }
+
+    /**
+     * Retrieves the document of all the known node types and the icons for each
+     * type from the database in base 64 format
+     *
+     * @return IconTableBase64 a set of node types and their icons in base 64
+     * format
+     * @throws PluginException
+     * @throws QueryException
+     */
+    public IconTableBase64 getNodeIconsBase64() throws PluginException, QueryException {
+        String iconTableQuery = "for $statsDoc in collection(\"" + databaseName + "\")\n"
+                + "where matches(document-uri($statsDoc), '" + iconTableDocumentName + "')\n"
+                + "return $statsDoc";
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(IconTableBase64.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            String queryResult;
+            queryResult = dbAdaptor.executeQuery(databaseName, iconTableQuery);
+            System.out.println("queryResult: " + queryResult);
+            return (IconTableBase64) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), IconTableBase64.class).getValue();
+        } catch (JAXBException exception) {
+            throw new PluginException(exception);
+        }
     }
 
     /**

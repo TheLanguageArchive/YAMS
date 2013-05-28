@@ -17,12 +17,10 @@
  */
 package nl.mpi.yaas.common.db;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import javax.swing.ImageIcon;
 import javax.swing.ImageIcon;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -37,6 +35,7 @@ import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.IconTable;
+import nl.mpi.yaas.common.data.IconTableBase64;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.NodeTypeImage;
 import org.junit.Assert;
@@ -184,5 +183,8 @@ public abstract class DataBaseManagerTest {
         final IconTable nodeIcons2 = dbManager.insertNodeIconsIntoDatabase(iconTable2);
         // test that two additional node type icons have been added and the duplicates have not
         assertEquals(6, nodeIcons2.getNodeTypeImageSet().size());
+        // test the base64 icons
+        final IconTableBase64 iconTableBase64 = dbManager.getNodeIconsBase64();
+        assertEquals(6, iconTableBase64.getNodeTypeImageSet().size());
     }
 }

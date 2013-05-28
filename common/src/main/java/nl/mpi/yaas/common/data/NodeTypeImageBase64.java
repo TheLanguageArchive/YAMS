@@ -17,35 +17,20 @@
  */
 package nl.mpi.yaas.common.data;
 
-import java.awt.Image;
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.bind.annotation.XmlValue;
 import nl.mpi.flap.model.DataNodeType;
 
 /**
- * Created on: May 10, 2013 11:51:35 AM
+ * Created on: May 28, 2013 14:00 PM
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class NodeTypeImage {
+public class NodeTypeImageBase64 implements Serializable {
 
-    private DataNodeType dataNodeType;
-    private Image imageData;
-    final static protected String imageFormatString = "image/png";
-
-    public NodeTypeImage() {
-        dataNodeType = new DataNodeType();
-    }
-
-    public NodeTypeImage(DataNodeType dataNodeType, Image imageData) {
-        this.dataNodeType = dataNodeType;
-        this.imageData = imageData;
-    }
-
-    public DataNodeType getDataNodeType() {
-        return dataNodeType;
-    }
+    private DataNodeType dataNodeType = new DataNodeType();
+    private String inlineImageData;
 
     public String getName() {
         return dataNodeType.getName();
@@ -74,14 +59,17 @@ public class NodeTypeImage {
         dataNodeType.setFormat(formatType);
     }
 
-    public Image getImageData() {
-        return imageData;
+    public String getInlineImageData() {
+        return inlineImageData;
     }
 
     @XmlValue
-    @XmlMimeType(imageFormatString)
-    public void setImageData(Image imageData) {
-        this.imageData = imageData;
+    public void setInlineImageData(String inlineImageData) {
+        this.inlineImageData = inlineImageData;
+    }
+
+    public String getInlineImageDataString() {
+        return "data:" + NodeTypeImage.imageFormatString + ";base64," + getInlineImageData();
     }
 
     @Override
@@ -99,7 +87,7 @@ public class NodeTypeImage {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final NodeTypeImage other = (NodeTypeImage) obj;
+        final NodeTypeImageBase64 other = (NodeTypeImageBase64) obj;
         if (this.dataNodeType != other.dataNodeType && (this.dataNodeType == null || !this.dataNodeType.equals(other.dataNodeType))) {
             return false;
         }
