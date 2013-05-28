@@ -47,7 +47,7 @@ public class yaas implements EntryPoint {
         RootPanel.get("dataNodeTable").add(dataNodeTable);
         RootPanel.get("searchOptionsPanel").add(searchOptionsPanel);
         RootPanel.get("databaseStats").add(new DatabaseStatsPanel(searchOptionsService, dataNodeTree));
-        RootPanel.get("databaseStats").add(new IconManager(searchOptionsService));
+        RootPanel.get("databaseStats").add(new IconInfoPanel(searchOptionsService));
 
 //        RootPanel.get("nameFieldContainer").add(nameField);
 //        RootPanel.get("sendButtonContainer").add(sendButton);
