@@ -17,21 +17,21 @@ import nl.mpi.yaas.common.data.NodeTypeImageBase64;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class IconManager extends VerticalPanel {
+public class IconInfoPanel extends VerticalPanel {
 
     protected IconTableBase64 imageDataForTypes;
 
-    public IconManager(SearchOptionsServiceAsync searchOptionsService) {
+    public IconInfoPanel(SearchOptionsServiceAsync searchOptionsService) {
 
         searchOptionsService.getImageDataForTypes(new AsyncCallback<IconTableBase64>() {
             public void onFailure(Throwable caught) {
-                IconManager.this.add(new Label("Failure"));
-                IconManager.this.add(new Label(caught.getMessage()));
+                IconInfoPanel.this.add(new Label("Failure"));
+                IconInfoPanel.this.add(new Label(caught.getMessage()));
             }
 
             public void onSuccess(IconTableBase64 result) {
                 imageDataForTypes = result;
-                IconManager.this.add(new Label("icon table size: " + result.getNodeTypeImageSet().size()));
+                IconInfoPanel.this.add(new Label("icon table size: " + result.getNodeTypeImageSet().size()));
                 for (NodeTypeImageBase64 typeImageBase64 : result.getNodeTypeImageSet()) {
                     Image image = new Image();
                     image.setUrl(typeImageBase64.getInlineImageDataString());
@@ -43,7 +43,7 @@ public class IconManager extends VerticalPanel {
                     horizontalPanel.add(image);
                     horizontalPanel.add(idLabel);
 //                    horizontalPanel.add(testDataLabel);
-                    IconManager.this.add(horizontalPanel);
+                    IconInfoPanel.this.add(horizontalPanel);
                 }
             }
         });
