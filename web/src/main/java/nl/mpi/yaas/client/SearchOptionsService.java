@@ -11,6 +11,7 @@ import java.util.List;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
+import nl.mpi.yaas.common.data.IconTableBase64;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures;
 import nl.mpi.yaas.common.data.SearchParameters;
@@ -33,4 +34,6 @@ public interface SearchOptionsService extends RemoteService {
     SerialisableDataNode performSearch(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException;
 
     List<SerialisableDataNode> getDataNodes(ArrayList<DataNodeId> dataNodeIds) throws WebQueryException;
+
+    IconTableBase64 getImageDataForTypes() throws WebQueryException;
 }

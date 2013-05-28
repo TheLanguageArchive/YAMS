@@ -19,13 +19,13 @@ public class yaas implements EntryPoint {
     private static final String SERVER_ERROR = "An error occurred while "
             + "attempting to contact the server. Please check your network "
             + "connection and try again.";
+
     /**
      * Create a remote service proxy to talk to the server-side Greeting
      * service.
      */
 //    private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
 //    private final Messages messages = GWT.create(Messages.class);
-
     /**
      * This is the entry point method.
      */
@@ -47,6 +47,7 @@ public class yaas implements EntryPoint {
         RootPanel.get("dataNodeTable").add(dataNodeTable);
         RootPanel.get("searchOptionsPanel").add(searchOptionsPanel);
         RootPanel.get("databaseStats").add(new DatabaseStatsPanel(searchOptionsService, dataNodeTree));
+        RootPanel.get("databaseStats").add(new IconManager(searchOptionsService));
 
 //        RootPanel.get("nameFieldContainer").add(nameField);
 //        RootPanel.get("sendButtonContainer").add(sendButton);
