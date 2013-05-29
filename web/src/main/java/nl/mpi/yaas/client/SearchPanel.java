@@ -87,21 +87,19 @@ public class SearchPanel extends VerticalPanel {
                 for (SearchCriterionPanel eventCriterionPanel : criterionPanelList) {
                     searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
                 }
-                searchOptionsService.performSearch(joinTypeListBox.getValue(), searchParametersList,
-                        new AsyncCallback<SerialisableDataNode>() {
-                            public void onFailure(Throwable caught) {
-                                Window.alert(caught.getMessage());
-                                searchHandler.signalSearchDone();
-                                searchButton.setEnabled(true);
-                            }
+                searchOptionsService.performSearch(joinTypeListBox.getValue(), searchParametersList, new AsyncCallback<SerialisableDataNode>() {
+                    public void onFailure(Throwable caught) {
+                        Window.alert(caught.getMessage());
+                        searchHandler.signalSearchDone();
+                        searchButton.setEnabled(true);
+                    }
 
-                            public void onSuccess(SerialisableDataNode result) {
-                                final YaasTreeItem yaasTreeItem = new YaasTreeItem(result, searchOptionsService, dataNodeTable);
-                                dataNodeTree.addResultsToTree(yaasTreeItem);
-                                searchHandler.signalSearchDone();
-                                searchButton.setEnabled(true);
-                            }
-                        });
+                    public void onSuccess(SerialisableDataNode result) {
+                        dataNodeTree.addResultsToTree(result);
+                        searchHandler.signalSearchDone();
+                        searchButton.setEnabled(true);
+                    }
+                });
             }
         };
         searchButton.addClickHandler(searchHandler);

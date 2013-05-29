@@ -10,6 +10,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TreeItem;
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
+import nl.mpi.yaas.common.data.IconTableBase64;
+import nl.mpi.yaas.common.data.NodeTypeImageBase64;
 
 /**
  * Created on : Feb 5, 2013, 1:24:35 PM
@@ -35,12 +38,15 @@ public class YaasTreeItem extends TreeItem {
     final HorizontalPanel outerPanel;
     final CheckBox checkBox;
     private SingleDataNodeTable singleDataNodeTable = null;
+    private final IconTableBase64 iconTableBase64;
+    private final Image iconImage = new Image();
 
-    public YaasTreeItem(DataNodeId dataNodeId, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable) {
+    public YaasTreeItem(DataNodeId dataNodeId, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
         super(new HorizontalPanel());
         this.dataNodeTable = dataNodeTable;
         this.dataNodeId = dataNodeId;
         this.searchOptionsService = searchOptionsService;
+        this.iconTableBase64 = iconTableBase64;
         outerPanel = (HorizontalPanel) this.getWidget();
         checkBox = new CheckBox();
         setupWidgets();
@@ -48,11 +54,12 @@ public class YaasTreeItem extends TreeItem {
 
     }
 
-    public YaasTreeItem(SerialisableDataNode yaasDataNode, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable) {
+    public YaasTreeItem(SerialisableDataNode yaasDataNode, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
         super(new HorizontalPanel());
         this.yaasDataNode = yaasDataNode;
         this.searchOptionsService = searchOptionsService;
         this.dataNodeTable = dataNodeTable;
+        this.iconTableBase64 = iconTableBase64;
         outerPanel = (HorizontalPanel) this.getWidget();
         checkBox = new CheckBox();
         setupWidgets();
@@ -64,9 +71,18 @@ public class YaasTreeItem extends TreeItem {
         } catch (ModelException exception) {
             addItem(new Label("Error getting child nodes: " + exception.getMessage()));
         }
+        setNodeIcon();
+    }
+
+    private void setNodeIcon() {
+        final NodeTypeImageBase64 typeIcon = iconTableBase64.getByType(yaasDataNode.getType());
+        if (typeIcon != null) {
+            iconImage.setUrl(typeIcon.getInlineImageDataString());
+        }
     }
 
     private void setupWidgets() {
+        outerPanel.add(iconImage);
         outerPanel.add(checkBox);
         final Button expandButton = new Button(">");
         outerPanel.add(expandButton);
@@ -119,6 +135,7 @@ public class YaasTreeItem extends TreeItem {
                     } catch (ModelException exception) {
                         setText("Failure: " + exception.getMessage());
                     }
+                    setNodeIcon();
                 }
             });
         }
@@ -130,7 +147,7 @@ public class YaasTreeItem extends TreeItem {
                 removeItems();
                 // add the meta child nodes
                 for (SerialisableDataNode childDataNode : yaasDataNode.getChildList()) {
-                    YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService, dataNodeTable);
+                    YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
                     addItem(yaasTreeItem);;
                 }
             } else {
@@ -157,7 +174,7 @@ public class YaasTreeItem extends TreeItem {
                             addItem(new Label("no child nodes found"));
                         } else {
                             for (SerialisableDataNode childDataNode : dataNodeList) {
-                                YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService, dataNodeTable);
+                                YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
                                 addItem(yaasTreeItem);
                             }
                         }

@@ -8,7 +8,9 @@ import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
+import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
+import nl.mpi.yaas.common.data.IconTableBase64;
 
 /**
  * Created on : Jan 29, 2013, 2:27:32 PM
@@ -19,10 +21,12 @@ public class DataNodeTree extends Tree {
 
     final DataNodeTable dataNodeTable;
     final SearchOptionsServiceAsync searchOptionsService;
+    private final IconTableBase64 iconTableBase64;
 
-    public DataNodeTree(final DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService) {
+    public DataNodeTree(final DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64) {
         this.dataNodeTable = dataNodeTable;
         this.searchOptionsService = searchOptionsService;
+        this.iconTableBase64 = iconTableBase64;
 //        // Create a tree with a few items in it.
 //        TreeItem root = new TreeItem();
 //        root.setText("root");
@@ -57,7 +61,7 @@ public class DataNodeTree extends Tree {
 
     public void addResultsToTree(DataNodeId[] dataNodeIds) {
         for (DataNodeId dataNodeId : dataNodeIds) {
-            final YaasTreeItem yaasTreeItem = new YaasTreeItem(dataNodeId, searchOptionsService, dataNodeTable);
+            final YaasTreeItem yaasTreeItem = new YaasTreeItem(dataNodeId, searchOptionsService, dataNodeTable, iconTableBase64);
             this.addItem(yaasTreeItem);
         }
         // temp code to add a session
@@ -65,7 +69,8 @@ public class DataNodeTree extends Tree {
         //this.addItem(yaasTreeItem);
     }
 
-    public void addResultsToTree(YaasTreeItem yaasTreeItem) {
+    public void addResultsToTree(SerialisableDataNode dataNode) {
+        final YaasTreeItem yaasTreeItem = new YaasTreeItem(dataNode, searchOptionsService, dataNodeTable, iconTableBase64);
         this.addItem(yaasTreeItem);
     }
 }

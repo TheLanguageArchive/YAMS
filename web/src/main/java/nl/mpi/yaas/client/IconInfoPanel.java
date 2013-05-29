@@ -19,33 +19,24 @@ import nl.mpi.yaas.common.data.NodeTypeImageBase64;
  */
 public class IconInfoPanel extends VerticalPanel {
 
-    protected IconTableBase64 imageDataForTypes;
+    final protected IconTableBase64 imageDataForTypes;
 
-    public IconInfoPanel(SearchOptionsServiceAsync searchOptionsService) {
+    public IconInfoPanel(IconTableBase64 imageDataForTypes) {
+        this.imageDataForTypes = imageDataForTypes;
 
-        searchOptionsService.getImageDataForTypes(new AsyncCallback<IconTableBase64>() {
-            public void onFailure(Throwable caught) {
-                IconInfoPanel.this.add(new Label("Failure"));
-                IconInfoPanel.this.add(new Label(caught.getMessage()));
-            }
-
-            public void onSuccess(IconTableBase64 result) {
-                imageDataForTypes = result;
-                IconInfoPanel.this.add(new Label("icon table size: " + result.getNodeTypeImageSet().size()));
-                for (NodeTypeImageBase64 typeImageBase64 : result.getNodeTypeImageSet()) {
-                    Image image = new Image();
-                    image.setUrl(typeImageBase64.getInlineImageDataString());
+        IconInfoPanel.this.add(new Label("Icon Table Size: " + imageDataForTypes.getNodeTypeImageSet().size()));
+        for (NodeTypeImageBase64 typeImageBase64 : imageDataForTypes.getNodeTypeImageSet()) {
+            Image image = new Image();
+            image.setUrl(typeImageBase64.getInlineImageDataString());
 //                    Label testDataLabel = new Label(typeImageBase64.getInlineImageDataString());
-                    Label idLabel = new Label(typeImageBase64.getID());
-                    Label nameLabel = new Label(typeImageBase64.getName());
-                    final HorizontalPanel horizontalPanel = new HorizontalPanel();
-                    horizontalPanel.add(nameLabel);
-                    horizontalPanel.add(image);
-                    horizontalPanel.add(idLabel);
+            Label idLabel = new Label(typeImageBase64.getID());
+            Label nameLabel = new Label(typeImageBase64.getName());
+            final HorizontalPanel horizontalPanel = new HorizontalPanel();
+            horizontalPanel.add(nameLabel);
+            horizontalPanel.add(image);
+            horizontalPanel.add(idLabel);
 //                    horizontalPanel.add(testDataLabel);
-                    IconInfoPanel.this.add(horizontalPanel);
-                }
-            }
-        });
+            IconInfoPanel.this.add(horizontalPanel);
+        }
     }
 }

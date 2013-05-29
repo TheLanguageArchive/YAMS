@@ -2,9 +2,10 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import nl.mpi.yaas.common.data.IconTableBase64;
 
 /**
  * Entry point classes define
@@ -35,20 +36,30 @@ public class yaas implements EntryPoint {
 //        final TextBox nameField = new TextBox();
 //        nameField.setText(messages.nameField());
 //        final Label errorLabel = new Label();
-        final DataNodeTable dataNodeTable = new DataNodeTable();
-        final DataNodeTree dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService);
-        final SearchPanel searchOptionsPanel = new SearchPanel(searchOptionsService, dataNodeTree, dataNodeTable);
         // We can add style names to widgets
 //        sendButton.addStyleName("sendButton");
 
         // Add the nameField and sendButton to the RootPanel
         // Use RootPanel.get() to get the entire body element
-        RootPanel.get("dataNodeTree").add(dataNodeTree);
-        RootPanel.get("dataNodeTable").add(dataNodeTable);
-        RootPanel.get("searchOptionsPanel").add(searchOptionsPanel);
-        RootPanel.get("databaseStats").add(new DatabaseStatsPanel(searchOptionsService, dataNodeTree));
-        RootPanel.get("databaseStats").add(new IconInfoPanel(searchOptionsService));
 
+
+        searchOptionsService.getImageDataForTypes(new AsyncCallback<IconTableBase64>() {
+            public void onFailure(Throwable caught) {
+                RootPanel.get("databaseStats").add(new Label("Failure"));
+                RootPanel.get("databaseStats").add(new Label(caught.getMessage()));
+            }
+
+            public void onSuccess(IconTableBase64 result) {
+                final DataNodeTable dataNodeTable = new DataNodeTable();
+                final DataNodeTree dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, result);
+                final SearchPanel searchOptionsPanel = new SearchPanel(searchOptionsService, dataNodeTree, dataNodeTable);
+                RootPanel.get("databaseStats").add(new DatabaseStatsPanel(searchOptionsService, dataNodeTree));
+                RootPanel.get("databaseStats").add(new IconInfoPanel(result));
+                RootPanel.get("searchOptionsPanel").add(searchOptionsPanel);
+                RootPanel.get("dataNodeTree").add(dataNodeTree);
+                RootPanel.get("dataNodeTable").add(dataNodeTable);
+            }
+        });
 //        RootPanel.get("nameFieldContainer").add(nameField);
 //        RootPanel.get("sendButtonContainer").add(sendButton);
 //        RootPanel.get("errorLabelContainer").add(errorLabel);
