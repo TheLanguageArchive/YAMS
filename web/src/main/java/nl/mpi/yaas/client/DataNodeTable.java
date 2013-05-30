@@ -6,7 +6,7 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import nl.mpi.flap.model.DataField;
@@ -18,7 +18,7 @@ import nl.mpi.flap.model.SerialisableDataNode;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class DataNodeTable extends VerticalPanel {
+public class DataNodeTable extends ScrollPanel {
 
     final private ArrayList<SerialisableDataNode> dataNodes;
     final private CellTable<SerialisableDataNode> cellTable;
