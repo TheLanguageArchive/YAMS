@@ -238,6 +238,16 @@ public class RemoteArchiveCrawler {
         }
     }
 
+    private void insertNodeIcons(ArbilDataNode dataNode) {
+        final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
+        iconTable.addTypeIcon(arbilDataNodeWrapper.getType(), dataNode.getIcon().getImage());
+        for (ArbilDataNode childNode : dataNode.getChildArray()) {
+            if (childNode.isChildNode()) {
+                insertNodeIcons(childNode);
+            }
+        }
+    }
+
     private void loadAndInsert(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException, CrawlerException, ModelException {
         System.out.println("Loading: " + numberInserted);
         while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
@@ -251,7 +261,7 @@ public class RemoteArchiveCrawler {
             System.out.println("Inserting into the database");
             System.out.println("URL: " + dataNode.getUrlString());
             final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
-            iconTable.addTypeIcon(arbilDataNodeWrapper.getType(), dataNode.getIcon().getImage());
+            insertNodeIcons(dataNode);
             //            arbilDataNodeWrapper.checkChildNodesLoaded();
             if (arbilDataNodeWrapper.getID() != null && !arbilDataNodeWrapper.getID().isEmpty()) {
                 arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper, true);
