@@ -6,7 +6,9 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import nl.mpi.flap.model.DataField;
@@ -18,17 +20,27 @@ import nl.mpi.flap.model.SerialisableDataNode;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class DataNodeTable extends ScrollPanel {
+public class DataNodeTable extends VerticalPanel {
 
     final private ArrayList<SerialisableDataNode> dataNodes;
     final private CellTable<SerialisableDataNode> cellTable;
     final private ArrayList<String> currentColumns;
+    final private DisclosurePanel disclosurePanel;
+    final private ScrollPanel scrollPanel;
+    final String tableTitle = "Table";
 
     public DataNodeTable() {
+        disclosurePanel = new DisclosurePanel(tableTitle);
 //        add(new Label("Table"));
         cellTable = new CellTable<SerialisableDataNode>();
         dataNodes = new ArrayList<SerialisableDataNode>();
         currentColumns = new ArrayList<String>();
+        scrollPanel = new ScrollPanel(cellTable);
+//        scrollPanel.setSize("100%", "100%");
+//        setHeight("100%");
+//        setWidth("50%");
+        disclosurePanel.add(scrollPanel);
+        add(disclosurePanel);
     }
 
     public void removeDataNode(SerialisableDataNode yaasDataNode) {
@@ -76,6 +88,7 @@ public class DataNodeTable extends ScrollPanel {
         }
         cellTable.setRowCount(dataNodes.size(), true);
         cellTable.setRowData(dataNodes);
-        add(cellTable);
+        disclosurePanel.setTitle(tableTitle + " (" + dataNodes.size() + ")");
+        disclosurePanel.setOpen(dataNodes.size() > 0);
     }
 }
