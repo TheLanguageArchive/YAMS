@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import nl.mpi.flap.model.DataNodeType;
 
 /**
  * Created on: May 28, 2013 14:00 PM
@@ -41,5 +42,22 @@ public class IconTableBase64 implements Serializable {
 
     public Set<NodeTypeImageBase64> getNodeTypeImageSet() {
         return Collections.unmodifiableSet(nodeTypeIconSet);
+    }
+
+    /**
+     * Finds the first NodeTypeImageBase64 that matches the supplied DataNodeType
+     *
+     * @param the type information of the data node in the form of a
+     * DataNodeType
+     * @return a NodeTypeImageBase64 that contains the icon for the supplied
+     * node type or null if no matching type image is found
+     */
+    public NodeTypeImageBase64 getByType(DataNodeType dataNodeType) {
+        for (NodeTypeImageBase64 nodeTypeImage : nodeTypeIconSet) {
+            if (nodeTypeImage.getDataNodeType().equals(dataNodeType)) {
+                return nodeTypeImage;
+            }
+        }
+        return null;
     }
 }

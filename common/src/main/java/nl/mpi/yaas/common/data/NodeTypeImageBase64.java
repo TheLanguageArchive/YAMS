@@ -63,6 +63,10 @@ public class NodeTypeImageBase64 implements Serializable {
         return inlineImageData;
     }
 
+    public DataNodeType getDataNodeType() {
+        return dataNodeType;
+    }
+
     @XmlValue
     public void setInlineImageData(String inlineImageData) {
         this.inlineImageData = inlineImageData;
