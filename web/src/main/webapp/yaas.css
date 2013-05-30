@@ -1,6 +1,6 @@
 /** Add css rules here for your application. */
 
-div.floatingTable {
+.yaas-floatingTable {
     position: fixed;
     right: 0;
     bottom: 0;
@@ -9,6 +9,16 @@ div.floatingTable {
     border-style:solid;
     border-width:1px;
     background-color:white;
+}
+.yaas-treeNode {
+/*  vertical-align: top;
+    border-style:solid;
+    border-width:1px;*/
+}
+
+.yaas-treeNodeDetails {
+    border-style:solid;
+    border-width:1px;
 }
 /** Example rules used by the template application (remove for your app) */
 h1 {

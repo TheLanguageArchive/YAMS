@@ -36,7 +36,8 @@ public class YaasTreeItem extends TreeItem {
     private boolean loadAttempted = false;
     final Label labelChildrenNotLoaded = new Label("child nodes not loaded");
     final HorizontalPanel outerPanel;
-    final CheckBox checkBox;
+    final private CheckBox checkBox;
+    private Button expandButton;
     private SingleDataNodeTable singleDataNodeTable = null;
     private final IconTableBase64 iconTableBase64;
     private final Image iconImage = new Image();
@@ -81,10 +82,15 @@ public class YaasTreeItem extends TreeItem {
         }
     }
 
+    private void hideShowExpandButton() {
+        expandButton.setVisible(yaasDataNode != null && yaasDataNode.getFieldGroups() != null);
+    }
+
     private void setupWidgets() {
+        setStyleName("yaas-treeNode");
         outerPanel.add(iconImage);
         outerPanel.add(checkBox);
-        final Button expandButton = new Button(">");
+        expandButton = new Button(">");
         outerPanel.add(expandButton);
         checkBox.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -99,6 +105,7 @@ public class YaasTreeItem extends TreeItem {
             public void onClick(ClickEvent event) {
                 if (singleDataNodeTable == null) {
                     singleDataNodeTable = new SingleDataNodeTable(yaasDataNode);
+                    singleDataNodeTable.setStyleName("yaas-treeNodeDetails");
                     outerPanel.add(singleDataNodeTable);
 //                                 expandButton.setText("<<");
                 } else {
@@ -107,6 +114,7 @@ public class YaasTreeItem extends TreeItem {
                 }
             }
         });
+        hideShowExpandButton();
     }
 
     @Override
@@ -136,6 +144,7 @@ public class YaasTreeItem extends TreeItem {
                         setText("Failure: " + exception.getMessage());
                     }
                     setNodeIcon();
+                    hideShowExpandButton();
                 }
             });
         }
@@ -164,7 +173,7 @@ public class YaasTreeItem extends TreeItem {
                 searchOptionsService.getDataNodes(dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
                     public void onFailure(Throwable caught) {
                         removeItems();
-                        setText("Loading child nodes failed: " + caught.getMessage());
+                        addItem(new Label("Loading child nodes failed: " + caught.getMessage()));
                     }
 
                     public void onSuccess(List<SerialisableDataNode> dataNodeList) {
