@@ -7,6 +7,7 @@ package nl.mpi.yaas.client;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -37,7 +38,9 @@ public class YaasTreeItem extends TreeItem {
     final Label labelChildrenNotLoaded = new Label("child nodes not loaded");
     final HorizontalPanel outerPanel;
     final private CheckBox checkBox;
-    private Button expandButton;
+    final private Label nodeLabel;
+    final private Anchor nodeDetailsAnchor;
+//    private Button expandButton;
     private SingleDataNodeTable singleDataNodeTable = null;
     private final IconTableBase64 iconTableBase64;
     private final Image iconImage = new Image();
@@ -50,6 +53,8 @@ public class YaasTreeItem extends TreeItem {
         this.iconTableBase64 = iconTableBase64;
         outerPanel = (HorizontalPanel) this.getWidget();
         checkBox = new CheckBox();
+        nodeLabel = new Label();
+        nodeDetailsAnchor = new Anchor();
         setupWidgets();
         loadDataNode();
 
@@ -63,6 +68,8 @@ public class YaasTreeItem extends TreeItem {
         this.iconTableBase64 = iconTableBase64;
         outerPanel = (HorizontalPanel) this.getWidget();
         checkBox = new CheckBox();
+        nodeLabel = new Label();
+        nodeDetailsAnchor = new Anchor();
         setupWidgets();
         setLabel();
         try {
@@ -83,15 +90,19 @@ public class YaasTreeItem extends TreeItem {
     }
 
     private void hideShowExpandButton() {
-        expandButton.setVisible(yaasDataNode != null && yaasDataNode.getFieldGroups() != null);
+        final boolean hasFields = yaasDataNode != null && yaasDataNode.getFieldGroups() != null;
+        nodeLabel.setVisible(!hasFields);
+        nodeDetailsAnchor.setVisible(hasFields);
     }
 
     private void setupWidgets() {
         setStyleName("yaas-treeNode");
         outerPanel.add(iconImage);
         outerPanel.add(checkBox);
-        expandButton = new Button(">");
-        outerPanel.add(expandButton);
+        outerPanel.add(nodeLabel);
+        outerPanel.add(nodeDetailsAnchor);
+//        expandButton = new Button(">");
+//        outerPanel.add(expandButton);
         checkBox.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 if (checkBox.getValue()) {
@@ -101,7 +112,7 @@ public class YaasTreeItem extends TreeItem {
                 }
             }
         });
-        expandButton.addClickHandler(new ClickHandler() {
+        nodeDetailsAnchor.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 if (singleDataNodeTable == null) {
                     singleDataNodeTable = new SingleDataNodeTable(yaasDataNode);
@@ -119,7 +130,8 @@ public class YaasTreeItem extends TreeItem {
 
     @Override
     public void setText(String text) {
-        checkBox.setText(text);
+        nodeLabel.setText(text);
+        nodeDetailsAnchor.setText(text);
     }
 
     private void loadDataNode() {
