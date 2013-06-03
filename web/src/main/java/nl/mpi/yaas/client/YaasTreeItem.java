@@ -6,9 +6,14 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -56,8 +61,9 @@ public class YaasTreeItem extends TreeItem {
         nodeLabel = new Label();
         nodeDetailsAnchor = new Anchor();
         setupWidgets();
+        // todo: continue working on the json version of the data loader
+//        loadDataNodeJson();
         loadDataNode();
-
     }
 
     public YaasTreeItem(SerialisableDataNode yaasDataNode, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
@@ -132,6 +138,31 @@ public class YaasTreeItem extends TreeItem {
     public void setText(String text) {
         nodeLabel.setText(text);
         nodeDetailsAnchor.setText(text);
+    }
+
+    private void loadDataNodeJson() {
+        // todo: continue working on the json version of the data loader
+        // todo: create a json datanode for use here
+        final String requestUrl = "http://192.168.56.101:8080/BaseX76/rest/yaas-data/" + dataNodeId.getIdString() + "?method=jsonml";
+        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(requestUrl));
+        try {
+            Request request = builder.sendRequest(null, new RequestCallback() {
+                public void onError(Request request, Throwable exception) {
+                    setText("Failure onError: " + exception.getMessage() + " " + requestUrl);
+                }
+
+                public void onResponseReceived(Request request, Response response) {
+                    if (200 == response.getStatusCode()) {
+                        setText(response.getText());
+                    } else {
+                        // if the document does not exist this error will occur
+                        setText("Failure (document not found): " + response.getStatusText() + " " + requestUrl);
+                    }
+                }
+            });
+        } catch (RequestException exception) {
+            setText("Failure RequestException: " + exception.getMessage() + " " + requestUrl);
+        }
     }
 
     private void loadDataNode() {
