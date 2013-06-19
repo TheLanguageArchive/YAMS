@@ -4,12 +4,14 @@
  */
 package nl.mpi.yaas.shared;
 
+import java.io.Serializable;
+
 /**
  * Created on : Jan 31, 2013, 11:58:57 AM
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class WebQueryException extends Exception {
+public class WebQueryException extends Exception implements Serializable {
 
     public WebQueryException() {
     }
