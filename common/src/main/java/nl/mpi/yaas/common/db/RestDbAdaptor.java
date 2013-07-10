@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import org.basex.util.Base64;
@@ -238,5 +239,30 @@ public class RestDbAdaptor implements DbAdaptor {
             throw new QueryException(exception);
         }
         checkDbExists(databaseName);
+    }
+
+    public static void main(String[] args) throws MalformedURLException, QueryException {
+        final RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL("http://192.168.56.101:8080/BaseX76/rest/"), "admin", "admin");
+        System.out.println(restDbAdaptor.executeQuery(DataBaseManager.defaultDataBase, "collection('unit-test-database/CrawledData')/DataNode/Type"));
+        System.out.println(restDbAdaptor.executeQuery(DataBaseManager.defaultDataBase, "<MetadataFileType>\n"
+                + "<MetadataFileType>\n"
+                + "<displayString>All Types</displayString>\n"
+                + "<RecordCount>{count(collection('unit-test-database/CrawledData'))}</RecordCount>\n"
+                + "</MetadataFileType>\n"
+                + "{\n"
+                + "let $allNodeTypes := collection('unit-test-database/CrawledData')/DataNode/Type/@Name\n"
+                + "for $nodeType in distinct-values($allNodeTypes)\n"
+                + "order by $nodeType\n"
+                + "return\n"
+                + "<MetadataFileType>\n"
+                + "<Type>{$nodeType}</Type>\n"
+                + "<Count>{count($allNodeTypes[$nodeType])}</Count>\n"
+                + "</MetadataFileType>\n"
+                + "},{for $profileString in distinct-values(collection('unit-test-database')/*:CMD/@*:schemaLocation)\n"
+                + "return\n"
+                + "<MetadataFileType>\n"
+                + "<profileString>{$profileString}</profileString>\n"
+                + "<RecordCount>{count(collection('unit-test-database')/*:CMD[@*:schemaLocation = $profileString])}</RecordCount></MetadataFileType>\n"
+                + "}</MetadataFileType>"));
     }
 }

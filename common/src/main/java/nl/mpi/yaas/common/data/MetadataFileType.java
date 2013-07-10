@@ -31,17 +31,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "MetadataFileType")
 public class MetadataFileType implements Serializable {
 
-    @XmlElement(name = "ImdiType")
-    private String imdiType = null;
+    @XmlElement(name = "Type")
+    private String type = null;
     @XmlElement(name = "fieldName")
     private String fieldName = null;
-    @XmlElement(name = "displayString")
+    @XmlElement(name = "Label")
     private String displayString = null;
     @XmlElement(name = "profileString")
     private String profileString = null;
     @XmlElement(name = "arbilPathString")
     private String arbilPathString = null;
-    @XmlElement(name = "RecordCount")
+    @XmlElement(name = "Count")
     private int recordCount = 0;
 //    @XmlElementWrapper(name = "childMetadataTypes")
     @XmlElement(name = "MetadataFileType")
@@ -59,11 +59,8 @@ public class MetadataFileType implements Serializable {
         return childMetadataTypes;
     }
 
-    public String getImdiType() {
-        if (imdiType != null) {
-            return imdiType.replaceAll("\"[^\"]*\":", "*:").replaceAll("\\[\\d*\\]", "");
-        }
-        return null;
+    public String getType() {
+        return type;
     }
 
     public String getArbilPathString() {
@@ -90,8 +87,8 @@ public class MetadataFileType implements Serializable {
     public String toString() {
         // todo: we really don't want to be putting this view code in this data object
         if (displayString == null) {
-            if (imdiType != null) {
-                displayString = imdiType.replaceAll("\"[^\"]*\":", "").replaceAll("\\[\\d*\\]", "");
+            if (type != null) {
+                displayString = type;
             } else if (fieldName != null) {
                 displayString = fieldName;
             } else if (profileString != null) {

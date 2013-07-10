@@ -334,7 +334,7 @@ public class DataBaseManager<D, F, M> {
     private String getTypeConstraint(MetadataFileType fileType) {
         String typeConstraint = "";
         if (fileType != null) {
-            final String imdiType = fileType.getImdiType();
+            final String imdiType = fileType.getType();
             final String profileId = fileType.getProfileIdString();
             if (imdiType != null) {
                 typeConstraint = "[/*:METATRANSCRIPT/count(" + imdiType + ") > 0]";
@@ -604,8 +604,8 @@ public class DataBaseManager<D, F, M> {
 //                + "$xpathString";
         return "<MetadataFileType>\n"
                 + "<MetadataFileType>\n"
-                + "<displayString>All Types</displayString>\n"
-                + "<RecordCount>{count(collection('" + databaseName + "/" + crawledDataCollection + "'))}</RecordCount>\n"
+                + "<Label>All Types</Label>\n"
+                + "<Count>{count(collection('" + databaseName + "/" + crawledDataCollection + "'))}</Count>\n"
                 + "</MetadataFileType>\n"
                 + "{\n"
                 //                + "for $imdiType in distinct-values(collection('" + databaseName + "')/*:METATRANSCRIPT/*/name())\n"
@@ -630,19 +630,37 @@ public class DataBaseManager<D, F, M> {
                  * the query below takes:
                  * 11.8 ms (varies per run)
                  */
-                + "for $profileInfo in index:facets('" + databaseName + "')/document-node/element[@name='DataNode']/element[@name='Type']/attribute[@name='Format']/entry\n"
+                //                + "for $profileInfo in index:facets('" + databaseName + "/" + crawledDataCollection + "')/document-node/element[@name='DataNode']/element[@name='Type']/attribute[@name='Format']/entry\n"
+                //                + "return\n"
+                //                + "<MetadataFileType>\n"
+                //                + "<fieldName>{string($profileInfo)}</fieldName>\n"
+                //                + "<RecordCount>{string($profileInfo/@count)}</RecordCount>\n"
+                //                + "</MetadataFileType>"
+                //                + "}{"
+                //                + "for $profileInfo in index:facets('" + databaseName + "')/document-node/element[@name='DataNode']/element[@name='Type']/attribute[@name='Name']/entry\n"
+                //                + "return\n"
+                //                + "<MetadataFileType>\n"
+                //                + "<fieldName>{string($profileInfo)}</fieldName>\n"
+                //                + "<RecordCount>{string($profileInfo/@count)}</RecordCount>\n"
+                //                //                + "<ValueCount>{count($profileInfo/entry)}</ValueCount>\n"
+                //                + "</MetadataFileType>\n"
+
+                + "let $allNodeTypes := collection('" + databaseName + "/" + crawledDataCollection + "')/DataNode/Type/@Name/string()\n"
+                + "for $nodeType in distinct-values($allNodeTypes)\n"
+                + "order by $nodeType\n"
                 + "return\n"
                 + "<MetadataFileType>\n"
-                + "<fieldName>{string($profileInfo)}</fieldName>\n"
-                + "<RecordCount>{string($profileInfo/@count)}</RecordCount>\n"
-                + "</MetadataFileType>"
-                + "}{"
-                + "for $profileInfo in index:facets('" + databaseName + "')/document-node/element[@name='DataNode']/element[@name='Type']/attribute[@name='Name']/entry\n"
+                + "<Label>{$nodeType}</Label>\n"
+                + "<Type>{$nodeType}</Type>\n"
+                + "<Count>{count($allNodeTypes[. = $nodeType])}</Count>\n"
+                + "</MetadataFileType>\n"
+                + "},{"
+                + "for $profileString in distinct-values(collection('" + databaseName + "')/*:CMD/@*:schemaLocation)\n"
+                //                + "order by $profileString\n"
                 + "return\n"
                 + "<MetadataFileType>\n"
-                + "<fieldName>{string($profileInfo)}</fieldName>\n"
-                + "<RecordCount>{string($profileInfo/@count)}</RecordCount>\n"
-                //                + "<ValueCount>{count($profileInfo/entry)}</ValueCount>\n"
+                + "<profileString>{$profileString}</profileString>\n"
+                + "<RecordCount>{count(collection('" + databaseName + "')/*:CMD[@*:schemaLocation = $profileString])}</RecordCount>"
                 + "</MetadataFileType>\n"
                 //                + "},{"
                 + "}</MetadataFileType>";
@@ -789,7 +807,6 @@ public class DataBaseManager<D, F, M> {
 
     public M[] getMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataTypes();
-        //System.out.println("getMetadataTypes: " + queryString);
         return getMetadataTypes(queryString);
     }
 

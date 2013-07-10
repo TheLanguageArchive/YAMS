@@ -992,6 +992,7 @@ public class TestData {
         + "<FieldGroup Label=\"Description\">"
         + "<FieldData Path=\".METATRANSCRIPT.Corpus.Description\" FieldValue=\"\"/>"
         + "</FieldGroup>"
+        + "<Type Name=\"Test\" ID=\"test.corpus\" Format=\"test\"/>\n"
         + "</DataNode>",
         "<DataNode Label=\"Brazil\" ID=\"hdl:1839/00-0000-0000-0001-2E76-0\">"
         + "<ChildIds>hdl:1839/00-0000-0000-000D-B743-0</ChildIds>"
@@ -1005,6 +1006,7 @@ public class TestData {
         + "<FieldGroup Label=\"Description\">"
         + "<FieldData Path=\".METATRANSCRIPT.Corpus.Description\" FieldValue=\"\"/>"
         + "</FieldGroup>"
+        + "<Type Name=\"Test\" ID=\"test.corpus\" Format=\"test\"/>\n"
         + "</DataNode>",
         "<DataNode Label=\"Brazil Catalogue\" ID=\"hdl:1839/00-0000-0000-000D-B743-0\">"
         + "<FieldGroup Label=\"Size\">"
@@ -1115,6 +1117,7 @@ public class TestData {
         + "<FieldGroup Label=\"ContactPerson\">"
         + "<FieldData Path=\".METATRANSCRIPT.Catalogue.ContactPerson\" FieldValue=\"Sergio Marmora de Andrade\"/>"
         + "</FieldGroup>"
+        + "<Type Name=\"Test\" ID=\"test.corpus\" Format=\"test\"/>\n"
         + "</DataNode>",
         "<DataNode Label=\"Texts\" ID=\"hdl:1839/00-0000-0000-0001-2E77-E\">"
         + "<FieldGroup Label=\"Name\">"
@@ -1126,5 +1129,25 @@ public class TestData {
         + "<FieldGroup Label=\"Description\">"
         + "<FieldData Path=\".METATRANSCRIPT.Corpus.Description\" FieldValue=\"\"/>"
         + "</FieldGroup>"
+        + "<Type Name=\"Test\" ID=\"test.corpus\" Format=\"test\"/>\n"
+        + "</DataNode>",
+        "<DataNode Label=\"Speaker Ages\" ID=\"0132fd35d7d2fd68faa904613c1bf6ad\">\n"
+        + "<ChildLink url=\"http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ageX.imdi\" ID=\"6fba20d10322bca5fb52491e45486146\"/>\n"
+        + "<ChildLink url=\"http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age5.imdi\" ID=\"2452a7d4f0ca79ed7b9fab5e255d6657\"/>\n"
+        + "<ChildLink url=\"http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age3.imdi\" ID=\"899a3335a47b416c3d846f5faab19758\"/>\n"
+        + "<ChildLink url=\"http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age2.imdi\" ID=\"895f14973332ad609e1ea8becfa2d69f\"/>\n"
+        + "<ChildLink url=\"http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age1.imdi\" ID=\"08789df76f3390feb0ead3d85d071290\"/>\n"
+        + "<ChildLink url=\"http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age0.imdi\" ID=\"0a5f98482990d8b5c2d2eff7a53fa326\"/>\n"
+        + "<ChildLink url=\"http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age4.imdi\" ID=\"1d497564a37debaa7769f92f1671cf41\"/>\n"
+        + "<FieldGroup Label=\"Name\">\n"
+        + "<FieldData Path=\".METATRANSCRIPT.Corpus.Name\" FieldValue=\"Speaker Ages\"/>\n"
+        + "</FieldGroup>\n"
+        + "<FieldGroup Label=\"Description\">\n"
+        + "<FieldData Path=\".METATRANSCRIPT.Corpus.Description\" LanguageId=\"\" KeyName=\"\" FieldValue=\"Corpus divided by subject age-categories\"/>\n"
+        + "</FieldGroup>\n"
+        + "<FieldGroup Label=\"Title\">\n"
+        + "<FieldData Path=\".METATRANSCRIPT.Corpus.Title\" FieldValue=\"Corpus divided by subject age-categories\"/>\n"
+        + "</FieldGroup>\n"
+        + "<Type Name=\"Corpus\" ID=\"imdi.corpus\" Format=\"imdi\"/>\n"
         + "</DataNode>"};
 }
