@@ -58,7 +58,7 @@ public abstract class DataBaseManagerTest {
     public DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDataBaseManager(boolean insertData) throws IOException, QueryException, JAXBException, PluginException, ModelException {
         DbAdaptor dbAdaptor = getDbAdaptor();
         final DataBaseManager dataBaseManager = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
-        dbAdaptor.dropAndRecreateDb(projectDatabaseName);
+        dataBaseManager.dropAllRecords();
         if (insertData) {
             JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -113,7 +113,7 @@ public abstract class DataBaseManagerTest {
 
     @Test
     public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException, IOException, ModelException {
-//        dbAdaptor.dropAndRecreateDb(projectDatabaseName);
+//        dbAdaptor.dropAllRecords(projectDatabaseName);
 //        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
 
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(false);

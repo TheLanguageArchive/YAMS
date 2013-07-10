@@ -71,6 +71,7 @@ public class DataBaseManager<D, F, M> {
     final static public String guestUser = "admin"; // todo: the user name and password for admin and guest users needs to be determined and set
     final static public String guestUserPass = "admin";
     final private String iconTableDocumentName = "IconTableDocument";
+    final private String crawledDataCollection = "CrawledData";
 
     /**
      *
@@ -100,8 +101,11 @@ public class DataBaseManager<D, F, M> {
      *
      * @throws QueryException
      */
-    public void dropAndRecreateDb() throws QueryException {
+    public void dropAllRecords() throws QueryException {
         dbAdaptor.dropAndRecreateDb(databaseName);
+//        dbAdaptor.deleteDocument(databaseName, crawledDataPath);
+//        dbAdaptor.deleteDocument(databaseName, "DbStatsDocument");
+//        dbAdaptor.deleteDocument(databaseName, "IconTableDocument"); 
     }
 
     /**
@@ -320,7 +324,7 @@ public class DataBaseManager<D, F, M> {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(dataNode, stringWriter);
 //            System.out.println("Data to be inserted:\n" + stringWriter.toString());
-            dbAdaptor.addDocument(databaseName, dataNode.getID(), stringWriter.toString());
+            dbAdaptor.addDocument(databaseName, crawledDataCollection + "/" + dataNode.getID(), stringWriter.toString());
         } catch (JAXBException exception) {
             System.err.println("jaxb error:" + exception.getMessage());
             throw new PluginException(exception);
@@ -601,7 +605,7 @@ public class DataBaseManager<D, F, M> {
         return "<MetadataFileType>\n"
                 + "<MetadataFileType>\n"
                 + "<displayString>All Types</displayString>\n"
-                + "<RecordCount>{count(collection('" + databaseName + "'))}</RecordCount>\n"
+                + "<RecordCount>{count(collection('" + databaseName + "/" + crawledDataCollection + "'))}</RecordCount>\n"
                 + "</MetadataFileType>\n"
                 + "{\n"
                 //                + "for $imdiType in distinct-values(collection('" + databaseName + "')/*:METATRANSCRIPT/*/name())\n"
@@ -785,6 +789,7 @@ public class DataBaseManager<D, F, M> {
 
     public M[] getMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataTypes();
+        //System.out.println("getMetadataTypes: " + queryString);
         return getMetadataTypes(queryString);
     }
 

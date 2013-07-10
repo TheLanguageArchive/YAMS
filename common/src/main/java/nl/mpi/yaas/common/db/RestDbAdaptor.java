@@ -50,7 +50,7 @@ public class RestDbAdaptor implements DbAdaptor {
             conn.setRequestMethod("DELETE");
             conn.setRequestProperty("Authorization", "Basic " + encodedPass);
             final int responseCode = conn.getResponseCode();
-//            System.out.println("HTTP response: " + responseCode);
+//            System.out.println("HTTP response: " + responseCode);            
             conn.disconnect();
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 throw new QueryException("HTTP response: " + responseCode);
@@ -59,6 +59,14 @@ public class RestDbAdaptor implements DbAdaptor {
             throw new QueryException(exception);
         }
         checkDbExists(databaseName);
+    }
+
+    public void deleteAllFromDb(String databaseName) throws QueryException {
+        String deleteAllQuery = "for $document in collection('" + databaseName + "') "
+                // + "return fn:delete('" + databaseName + "', fn:substring-after(base-uri($document), '/'))";
+                + "return fn:delete('" + databaseName + "', base-uri($document))";
+        System.out.println("deleteAllQuery: " + deleteAllQuery);
+        executeQuery(databaseName, deleteAllQuery);
     }
 
     public void checkDbExists(String databaseName) throws QueryException {
@@ -87,6 +95,47 @@ public class RestDbAdaptor implements DbAdaptor {
         }
     }
 
+    private void runCommand(String commandString) throws QueryException {
+        try {
+            HttpURLConnection conn = (HttpURLConnection) restUrl.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "Basic " + encodedPass);
+            conn.setRequestProperty("Content-Type", "application/xml");
+            OutputStream out = conn.getOutputStream();
+            System.out.println("executeQuery POST: " + restUrl + " : " + commandString);
+            out.write(commandString.getBytes("UTF-8"));
+            out.close();
+            final int responseCode = conn.getResponseCode();
+            final String responseMessage = conn.getResponseMessage();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                System.out.println("command ok");
+            }
+            // output the response which is only for debugging
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            for (String line; (line = bufferedReader.readLine()) != null;) {
+                System.out.println("response: " + line);
+            }
+            bufferedReader.close();
+            // end output
+            conn.disconnect();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new QueryException("HTTP response: " + responseCode + " " + responseMessage);
+            }
+        } catch (IOException exception) {
+            throw new QueryException(exception);
+        }
+    }
+
+    public void checkUserPermissions(String databaseName) throws QueryException {
+        // just run a test query
+        // commands should probably be disabled on the production database
+        runCommand("<command xmlns=\"http://basex.org/rest\">\n"
+                + "  <text>show users</text>\n"
+                + "  <parameter name='encoding' value='ISO-8859-1'/>\n"
+                + "</command>");
+    }
+
     public void addDocument(String databaseName, String documentName, String documentContents) throws QueryException {
         try {
             URL documentUrl = new URL(restUrl, databaseName + "/" + documentName); //.replaceAll(":", "-").replaceAll("/", "-"));
@@ -100,10 +149,11 @@ public class RestDbAdaptor implements DbAdaptor {
             out.write(documentContents.getBytes("UTF-8"));
             out.close();
             final int responseCode = conn.getResponseCode();
+            final String responseMessage = conn.getResponseMessage();
 //            System.out.println("HTTP response: " + responseCode);
             conn.disconnect();
             if (responseCode != HttpURLConnection.HTTP_CREATED) {
-                throw new QueryException("HTTP response: " + responseCode);
+                throw new QueryException("HTTP response: " + responseCode + " : responseMessage: " + responseMessage + " : documentUrl: " + documentUrl);
             }
         } catch (IOException exception) {
             throw new QueryException(exception);
@@ -132,6 +182,7 @@ public class RestDbAdaptor implements DbAdaptor {
         // todo: it would be better to consume the string as it becomes available, however this will get complicated when one query depends on another such as the get missing ID list in the crawler.
         StringBuilder replaceMe = new StringBuilder();
         try {
+            long startTime = System.currentTimeMillis();
             HttpURLConnection conn = (HttpURLConnection) restUrl.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
@@ -146,15 +197,21 @@ public class RestDbAdaptor implements DbAdaptor {
             out.close();
             final int responseCode = conn.getResponseCode();
             final String responseMessage = conn.getResponseMessage();
+            long responseMils = System.currentTimeMillis() - startTime;
+            String queryTimeString = "response time: " + responseMils + "ms";
+            System.out.println(queryTimeString);
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
                 for (String line; (line = bufferedReader.readLine()) != null;) {
-                    System.out.println("response: " + line);
+//                    System.out.println("response: " + line);
                     replaceMe.append(line);
                 }
                 bufferedReader.close();
             }
             conn.disconnect();
+            long totalMils = System.currentTimeMillis() - startTime;
+            String totalTimeString = "total time: " + totalMils + "ms";
+            System.out.println(totalTimeString);
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 throw new QueryException("HTTP response: " + responseCode + " " + responseMessage);
             }
