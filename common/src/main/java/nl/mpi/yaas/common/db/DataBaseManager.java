@@ -654,15 +654,6 @@ public class DataBaseManager<D, F, M> {
                 + "<Type>{$nodeType}</Type>\n"
                 + "<Count>{count($allNodeTypes[. = $nodeType])}</Count>\n"
                 + "</MetadataFileType>\n"
-                + "},{"
-                + "for $profileString in distinct-values(collection('" + databaseName + "')/*:CMD/@*:schemaLocation)\n"
-                //                + "order by $profileString\n"
-                + "return\n"
-                + "<MetadataFileType>\n"
-                + "<profileString>{$profileString}</profileString>\n"
-                + "<RecordCount>{count(collection('" + databaseName + "')/*:CMD[@*:schemaLocation = $profileString])}</RecordCount>"
-                + "</MetadataFileType>\n"
-                //                + "},{"
                 + "}</MetadataFileType>";
     }
 
@@ -673,16 +664,15 @@ public class DataBaseManager<D, F, M> {
 //                + ")\n"
 //                + "return"
 //                + "$xpathString";
-        return "<MetadataFileType>\n"
-                + "<MetadataFileType><displayString>All Types</displayString></MetadataFileType>\n"
+        return "let $fieldLabels := collection('unit-test-database/CrawledData')//FieldGroup/@Label/string()\n"
+                + "return <MetadataFileType>\n"
+                + "<MetadataFileType><Label>All Types</Label>"
+                + "<Count>{count(distinct-values($fieldLabels))}</Count></MetadataFileType>\n"
                 + "{\n"
-                + "for $xpathString in distinct-values(\n"
-                + "for $entityNode in collection('" + databaseName + "')/*\n"
-                + "return path($entityNode)\n"
-                + ")\n"
-                + "order by $xpathString\n"
-                + "return\n"
-                + "<MetadataFileType><rootXpath>{$xpathString}</rootXpath></MetadataFileType>\n"
+                + "for $label in distinct-values($fieldLabels)\n"
+                + "order by $label\n"
+                + "return <MetadataFileType><Label>{$label}</Label>\n"
+                + "<Count>{count($fieldLabels[. = $label])}</Count></MetadataFileType>\n"
                 + "}</MetadataFileType>";
     }
 

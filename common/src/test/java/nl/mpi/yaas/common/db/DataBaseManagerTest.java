@@ -159,6 +159,51 @@ public abstract class DataBaseManagerTest {
     }
 
     /**
+     * Test of getPathMetadataTypes method, of class DataBaseManager.
+     */
+    @Test
+    public void testGetPathMetadataTypes() throws Exception {
+        System.out.println("getPathMetadataTypes");
+        MetadataFileType metadataFileType = null;
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        MetadataFileType[] result = dbManager.getPathMetadataTypes(metadataFileType);
+        assertEquals("All Types (41)", result[0].toString());
+        assertEquals("Access.Availability (2)", result[1].toString());
+        assertEquals("ContentType (2)", result[10].toString());
+    }
+
+    /**
+     * Test of getFieldMetadataTypes method, of class DataBaseManager.
+     */
+    @Test
+    public void testGetFieldMetadataTypes() throws Exception {
+        System.out.println("getFieldMetadataTypes");
+        MetadataFileType metadataFileType = null;
+        DataBaseManager instance = null;
+        Object[] expResult = null;
+        Object[] result = instance.getFieldMetadataTypes(metadataFileType);
+        assertArrayEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getTreeFieldTypes method, of class DataBaseManager.
+     */
+    @Test
+    public void testGetTreeFieldTypes() throws Exception {
+        System.out.println("getTreeFieldTypes");
+        MetadataFileType metadataFileType = null;
+        boolean fastQuery = false;
+        DataBaseManager instance = null;
+        Object[] expResult = null;
+        Object[] result = instance.getTreeFieldTypes(metadataFileType, fastQuery);
+        assertArrayEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
      * Test of insertNodeIconsIntoDatabase method, of class DataBaseManager.
      */
     @Test
