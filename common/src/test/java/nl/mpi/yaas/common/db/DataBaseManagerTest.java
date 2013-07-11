@@ -162,47 +162,55 @@ public abstract class DataBaseManagerTest {
      * Test of getPathMetadataTypes method, of class DataBaseManager.
      */
     @Test
-    public void testGetPathMetadataTypes() throws Exception {
-        System.out.println("getPathMetadataTypes");
-        MetadataFileType metadataFileType = null;
+    public void testGetMetadataPaths() throws Exception {
+        System.out.println("getMetadataPaths");
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
-        MetadataFileType[] result = dbManager.getPathMetadataTypes(metadataFileType);
-        assertEquals("All Types (41)", result[0].toString());
-        assertEquals("Access.Availability (2)", result[1].toString());
-        assertEquals("ContentType (2)", result[10].toString());
+        MetadataFileType[] result1 = dbManager.getMetadataPaths(null);
+        assertEquals("All Paths (41)", result1[0].toString());
+        assertEquals("Access.Availability (2)", result1[1].toString());
+        assertEquals("ContentType (2)", result1[10].toString());
+        MetadataFileType metadataFileType = new MetadataFileType() {
+            @Override
+            public String getType() {
+                return "Corpus";
+            }
+        };
+        MetadataFileType[] result2 = dbManager.getMetadataPaths(metadataFileType);
+        assertEquals("All Paths (3)", result2[0].toString());
+        assertEquals("Description (1)", result2[1].toString());
+        assertEquals("Title (1)", result2[3].toString());
     }
 
-    /**
-     * Test of getFieldMetadataTypes method, of class DataBaseManager.
-     */
-    @Test
-    public void testGetFieldMetadataTypes() throws Exception {
-        System.out.println("getFieldMetadataTypes");
-        MetadataFileType metadataFileType = null;
-        DataBaseManager instance = null;
-        Object[] expResult = null;
-        Object[] result = instance.getFieldMetadataTypes(metadataFileType);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getTreeFieldTypes method, of class DataBaseManager.
-     */
-    @Test
-    public void testGetTreeFieldTypes() throws Exception {
-        System.out.println("getTreeFieldTypes");
-        MetadataFileType metadataFileType = null;
-        boolean fastQuery = false;
-        DataBaseManager instance = null;
-        Object[] expResult = null;
-        Object[] result = instance.getTreeFieldTypes(metadataFileType, fastQuery);
-        assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
+//    /**
+//     * Test of getFieldMetadataTypes method, of class DataBaseManager.
+//     */
+//    @Test
+//    public void testGetFieldMetadataTypes() throws Exception {
+//        System.out.println("getFieldMetadataTypes");
+//        MetadataFileType metadataFileType = null;
+//        DataBaseManager instance = null;
+//        Object[] expResult = null;
+//        Object[] result = instance.getFieldMetadataTypes(metadataFileType);
+//        assertArrayEquals(expResult, result);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
+//
+//    /**
+//     * Test of getTreeFieldTypes method, of class DataBaseManager.
+//     */
+//    @Test
+//    public void testGetTreeFieldTypes() throws Exception {
+//        System.out.println("getTreeFieldTypes");
+//        MetadataFileType metadataFileType = null;
+//        boolean fastQuery = false;
+//        DataBaseManager instance = null;
+//        Object[] expResult = null;
+//        Object[] result = instance.getTreeFieldTypes(metadataFileType, fastQuery);
+//        assertArrayEquals(expResult, result);
+//        // TODO review the generated test code and remove the default call to fail.
+//        fail("The test case is a prototype.");
+//    }
     /**
      * Test of insertNodeIconsIntoDatabase method, of class DataBaseManager.
      */

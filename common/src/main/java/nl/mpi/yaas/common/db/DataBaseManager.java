@@ -657,16 +657,20 @@ public class DataBaseManager<D, F, M> {
                 + "}</MetadataFileType>";
     }
 
-    private String getPopulatedPaths() {
+    private String getMetadataPathsQuery(MetadataFileType metadataFileType) {
 //        return "for $xpathString in distinct-values(\n"
 //                + "for $entityNode in collection('" + databaseName + "')/*\n"
 //                + "return path($entityNode)\n"
 //                + ")\n"
 //                + "return"
 //                + "$xpathString";
-        return "let $fieldLabels := collection('unit-test-database/CrawledData')//FieldGroup/@Label/string()\n"
+        String typeClause = "";
+        if (metadataFileType != null) {
+            typeClause = "[/DataNode/Type/@Name = '" + metadataFileType.getType() + "']";
+        }
+        return "let $fieldLabels := collection('unit-test-database/CrawledData')" + typeClause + "//FieldGroup/@Label/string()\n"
                 + "return <MetadataFileType>\n"
-                + "<MetadataFileType><Label>All Types</Label>"
+                + "<MetadataFileType><Label>All Paths</Label>"
                 + "<Count>{count(distinct-values($fieldLabels))}</Count></MetadataFileType>\n"
                 + "{\n"
                 + "for $label in distinct-values($fieldLabels)\n"
@@ -785,8 +789,8 @@ public class DataBaseManager<D, F, M> {
 //        final DbTreeNode metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
 //        return metadataTypesString;
 //    }
-    public M[] getPathMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
-        final String queryString = getPopulatedPaths();
+    public M[] getMetadataPaths(MetadataFileType metadataFileType) throws QueryException {
+        final String queryString = getMetadataPathsQuery(metadataFileType);
         return getMetadataTypes(queryString);
     }
 
