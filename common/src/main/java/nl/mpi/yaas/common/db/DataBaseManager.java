@@ -338,12 +338,24 @@ public class DataBaseManager<D, F, M> {
                 typeClause += "[/DataNode/Type/@Name = '" + metadataFileType.getType() + "']";
             }
             if (metadataFileType.getPath() != null) {
-                typeClause += "[//DataNode/FieldGroup/@Label = '" + metadataFileType.getPath() + "']";
+                typeClause += "//DataNode/FieldGroup[@Label = '" + metadataFileType.getPath() + "']";
             }
         }
         return typeClause;
     }
 
+    private String getTypeNodes(MetadataFileType metadataFileType) {
+        String typeNodes = "";
+        if (metadataFileType != null) {
+            if (metadataFileType.getPath() != null) {
+                typeNodes += "<Path>" + metadataFileType.getPath() + "</Path>";
+            }
+            if (metadataFileType.getType() != null) {
+                typeNodes += "<Type>" + metadataFileType.getType() + "</Type>";
+            }
+        }
+        return typeNodes;
+    }
 //    private String getFieldConstraint(MetadataFileType fieldType) {
 //        String fieldConstraint = "";
 //        if (fieldType != null) {
@@ -354,6 +366,7 @@ public class DataBaseManager<D, F, M> {
 //        }
 //        return fieldConstraint;
 //    }
+
     private String getSearchTextConstraint(SearchNegator searchNegator, SearchType searchType, String searchString) {
         final String escapedSearchString = escapeBadChars(searchString);
         String returnString = "";
@@ -557,21 +570,9 @@ public class DataBaseManager<D, F, M> {
 
     private String getMetadataFieldValuesQuery(MetadataFileType metadataFileType) {
         String typeClause = getTypeClause(metadataFileType);
-        String typeNodes = "";
-        if (metadataFileType != null) {
-            if (metadataFileType.getPath() != null) {
-                typeNodes += "<Path>" + metadataFileType.getPath() + "</Path>";
-            }
-            if (metadataFileType.getType() != null) {
-                typeNodes += "<Type>" + metadataFileType.getType() + "</Type>";
-            }
-        }
-        return "let $fieldValues := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldGroup/FieldData/@FieldValue/string()\n"
+        String typeNodes = getTypeNodes(metadataFileType);
+        return "let $fieldValues := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldData/@FieldValue/string()\n"
                 + "return <MetadataFileType>\n"
-                + "<MetadataFileType>"
-                + "<Label>All Values</Label>"
-                + typeNodes
-                + "<Count>{count($fieldValues)}</Count></MetadataFileType>\n"
                 + "{\n"
                 + "for $label in distinct-values($fieldValues)\n"
                 + "order by $label\n"
@@ -647,14 +648,19 @@ public class DataBaseManager<D, F, M> {
 
     private String getMetadataPathsQuery(MetadataFileType metadataFileType) {
         String typeClause = getTypeClause(metadataFileType);
+        String typeNodes = getTypeNodes(metadataFileType);
         return "let $fieldLabels := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldGroup/@Label/string()\n"
                 + "return <MetadataFileType>\n"
                 + "<MetadataFileType><Label>All Paths</Label>"
+                + typeNodes
                 + "<Count>{count($fieldLabels)}</Count></MetadataFileType>\n"
                 + "{\n"
                 + "for $label in distinct-values($fieldLabels)\n"
                 + "order by $label\n"
-                + "return <MetadataFileType><Label>{$label}</Label>\n"
+                + "return <MetadataFileType>"
+                + "<Label>{$label}</Label>\n"
+                + typeNodes
+                + "<Path>{$label}</Path>\n"
                 + "<Count>{count($fieldLabels[. = $label])}</Count></MetadataFileType>\n"
                 + "}</MetadataFileType>";
     }

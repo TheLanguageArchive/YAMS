@@ -199,17 +199,13 @@ public abstract class DataBaseManagerTest {
         System.out.println("getFieldMetadataTypes");
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         MetadataFileType[] result1 = dbManager.getMetadataFieldValues(null);
-        assertEquals("All Values", result1[0].getLabel());
+        assertEquals("", result1[0].getLabel());
         assertEquals(null, result1[0].getType());
         assertEquals(null, result1[0].getPath());
-        assertEquals(127, result1[0].getRecordCount());
-        assertEquals("", result1[1].getLabel());
-        assertEquals(null, result1[1].getType());
-        assertEquals(null, result1[1].getPath());
-        assertEquals(56, result1[1].getRecordCount());
-        assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[10].getLabel());
-        assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[10].getValue());
-        assertEquals(1, result1[10].getRecordCount());
+        assertEquals(56, result1[0].getRecordCount());
+        assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[9].getLabel());
+        assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[9].getValue());
+        assertEquals(1, result1[9].getRecordCount());
         MetadataFileType metadataFileType1 = new MetadataFileType() {
             @Override
             public String getType() {
@@ -217,16 +213,12 @@ public abstract class DataBaseManagerTest {
             }
         };
         MetadataFileType[] result2 = dbManager.getMetadataFieldValues(metadataFileType1);
-        assertEquals("All Values", result2[0].getLabel());
-        assertEquals("Corpus", result2[0].getType());
-        assertEquals(null, result2[0].getPath());
-        assertEquals(3, result2[0].getRecordCount());
-        assertEquals("", result1[1].getLabel());
-        assertEquals(2, result2[1].getRecordCount());
-        assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[10].getLabel());
-        assertEquals("Corpus", result2[2].getType());
-        assertEquals(null, result2[2].getPath());
-        assertEquals(1, result2[2].getRecordCount());
+        assertEquals("", result1[0].getLabel());
+        assertEquals(2, result2[0].getRecordCount());
+        assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[9].getLabel());
+        assertEquals("Corpus", result2[1].getType());
+        assertEquals(null, result2[1].getPath());
+        assertEquals(1, result2[1].getRecordCount());
         MetadataFileType metadataFileType2 = new MetadataFileType() {
             @Override
             public String getType() {
@@ -239,16 +231,9 @@ public abstract class DataBaseManagerTest {
             }
         };
         MetadataFileType[] result3 = dbManager.getMetadataFieldValues(metadataFileType2);
-        assertEquals("All Values", result3[0].getLabel());
-        assertEquals("Corpus", result3[0].getType());
-        assertEquals("Description", result3[0].getPath());
-        assertEquals(3, result3[0].getRecordCount());
-        assertEquals("Corpus divided by subject age-categories", result3[1].getLabel());
-        assertEquals(2, result3[1].getRecordCount());
-        assertEquals("Speaker Ages", result3[2].getLabel());
-        assertEquals("Corpus", result3[2].getType());
-        assertEquals("Description", result3[2].getPath());
-        assertEquals(1, result3[2].getRecordCount());
+        assertEquals("Corpus divided by subject age-categories", result3[0].getLabel());
+        assertEquals(1, result3[0].getRecordCount());
+        assertEquals(1, result3.length);
     }
 
     /**
