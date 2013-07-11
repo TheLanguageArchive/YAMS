@@ -6,6 +6,8 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.text.shared.Renderer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -26,12 +28,13 @@ import nl.mpi.yaas.common.data.QueryDataStructures;
  */
 public class SearchCriterionPanel extends HorizontalPanel {
 
-    private final SearchOptionsServiceAsync searchOptionsService;
-    final SearchPanel searchPanel;
-    final ValueListBox<MetadataFileType> typesOptionsListBox;
-    final ValueListBox<MetadataFileType> fieldsOptionsListBox;
-    final ValueListBox<QueryDataStructures.SearchOption> searchOptionsListBox;
-    final SuggestBox searchTextBox;
+    final private SearchOptionsServiceAsync searchOptionsService;
+    final private SearchPanel searchPanel;
+    final private ValueListBox<MetadataFileType> typesOptionsListBox;
+    final private ValueListBox<MetadataFileType> fieldsOptionsListBox;
+    final private ValueListBox<QueryDataStructures.SearchOption> searchOptionsListBox;
+    final private SuggestBox searchTextBox;
+    private MultiWordSuggestOracle oracle;
 
     public SearchCriterionPanel(final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
         this.searchPanel = searchPanel;
@@ -50,6 +53,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
         searchOptionsListBox = searchPanel.getSearchOptionsListBox();
         this.add(searchOptionsListBox);
         this.add(searchTextBox);
+        loadTypesOptions();
     }
 
     public MetadataFileType getMetadataFileType() {
@@ -82,6 +86,58 @@ public class SearchCriterionPanel extends HorizontalPanel {
         return searchTextBox.getText();
     }
 
+    private void loadTypesOptions() {
+        searchOptionsService.getTypeOptions(null, new AsyncCallback<MetadataFileType[]>() {
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+            }
+
+            public void onSuccess(MetadataFileType[] result) {
+                if (result != null && result.length > 0) {
+                    typesOptionsListBox.setValue(result[0]);
+                    typesOptionsListBox.setAcceptableValues(Arrays.asList(result));
+                    loadPathsOptions(typesOptionsListBox.getValue());
+                }
+            }
+        });
+
+    }
+
+    private void loadPathsOptions(MetadataFileType type) {
+        searchOptionsService.getPathOptions(type, new AsyncCallback<MetadataFileType[]>() {
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+            }
+
+            public void onSuccess(MetadataFileType[] result) {
+                if (result != null && result.length > 0) {
+                    fieldsOptionsListBox.setValue(result[0]);
+                    fieldsOptionsListBox.setAcceptableValues(Arrays.asList(result));
+                    loadValuesOptions(fieldsOptionsListBox.getValue());
+                }
+            }
+        });
+    }
+
+    private void loadValuesOptions(MetadataFileType type) {
+        searchOptionsService.getValueOptions(type, new AsyncCallback<MetadataFileType[]>() {
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+            }
+
+            public void onSuccess(MetadataFileType[] result) {
+                oracle.clear();
+                if (result != null) {
+                    for (MetadataFileType type : result) {
+                        oracle.add(type.toString());
+                    }
+                    // searchTextBox.setText("Added " + result.length + " values. Starting: " + result[0].getLabel());
+                }
+            }
+        });
+
+    }
+
     private ValueListBox getFieldsOptionsListBox() {
         final ValueListBox<MetadataFileType> widget = new ValueListBox<MetadataFileType>(new Renderer<MetadataFileType>() {
             public String render(MetadataFileType object) {
@@ -99,16 +155,9 @@ public class SearchCriterionPanel extends HorizontalPanel {
             }
         });
         widget.addStyleName("demo-ListBox");
-        searchOptionsService.getPathOptions(null, new AsyncCallback<MetadataFileType[]>() {
-            public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
-            }
-
-            public void onSuccess(MetadataFileType[] result) {
-                if (result != null && result.length > 0) {
-                    widget.setValue(result[0]);
-                    widget.setAcceptableValues(Arrays.asList(result));
-                }
+        widget.addValueChangeHandler(new ValueChangeHandler<MetadataFileType>() {
+            public void onValueChange(ValueChangeEvent<MetadataFileType> event) {
+                loadValuesOptions(event.getValue());
             }
         });
         return widget;
@@ -131,37 +180,16 @@ public class SearchCriterionPanel extends HorizontalPanel {
             }
         });
         widget.addStyleName("demo-ListBox");
-        searchOptionsService.getTypeOptions(null, new AsyncCallback<MetadataFileType[]>() {
-            public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
-            }
-
-            public void onSuccess(MetadataFileType[] result) {
-                if (result != null && result.length > 0) {
-                    widget.setValue(result[0]);
-                    widget.setAcceptableValues(Arrays.asList(result));
-                }
+        widget.addValueChangeHandler(new ValueChangeHandler<MetadataFileType>() {
+            public void onValueChange(ValueChangeEvent<MetadataFileType> event) {
+                loadPathsOptions(event.getValue());
             }
         });
         return widget;
     }
 
     private SuggestBox createTextBox() {
-        final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
-        searchOptionsService.getValueOptions(null, new AsyncCallback<MetadataFileType[]>() {
-            public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
-            }
-
-            public void onSuccess(MetadataFileType[] result) {
-                if (result != null && result.length > 0) {
-                    oracle.clear();
-                    for (MetadataFileType type : result) {
-                        oracle.add(type.toString());
-                    }
-                }
-            }
-        });
+        oracle = new MultiWordSuggestOracle();
         return new SuggestBox(oracle);
     }
 }
