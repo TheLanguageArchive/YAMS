@@ -46,7 +46,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
     }
 
     private DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDatabase() throws QueryException {
-        // todo: this version of the Arbil database is not intended to multi entry and will be replaced by a rest version when it is written
+        // the LocalDbAdaptor version of the Arbil database is not intended to multi entry and has be replaced by a REST version
 //        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File(System.getProperty("user.dir"), "yaas-data"));
         try {
             final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL("http://192.168.56.101:8080/BaseX76/rest/"), DataBaseManager.guestUser, DataBaseManager.guestUserPass);

@@ -12,15 +12,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
-import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.ValueListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchOption;
 import nl.mpi.yaas.common.data.SearchParameters;
@@ -47,12 +44,12 @@ public class SearchPanel extends VerticalPanel {
         this.dataNodeTree = dataNodeTree;
         verticalPanel = new VerticalPanel();
         initSearchHandler();
-        final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this);
+        final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this, searchOptionsService);
         verticalPanel.add(searchCriterionPanel);
         criterionPanelList.add(searchCriterionPanel);
         Button addRowButton = new Button("add search term", new ClickHandler() {
             public void onClick(ClickEvent event) {
-                addSearchCriterionPanel(new SearchCriterionPanel(SearchPanel.this));
+                addSearchCriterionPanel(new SearchCriterionPanel(SearchPanel.this, SearchPanel.this.searchOptionsService));
             }
         });
         this.add(verticalPanel);
@@ -103,89 +100,6 @@ public class SearchPanel extends VerticalPanel {
             }
         };
         searchButton.addClickHandler(searchHandler);
-    }
-
-    protected ValueListBox getFieldsOptionsListBox() {
-        final ValueListBox<MetadataFileType> widget = new ValueListBox<MetadataFileType>(new Renderer<MetadataFileType>() {
-            public String render(MetadataFileType object) {
-                if (object == null) {
-                    return "<no value>";
-                } else {
-                    return object.toString();
-                }
-            }
-
-            public void render(MetadataFileType object, Appendable appendable) throws IOException {
-                if (object != null) {
-                    appendable.append(object.toString());
-                }
-            }
-        });
-        widget.addStyleName("demo-ListBox");
-        searchOptionsService.getPathOptions(null, new AsyncCallback<MetadataFileType[]>() {
-            public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
-            }
-
-            public void onSuccess(MetadataFileType[] result) {
-                if (result != null && result.length > 0) {
-                    widget.setValue(result[0]);
-                    widget.setAcceptableValues(Arrays.asList(result));
-                }
-            }
-        });
-        return widget;
-    }
-
-    protected ValueListBox getTypesOptionsListBox() {
-        final ValueListBox<MetadataFileType> widget = new ValueListBox<MetadataFileType>(new Renderer<MetadataFileType>() {
-            public String render(MetadataFileType object) {
-                if (object == null) {
-                    return "<no value>";
-                } else {
-                    return object.toString();
-                }
-            }
-
-            public void render(MetadataFileType object, Appendable appendable) throws IOException {
-                if (object != null) {
-                    appendable.append(object.toString());
-                }
-            }
-        });
-        widget.addStyleName("demo-ListBox");
-        searchOptionsService.getTypeOptions(null, new AsyncCallback<MetadataFileType[]>() {
-            public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
-            }
-
-            public void onSuccess(MetadataFileType[] result) {
-                if (result != null && result.length > 0) {
-                    widget.setValue(result[0]);
-                    widget.setAcceptableValues(Arrays.asList(result));
-                }
-            }
-        });
-        return widget;
-    }
-
-    protected SuggestBox createSearchBox() {
-        final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
-        searchOptionsService.getValueOptions(null, new AsyncCallback<MetadataFileType[]>() {
-            public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
-            }
-
-            public void onSuccess(MetadataFileType[] result) {
-                if (result != null && result.length > 0) {
-                    oracle.clear();
-                    for (MetadataFileType type : result) {
-                        oracle.add(type.toString());
-                    }
-                }
-            }
-        });
-        return new SuggestBox(oracle);
     }
 
     protected ValueListBox getSearchOptionsListBox() {
