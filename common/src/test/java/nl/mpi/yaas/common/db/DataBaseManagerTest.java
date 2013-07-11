@@ -43,6 +43,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -153,9 +154,12 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         MetadataFileType metadataFileType = null;
         MetadataFileType[] result = dbManager.getMetadataTypes(metadataFileType);
-        assertEquals("All Types (17)", result[0].toString());
-        assertEquals("Corpus (1)", result[1].toString());
-        assertEquals("Test (4)", result[2].toString());
+        assertEquals("All Types", result[0].getLabel());
+        assertEquals(17, result[0].getRecordCount());
+        assertEquals("Corpus", result[1].getLabel());
+        assertEquals(1, result[1].getRecordCount());
+        assertEquals("Test", result[2].getLabel());
+        assertEquals(4, result[2].getRecordCount());
     }
 
     /**
@@ -166,9 +170,12 @@ public abstract class DataBaseManagerTest {
         System.out.println("getMetadataPaths");
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         MetadataFileType[] result1 = dbManager.getMetadataPaths(null);
-        assertEquals("All Paths (41)", result1[0].toString());
-        assertEquals("Access.Availability (2)", result1[1].toString());
-        assertEquals("ContentType (2)", result1[10].toString());
+        assertEquals("All Paths", result1[0].getLabel());
+        assertEquals(41, result1[0].getRecordCount());
+        assertEquals("Access.Availability", result1[1].getLabel());
+        assertEquals(2, result1[1].getRecordCount());
+        assertEquals("ContentType", result1[10].getLabel());
+        assertEquals(2, result1[10].getRecordCount());
         MetadataFileType metadataFileType = new MetadataFileType() {
             @Override
             public String getType() {
@@ -176,41 +183,89 @@ public abstract class DataBaseManagerTest {
             }
         };
         MetadataFileType[] result2 = dbManager.getMetadataPaths(metadataFileType);
-        assertEquals("All Paths (3)", result2[0].toString());
-        assertEquals("Description (1)", result2[1].toString());
-        assertEquals("Title (1)", result2[3].toString());
+        assertEquals("All Paths", result2[0].getLabel());
+        assertEquals(3, result2[0].getRecordCount());
+        assertEquals("Description", result2[1].getLabel());
+        assertEquals(1, result2[1].getRecordCount());
+        assertEquals("Title", result2[3].getLabel());
+        assertEquals(1, result2[2].getRecordCount());
     }
 
-//    /**
-//     * Test of getFieldMetadataTypes method, of class DataBaseManager.
-//     */
-//    @Test
-//    public void testGetFieldMetadataTypes() throws Exception {
-//        System.out.println("getFieldMetadataTypes");
-//        MetadataFileType metadataFileType = null;
-//        DataBaseManager instance = null;
-//        Object[] expResult = null;
-//        Object[] result = instance.getFieldMetadataTypes(metadataFileType);
-//        assertArrayEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of getTreeFieldTypes method, of class DataBaseManager.
-//     */
-//    @Test
-//    public void testGetTreeFieldTypes() throws Exception {
-//        System.out.println("getTreeFieldTypes");
-//        MetadataFileType metadataFileType = null;
-//        boolean fastQuery = false;
-//        DataBaseManager instance = null;
-//        Object[] expResult = null;
-//        Object[] result = instance.getTreeFieldTypes(metadataFileType, fastQuery);
-//        assertArrayEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    /**
+     * Test of getFieldMetadataTypes method, of class DataBaseManager.
+     */
+    @Test
+    public void testGetMetadataFieldValues() throws Exception {
+        System.out.println("getFieldMetadataTypes");
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        MetadataFileType[] result1 = dbManager.getMetadataFieldValues(null);
+        assertEquals("All Values", result1[0].getLabel());
+        assertEquals(null, result1[0].getType());
+        assertEquals(null, result1[0].getPath());
+        assertEquals(127, result1[0].getRecordCount());
+        assertEquals("", result1[1].getLabel());
+        assertEquals(null, result1[1].getType());
+        assertEquals(null, result1[1].getPath());
+        assertEquals(56, result1[1].getRecordCount());
+        assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[10].getLabel());
+        assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[10].getValue());
+        assertEquals(1, result1[10].getRecordCount());
+        MetadataFileType metadataFileType1 = new MetadataFileType() {
+            @Override
+            public String getType() {
+                return "Corpus";
+            }
+        };
+        MetadataFileType[] result2 = dbManager.getMetadataFieldValues(metadataFileType1);
+        assertEquals("All Values", result2[0].getLabel());
+        assertEquals("Corpus", result2[0].getType());
+        assertEquals(null, result2[0].getPath());
+        assertEquals(3, result2[0].getRecordCount());
+        assertEquals("", result1[1].getLabel());
+        assertEquals(2, result2[1].getRecordCount());
+        assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[10].getLabel());
+        assertEquals("Corpus", result2[2].getType());
+        assertEquals(null, result2[2].getPath());
+        assertEquals(1, result2[2].getRecordCount());
+        MetadataFileType metadataFileType2 = new MetadataFileType() {
+            @Override
+            public String getType() {
+                return "Corpus";
+            }
+
+            @Override
+            public String getPath() {
+                return "Description";
+            }
+        };
+        MetadataFileType[] result3 = dbManager.getMetadataFieldValues(metadataFileType2);
+        assertEquals("All Values", result3[0].getLabel());
+        assertEquals("Corpus", result3[0].getType());
+        assertEquals("Description", result3[0].getPath());
+        assertEquals(3, result3[0].getRecordCount());
+        assertEquals("Corpus divided by subject age-categories", result3[1].getLabel());
+        assertEquals(2, result3[1].getRecordCount());
+        assertEquals("Speaker Ages", result3[2].getLabel());
+        assertEquals("Corpus", result3[2].getType());
+        assertEquals("Description", result3[2].getPath());
+        assertEquals(1, result3[2].getRecordCount());
+    }
+
+    /**
+     * Test of getTreeFieldTypes method, of class DataBaseManager.
+     */
+    @Test
+    @Ignore
+    public void testGetTreeFieldTypes() throws Exception {
+        System.out.println("getTreeFieldTypes");
+        MetadataFileType metadataFileType = null;
+        boolean fastQuery = false;
+        DataBaseManager instance = null;
+        Object[] expResult = null;
+        Object[] result = instance.getTreeFieldTypes(metadataFileType, fastQuery);
+        assertArrayEquals(expResult, result);
+    }
+
     /**
      * Test of insertNodeIconsIntoDatabase method, of class DataBaseManager.
      */

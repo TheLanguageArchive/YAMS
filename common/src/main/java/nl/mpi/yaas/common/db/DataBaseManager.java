@@ -331,31 +331,29 @@ public class DataBaseManager<D, F, M> {
         }
     }
 
-    private String getTypeConstraint(MetadataFileType fileType) {
-        String typeConstraint = "";
-        if (fileType != null) {
-            final String imdiType = fileType.getType();
-            final String profileId = fileType.getProfileIdString();
-            if (imdiType != null) {
-                typeConstraint = "[/*:METATRANSCRIPT/count(" + imdiType + ") > 0]";
-            } else if (profileId != null) {
-                typeConstraint = "[*:CMD/@*:schemaLocation contains text '" + profileId + "']/*:CMD/*:Components/*";
+    private String getTypeClause(MetadataFileType metadataFileType) {
+        String typeClause = "";
+        if (metadataFileType != null) {
+            if (metadataFileType.getType() != null) {
+                typeClause += "[/DataNode/Type/@Name = '" + metadataFileType.getType() + "']";
+            }
+            if (metadataFileType.getPath() != null) {
+                typeClause += "[//DataNode/FieldGroup/@Label = '" + metadataFileType.getPath() + "']";
             }
         }
-        return typeConstraint;
+        return typeClause;
     }
 
-    private String getFieldConstraint(MetadataFileType fieldType) {
-        String fieldConstraint = "";
-        if (fieldType != null) {
-            final String fieldNameString = fieldType.getFieldName();
-            if (fieldNameString != null) {
-                fieldConstraint = "FieldGroup/@Label = '" + fieldNameString + "' and ";
-            }
-        }
-        return fieldConstraint;
-    }
-
+//    private String getFieldConstraint(MetadataFileType fieldType) {
+//        String fieldConstraint = "";
+//        if (fieldType != null) {
+//            final String fieldNameString = fieldType.getFieldName();
+//            if (fieldNameString != null) {
+//                fieldConstraint = "FieldGroup/@Label = '" + fieldNameString + "' and ";
+//            }
+//        }
+//        return fieldConstraint;
+//    }
     private String getSearchTextConstraint(SearchNegator searchNegator, SearchType searchType, String searchString) {
         final String escapedSearchString = escapeBadChars(searchString);
         String returnString = "";
@@ -420,7 +418,7 @@ public class DataBaseManager<D, F, M> {
 //                separatorString = ",\n";
 //            }
             MetadataFileType treeBranchType = treeBranchTypeList.remove(0);
-            String currentFieldName = treeBranchType.getFieldName();
+            String currentFieldName = treeBranchType.getPath();
             String nextWhereClause = whereClause + "[//*:" + currentFieldName + " = $nameString" + levelCount + "]";
             String nextSelectClause = selectClause + "[*:" + currentFieldName + " = $nameString" + levelCount + "]";
             String nextTrailingSelectClause = "[*:" + currentFieldName + " = $nameString" + levelCount + "]";
@@ -532,14 +530,14 @@ public class DataBaseManager<D, F, M> {
     }
 
     private String getSearchFieldConstraint(SearchParameters searchParameters) {
-        String fieldConstraint = getFieldConstraint(searchParameters.getFieldType());
+        String fieldConstraint = getTypeClause(searchParameters.getFieldType());
         String searchTextConstraint = getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString());
         return fieldConstraint + searchTextConstraint;
     }
 
     private String getSearchConstraint(SearchParameters searchParameters) {
-        String typeConstraint = getTypeConstraint(searchParameters.getFileType());
-        String fieldConstraint = getFieldConstraint(searchParameters.getFieldType());
+        String typeConstraint = getTypeClause(searchParameters.getFileType());
+        String fieldConstraint = getTypeClause(searchParameters.getFieldType());
         // todo: add to query: boolean searchNot, SearchType searchType, String searchString
         String searchTextConstraint = getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString());
 
@@ -557,41 +555,31 @@ public class DataBaseManager<D, F, M> {
 //                + "<MetadataTreeNode><arbilPathString>{$nameString}</arbilPathString></MetadataTreeNode>\n";
     }
 
-    private String getPopulatedFieldNames(MetadataFileType fileType) {
-        String typeConstraint = getTypeConstraint(fileType); // todo: the type constraint is now unused, this should be renabled
-        return "let $allFieldNames := index:facets('" + databaseName + "')/document-node/element/element[@name='FieldGroup']/attribute[@name='Label']/entry\n"
+    private String getMetadataFieldValuesQuery(MetadataFileType metadataFileType) {
+        String typeClause = getTypeClause(metadataFileType);
+        String typeNodes = "";
+        if (metadataFileType != null) {
+            if (metadataFileType.getPath() != null) {
+                typeNodes += "<Path>" + metadataFileType.getPath() + "</Path>";
+            }
+            if (metadataFileType.getType() != null) {
+                typeNodes += "<Type>" + metadataFileType.getType() + "</Type>";
+            }
+        }
+        return "let $fieldValues := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldGroup/FieldData/@FieldValue/string()\n"
                 + "return <MetadataFileType>\n"
-                + "<MetadataFileType><displayString>All Fields</displayString>"
-                //                + "<RecordCount>{sum($allFieldNames/text/@count)}</RecordCount>\n"
-                + "</MetadataFileType>\n"
-                //                + "for $nameString in distinct-values(\n"
-                //                + "for $entityNode in collection('" + databaseName + "')" + typeConstraint + "/descendant-or-self::*[count(*) = 0]\n"
-                //                + "return $entityNode/name()\n"
-                //                + ")\n"
-                //                + "order by $nameString\n"
-                //                + "return\n"
-                //                + "<MetadataFileType>"
-                //                + "<fieldName>{$nameString}</fieldName>"
-                //                + "<RecordCount>{count(collection('" + databaseName + "')/descendant-or-self::*[name() = $nameString]/text())}</RecordCount>"
-                //                + "</MetadataFileType>\n"
-                /*
-                 * optimised this query 2012-10-17
-                 * the query above takes:
-                 * 66932.06 ms
-                 * the query below takes:
-                 * 12.39 ms (varies per run)
-                 */
-                + "{\nfor $facetEntry in $allFieldNames\n"
-                + "let $nameString := $facetEntry/text()\n"
-                + "group by $nameString\n"
-                + "order by $nameString\n"
-                + "return\n"
-                + "<MetadataFileType>\n"
-                + "<fieldName>{$nameString}</fieldName>\n"
-                //                + "<RecordCount>{string($facetEntry/@count)}</RecordCount>\n"
-                //                + "<ValueCount>{count($facetEntry/entry)}</ValueCount>\n"
-                + "<RecordCount>{string($facetEntry/@count)}</RecordCount>\n"
-                + "</MetadataFileType>\n"
+                + "<MetadataFileType>"
+                + "<Label>All Values</Label>"
+                + typeNodes
+                + "<Count>{count($fieldValues)}</Count></MetadataFileType>\n"
+                + "{\n"
+                + "for $label in distinct-values($fieldValues)\n"
+                + "order by $label\n"
+                + "return <MetadataFileType>"
+                + "<Label>{$label}</Label>\n"
+                + "<Value>{$label}</Value>\n"
+                + typeNodes
+                + "<Count>{count($fieldValues[. = $label])}</Count></MetadataFileType>\n"
                 + "}</MetadataFileType>";
     }
 
@@ -658,17 +646,8 @@ public class DataBaseManager<D, F, M> {
     }
 
     private String getMetadataPathsQuery(MetadataFileType metadataFileType) {
-//        return "for $xpathString in distinct-values(\n"
-//                + "for $entityNode in collection('" + databaseName + "')/*\n"
-//                + "return path($entityNode)\n"
-//                + ")\n"
-//                + "return"
-//                + "$xpathString";
-        String typeClause = "";
-        if (metadataFileType != null) {
-            typeClause = "[/DataNode/Type/@Name = '" + metadataFileType.getType() + "']";
-        }
-        return "let $fieldLabels := collection('unit-test-database/CrawledData')" + typeClause + "//FieldGroup/@Label/string()\n"
+        String typeClause = getTypeClause(metadataFileType);
+        return "let $fieldLabels := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldGroup/@Label/string()\n"
                 + "return <MetadataFileType>\n"
                 + "<MetadataFileType><Label>All Paths</Label>"
                 + "<Count>{count(distinct-values($fieldLabels))}</Count></MetadataFileType>\n"
@@ -794,8 +773,8 @@ public class DataBaseManager<D, F, M> {
         return getMetadataTypes(queryString);
     }
 
-    public M[] getFieldMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
-        final String queryString = getPopulatedFieldNames(metadataFileType);
+    public M[] getMetadataFieldValues(MetadataFileType metadataFileType) throws QueryException {
+        final String queryString = getMetadataFieldValuesQuery(metadataFileType);
         return getMetadataTypes(queryString);
     }
 

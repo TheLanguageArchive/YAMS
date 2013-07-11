@@ -17,8 +17,6 @@
  */
 package nl.mpi.yaas.common.data;
 
-//import java.util.regex.Matcher;
-//import java.util.regex.Pattern;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -33,28 +31,20 @@ public class MetadataFileType implements Serializable {
 
     @XmlElement(name = "Type")
     private String type = null;
-    @XmlElement(name = "fieldName")
-    private String fieldName = null;
+    @XmlElement(name = "Path")
+    private String path = null;
     @XmlElement(name = "Label")
-    private String displayString = null;
-    @XmlElement(name = "profileString")
-    private String profileString = null;
-    @XmlElement(name = "arbilPathString")
-    private String arbilPathString = null;
+    private String label = null;
+    @XmlElement(name = "Value")
+    private String value = null;
     @XmlElement(name = "Count")
     private int recordCount = 0;
-//    @XmlElementWrapper(name = "childMetadataTypes")
     @XmlElement(name = "MetadataFileType")
     private MetadataFileType[] childMetadataTypes = null;
 
     public MetadataFileType() {
     }
 
-//    public MetadataFileType(String rootXpath, String pathPart, String displayString) {
-//        this.rootXpath = rootXpath;
-//        this.pathPart = pathPart;
-//        this.displayString = displayString;
-//    }
     public MetadataFileType[] getChildMetadataTypes() {
         return childMetadataTypes;
     }
@@ -63,38 +53,19 @@ public class MetadataFileType implements Serializable {
         return type;
     }
 
-    public String getArbilPathString() {
-        return arbilPathString.replaceAll("\"[^\"]*\":", "*:").replaceAll("\\[\\d*\\]", "");
+    public String getPath() {
+        return path;
     }
 
-    public String getFieldName() {
-        return fieldName;
+    public String getLabel() {
+        return label;
     }
 
-    public String getProfileIdString() {
-        if (profileString != null) {
-//            Pattern regexPattern = Pattern.compile(".*(clarin.eu:cr1:p_[0-9]+).*");
-//            Matcher matcher = regexPattern.matcher(profileString);
-//            while (matcher.find()) {
-//                return matcher.group(1);
-//            }
-            return profileString;
-        }
-        return null;
+    public String getValue() {
+        return value;
     }
 
-    @Override
-    public String toString() {
-        // todo: we really don't want to be putting this view code in this data object
-        if (displayString == null) {
-            if (type != null) {
-                displayString = type;
-            } else if (fieldName != null) {
-                displayString = fieldName;
-            } else if (profileString != null) {
-                displayString = getProfileIdString();
-            }
-        }
-        return displayString + " (" + recordCount + ")";
+    public int getRecordCount() {
+        return recordCount;
     }
 }
