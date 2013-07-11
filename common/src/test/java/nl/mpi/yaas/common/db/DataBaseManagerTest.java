@@ -171,7 +171,7 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         MetadataFileType[] result1 = dbManager.getMetadataPaths(null);
         assertEquals("All Paths", result1[0].getLabel());
-        assertEquals(41, result1[0].getRecordCount());
+        assertEquals(127, result1[0].getRecordCount());
         assertEquals("Access.Availability", result1[1].getLabel());
         assertEquals(2, result1[1].getRecordCount());
         assertEquals("ContentType", result1[10].getLabel());
