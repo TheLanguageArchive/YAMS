@@ -40,6 +40,7 @@ public class DatabaseStats implements Serializable {
     protected int rootDocumentsCount = -1;
     @XmlElement(name = "RootDocumentID")
     protected DataNodeId[] rootDocumentsIDs = new DataNodeId[0];
+    @XmlElement(name = "Cached")
     private boolean isCachedResults = false;
 
     public DatabaseStats() {
@@ -49,9 +50,9 @@ public class DatabaseStats implements Serializable {
         return isCachedResults;
     }
 
-    public void setIsCachedResults(boolean isCachedResults) {
-        this.isCachedResults = isCachedResults;
-    }
+//    public void setIsCachedResults(boolean isCachedResults) {
+//        this.isCachedResults = isCachedResults;
+//    }
 
     public void setQueryTimeMS(long queryTimeMS) {
         this.queryTimeMS = queryTimeMS;

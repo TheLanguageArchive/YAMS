@@ -133,6 +133,23 @@ public class DataBaseManager<D, F, M> {
         System.out.println(queryTimeString);
     }
 
+    private String getCachedVersion(String cachedDocument, String queryString) throws QueryException {
+        String statsCachedQuery = "for $statsDoc in collection(\"" + databaseName + "\")\n"
+                + "where matches(document-uri($statsDoc), '" + cachedDocument + "')\n"
+                + "return $statsDoc";
+        String queryResult;
+        queryResult = dbAdaptor.executeQuery(databaseName, statsCachedQuery);
+        if (queryResult.length() < 2) {
+            // calculate the stats
+            queryResult = dbAdaptor.executeQuery(databaseName, queryString);
+            String resultCacheFlagged = queryResult.replaceFirst("<Cached>false</Cached>", "<Cached>true</Cached>");
+            // insert the stats as a document
+            dbAdaptor.addDocument(databaseName, cachedDocument, resultCacheFlagged);
+        }
+        System.out.println("queryResult: " + queryResult);
+        return queryResult;
+    }
+
     /**
      * Creates a document in the database that holds information on the contents
      * of the database such as document count and root nodes URLs
@@ -143,10 +160,6 @@ public class DataBaseManager<D, F, M> {
      */
     public DatabaseStats getDatabaseStats() throws QueryException {
         long startTime = System.currentTimeMillis();
-        String statsCachedQuery = "for $statsDoc in collection(\"" + databaseName + "\")\n"
-                + "where matches(document-uri($statsDoc), 'DbStatsDocument')\n"
-                + "return $statsDoc";
-
         String statsQuery = "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                 + "let $duplicateDocumentCount := count($knownIds) - count(distinct-values($knownIds))\n"
                 + "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildLink/@ID\n" // removing the "/text()" here reduced the query from 310ms to 290ms with 55 documents
@@ -160,27 +173,17 @@ public class DataBaseManager<D, F, M> {
                 + "<MissingDocuments>{count($missingIds)}</MissingDocuments>\n"
                 + "<DuplicateDocuments>{$duplicateDocumentCount}</DuplicateDocuments>\n"
                 + "<RootDocuments>{count($rootNodes)}</RootDocuments>\n"
+                + "<Cached>false</Cached>\n"
                 + "{for $rootDocId in $rootNodes return <RootDocumentID>{$rootDocId}</RootDocumentID>}\n"
                 + "</DatabaseStats>\n";
+        String queryResult = getCachedVersion("DbStatsDocument", statsQuery);
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(DatabaseStats.class, DataNodeId.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            String queryResult;
-            boolean resultsWereCached = true;
-            queryResult = dbAdaptor.executeQuery(databaseName, statsCachedQuery);
-            if (queryResult.length() < 2) {
-                resultsWereCached = false;
-                // calculate the stats
-                queryResult = dbAdaptor.executeQuery(databaseName, statsQuery);
-                // insert the stats as a document
-                dbAdaptor.addDocument(databaseName, "DbStatsDocument", queryResult);
-            }
-            System.out.println("queryResult: " + queryResult);
             DatabaseStats databaseStats = (DatabaseStats) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), DatabaseStats.class).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
 //            String queryTimeString = "DatabaseStats Query time: " + queryMils + "ms";
             databaseStats.setQueryTimeMS(queryMils);
-            databaseStats.setIsCachedResults(resultsWereCached);
 //            System.out.println(queryTimeString);
             return databaseStats;
         } catch (JAXBException exception) {
@@ -355,6 +358,13 @@ public class DataBaseManager<D, F, M> {
             }
         }
         return typeNodes;
+    }
+
+    private String getDocumentName(MetadataFileType metadataFileType) {
+        if (metadataFileType == null) {
+            return "FacetData/all";
+        }
+        return "FacetData/" + metadataFileType.getType() + "/" + metadataFileType.getPath();
     }
 //    private String getFieldConstraint(MetadataFileType fieldType) {
 //        String fieldConstraint = "";
@@ -776,22 +786,22 @@ public class DataBaseManager<D, F, M> {
 //    }
     public M[] getMetadataPaths(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataPathsQuery(metadataFileType);
-        return getMetadataTypes(queryString);
+        return getMetadataTypes(queryString, getDocumentName(metadataFileType));
     }
 
     public M[] getMetadataFieldValues(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataFieldValuesQuery(metadataFileType);
-        return getMetadataTypes(queryString);
+        return getMetadataTypes(queryString, getDocumentName(metadataFileType));
     }
 
     public M[] getMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataTypes();
-        return getMetadataTypes(queryString);
+        return getMetadataTypes(queryString, getDocumentName(metadataFileType));
     }
 
     public M[] getTreeFieldTypes(MetadataFileType metadataFileType, boolean fastQuery) throws QueryException {
         final String queryString = getTreeFieldNames(metadataFileType, fastQuery);
-        return getMetadataTypes(queryString);
+        return getMetadataTypes(queryString, getDocumentName(metadataFileType));
     }
 
 //    public DbTreeNode getSearchTreeData() {
@@ -832,14 +842,14 @@ public class DataBaseManager<D, F, M> {
         }
     }
 
-    private M[] getMetadataTypes(final String queryString) throws QueryException {
+    private M[] getMetadataTypes(final String queryString, String documentName) throws QueryException {
         long startTime = System.currentTimeMillis();
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(mClass);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            String queryResult;
-            System.out.println("queryString: " + queryString);
-            queryResult = dbAdaptor.executeQuery(databaseName, queryString);
+            String queryResult = getCachedVersion(documentName, queryString);
+//            System.out.println("queryString: " + queryString);
+//            queryResult = dbAdaptor.executeQuery(databaseName, queryString);
             System.out.println("queryResult: " + queryResult);
             M foundEntities = (M) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), MetadataFileType.class).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
