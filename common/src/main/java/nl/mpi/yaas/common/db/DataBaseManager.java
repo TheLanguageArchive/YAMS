@@ -650,7 +650,7 @@ public class DataBaseManager<D, F, M> {
         return "let $fieldLabels := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldGroup/@Label/string()\n"
                 + "return <MetadataFileType>\n"
                 + "<MetadataFileType><Label>All Paths</Label>"
-                + "<Count>{count(distinct-values($fieldLabels))}</Count></MetadataFileType>\n"
+                + "<Count>{count($fieldLabels)}</Count></MetadataFileType>\n"
                 + "{\n"
                 + "for $label in distinct-values($fieldLabels)\n"
                 + "order by $label\n"

@@ -68,4 +68,9 @@ public class MetadataFileType implements Serializable {
     public int getRecordCount() {
         return recordCount;
     }
+
+    @Override
+    public String toString() {
+        return label + " (" + recordCount + ")";
+    }
 }
