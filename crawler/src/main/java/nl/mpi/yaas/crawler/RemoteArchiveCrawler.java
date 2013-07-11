@@ -205,8 +205,8 @@ public class RemoteArchiveCrawler {
 
     public void dropDataBase() {
         try {
-            System.out.println("Dropping old DB and creating a new DB");
-            yaasDatabase.dropAndRecreateDb(); // this will drop the old database
+            System.out.println("Dropping old crawled data");
+            yaasDatabase.dropAllRecords(); // this will drop the old data and may drop the database depending on the database module used
         } catch (QueryException exception) {
             System.out.println(exception.getMessage());
             System.exit(-1);
