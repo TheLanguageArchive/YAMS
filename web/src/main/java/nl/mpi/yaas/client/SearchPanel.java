@@ -122,7 +122,7 @@ public class SearchPanel extends VerticalPanel {
             }
         });
         widget.addStyleName("demo-ListBox");
-        searchOptionsService.getFieldOptions(new AsyncCallback<MetadataFileType[]>() {
+        searchOptionsService.getPathOptions(null, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
             }
@@ -154,7 +154,7 @@ public class SearchPanel extends VerticalPanel {
             }
         });
         widget.addStyleName("demo-ListBox");
-        searchOptionsService.getTypeOptions(new AsyncCallback<MetadataFileType[]>() {
+        searchOptionsService.getTypeOptions(null, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 Window.alert(caught.getMessage());
             }
@@ -167,6 +167,25 @@ public class SearchPanel extends VerticalPanel {
             }
         });
         return widget;
+    }
+
+    protected SuggestBox createSearchBox() {
+        final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
+        searchOptionsService.getValueOptions(null, new AsyncCallback<MetadataFileType[]>() {
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+            }
+
+            public void onSuccess(MetadataFileType[] result) {
+                if (result != null && result.length > 0) {
+                    oracle.clear();
+                    for (MetadataFileType type : result) {
+                        oracle.add(type.toString());
+                    }
+                }
+            }
+        });
+        return new SuggestBox(oracle);
     }
 
     protected ValueListBox getSearchOptionsListBox() {

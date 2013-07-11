@@ -3,6 +3,7 @@ package nl.mpi.yaas.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import nl.mpi.yaas.common.data.IconTableBase64;
@@ -32,6 +33,12 @@ public class yaas implements EntryPoint {
      */
     public void onModuleLoad() {
         final SearchOptionsServiceAsync searchOptionsService = GWT.create(SearchOptionsService.class);
+        RootPanel.get("databaseStats").add(new Label(GWT.getModuleBaseURL()));
+        ServiceDefTarget serviceDefTarget = (ServiceDefTarget) searchOptionsService;
+        RootPanel.get("databaseStats").add(new Label(serviceDefTarget.getServiceEntryPoint()));
+//        serviceDefTarget.setServiceEntryPoint("http://192.168.1.79:8080/web/yaas/searchoptions");
+//        RootPanel.get("databaseStats").add(new Label(serviceDefTarget.getServiceEntryPoint()));
+//        RootPanel.get("databaseStats").add(new Label(GWT.getModuleBaseURL()));
 //        final Button sendButton = new Button(messages.sendButton());
 //        final TextBox nameField = new TextBox();
 //        nameField.setText(messages.nameField());

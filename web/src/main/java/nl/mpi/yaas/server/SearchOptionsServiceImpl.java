@@ -4,6 +4,7 @@
  */
 package nl.mpi.yaas.server;
 
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,6 +32,7 @@ import nl.mpi.yaas.shared.WebQueryException;
  * @author Peter Withers <peter.withers@mpi.nl>
  */
 @SuppressWarnings("serial")
+//@RemoteServiceRelativePath("SearchOptionsService")
 public class SearchOptionsServiceImpl extends RemoteServiceServlet implements SearchOptionsService {
 
     public DatabaseStats getDatabaseStats() throws WebQueryException {
@@ -54,31 +56,31 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    public MetadataFileType[] getTypeOptions() throws WebQueryException {
+    public MetadataFileType[] getTypeOptions(MetadataFileType metadataFileType) throws WebQueryException {
         try {
             DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
-            MetadataFileType[] metadataPathTypes = yaasDatabase.getMetadataTypes(null);
+            MetadataFileType[] metadataPathTypes = yaasDatabase.getMetadataTypes(metadataFileType);
             return metadataPathTypes;
-//            ArrayList<String> returnList = new ArrayList<String>();
-//            for (WebMetadataFileType metadataFileType : metadataPathTypes) {
-//                returnList.add(metadataFileType.getFieldName());
-//            };
-//            return returnList.toArray(new String[0]);
         } catch (QueryException exception) {
             throw new WebQueryException(exception.getMessage());
         }
     }
 
-    public MetadataFileType[] getFieldOptions() throws WebQueryException {
+    public MetadataFileType[] getPathOptions(MetadataFileType metadataFileType) throws WebQueryException {
         try {
             DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
-            MetadataFileType[] metadataFieldTypes = yaasDatabase.getFieldMetadataTypes(null);
+            MetadataFileType[] metadataFieldTypes = yaasDatabase.getMetadataPaths(metadataFileType);
             return metadataFieldTypes;
-//            ArrayList<String> returnList = new ArrayList<String>();
-//            for (WebMetadataFileType metadataFileType : metadataFieldTypes) {
-//                returnList.add(metadataFileType.getFieldName());
-//            };
-//            return returnList.toArray(new String[0]);
+        } catch (QueryException exception) {
+            throw new WebQueryException(exception.getMessage());
+        }
+    }
+
+    public MetadataFileType[] getValueOptions(MetadataFileType metadataFileType) throws WebQueryException {
+        try {
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
+            MetadataFileType[] metadataFieldTypes = yaasDatabase.getMetadataFieldValues(metadataFileType);
+            return metadataFieldTypes;
         } catch (QueryException exception) {
             throw new WebQueryException(exception.getMessage());
         }

@@ -27,9 +27,11 @@ public interface SearchOptionsService extends RemoteService {
 
     DatabaseStats getDatabaseStats() throws WebQueryException;
 
-    MetadataFileType[] getTypeOptions() throws WebQueryException;
+    MetadataFileType[] getTypeOptions(MetadataFileType metadataFileType) throws WebQueryException;
 
-    MetadataFileType[] getFieldOptions() throws WebQueryException;
+    MetadataFileType[] getPathOptions(MetadataFileType metadataFileType) throws WebQueryException;
+
+    MetadataFileType[] getValueOptions(MetadataFileType metadataFileType) throws WebQueryException;
 
     SerialisableDataNode performSearch(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException;
 
