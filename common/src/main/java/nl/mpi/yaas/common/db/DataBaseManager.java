@@ -66,12 +66,14 @@ public class DataBaseManager<D, F, M> {
      */
     final static public String defaultDataBase = "yaas-data";
     final static public String testDataBase = "yaas-test-data";
+    final static public String facetsCollection = "Facets";
+    final static public String dbStatsDocument = "DbStats";
+    final static public String iconTableDocument = "IconTable";
+    final private String crawledDataCollection = "CrawledData";
 //    final static public String guestUser = "guestdbuser";
 //    final static public String guestUserPass = "minfc8u4ng6s";
     final static public String guestUser = "admin"; // todo: the user name and password for admin and guest users needs to be determined and set
     final static public String guestUserPass = "admin";
-    final private String iconTableDocumentName = "IconTableDocument";
-    final private String crawledDataCollection = "CrawledData";
 
     /**
      *
@@ -103,9 +105,10 @@ public class DataBaseManager<D, F, M> {
      */
     public void dropAllRecords() throws QueryException {
         dbAdaptor.dropAndRecreateDb(databaseName);
-//        dbAdaptor.deleteDocument(databaseName, crawledDataPath);
-//        dbAdaptor.deleteDocument(databaseName, "DbStatsDocument");
-//        dbAdaptor.deleteDocument(databaseName, "IconTableDocument"); 
+//        dbAdaptor.deleteDocument(databaseName, crawledDataCollection);
+//        dbAdaptor.deleteDocument(databaseName, dbStatsDocument);
+//        dbAdaptor.deleteDocument(databaseName, iconTableDocument);
+//        dbAdaptor.deleteDocument(databaseName, facetsCollection);
     }
 
     /**
@@ -115,7 +118,7 @@ public class DataBaseManager<D, F, M> {
      * @throws QueryException
      */
     public void clearDatabaseStats() throws QueryException {
-        dbAdaptor.deleteDocument(databaseName, "DbStatsDocument");
+        dbAdaptor.deleteDocument(databaseName, dbStatsDocument);
     }
 
     /**
@@ -176,7 +179,7 @@ public class DataBaseManager<D, F, M> {
                 + "<Cached>false</Cached>\n"
                 + "{for $rootDocId in $rootNodes return <RootDocumentID>{$rootDocId}</RootDocumentID>}\n"
                 + "</DatabaseStats>\n";
-        String queryResult = getCachedVersion("DbStatsDocument", statsQuery);
+        String queryResult = getCachedVersion(dbStatsDocument, statsQuery);
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(DatabaseStats.class, DataNodeId.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -225,7 +228,7 @@ public class DataBaseManager<D, F, M> {
      */
     public IconTableBase64 getNodeIconsBase64() throws PluginException, QueryException {
         String iconTableQuery = "for $statsDoc in collection(\"" + databaseName + "\")\n"
-                + "where matches(document-uri($statsDoc), '" + iconTableDocumentName + "')\n"
+                + "where matches(document-uri($statsDoc), '" + iconTableDocument + "')\n"
                 + "return $statsDoc";
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(IconTableBase64.class);
@@ -249,7 +252,7 @@ public class DataBaseManager<D, F, M> {
      */
     public IconTable getNodeIcons() throws PluginException, QueryException {
         String iconTableQuery = "for $statsDoc in collection(\"" + databaseName + "\")\n"
-                + "where matches(document-uri($statsDoc), '" + iconTableDocumentName + "')\n"
+                + "where matches(document-uri($statsDoc), '" + iconTableDocument + "')\n"
                 + "return $statsDoc";
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(IconTable.class);
@@ -283,7 +286,7 @@ public class DataBaseManager<D, F, M> {
             // if there is not icon document here that can be normal if it is the first run
             System.out.println("Error getting existing IconTableDocument: " + exception.getMessage());
         }
-        dbAdaptor.deleteDocument(databaseName, iconTableDocumentName);
+        dbAdaptor.deleteDocument(databaseName, iconTableDocument);
         // use JAXB to serialise and insert the IconTable into the database
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(IconTable.class);
@@ -292,7 +295,7 @@ public class DataBaseManager<D, F, M> {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(iconTable, stringWriter);
             System.out.println("NodeIcons to be inserted:\n" + stringWriter.toString());
-            dbAdaptor.addDocument(databaseName, iconTableDocumentName, stringWriter.toString());
+            dbAdaptor.addDocument(databaseName, iconTableDocument, stringWriter.toString());
         } catch (JAXBException exception) {
             System.err.println("jaxb error:" + exception.getMessage());
             throw new PluginException(exception);
@@ -360,11 +363,13 @@ public class DataBaseManager<D, F, M> {
         return typeNodes;
     }
 
-    private String getDocumentName(MetadataFileType metadataFileType) {
+    private String getDocumentName(MetadataFileType metadataFileType, String queryType) {
         if (metadataFileType == null) {
-            return "FacetData/all";
+            return facetsCollection + "/" + queryType + "/all";
         }
-        return "FacetData/" + metadataFileType.getType() + "/" + metadataFileType.getPath();
+        final String type = (metadataFileType.getType() == null) ? "all" : metadataFileType.getType();
+        final String path = (metadataFileType.getPath() == null) ? "all" : metadataFileType.getPath();
+        return facetsCollection + "/" + queryType + "/" + type + "/" + path;
     }
 //    private String getFieldConstraint(MetadataFileType fieldType) {
 //        String fieldConstraint = "";
@@ -786,22 +791,22 @@ public class DataBaseManager<D, F, M> {
 //    }
     public M[] getMetadataPaths(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataPathsQuery(metadataFileType);
-        return getMetadataTypes(queryString, getDocumentName(metadataFileType));
+        return getMetadataTypes(queryString, getDocumentName(metadataFileType, "paths"));
     }
 
     public M[] getMetadataFieldValues(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataFieldValuesQuery(metadataFileType);
-        return getMetadataTypes(queryString, getDocumentName(metadataFileType));
+        return getMetadataTypes(queryString, getDocumentName(metadataFileType, "values"));
     }
 
     public M[] getMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataTypes();
-        return getMetadataTypes(queryString, getDocumentName(metadataFileType));
+        return getMetadataTypes(queryString, getDocumentName(metadataFileType, "types"));
     }
 
     public M[] getTreeFieldTypes(MetadataFileType metadataFileType, boolean fastQuery) throws QueryException {
         final String queryString = getTreeFieldNames(metadataFileType, fastQuery);
-        return getMetadataTypes(queryString, getDocumentName(metadataFileType));
+        return getMetadataTypes(queryString, getDocumentName(metadataFileType, "tree"));
     }
 
 //    public DbTreeNode getSearchTreeData() {
