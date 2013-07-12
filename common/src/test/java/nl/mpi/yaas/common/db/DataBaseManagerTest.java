@@ -38,6 +38,8 @@ import nl.mpi.yaas.common.data.IconTable;
 import nl.mpi.yaas.common.data.IconTableBase64;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.NodeTypeImage;
+import nl.mpi.yaas.common.data.QueryDataStructures;
+import nl.mpi.yaas.common.data.SearchParameters;
 import org.junit.Assert;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -234,6 +236,31 @@ public abstract class DataBaseManagerTest {
         assertEquals("Corpus divided by subject age-categories", result3[0].getLabel());
         assertEquals(1, result3[0].getRecordCount());
         assertEquals(1, result3.length);
+    }
+
+    /**
+     * Test of getSearchResult method, of class DataBaseManager.
+     */
+    @Test
+    public void testGetSearchResult() throws Exception {
+        System.out.println("getSearchResult");
+        QueryDataStructures.CriterionJoinType criterionJoinType = QueryDataStructures.CriterionJoinType.intersect;
+        MetadataFileType metadataFileType1 = new MetadataFileType() {
+            @Override
+            public String getType() {
+                return "Test";
+            }
+
+            @Override
+            public String getPath() {
+                return "Name";
+            }
+        };
+        ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
+        searchParametersList.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "urban sign languages"));
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        SerialisableDataNode result = dbManager.getSearchResult(criterionJoinType, searchParametersList);
+        assertEquals("Search Results", result.getID());
     }
 
     /**

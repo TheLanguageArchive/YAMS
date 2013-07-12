@@ -382,7 +382,7 @@ public class DataBaseManager<D, F, M> {
 //        return fieldConstraint;
 //    }
 
-    private String getSearchTextConstraint(SearchNegator searchNegator, SearchType searchType, String searchString) {
+    private String getSearchTextConstraint(SearchNegator searchNegator, SearchType searchType, String searchString, String nodeString) {
         final String escapedSearchString = escapeBadChars(searchString);
         String returnString = "";
         switch (searchType) {
@@ -391,14 +391,14 @@ public class DataBaseManager<D, F, M> {
                     // when the user has not entered any string then return all, but allow the negator to still be used
                     returnString = "1=1";
                 } else {
-                    returnString = "FieldGroup/FieldData/@FieldValue contains text '" + escapedSearchString + "'";
+                    returnString = nodeString + "@FieldValue contains text '" + escapedSearchString + "'";
                 }
                 break;
             case equals:
-                returnString = "FieldGroup/FieldData/@FieldValue = '" + escapedSearchString + "'";
+                returnString = nodeString + "@FieldValue = '" + escapedSearchString + "'";
                 break;
             case fuzzy:
-                returnString = "FieldGroup/FieldData/@FieldValue contains text '" + escapedSearchString + "' using fuzzy";
+                returnString = nodeString + "@FieldValue contains text '" + escapedSearchString + "' using fuzzy";
                 break;
         }
         switch (searchNegator) {
@@ -559,28 +559,37 @@ public class DataBaseManager<D, F, M> {
 
     private String getSearchFieldConstraint(SearchParameters searchParameters) {
         String fieldConstraint = getTypeClause(searchParameters.getFieldType());
-        String searchTextConstraint = getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString());
+        String searchTextConstraint = getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData/");
         return fieldConstraint + searchTextConstraint;
     }
 
     private String getSearchConstraint(SearchParameters searchParameters) {
-        String typeConstraint = getTypeClause(searchParameters.getFileType());
-        String fieldConstraint = getTypeClause(searchParameters.getFieldType());
-        // todo: add to query: boolean searchNot, SearchType searchType, String searchString
-        String searchTextConstraint = getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString());
-
-        return //"for $nameString in distinct-values(\n"
-                "collection('" + databaseName + "')//*[" + typeConstraint + fieldConstraint + searchTextConstraint + "]\n";
-//                + "return\n"
-//                + "<MetadataTreeNode>\n"
-//                + "<FileUri>{base-uri($entityNode)}</FileUri>\n"
-//                + "<FileUriPath>{path($entityNode)}</FileUriPath>\n"
-//                + "</MetadataTreeNode>\n";
-//                + "return concat(base-uri($entityNode), path($entityNode))\n"
-//                + ")\n"
-        //                + "order by $nameString\n"
-//                + "return\n"
-//                + "<MetadataTreeNode><arbilPathString>{$nameString}</arbilPathString></MetadataTreeNode>\n";
+        String typeClause = "";
+        if (searchParameters.getFileType() != null) {
+            if (searchParameters.getFileType().getType() != null) {
+                typeClause += "[/DataNode/Type/@Name = '" + searchParameters.getFileType().getType() + "']";
+            }
+            if (searchParameters.getFieldType().getPath() != null) {
+                typeClause += "[//DataNode/FieldGroup/@Label = '" + searchParameters.getFieldType().getPath() + "']";
+            }
+        }
+        return "for $foundNode in collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "["
+                + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData/")
+                + "]\n"
+                + "return\n"
+                + "<DataNode>\n"
+                + "{$foundNode/@ID}\n"
+                + "{$foundNode/@Label}\n"
+                + "{"
+                + "for $field in $foundNode"
+                + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData[")
+                + "]\n"
+                + "return \n"
+                + "<FieldGroup>{$field}</FieldGroup>\n"
+                + "}\n"
+                + "<ChildLink ID=\"{$foundNode/@ID}\"/>\n"
+                + "{$foundNode/Type}\n"
+                + "</DataNode>";
     }
 
     private String getMetadataFieldValuesQuery(MetadataFileType metadataFileType) {
@@ -691,7 +700,7 @@ public class DataBaseManager<D, F, M> {
      */
     public D getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws QueryException {
         StringBuilder queryStringBuilder = new StringBuilder();
-        queryStringBuilder.append("<DataNode Label=\"Search Results\"> {\n");
+        queryStringBuilder.append("<DataNode Label=\"Search Results\" ID=\"Search Results\"> {\n");
         int parameterCounter = 0;
         for (SearchParameters searchParameters : searchParametersList) {
             queryStringBuilder.append("let $documentSet");
@@ -733,18 +742,20 @@ public class DataBaseManager<D, F, M> {
                  </MetadataTreeNode>
                  }</TreeNode>
                  */
-                + "for $entityNode in $documentNode[");
-        boolean firstConstraint = true;
-        for (SearchParameters searchParameters : searchParametersList) {
-            if (firstConstraint) {
-                firstConstraint = false;
-            } else {
-                queryStringBuilder.append(" or ");
-            }
-            queryStringBuilder.append(getSearchFieldConstraint(searchParameters));
-        }
-        queryStringBuilder.append("]\n"
-                + "return $entityNode\n"
+              // todo: add back in the set functions
+                //                + "for $entityNode in $documentNode[");
+                //        boolean firstConstraint = true;
+                //        for (SearchParameters searchParameters : searchParametersList) {
+                //            if (firstConstraint) {
+                //                firstConstraint = false;
+                //            } else {
+                //                queryStringBuilder.append(" or ");
+                //            }
+                //            queryStringBuilder.append(getSearchFieldConstraint(searchParameters));
+                //        }
+                //        queryStringBuilder.append("]\n"
+                //                + "return $entityNode\n"
+                + "$returnSet"
                 + "}</DataNode>\n");
         final D metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
         return metadataTypesString;
