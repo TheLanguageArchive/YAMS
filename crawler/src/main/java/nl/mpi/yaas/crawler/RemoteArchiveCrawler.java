@@ -147,6 +147,17 @@ public class RemoteArchiveCrawler {
         yaasDatabase.insertNodeIconsIntoDatabase(iconTable);
     }
 
+    public void preloadFacets() throws QueryException {
+        System.out.println("Preloading facets");
+        for (MetadataFileType metadataType : yaasDatabase.getMetadataTypes(null)) {
+            System.out.println("File type: " + metadataType.getLabel());
+            for (MetadataFileType metadataPath : yaasDatabase.getMetadataPaths(metadataType)) {
+                System.out.println("Path type: " + metadataPath.getLabel());
+                System.out.println("Values: " + yaasDatabase.getMetadataFieldValues(metadataPath).length);
+            }
+        }
+    }
+
     public void update() {
         System.out.println("FindAndInsertMissingNodes");
         try {

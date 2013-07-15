@@ -107,6 +107,7 @@ public class Main {
 //                }
                 archiveCrawler.clearAndCalculateDbStats();
                 archiveCrawler.insertKnowIcons();
+                archiveCrawler.preloadFacets();
                 System.exit(0); // arbil threads might be requiring this to terminate
             } catch (URISyntaxException exception) {
                 System.out.println(exception.getMessage());
