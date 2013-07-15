@@ -173,10 +173,10 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         MetadataFileType[] result1 = dbManager.getMetadataPaths(null);
         assertEquals("All Paths", result1[0].getLabel());
-        assertEquals(127, result1[0].getRecordCount());
-        assertEquals("Access.Availability", result1[1].getLabel());
+        assertEquals(71, result1[0].getRecordCount());
+        assertEquals("Author", result1[1].getLabel());
         assertEquals(2, result1[1].getRecordCount());
-        assertEquals("ContentType", result1[10].getLabel());
+        assertEquals("Keys.Key.CorpusBrowserLink", result1[10].getLabel());
         assertEquals(2, result1[10].getRecordCount());
         MetadataFileType metadataFileType = new MetadataFileType() {
             @Override

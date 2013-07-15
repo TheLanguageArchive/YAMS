@@ -37,6 +37,7 @@ import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.NodeTypeImage;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
+import nl.mpi.yaas.common.data.QueryDataStructures.SearchOption;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
 import nl.mpi.yaas.common.data.SearchParameters;
 import org.slf4j.LoggerFactory;
@@ -677,7 +678,7 @@ public class DataBaseManager<D, F, M> {
     private String getMetadataPathsQuery(MetadataFileType metadataFileType) {
         String typeClause = getTypeClause(metadataFileType);
         String typeNodes = getTypeNodes(metadataFileType);
-        return "let $fieldLabels := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldGroup/@Label/string()\n"
+        return "let $fieldLabels := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldGroup[FieldData/@FieldValue != '']/@Label/string()\n"
                 + "return <MetadataFileType>\n"
                 + "<MetadataFileType><Label>All Paths</Label>"
                 + typeNodes
@@ -689,7 +690,7 @@ public class DataBaseManager<D, F, M> {
                 + "<Label>{$label}</Label>\n"
                 + typeNodes
                 + "<Path>{$label}</Path>\n"
-                + "<Count>{count($fieldLabels[. = $label])}</Count></MetadataFileType>\n"
+                + "<Count>{count($fieldLabels[. = $label and $label != ''])}</Count></MetadataFileType>\n"
                 + "}</MetadataFileType>";
     }
 
@@ -704,7 +705,27 @@ public class DataBaseManager<D, F, M> {
      */
     public D getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws QueryException {
         StringBuilder queryStringBuilder = new StringBuilder();
-        queryStringBuilder.append("<DataNode Label=\"Search Results\" ID=\"Search Results\"> {\n");
+        queryStringBuilder.append("<DataNode ID=\"Search Results\" Label=\"Search Results: ");
+        if (searchParametersList.size() > 1) {
+            queryStringBuilder.append(criterionJoinType.name());
+            queryStringBuilder.append(" ");
+        }
+        for (SearchParameters parameters : searchParametersList) {
+            queryStringBuilder.append("(");
+            queryStringBuilder.append(parameters.getFileType().getType());
+            queryStringBuilder.append(" ");
+            queryStringBuilder.append(parameters.getFieldType().getPath());
+            queryStringBuilder.append(" ");
+            for(SearchOption option : SearchOption.values()){
+                if (option.getSearchNegator()==parameters.getSearchNegator() && option.getSearchType()== parameters.getSearchType())
+                    queryStringBuilder.append(option.toString());
+            }            
+            queryStringBuilder.append(" ");
+            queryStringBuilder.append(parameters.getSearchString());
+            queryStringBuilder.append(") ");
+        }
+        queryStringBuilder.append("\">");
+        queryStringBuilder.append("{\n");
         int parameterCounter = 0;
         for (SearchParameters searchParameters : searchParametersList) {
             queryStringBuilder.append("let $documentSet");
