@@ -244,7 +244,6 @@ public abstract class DataBaseManagerTest {
     @Test
     public void testGetSearchResult() throws Exception {
         System.out.println("getSearchResult");
-        QueryDataStructures.CriterionJoinType criterionJoinType = QueryDataStructures.CriterionJoinType.intersect;
         MetadataFileType metadataFileType1 = new MetadataFileType() {
             @Override
             public String getType() {
@@ -259,8 +258,14 @@ public abstract class DataBaseManagerTest {
         ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
         searchParametersList.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "urban sign languages"));
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
-        SerialisableDataNode result = dbManager.getSearchResult(criterionJoinType, searchParametersList);
-        assertEquals("Search Results", result.getID());
+        SerialisableDataNode result1 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
+        assertEquals("Search Results", result1.getID());
+        assertEquals(4, result1.getChildList().size());
+        searchParametersList.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.not, QueryDataStructures.SearchType.contains, "urban sign languages"));
+        SerialisableDataNode result2 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
+        assertEquals(null, result2.getChildList());
+        SerialisableDataNode result3 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList);
+        assertEquals(16, result3.getChildList().size());
     }
 
     /**

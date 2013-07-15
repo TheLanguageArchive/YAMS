@@ -564,14 +564,24 @@ public class DataBaseManager<D, F, M> {
     }
 
     private String getSearchConstraint(SearchParameters searchParameters) {
-        String typeClause = "";
+        String typeClause = "/DataNode";
         if (searchParameters.getFileType() != null) {
             if (searchParameters.getFileType().getType() != null) {
-                typeClause += "[/DataNode/Type/@Name = '" + searchParameters.getFileType().getType() + "']";
+                typeClause += "[Type/@Name = '" + searchParameters.getFileType().getType() + "']";
             }
             if (searchParameters.getFieldType().getPath() != null) {
                 typeClause += "[//DataNode/FieldGroup/@Label = '" + searchParameters.getFieldType().getPath() + "']";
             }
+        }
+        String fieldsQuery = "";
+        if (searchParameters.getSearchNegator() == SearchNegator.is) {
+            fieldsQuery = "{"
+                    + "for $field in $foundNode"
+                    + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData[")
+                    + "]\n"
+                    + "return \n"
+                    + "<FieldGroup>{$field}</FieldGroup>\n"
+                    + "}\n";
         }
         return "for $foundNode in collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "["
                 + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData/")
@@ -580,13 +590,7 @@ public class DataBaseManager<D, F, M> {
                 + "<DataNode>\n"
                 + "{$foundNode/@ID}\n"
                 + "{$foundNode/@Label}\n"
-                + "{"
-                + "for $field in $foundNode"
-                + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData[")
-                + "]\n"
-                + "return \n"
-                + "<FieldGroup>{$field}</FieldGroup>\n"
-                + "}\n"
+                + fieldsQuery
                 + "<ChildLink ID=\"{$foundNode/@ID}\"/>\n"
                 + "{$foundNode/Type}\n"
                 + "</DataNode>";
@@ -742,7 +746,7 @@ public class DataBaseManager<D, F, M> {
                  </MetadataTreeNode>
                  }</TreeNode>
                  */
-              // todo: add back in the set functions
+                // todo: add back in the set functions
                 //                + "for $entityNode in $documentNode[");
                 //        boolean firstConstraint = true;
                 //        for (SearchParameters searchParameters : searchParametersList) {
