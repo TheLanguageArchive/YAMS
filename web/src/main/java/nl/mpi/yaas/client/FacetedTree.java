@@ -18,9 +18,13 @@
 package nl.mpi.yaas.client;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.Tree;
+import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import nl.mpi.yaas.common.data.MetadataFileType;
@@ -35,16 +39,29 @@ public class FacetedTree extends VerticalPanel {
     final private SearchOptionsServiceAsync searchOptionsService;
     final private ArrayList<MetadataFileType[]> selectedFacets = new ArrayList<MetadataFileType[]>();
     final private MenuBar menuBar;
+    final private Tree facetTree;
 
     public FacetedTree(SearchOptionsServiceAsync searchOptionsService) {
         this.searchOptionsService = searchOptionsService;
         menuBar = new MenuBar();
-        updateRootMenus(menuBar);
+        facetTree = new Tree();
         add(menuBar);
+        add(facetTree);
+        updateRootMenus(menuBar);
+        facetTree.addOpenHandler(new OpenHandler<TreeItem>() {
+            public void onOpen(OpenEvent<TreeItem> event) {
+                final Object selectedItem = event.getTarget();
+                if (selectedItem instanceof YaasTreeFacet) {
+                    YaasTreeFacet treeFacet = (YaasTreeFacet) selectedItem;
+                    treeFacet.loadChildFacets();
+                }
+            }
+        });
     }
 
     private void updateRootMenus(MenuBar menuBar) {
         menuBar.clearItems();
+        facetTree.clear();
         int menuIndex = 0;
         for (MetadataFileType[] type : selectedFacets) {
             String labelString = "";
@@ -54,6 +71,9 @@ public class FacetedTree extends VerticalPanel {
                 labelString += type[1].toString();
             }
             menuBar.addItem(labelString, getMenuItems(menuIndex++));
+            final YaasTreeFacet yaasTreeFacet = new YaasTreeFacet(type[0], searchOptionsService);
+            facetTree.addItem(yaasTreeFacet);
+            yaasTreeFacet.loadChildFacets();
         }
         if (selectedFacets.isEmpty()) {
             menuBar.addItem("<please select a facet>", getMenuItems(menuIndex++));
