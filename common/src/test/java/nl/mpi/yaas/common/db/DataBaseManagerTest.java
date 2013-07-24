@@ -269,21 +269,6 @@ public abstract class DataBaseManagerTest {
     }
 
     /**
-     * Test of getTreeFieldTypes method, of class DataBaseManager.
-     */
-    @Test
-    @Ignore
-    public void testGetTreeFieldTypes() throws Exception {
-        System.out.println("getTreeFieldTypes");
-        MetadataFileType metadataFileType = null;
-        boolean fastQuery = false;
-        DataBaseManager instance = null;
-        Object[] expResult = null;
-        Object[] result = instance.getTreeFieldTypes(metadataFileType, fastQuery);
-        assertArrayEquals(expResult, result);
-    }
-
-    /**
      * Test of insertNodeIconsIntoDatabase method, of class DataBaseManager.
      */
     @Test

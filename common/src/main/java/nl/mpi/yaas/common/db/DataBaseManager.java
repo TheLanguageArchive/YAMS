@@ -372,6 +372,20 @@ public class DataBaseManager<D, F, M> {
         final String path = (metadataFileType.getPath() == null) ? "all" : metadataFileType.getPath();
         return facetsCollection + "/" + queryType + "/" + type + "/" + path;
     }
+
+    private String getDocumentName(MetadataFileType[] metadataFileTypes, String queryType) {
+        String documentName = facetsCollection + "/" + queryType;
+        for (MetadataFileType metadataFileType : metadataFileTypes) {
+            if (metadataFileType == null) {
+                documentName += "/all/all";
+            } else {
+                final String type = (metadataFileType.getType() == null) ? "all" : metadataFileType.getType();
+                final String path = (metadataFileType.getPath() == null) ? "all" : metadataFileType.getPath();
+                documentName += "/" + type + "/" + path;
+            }
+        }
+        return documentName;
+    }
 //    private String getFieldConstraint(MetadataFileType fieldType) {
 //        String fieldConstraint = "";
 //        if (fieldType != null) {
@@ -496,68 +510,6 @@ public class DataBaseManager<D, F, M> {
         return queryStringBuilder.toString();
     }
 
-    private String getTreeQuery(ArrayList<MetadataFileType> treeBranchTypeList) {
-//        String branchConstraint = "//treeBranchType.getFieldName()";
-
-        return "<TreeNode><DisplayString>All</DisplayString>\n"
-                + getTreeSubQuery(treeBranchTypeList, "", "", "", 0)
-                + "</TreeNode>";
-
-
-        /*
-         for $d in distinct-values(doc("order.xml")//item/@dept)
-         let $items := doc("order.xml")//item[@dept = $d]
-         order by $d
-         return <department code="{$d}">{
-         for $i in $items
-         order by $i/@num
-         return $i
-         }</department>
-
-         */
-    }
-
-    private String getTreeFieldNames(MetadataFileType fileType, boolean fastQuery) {
-        // todo: note that this does not filter the sub lists. While this loss is worth the speed gain, it may be possible to filter based on the same file type or similar.
-//        String countClause;
-//        if (fastQuery) {
-//            countClause = "";
-//        } else {
-//            countClause = "<RecordCount>{count(distinct-values(collection('" + databaseName + "')/descendant-or-self::*[name() = $nameString]/text()))}</RecordCount>";
-//        }
-//        String typeConstraint = getTypeConstraint(fileType);
-//        String noChildClause = "[count(*) = 0]";
-//        String hasTextClause = "[text() != '']";
-        return "<MetadataFileType>\n"
-                + "{\n"
-                //                + "for $nameString in distinct-values(collection('" + databaseName + "')" + typeConstraint + "/descendant-or-self::*" + noChildClause + hasTextClause + "/name()\n"
-                //                + ")\n"
-                //                + "order by $nameString\n"
-                //                + "return\n"
-                //                + "<MetadataFileType>"
-                //                + "<fieldName>{$nameString}</fieldName>"
-                //                + countClause
-                //                + "</MetadataFileType>\n"
-                /*
-                 * optimised this query 2012-10-17
-                 * the fast version of query above takes:
-                 * 2586.19 ms
-                 * the slow version of query above takes:
-                 * 48998.5 ms
-                 * the query below takes:
-                 * 9.82 ms (varies per run)
-                 */
-                + "for $facetEntry in index:facets('" + databaseName + "', 'flat')//element[entry/text() != '']\n"
-                + "return\n"
-                + "<MetadataFileType>\n"
-                + "<fieldName>{string($facetEntry/@name)}</fieldName>\n"
-                //                + "<RecordCount>{string($facetEntry/@count)}</RecordCount>\n"
-                //                + "<ValueCount>{count($facetEntry/entry)}</ValueCount>\n"
-                + "<RecordCount>{count($facetEntry/entry)}</RecordCount>\n"
-                + "</MetadataFileType>\n"
-                + "}</MetadataFileType>";
-    }
-
     private String getSearchFieldConstraint(SearchParameters searchParameters) {
         String fieldConstraint = getTypeClause(searchParameters.getFieldType());
         String searchTextConstraint = getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData/");
@@ -595,6 +547,25 @@ public class DataBaseManager<D, F, M> {
                 + "<ChildLink ID=\"{$foundNode/@ID}\"/>\n"
                 + "{$foundNode/Type}\n"
                 + "</DataNode>";
+    }
+
+    private String getTreeFacetsQuery(MetadataFileType[] metadataFileTypes) {
+        String typeClause = "";
+        for (MetadataFileType type : metadataFileTypes) {
+            typeClause += getTypeClause(type);
+        }
+        String typeNodes = getTypeNodes(metadataFileTypes[metadataFileTypes.length - 1]);
+        return "let $fieldValues := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldData/@FieldValue/string()\n"
+                + "return <MetadataFileType>\n"
+                + "{\n"
+                + "for $label in distinct-values($fieldValues)\n"
+                + "order by $label\n"
+                + "return <MetadataFileType>"
+                + "<Label>{$label}</Label>\n"
+                + "<Value>{$label}</Value>\n"
+                + typeNodes
+                + "<Count>{count($fieldValues[. = $label])}</Count></MetadataFileType>\n"
+                + "}</MetadataFileType>";
     }
 
     private String getMetadataFieldValuesQuery(MetadataFileType metadataFileType) {
@@ -716,10 +687,11 @@ public class DataBaseManager<D, F, M> {
             queryStringBuilder.append(" ");
             queryStringBuilder.append(parameters.getFieldType().getPath());
             queryStringBuilder.append(" ");
-            for(SearchOption option : SearchOption.values()){
-                if (option.getSearchNegator()==parameters.getSearchNegator() && option.getSearchType()== parameters.getSearchType())
+            for (SearchOption option : SearchOption.values()) {
+                if (option.getSearchNegator() == parameters.getSearchNegator() && option.getSearchType() == parameters.getSearchType()) {
                     queryStringBuilder.append(option.toString());
-            }            
+                }
+            }
             queryStringBuilder.append(" ");
             queryStringBuilder.append(parameters.getSearchString());
             queryStringBuilder.append(") ");
@@ -840,9 +812,9 @@ public class DataBaseManager<D, F, M> {
         return getMetadataTypes(queryString, getDocumentName(metadataFileType, "types"));
     }
 
-    public M[] getTreeFieldTypes(MetadataFileType metadataFileType, boolean fastQuery) throws QueryException {
-        final String queryString = getTreeFieldNames(metadataFileType, fastQuery);
-        return getMetadataTypes(queryString, getDocumentName(metadataFileType, "tree"));
+    public M[] getTreeFacetTypes(MetadataFileType[] metadataFileTypes) throws QueryException {
+        final String queryString = getTreeFacetsQuery(metadataFileTypes);
+        return getMetadataTypes(queryString, getDocumentName(metadataFileTypes, "tree"));
     }
 
 //    public DbTreeNode getSearchTreeData() {
@@ -851,11 +823,6 @@ public class DataBaseManager<D, F, M> {
 //    }
     public D getNodeDatasByIDs(final ArrayList<DataNodeId> nodeIDs) throws QueryException {
         final String queryString = getNodesByIdQuery(nodeIDs);
-        return getDbTreeNode(queryString);
-    }
-
-    public D getTreeData(final ArrayList<MetadataFileType> treeBranchTypeList) throws QueryException {
-        final String queryString = getTreeQuery(treeBranchTypeList);
         return getDbTreeNode(queryString);
     }
 
