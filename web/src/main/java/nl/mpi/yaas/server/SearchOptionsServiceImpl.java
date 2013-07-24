@@ -86,6 +86,16 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
+    public MetadataFileType[] getTreeFacets(MetadataFileType[] metadataFileTypes) throws WebQueryException {
+        try {
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
+            MetadataFileType[] metadataFieldTypes = yaasDatabase.getTreeFacetTypes(metadataFileTypes);
+            return metadataFieldTypes;
+        } catch (QueryException exception) {
+            throw new WebQueryException(exception.getMessage());
+        }
+    }
+
     public SerialisableDataNode performSearch(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException {
 //        return new YaasDataNode(criterionJoinType.name());
         try {

@@ -143,6 +143,8 @@ public class YaasTreeItem extends TreeItem {
     private void loadDataNodeJson() {
         // todo: continue working on the json version of the data loader
         // todo: create a json datanode for use here
+        // The RequestBuilder code is replaced by a call to the getJson method. So you no longer need the following code in the refreshWatchList method: http://stackoverflow.com/questions/11121374/gwt-requestbuilder-cross-site-requests
+        // also the current configuration probalby needs on the server: Response.setHeader("Access-Control-Allow-Origin","http://192.168.56.101:8080/BaseX76/rest/");
         final String requestUrl = "http://192.168.56.101:8080/BaseX76/rest/yaas-data/" + dataNodeId.getIdString() + "?method=jsonml";
         RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(requestUrl));
         try {
@@ -156,7 +158,7 @@ public class YaasTreeItem extends TreeItem {
                         setText(response.getText());
                     } else {
                         // if the document does not exist this error will occur
-                        setText("Failure (document not found): " + response.getStatusText() + " " + requestUrl);
+                        setText("Failure (document not found): " + response.getStatusText() + response.getStatusCode() + " " + " " + response.getText() + " " + requestUrl);
                     }
                 }
             });
@@ -204,13 +206,17 @@ public class YaasTreeItem extends TreeItem {
                 }
             } else {
                 removeItems();
-                addItem(new Label("loading..."));
+                HorizontalPanel item = new HorizontalPanel();
+                item.add(new Image("./loader.gif"));
+                item.add(new Label("loading..."));
+                addItem(item);
                 final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
                 try {
                     for (DataNodeLink childId : yaasDataNode.getChildIds()) {
                         dataNodeIdList.add(new DataNodeId(childId.getIdString()));
                     }
                 } catch (ModelException exception) {
+                    removeItems();
                     addItem(new Label("Error getting child nodes: " + exception.getMessage()));
                 }
                 searchOptionsService.getDataNodes(dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {

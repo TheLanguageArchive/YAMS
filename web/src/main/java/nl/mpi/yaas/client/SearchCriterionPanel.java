@@ -131,7 +131,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
                     for (MetadataFileType type : result) {
                         oracle.add(type.toString());
                     }
-                    // searchTextBox.setText("Added " + result.length + " values. Starting: " + result[0].getLabel());
+//                    searchTextBox.setText("Added " + result.length + " values. Starting: " + result[0].getLabel());
                 }
             }
         });

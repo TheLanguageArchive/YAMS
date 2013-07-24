@@ -33,6 +33,8 @@ public interface SearchOptionsService extends RemoteService {
 
     MetadataFileType[] getValueOptions(MetadataFileType metadataFileType) throws WebQueryException;
 
+    MetadataFileType[] getTreeFacets(MetadataFileType[] metadataFileTypes) throws WebQueryException;
+
     SerialisableDataNode performSearch(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException;
 
     List<SerialisableDataNode> getDataNodes(ArrayList<DataNodeId> dataNodeIds) throws WebQueryException;

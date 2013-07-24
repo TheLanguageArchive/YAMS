@@ -17,9 +17,10 @@
  */
 package nl.mpi.yaas.client;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.TreeItem;
+import java.util.ArrayList;
 import nl.mpi.yaas.common.data.MetadataFileType;
 
 /**
@@ -29,25 +30,48 @@ import nl.mpi.yaas.common.data.MetadataFileType;
  */
 public class YaasTreeFacet extends TreeItem {
 
-    private final MetadataFileType metadataFileType;
+    private final MetadataFileType selectedFacet;
     final private SearchOptionsServiceAsync searchOptionsService;
+    final private int levelIndex;
+    final private YaasTreeFacet parentFacet;
 
-    public YaasTreeFacet(MetadataFileType metadataFileType, SearchOptionsServiceAsync searchOptionsService) {
-        this.metadataFileType = metadataFileType;
+    public YaasTreeFacet(MetadataFileType selectedFacet, SearchOptionsServiceAsync searchOptionsService, YaasTreeFacet parentFacet, int levelIndex) {
+        this.selectedFacet = selectedFacet;
         this.searchOptionsService = searchOptionsService;
-        setText(metadataFileType.toString());
+        this.parentFacet = parentFacet;
+        this.levelIndex = levelIndex;
+        setText(selectedFacet.toString());
     }
 
-    protected void loadChildFacets() {
-        searchOptionsService.getPathOptions(metadataFileType, new AsyncCallback<MetadataFileType[]>() {
+    private void getParentFacets(MetadataFileType[] parentFacets) {
+        parentFacets[levelIndex] = selectedFacet;
+        parentFacet.getParentFacets(parentFacets);
+    }
+
+    protected void loadChildFacetsOnce(ArrayList<MetadataFileType[]> selectedFacets) {
+        if (getChildCount() == 0) {
+            loadChildFacets(selectedFacets);
+        }
+    }
+
+    protected void loadChildFacets(ArrayList<MetadataFileType[]> selectedFacets) {
+        this.addItem(new Image("./loader.gif"));
+        MetadataFileType[] parentFacets = new MetadataFileType[levelIndex + 1];
+        if (parentFacet != null) {
+            parentFacet.getParentFacets(parentFacets);
+        }
+        parentFacets[levelIndex] = selectedFacets.get(selectedFacets.size() - 1)[1];
+        searchOptionsService.getTreeFacets(parentFacets, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
+                removeItems();
+                setText(caught.getMessage());
             }
 
             public void onSuccess(MetadataFileType[] result) {
+                removeItems();
                 if (result != null && result.length > 0) {
                     for (final MetadataFileType facetType : result) {
-                        addItem(new YaasTreeFacet(facetType, searchOptionsService));
+                        addItem(new YaasTreeFacet(facetType, searchOptionsService, YaasTreeFacet.this, levelIndex + 1));
                     }
                 }
             }

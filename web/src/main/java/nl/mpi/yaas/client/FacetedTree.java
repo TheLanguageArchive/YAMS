@@ -50,10 +50,13 @@ public class FacetedTree extends VerticalPanel {
         updateRootMenus(menuBar);
         facetTree.addOpenHandler(new OpenHandler<TreeItem>() {
             public void onOpen(OpenEvent<TreeItem> event) {
-                final Object selectedItem = event.getTarget();
-                if (selectedItem instanceof YaasTreeFacet) {
-                    YaasTreeFacet treeFacet = (YaasTreeFacet) selectedItem;
-                    treeFacet.loadChildFacets();
+                final TreeItem selectedItem = event.getTarget();
+                for (int childCount = 0; childCount < selectedItem.getChildCount(); childCount++) {
+                    final TreeItem child = selectedItem.getChild(childCount);
+                    if (child instanceof YaasTreeFacet) {
+                        YaasTreeFacet treeFacet = (YaasTreeFacet) child;
+                        treeFacet.loadChildFacetsOnce(selectedFacets);
+                    }
                 }
             }
         });
@@ -71,9 +74,11 @@ public class FacetedTree extends VerticalPanel {
                 labelString += type[1].toString();
             }
             menuBar.addItem(labelString, getMenuItems(menuIndex++));
-            final YaasTreeFacet yaasTreeFacet = new YaasTreeFacet(type[0], searchOptionsService);
+        }
+        if (!selectedFacets.isEmpty()) {
+            final YaasTreeFacet yaasTreeFacet = new YaasTreeFacet(selectedFacets.get(0)[1], searchOptionsService, null, 0);
             facetTree.addItem(yaasTreeFacet);
-            yaasTreeFacet.loadChildFacets();
+            yaasTreeFacet.loadChildFacets(selectedFacets);
         }
         if (selectedFacets.isEmpty()) {
             menuBar.addItem("<please select a facet>", getMenuItems(menuIndex++));
