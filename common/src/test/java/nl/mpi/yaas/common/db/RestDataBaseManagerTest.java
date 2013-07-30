@@ -33,7 +33,7 @@ public class RestDataBaseManagerTest extends DataBaseManagerTest {
 
     @Override
     DbAdaptor getDbAdaptor() throws IOException, QueryException {
-        return new RestDbAdaptor(new URL("http://192.168.56.101:8080/BaseX76/rest/"), "admin", "admin");
+        return new RestDbAdaptor(new URL(DataBaseManagerTest.restUrl), DataBaseManagerTest.restUser, DataBaseManagerTest.restPass);
     }
 
     @Override
