@@ -17,9 +17,13 @@
  */
 package nl.mpi.yaas.common.db;
 
+import java.net.MalformedURLException;
 import java.net.URL;
+import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Ignore;
 
 /**
  * Created on : Apr 26, 2013, 10:28 AM
@@ -34,54 +38,72 @@ public class RestDbAdaptorTest {
     /**
      * Test of dropAndRecreateDb method, of class RestDbAdaptor.
      */
-//    @Test
-//    public void testDropAndRecreateDb() throws Exception {
-//        System.out.println("dropAndRecreateDb");
-//        String databaseName = "";
-//        RestDbAdaptor instance = null;
-//        instance.dropAndRecreateDb(databaseName);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    @Test
+    @Before
+    public void testDropAndRecreateDb() throws Exception {
+        System.out.println("dropAndRecreateDb");
+        RestDbAdaptor instance = new RestDbAdaptor(new URL(DataBaseManagerTest.restUrl), DataBaseManagerTest.restUser, DataBaseManagerTest.restPass);
+        instance.dropAndRecreateDb(DataBaseManagerTest.testDatabaseName);
+    }
+
+    /**
+     * Test of deleteAllFromDb method, of class RestDbAdaptor.
+     */
+    @Test
+    @Ignore
+    public void testDeleteAllFromDb() throws Exception {
+        System.out.println("deleteAllFromDb");
+        RestDbAdaptor instance = new RestDbAdaptor(new URL(DataBaseManagerTest.restUrl), DataBaseManagerTest.restUser, DataBaseManagerTest.restPass);
+        instance.checkDbExists(DataBaseManagerTest.testDatabaseName);
+        instance.addDocument(DataBaseManagerTest.testDatabaseName, "testdocument", "<document><contents>here</contents></document>");
+        instance.deleteAllFromDb(DataBaseManagerTest.testDatabaseName);
+    }
+
     /**
      * Test of checkDbExists method, of class RestDbAdaptor.
      */
+    @Test
+    @Before
+    public void testCheckDbExists() throws MalformedURLException, QueryException {
+        System.out.println("checkDbExists");
+        RestDbAdaptor instance = new RestDbAdaptor(new URL(DataBaseManagerTest.restUrl), DataBaseManagerTest.restUser, DataBaseManagerTest.restPass);
+        instance.checkDbExists(DataBaseManagerTest.testDatabaseName);
+    }
+
+    /**
+     * Test of checkUserPermissions method, of class RestDbAdaptor.
+     */
 //    @Test
-//    public void testCheckDbExists() throws Exception {
-//        System.out.println("checkDbExists");
+//    public void testCheckUserPermissions() throws Exception {
+//        System.out.println("checkUserPermissions");
 //        String databaseName = "";
 //        RestDbAdaptor instance = null;
-//        instance.checkDbExists(databaseName);
+//        instance.checkUserPermissions(databaseName);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
 //    }
     /**
      * Test of addDocument method, of class RestDbAdaptor.
      */
-//    @Test
-//    public void testAddDocument() throws Exception {
-//        System.out.println("addDocument");
-//        String databaseName = "";
-//        String documentName = "";
-//        String documentContents = "";
-//        RestDbAdaptor instance = null;
-//        instance.addDocument(databaseName, documentName, documentContents);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    @Test
+    public void testAddDocument() throws Exception {
+        System.out.println("addDocument");
+        RestDbAdaptor instance = new RestDbAdaptor(new URL(DataBaseManagerTest.restUrl), DataBaseManagerTest.restUser, DataBaseManagerTest.restPass);
+        instance.addDocument(DataBaseManagerTest.testDatabaseName, "testdocument", "<document><contents>here</contents></document>");
+    }
+
     /**
      * Test of deleteDocument method, of class RestDbAdaptor.
      */
-//    @Test
-//    public void testDeleteDocument() throws Exception {
-//        System.out.println("deleteDocument");
-//        String databaseName = "";
-//        String documentName = "";
-//        RestDbAdaptor instance = null;
-//        instance.deleteDocument(databaseName, documentName);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    @Test
+    public void testDeleteDocument() throws Exception {
+        System.out.println("deleteDocument");
+
+        RestDbAdaptor instance = new RestDbAdaptor(new URL(DataBaseManagerTest.restUrl), DataBaseManagerTest.restUser, DataBaseManagerTest.restPass);
+        instance.addDocument(DataBaseManagerTest.testDatabaseName, "testdocument", "<document><contents>here</contents></document>");
+        instance.deleteDocument(DataBaseManagerTest.testDatabaseName, "testdocument");
+    }
+
     /**
      * Test of executeQuery method, of class RestDbAdaptor.
      */
@@ -102,23 +124,11 @@ public class RestDbAdaptorTest {
 //                + "<RootDocuments>{count($rootNodes)}</RootDocuments>\n"
 //                + "{for $rootDocId in $rootNodes return <RootDocumentID>{$rootDocId}</RootDocumentID>}\n"
 //                + "</DatabaseStats>";
-        RestDbAdaptor instance = new RestDbAdaptor(new URL("http://192.168.56.101:8080/BaseX76/rest"), "admin", "admin");
+        RestDbAdaptor instance = new RestDbAdaptor(new URL(DataBaseManagerTest.restUrl), DataBaseManagerTest.restUser, DataBaseManagerTest.restPass);
         String expResult = "<data>12340</data>";
-        String result = instance.executeQuery("unit-test-database", queryString);
+        String result = instance.executeQuery(DataBaseManagerTest.testDatabaseName, queryString);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
     }
-    /**
-     * Test of createIndexes method, of class RestDbAdaptor.
-     */
-//    @Test
-//    public void testCreateIndexes() throws Exception {
-//        System.out.println("createIndexes");
-//        String databaseName = "";
-//        RestDbAdaptor instance = null;
-//        instance.createIndexes(databaseName);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
 }
