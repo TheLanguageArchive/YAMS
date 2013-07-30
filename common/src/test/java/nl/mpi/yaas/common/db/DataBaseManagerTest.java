@@ -54,13 +54,16 @@ import org.junit.Test;
  */
 public abstract class DataBaseManagerTest {
 
-    static String projectDatabaseName = "unit-test-database";
+    static String testDatabaseName = "unit-test-database";
+    static String restUrl = "http://localhost:8984/rest/";
+    static String restUser = "";
+    static String restPass = "";
 
     abstract DbAdaptor getDbAdaptor() throws IOException, QueryException;
 
     public DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDataBaseManager(boolean insertData) throws IOException, QueryException, JAXBException, PluginException, ModelException {
         DbAdaptor dbAdaptor = getDbAdaptor();
-        final DataBaseManager dataBaseManager = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
+        final DataBaseManager dataBaseManager = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, testDatabaseName);
         dataBaseManager.dropAllRecords();
         if (insertData) {
             JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
@@ -117,10 +120,11 @@ public abstract class DataBaseManagerTest {
 
     @Test
     public void testGetDatabaseStats() throws JAXBException, PluginException, QueryException, IOException, ModelException {
-//        dbAdaptor.dropAllRecords(projectDatabaseName);
-//        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
+//        dbAdaptor.dropAllRecords(testDatabaseName);
+//        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, testDatabaseName);
 
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(false);
+        //dbManager.clearDatabaseStats();
         DatabaseStats databaseStats = dbManager.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
         assertEquals(0, databaseStats.getKnownDocumentsCount());
@@ -140,7 +144,7 @@ public abstract class DataBaseManagerTest {
     @Test
     public void testGetNodeDatasByIDs() throws QueryException, IOException, JAXBException, PluginException, ModelException {
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
-//        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, projectDatabaseName);
+//        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, testDatabaseName);
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
         SerialisableDataNode dataNode = (SerialisableDataNode) dbManager.getNodeDatasByIDs(nodeIDs);
@@ -296,5 +300,19 @@ public abstract class DataBaseManagerTest {
         // test the base64 icons
         final IconTableBase64 iconTableBase64 = dbManager.getNodeIconsBase64();
         assertEquals(6, iconTableBase64.getNodeTypeImageSet().size());
+    }
+
+    /**
+     * Test of getTreeFacetTypes method, of class DataBaseManager.
+     */
+    @Test
+    @Ignore
+    public void testGetTreeFacetTypes() throws Exception {
+        System.out.println("getTreeFacetTypes");
+        MetadataFileType[] metadataFileTypes = null;
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        Object[] expResult = null;
+        final MetadataFileType[] result = dbManager.getTreeFacetTypes(metadataFileTypes);
+        assertArrayEquals(expResult, result);
     }
 }
