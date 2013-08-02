@@ -57,7 +57,8 @@ public class RestDbAdaptor implements DbAdaptor {
                 throw new QueryException("HTTP response: " + responseCode);
             }
         } catch (IOException exception) {
-            throw new QueryException(exception);
+            // this is not exceptional and will happen on the first run when the db does not exist
+            System.out.println("Failed to delete old database, maybe it does not exist: " + exception.getMessage());
         }
         checkDbExists(databaseName);
     }
@@ -104,7 +105,7 @@ public class RestDbAdaptor implements DbAdaptor {
             conn.setRequestProperty("Authorization", "Basic " + encodedPass);
             conn.setRequestProperty("Content-Type", "application/xml");
             OutputStream out = conn.getOutputStream();
-            System.out.println("executeQuery POST: " + restUrl + " : " + commandString);
+//            System.out.println("executeQuery POST: " + restUrl + " : " + commandString);
             out.write(commandString.getBytes("UTF-8"));
             out.close();
             final int responseCode = conn.getResponseCode();
@@ -193,7 +194,7 @@ public class RestDbAdaptor implements DbAdaptor {
             String bodyString = "<query xmlns=\"http://basex.org/rest\">\n"
                     + "  <text><![CDATA[" + queryString + "]]></text>\n"
                     + "</query>";
-            System.out.println("executeQuery POST: " + restUrl + " : " + bodyString);
+//            System.out.println("executeQuery POST: " + restUrl + " : " + bodyString);
             out.write(bodyString.getBytes("UTF-8"));
             out.close();
             final int responseCode = conn.getResponseCode();
@@ -203,12 +204,15 @@ public class RestDbAdaptor implements DbAdaptor {
             System.out.println(queryTimeString);
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+                System.out.println("Reading response");
                 for (String line; (line = bufferedReader.readLine()) != null;) {
 //                    System.out.println("response: " + line);
+                    System.out.print(".");
                     replaceMe.append(line);
                 }
                 bufferedReader.close();
             }
+            System.out.println(".");
             conn.disconnect();
             long totalMils = System.currentTimeMillis() - startTime;
             String totalTimeString = "total time: " + totalMils + "ms";
