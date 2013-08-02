@@ -150,7 +150,7 @@ public class DataBaseManager<D, F, M> {
             // insert the stats as a document
             dbAdaptor.addDocument(databaseName, cachedDocument, resultCacheFlagged);
         }
-        System.out.println("queryResult: " + queryResult);
+//        System.out.println("queryResult: " + queryResult);
         return queryResult;
     }
 
@@ -236,7 +236,7 @@ public class DataBaseManager<D, F, M> {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             queryResult = dbAdaptor.executeQuery(databaseName, iconTableQuery);
-            System.out.println("queryResult: " + queryResult);
+//            System.out.println("queryResult: " + queryResult);
             return (IconTableBase64) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), IconTableBase64.class).getValue();
         } catch (JAXBException exception) {
             throw new PluginException(exception);
@@ -260,7 +260,7 @@ public class DataBaseManager<D, F, M> {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             queryResult = dbAdaptor.executeQuery(databaseName, iconTableQuery);
-            System.out.println("queryResult: " + queryResult);
+//            System.out.println("queryResult: " + queryResult);
             return (IconTable) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), IconTable.class).getValue();
         } catch (JAXBException exception) {
             throw new PluginException(exception);
@@ -384,6 +384,7 @@ public class DataBaseManager<D, F, M> {
                 documentName += "/" + type + "/" + path;
             }
         }
+        System.out.println("documentName: " + documentName);
         return documentName;
     }
 //    private String getFieldConstraint(MetadataFileType fieldType) {
@@ -813,6 +814,9 @@ public class DataBaseManager<D, F, M> {
     }
 
     public M[] getTreeFacetTypes(MetadataFileType[] metadataFileTypes) throws QueryException {
+        for (MetadataFileType type : metadataFileTypes) {
+            System.out.println("Type: " + type);
+        }
         final String queryString = getTreeFacetsQuery(metadataFileTypes);
         return getMetadataTypes(queryString, getDocumentName(metadataFileTypes, "tree"));
     }
@@ -858,7 +862,7 @@ public class DataBaseManager<D, F, M> {
             String queryResult = getCachedVersion(documentName, queryString);
 //            System.out.println("queryString: " + queryString);
 //            queryResult = dbAdaptor.executeQuery(databaseName, queryString);
-            System.out.println("queryResult: " + queryResult);
+//            System.out.println("queryResult: " + queryResult);
             M foundEntities = (M) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), MetadataFileType.class).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
             final M[] entityDataArray = (M[]) ((MetadataFileType) foundEntities).getChildMetadataTypes();
