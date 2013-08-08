@@ -76,7 +76,7 @@ public class DataNodeTable extends VerticalPanel {
                                 StringBuilder stringBuilder = new StringBuilder();
                                 for (DataField dataField : fieldGroup.getFields()) {
                                     stringBuilder.append(dataField.getFieldValue());
-                                    stringBuilder.append("<hr>");
+                                    stringBuilder.append(" - ");
                                 };
                                 return stringBuilder.toString();
                             }
