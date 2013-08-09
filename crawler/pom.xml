@@ -36,6 +36,28 @@
         </resources>
         <plugins>
             <plugin>
+                <!--    mvn assembly:single    -->
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>nl.mpi.yaas.crawler.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <!--                                		 
 		    License plugin checks for presence of license header in all source files (with some exceptions, see excludes below).
 		    You can use this plugin to actually insert or fix the license headers by running maven with the following goal:
@@ -116,7 +138,7 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>pluginloader</artifactId>
             <version>1.2-pretesting-SNAPSHOT</version>
