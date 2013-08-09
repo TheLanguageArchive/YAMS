@@ -65,7 +65,7 @@ public class Main {
         options.addOption("a", "append", false, "Restart crawling adding missing documents.");
         options.addOption("n", "number", true, "Number of documents to insert (default is " + defaultNumberToCrawl + ").");
         options.addOption("t", "target", true, "Target URL of the start documents to crawl (default is " + defaultStartUrl + "). This option implies the c option.");
-        options.addOption("s", "server", true, "Data base server URL, default is " + databaseUrl);
+        options.addOption("s", "server", true, "Data base server URL or file path (when a file path is provided the basex java bindings are used rather than the REST interface), default is " + databaseUrl);
         options.addOption("u", "user", true, "Data base user name, default is " + databaseUser);
         options.addOption("p", "password", true, "Data base password, default is " + databasePassword);
         try {

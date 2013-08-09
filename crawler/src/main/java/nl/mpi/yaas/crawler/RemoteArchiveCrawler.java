@@ -123,7 +123,12 @@ public class RemoteArchiveCrawler {
                 break;
         }
         try {
-            final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(databaseUrl), databaseUser, databasePassword);
+            DbAdaptor dbAdaptor;
+            if (databaseUrl.startsWith("http://")) {
+                dbAdaptor = new RestDbAdaptor(new URL(databaseUrl), databaseUser, databasePassword);
+            } else {
+                dbAdaptor = new LocalDbAdaptor(new File(databaseUrl));
+            }
 //        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File());
             yaasDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dataBaseName);
 //            yaasDatabase.clearDatabaseStats();
