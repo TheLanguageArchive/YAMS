@@ -61,6 +61,7 @@ public class Main {
         // create the Options
         Options options = new Options();
         options.addOption("d", "drop", false, "Drop the existing data and recrawl. This option implies the c option.");
+        options.addOption("f", "facets", false, "Preload the facets from the existing crawled data.");
         options.addOption("c", "crawl", false, "Crawl the provided url or the default url if not otherwise specified.");
         options.addOption("a", "append", false, "Restart crawling adding missing documents.");
         options.addOption("n", "number", true, "Number of documents to insert (default is " + defaultNumberToCrawl + ").");
@@ -72,7 +73,7 @@ public class Main {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
             // check for valid actions and show help if none found
-            if (!line.hasOption("d") && !line.hasOption("c") && !line.hasOption("a")) {
+            if (!line.hasOption("d") && !line.hasOption("c") && !line.hasOption("a") && !line.hasOption("f")) {
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp("yaas-crawler", options);
                 System.exit(-1);
@@ -117,7 +118,9 @@ public class Main {
 //                }
                 archiveCrawler.clearAndCalculateDbStats();
                 archiveCrawler.insertKnowIcons();
-                archiveCrawler.preloadFacets();
+                if (line.hasOption("p")) {
+                    archiveCrawler.preloadFacets();
+                }
                 System.exit(0); // arbil threads might be requiring this to terminate
             } catch (URISyntaxException exception) {
                 System.out.println(exception.getMessage());
