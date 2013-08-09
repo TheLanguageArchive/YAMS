@@ -126,7 +126,7 @@ public class RemoteArchiveCrawler {
             final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(databaseUrl), databaseUser, databasePassword);
 //        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File());
             yaasDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dataBaseName);
-            yaasDatabase.clearDatabaseStats();
+//            yaasDatabase.clearDatabaseStats();
         } catch (MalformedURLException exception) {
             throw new QueryException(exception);
         }
@@ -153,7 +153,12 @@ public class RemoteArchiveCrawler {
             System.out.println("File type: " + metadataType.getLabel());
             for (MetadataFileType metadataPath : yaasDatabase.getMetadataPaths(metadataType)) {
                 System.out.println("Path type: " + metadataPath.getLabel());
-                System.out.println("Values: " + yaasDatabase.getMetadataFieldValues(metadataPath).length);
+                final MetadataFileType[] metadataFieldValues = yaasDatabase.getMetadataFieldValues(metadataPath);
+                if (metadataFieldValues != null) {
+                    System.out.println("Values: " + metadataFieldValues.length);
+                } else {
+                    System.out.println("Values: none");
+                }
             }
         }
     }
@@ -168,6 +173,7 @@ public class RemoteArchiveCrawler {
             while (continueGetting) {
                 if (stringTokenizer == null) {
                     String handlesOfMissing = yaasDatabase.getHandlesOfMissing();
+                    System.out.println("Nodes to get length: " + handlesOfMissing.length());
                     stringTokenizer = new StringTokenizer(handlesOfMissing);
                     continueGetting = stringTokenizer.hasMoreTokens();
                 }
@@ -181,12 +187,12 @@ public class RemoteArchiveCrawler {
                         System.out.println("No more missing documents to crawl");
                         break;
                     }
-                    System.out.println("targetHandle: " + targetHandle);
+//                    System.out.println("targetHandle: " + targetHandle);
                     URI targetUri = new URI(targetHandle.replace("hdl:", HANDLE_SERVER_URI));
-                    System.out.println("targetUri: " + targetUri);
+//                    System.out.println("targetUri: " + targetUri);
                     ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
                     ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, new URI(targetHandle));
-                    System.out.println("arbil url: " + dataNode.getUrlString());
+//                    System.out.println("arbil url: " + dataNode.getUrlString());
                     loadAndInsert(yaasDatabase, dataNode);
                 } catch (NoSuchElementException exception) {
                     stringTokenizer = null;
@@ -214,7 +220,7 @@ public class RemoteArchiveCrawler {
         }
     }
 
-    public void dropDataBase() {
+    public void dropAllRecords() {
         try {
             System.out.println("Dropping old crawled data");
             yaasDatabase.dropAllRecords(); // this will drop the old data and may drop the database depending on the database module used
@@ -269,7 +275,7 @@ public class RemoteArchiveCrawler {
         totalLoaded++;
 //        loadChildNodes(dataNode);
         if (!dataNode.fileNotFound && !dataNode.isChildNode()) {
-            System.out.println("Inserting into the database");
+//            System.out.println("Inserting into the database");
             System.out.println("URL: " + dataNode.getUrlString());
             final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
             insertNodeIcons(dataNode);
