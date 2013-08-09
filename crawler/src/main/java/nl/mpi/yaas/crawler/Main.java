@@ -115,10 +115,10 @@ public class Main {
                     System.out.println("Crawling the start URL: " + startURI);
                     archiveCrawler.crawl(startURI);
                 }
-//                if (line.hasOption("a")) {
-                System.out.println("Looking for and appending missing documents");
-                archiveCrawler.update();
-//                }
+                if (line.hasOption("a")) {
+                    System.out.println("Looking for and appending missing documents");
+                    archiveCrawler.update();
+                }
                 archiveCrawler.clearAndCalculateDbStats();
                 archiveCrawler.insertKnowIcons();
                 if (line.hasOption("p")) {
