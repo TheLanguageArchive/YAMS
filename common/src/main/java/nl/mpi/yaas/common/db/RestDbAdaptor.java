@@ -207,7 +207,7 @@ public class RestDbAdaptor implements DbAdaptor {
                 System.out.println("Reading response");
                 for (String line; (line = bufferedReader.readLine()) != null;) {
 //                    System.out.println("response: " + line);
-                    System.out.print(".");
+//                    System.out.print(".");
                     replaceMe.append(line);
                 }
                 bufferedReader.close();

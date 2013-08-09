@@ -56,8 +56,8 @@ public abstract class DataBaseManagerTest {
 
     static String testDatabaseName = "unit-test-database";
     static String restUrl = "http://localhost:8984/rest/";
-    static String restUser = "";
-    static String restPass = "";
+    static String restUser = "admin";
+    static String restPass = "admin";
 
     abstract DbAdaptor getDbAdaptor() throws IOException, QueryException;
 

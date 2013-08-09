@@ -96,6 +96,16 @@ public class DataBaseManager<D, F, M> {
         this.fClass = fClass;
         this.mClass = mClass;
         this.databaseName = databaseName;
+//        dbAdaptor.checkDbExists(databaseName);
+    }
+
+    /**
+     * Verifies that the database exists and create a new empty database if it
+     * does not
+     *
+     * @throws QueryException
+     */
+    public void checkDbExists() throws QueryException {
         dbAdaptor.checkDbExists(databaseName);
     }
 
@@ -285,7 +295,7 @@ public class DataBaseManager<D, F, M> {
             }
         } catch (PluginException exception) {
             // if there is not icon document here that can be normal if it is the first run
-            System.out.println("Error getting existing IconTableDocument: " + exception.getMessage());
+            System.out.println("Error getting existing IconTableDocument (this is normal on the first run).");
         }
         dbAdaptor.deleteDocument(databaseName, iconTableDocument);
         // use JAXB to serialise and insert the IconTable into the database
@@ -295,7 +305,7 @@ public class DataBaseManager<D, F, M> {
             StringWriter stringWriter = new StringWriter();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(iconTable, stringWriter);
-            System.out.println("NodeIcons to be inserted:\n" + stringWriter.toString());
+            //System.out.println("NodeIcons to be inserted:\n" + stringWriter.toString());
             dbAdaptor.addDocument(databaseName, iconTableDocument, stringWriter.toString());
         } catch (JAXBException exception) {
             System.err.println("jaxb error:" + exception.getMessage());

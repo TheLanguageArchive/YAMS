@@ -107,6 +107,9 @@ public class Main {
                     System.out.println("Dropping and crawing from scratch");
                     archiveCrawler.dropAllRecords();
                     crawlOption = true;
+                } else {
+                    // make sure the db exists
+                    archiveCrawler.checkDbExists();
                 }
                 if (crawlOption) {
                     System.out.println("Crawling the start URL: " + startURI);

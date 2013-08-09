@@ -225,6 +225,16 @@ public class RemoteArchiveCrawler {
         }
     }
 
+    public void checkDbExists() {
+        try {
+            System.out.println("Checking the database exists");
+            yaasDatabase.checkDbExists();
+        } catch (QueryException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        }
+    }
+
     public void dropAllRecords() {
         try {
             System.out.println("Dropping old crawled data");
