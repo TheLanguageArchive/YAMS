@@ -24,6 +24,7 @@ import nl.mpi.flap.plugin.PluginException;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -49,7 +50,9 @@ public class Main {
 //            }
 //        }
         int defaultNumberToCrawl = 10000;
+//        String databaseUrl = "http://lux16.mpi.nl:8984/rest/";
         String databaseUrl = "http://192.168.56.101:8080/BaseX76/rest/";
+//        String databaseUrl = "http://localhost:8984/rest/";
         String databaseUser = "admin";
         String databasePassword = "admin";
         String defaultStartUrl = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi";
@@ -57,9 +60,9 @@ public class Main {
         CommandLineParser parser = new BasicParser(); //DefaultParser();
         // create the Options
         Options options = new Options();
-        options.addOption("d", "drop", false, "Drop the existing database and recrawl. This option implies the c option.");
+        options.addOption("d", "drop", false, "Drop the existing data and recrawl. This option implies the c option.");
         options.addOption("c", "crawl", false, "Crawl the provided url or the default url if not otherwise specified.");
-        options.addOption("a", "append", false, "Recrawl adding missing documents (this is the default behaviour).");
+        options.addOption("a", "append", false, "Restart crawling adding missing documents.");
         options.addOption("n", "number", true, "Number of documents to insert (default is " + defaultNumberToCrawl + ").");
         options.addOption("t", "target", true, "Target URL of the start documents to crawl (default is " + defaultStartUrl + "). This option implies the c option.");
         options.addOption("s", "server", true, "Data base server URL, default is " + databaseUrl);
@@ -68,6 +71,13 @@ public class Main {
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
+            // check for valid actions and show help if none found
+            if (!line.hasOption("d") && !line.hasOption("c") && !line.hasOption("a")) {
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("yaas-crawler", options);
+                System.exit(-1);
+            }
+
             String startUrl = defaultStartUrl;
             int numberToCrawl = defaultNumberToCrawl;
             boolean crawlOption = line.hasOption("c");
@@ -94,7 +104,7 @@ public class Main {
 //            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
                 if (line.hasOption("d")) {
                     System.out.println("Dropping and crawing from scratch");
-                    archiveCrawler.dropDataBase();
+                    archiveCrawler.dropAllRecords();
                     crawlOption = true;
                 }
                 if (crawlOption) {
