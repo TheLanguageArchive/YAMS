@@ -54,7 +54,9 @@ public class RestDbAdaptor implements DbAdaptor {
 //            System.out.println("HTTP response: " + responseCode);            
             conn.disconnect();
             if (responseCode != HttpURLConnection.HTTP_OK) {
-                throw new QueryException("HTTP response: " + responseCode);
+//                throw new QueryException("HTTP response: " + responseCode);
+                // this is not exceptional and will happen on the first run when the db does not exist
+                System.out.println("Failed to delete old database, maybe it does not exist");
             }
         } catch (IOException exception) {
             // this is not exceptional and will happen on the first run when the db does not exist
@@ -228,16 +230,18 @@ public class RestDbAdaptor implements DbAdaptor {
 
     public void createIndexes(String databaseName) throws QueryException {
         try {
-            URL databaseUrl = new URL(restUrl, databaseName + "?command=optimize");
-            System.out.println("createIndexes GET: " + databaseUrl);
-            HttpURLConnection conn = (HttpURLConnection) databaseUrl.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Authorization", "Basic " + encodedPass);
-            final int responseCode = conn.getResponseCode();
+            for (String command : new String[]{"CREATE+INDEX+TEXT", "CREATE+INDEX+ATTRIBUTE", "CREATE+INDEX+FULLTEXT", "optimize+all"}) {
+                URL databaseUrl = new URL(restUrl, databaseName + "?command=" + command);
+                System.out.println("createIndexes GET: " + databaseUrl);
+                HttpURLConnection conn = (HttpURLConnection) databaseUrl.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Authorization", "Basic " + encodedPass);
+                final int responseCode = conn.getResponseCode();
 //            System.out.println("HTTP response: " + responseCode);
-            conn.disconnect();
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                throw new QueryException("HTTP response: " + responseCode);
+                conn.disconnect();
+                if (responseCode != HttpURLConnection.HTTP_OK) {
+                    throw new QueryException("HTTP response: " + responseCode);
+                }
             }
         } catch (IOException exception) {
             throw new QueryException(exception);

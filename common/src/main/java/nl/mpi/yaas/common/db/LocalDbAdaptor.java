@@ -24,10 +24,12 @@ import org.basex.core.Context;
 import org.basex.core.cmd.Add;
 import org.basex.core.cmd.Close;
 import org.basex.core.cmd.CreateDB;
+import org.basex.core.cmd.CreateIndex;
 import org.basex.core.cmd.Delete;
 import org.basex.core.cmd.DropDB;
 import org.basex.core.cmd.InfoDB;
 import org.basex.core.cmd.Open;
+import org.basex.core.cmd.OptimizeAll;
 import org.basex.core.cmd.Set;
 import org.basex.core.cmd.XQuery;
 import org.slf4j.LoggerFactory;
@@ -142,7 +144,18 @@ public class LocalDbAdaptor implements DbAdaptor {
     }
 
     public void createIndexes(String databaseName) throws QueryException {
-        String createIndexesQuery = "db:optimize(\"" + databaseName + "\")\n";
-        String queryResult = executeQuery(databaseName, createIndexesQuery);
+        try {
+            synchronized (databaseLock) {
+                new Open(databaseName).execute(context);
+                new CreateIndex("text").execute(context);
+                new CreateIndex("attribute").execute(context);
+                new CreateIndex("fulltext").execute(context);
+                new OptimizeAll().execute(context);
+                new Close().execute(context);
+            }
+        } catch (BaseXException exception) {
+            logger.debug(exception.getMessage());
+            throw new QueryException("Error creating indexes", exception);
+        }
     }
 }
