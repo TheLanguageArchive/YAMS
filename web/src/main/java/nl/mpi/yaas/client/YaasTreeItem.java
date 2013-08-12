@@ -14,6 +14,7 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -21,6 +22,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TreeItem;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
@@ -35,23 +38,28 @@ import nl.mpi.yaas.common.data.NodeTypeImageBase64;
  */
 public class YaasTreeItem extends TreeItem {
 
+    public static final String ERROR_GETTING_CHILD_NODES = "Error getting child nodes";
+    public static final String LOADING_CHILD_NODES_FAILED = "Loading child nodes failed";
+    public static final String FAILURE = "Failure";
     private SerialisableDataNode yaasDataNode = null;
     private DataNodeId dataNodeId = null;
     final private SearchOptionsServiceAsync searchOptionsService;
     final private DataNodeTable dataNodeTable;
     private boolean loadAttempted = false;
-    final Label labelChildrenNotLoaded = new Label("child nodes not loaded");
     final HorizontalPanel outerPanel;
     final private CheckBox checkBox;
     final private Label nodeLabel;
     final private Anchor nodeDetailsAnchor;
-//    private Button expandButton;
     private SingleDataNodeTable singleDataNodeTable = null;
     private final IconTableBase64 iconTableBase64;
     private final Image iconImage = new Image();
+    private final TreeItem loadingTreeItem;
+    private final TreeItem loadNextTreeItem;
+    private static final Logger logger = Logger.getLogger("");
 
     public YaasTreeItem(DataNodeId dataNodeId, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
         super(new HorizontalPanel());
+        loadingTreeItem = getLoadingItem();
         this.dataNodeTable = dataNodeTable;
         this.dataNodeId = dataNodeId;
         this.searchOptionsService = searchOptionsService;
@@ -60,6 +68,7 @@ public class YaasTreeItem extends TreeItem {
         checkBox = new CheckBox();
         nodeLabel = new Label();
         nodeDetailsAnchor = new Anchor();
+        loadNextTreeItem = getLoadNextTreeItem();
         setupWidgets();
         // todo: continue working on the json version of the data loader
 //        loadDataNodeJson();
@@ -68,6 +77,7 @@ public class YaasTreeItem extends TreeItem {
 
     public YaasTreeItem(SerialisableDataNode yaasDataNode, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
         super(new HorizontalPanel());
+        loadingTreeItem = getLoadingItem();
         this.yaasDataNode = yaasDataNode;
         this.searchOptionsService = searchOptionsService;
         this.dataNodeTable = dataNodeTable;
@@ -76,16 +86,36 @@ public class YaasTreeItem extends TreeItem {
         checkBox = new CheckBox();
         nodeLabel = new Label();
         nodeDetailsAnchor = new Anchor();
+        loadNextTreeItem = getLoadNextTreeItem();
         setupWidgets();
         setLabel();
         try {
             if (yaasDataNode.getChildList() != null || yaasDataNode.getChildIds() != null) {
-                addItem(labelChildrenNotLoaded);
+                addItem(loadingTreeItem);
             }
         } catch (ModelException exception) {
-            addItem(new Label("Error getting child nodes: " + exception.getMessage()));
+            addItem(new Label(ERROR_GETTING_CHILD_NODES));
+            logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
         }
         setNodeIcon();
+    }
+
+    private TreeItem getLoadNextTreeItem() {
+        final Button loadNextButton = new Button("Load More");
+        loadNextButton.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                loadChildNodes();
+            }
+        });
+        return new TreeItem(loadNextButton);
+    }
+
+    private TreeItem getLoadingItem() {
+        HorizontalPanel loadingItem = new HorizontalPanel();
+        loadingItem.add(new Image("./loader.gif"));
+        loadingItem.add(new Label("loading..."));
+        return new TreeItem(loadingItem);
+
     }
 
     private void setNodeIcon() {
@@ -150,7 +180,8 @@ public class YaasTreeItem extends TreeItem {
         try {
             Request request = builder.sendRequest(null, new RequestCallback() {
                 public void onError(Request request, Throwable exception) {
-                    setText("Failure onError: " + exception.getMessage() + " " + requestUrl);
+                    setText(FAILURE);
+                    logger.log(Level.SEVERE, FAILURE, exception);
                 }
 
                 public void onResponseReceived(Request request, Response response) {
@@ -158,12 +189,14 @@ public class YaasTreeItem extends TreeItem {
                         setText(response.getText());
                     } else {
                         // if the document does not exist this error will occur
-                        setText("Failure (document not found): " + response.getStatusText() + response.getStatusCode() + " " + " " + response.getText() + " " + requestUrl);
+                        setText(FAILURE);
+                        logger.log(Level.SEVERE, FAILURE, new Throwable(response.getStatusText() + response.getStatusCode() + " " + " " + response.getText() + " " + requestUrl));
                     }
                 }
             });
         } catch (RequestException exception) {
-            setText("Failure RequestException: " + exception.getMessage() + " " + requestUrl);
+            setText(FAILURE);
+            logger.log(Level.SEVERE, FAILURE, exception);
         }
     }
 
@@ -175,7 +208,8 @@ public class YaasTreeItem extends TreeItem {
             dataNodeIdList.add(dataNodeId);
             searchOptionsService.getDataNodes(dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
                 public void onFailure(Throwable caught) {
-                    setText("Failure: " + caught.getMessage());
+                    setText(FAILURE);
+                    logger.log(Level.SEVERE, FAILURE, caught);
                 }
 
                 public void onSuccess(List<SerialisableDataNode> dataNodeList) {
@@ -183,10 +217,11 @@ public class YaasTreeItem extends TreeItem {
                     setLabel();
                     try {
                         if (yaasDataNode.getChildList() != null || yaasDataNode.getChildIds() != null) {
-                            addItem(labelChildrenNotLoaded);
+                            addItem(loadingTreeItem);
                         }
                     } catch (ModelException exception) {
-                        setText("Failure: " + exception.getMessage());
+                        setText(FAILURE);
+                        logger.log(Level.SEVERE, FAILURE, exception);
                     }
                     setNodeIcon();
                     hideShowExpandButton();
@@ -196,38 +231,44 @@ public class YaasTreeItem extends TreeItem {
     }
 
     public void loadChildNodes() {
+        removeItem(loadNextTreeItem);
         if (yaasDataNode != null) {
             if (yaasDataNode.getChildList() != null) {
-                removeItems();
+                removeItem(loadingTreeItem);
                 // add the meta child nodes
                 for (SerialisableDataNode childDataNode : yaasDataNode.getChildList()) {
                     YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
                     addItem(yaasTreeItem);;
                 }
             } else {
-                removeItems();
-                HorizontalPanel item = new HorizontalPanel();
-                item.add(new Image("./loader.gif"));
-                item.add(new Label("loading..."));
-                addItem(item);
+                addItem(loadingTreeItem);
+                final int loadedCount = getChildCount() - 1; // not counting the loading tree node
                 final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
                 try {
-                    for (DataNodeLink childId : yaasDataNode.getChildIds()) {
+                    final int maxToGet = yaasDataNode.getChildIds().size();
+                    if (maxToGet <= loadedCount) {
+                        // all child nodes should be visible so we can just return
+                        return;
+                    }
+                    final int nextToLoad = (maxToGet <= loadedCount + 20) ? maxToGet : loadedCount + 20;
+                    for (DataNodeLink childId : yaasDataNode.getChildIds().subList(loadedCount, nextToLoad)) {
                         dataNodeIdList.add(new DataNodeId(childId.getIdString()));
                     }
                 } catch (ModelException exception) {
-                    removeItems();
-                    addItem(new Label("Error getting child nodes: " + exception.getMessage()));
+                    removeItem(loadingTreeItem);
+                    addItem(new Label(ERROR_GETTING_CHILD_NODES));
+                    logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
                 }
                 searchOptionsService.getDataNodes(dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
-                    public void onFailure(Throwable caught) {
-                        removeItems();
-                        addItem(new Label("Loading child nodes failed: " + caught.getMessage()));
+                    public void onFailure(Throwable exception) {
+                        removeItem(loadingTreeItem);
+                        addItem(new Label(LOADING_CHILD_NODES_FAILED));
+                        logger.log(Level.SEVERE, LOADING_CHILD_NODES_FAILED, exception);
                     }
 
                     public void onSuccess(List<SerialisableDataNode> dataNodeList) {
 //                        setText("Loaded " + dataNodeList.size() + " child nodes");
-                        removeItems();
+                        removeItem(loadingTreeItem);
                         if (dataNodeList == null) {
                             addItem(new Label("no child nodes found"));
                         } else {
@@ -235,7 +276,18 @@ public class YaasTreeItem extends TreeItem {
                                 YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
                                 addItem(yaasTreeItem);
                             }
+                            try {
+                                final int maxToGet = yaasDataNode.getChildIds().size();
+                                final int loadedCount = getChildCount();
+                                if (loadedCount < maxToGet) {
+                                    addItem(loadNextTreeItem);
+                                }
+                            } catch (ModelException exception) {
+                                addItem(new Label(ERROR_GETTING_CHILD_NODES));
+                                logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
+                            }
                         }
+
                     }
                 });
             }
