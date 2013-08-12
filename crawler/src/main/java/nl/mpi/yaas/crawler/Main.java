@@ -49,10 +49,10 @@ public class Main {
 //                System.exit(-1);
 //            }
 //        }
-        int defaultNumberToCrawl = 10000;
+        int defaultNumberToCrawl = 900;
 //        String databaseUrl = "http://lux16.mpi.nl:8984/rest/";
-        String databaseUrl = "http://192.168.56.101:8080/BaseX76/rest/";
-//        String databaseUrl = "http://localhost:8984/rest/";
+//        String databaseUrl = "http://192.168.56.101:8080/BaseX76/rest/";
+        String databaseUrl = "http://localhost:8984/rest/";
         String databaseUser = "admin";
         String databasePassword = "admin";
         String defaultStartUrl = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi";
@@ -121,7 +121,7 @@ public class Main {
                 }
                 archiveCrawler.clearAndCalculateDbStats();
                 archiveCrawler.insertKnowIcons();
-                if (line.hasOption("p")) {
+                if (line.hasOption("f")) {
                     archiveCrawler.preloadFacets();
                 }
                 System.exit(0); // arbil threads might be requiring this to terminate
