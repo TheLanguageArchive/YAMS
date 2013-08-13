@@ -2,7 +2,7 @@
 <module rename-to='yaas'>
     <!-- Inherit the core Web Toolkit stuff.                        -->
     <inherits name='com.google.gwt.user.User' />
-
+    <inherits name="com.google.gwt.logging.Logging"/>
     <!-- We need the JUnit module in the main module,               -->
     <!-- otherwise eclipse complains (Google plugin bug?)           -->
     <inherits name='com.google.gwt.junit.JUnit' />

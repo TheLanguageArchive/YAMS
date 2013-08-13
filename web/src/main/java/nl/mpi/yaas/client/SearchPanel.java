@@ -17,6 +17,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchOption;
@@ -29,6 +31,7 @@ import nl.mpi.yaas.common.data.SearchParameters;
  */
 public class SearchPanel extends VerticalPanel {
 
+    private static final Logger logger = Logger.getLogger("");
     private final SearchOptionsServiceAsync searchOptionsService;
     private final DataNodeTable dataNodeTable;
     private Button searchButton;
@@ -80,18 +83,22 @@ public class SearchPanel extends VerticalPanel {
             @Override
             void performSearch() {
                 searchButton.setEnabled(false);
+                final long startTime = System.currentTimeMillis();
                 ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
                 for (SearchCriterionPanel eventCriterionPanel : criterionPanelList) {
                     searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
                 }
                 searchOptionsService.performSearch(joinTypeListBox.getValue(), searchParametersList, new AsyncCallback<SerialisableDataNode>() {
                     public void onFailure(Throwable caught) {
-                        Window.alert(caught.getMessage());
+                        logger.log(Level.SEVERE, "PerformSearch", caught);
                         searchHandler.signalSearchDone();
                         searchButton.setEnabled(true);
                     }
 
                     public void onSuccess(SerialisableDataNode result) {
+                        long responseMils = System.currentTimeMillis() - startTime;
+                        final String searchTimeMessage = "PerformSearch response time: " + responseMils + " ms";
+                        logger.log(Level.INFO, searchTimeMessage);
                         dataNodeTree.addResultsToTree(result);
                         searchHandler.signalSearchDone();
                         searchButton.setEnabled(true);

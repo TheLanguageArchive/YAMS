@@ -18,6 +18,8 @@ import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.ValueListBox;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures;
 
@@ -28,6 +30,7 @@ import nl.mpi.yaas.common.data.QueryDataStructures;
  */
 public class SearchCriterionPanel extends HorizontalPanel {
 
+    private static final Logger logger = Logger.getLogger("");
     final private SearchOptionsServiceAsync searchOptionsService;
     final private SearchPanel searchPanel;
     final private ValueListBox<MetadataFileType> typesOptionsListBox;
@@ -89,7 +92,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
     private void loadTypesOptions() {
         searchOptionsService.getTypeOptions(null, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
+                logger.log(Level.SEVERE, "TypeOptions", caught);
             }
 
             public void onSuccess(MetadataFileType[] result) {
@@ -106,7 +109,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
     private void loadPathsOptions(MetadataFileType type) {
         searchOptionsService.getPathOptions(type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
+                logger.log(Level.SEVERE, "PathsOptions", caught);
             }
 
             public void onSuccess(MetadataFileType[] result) {
@@ -122,14 +125,14 @@ public class SearchCriterionPanel extends HorizontalPanel {
     private void loadValuesOptions(MetadataFileType type) {
         searchOptionsService.getValueOptions(type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
+                logger.log(Level.SEVERE, "ValuesOptions", caught);
             }
 
             public void onSuccess(MetadataFileType[] result) {
                 oracle.clear();
                 if (result != null) {
                     for (MetadataFileType type : result) {
-                        oracle.add(type.toString());
+                        oracle.add(type.getValue());
                     }
 //                    searchTextBox.setText("Added " + result.length + " values. Starting: " + result[0].getLabel());
                 }
