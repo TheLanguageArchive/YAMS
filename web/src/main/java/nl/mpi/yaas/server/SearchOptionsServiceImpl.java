@@ -4,7 +4,6 @@
  */
 package nl.mpi.yaas.server;
 
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -49,7 +48,10 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         // the LocalDbAdaptor version of the Arbil database is not intended to multi entry and has be replaced by a REST version
 //        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File(System.getProperty("user.dir"), "yaas-data"));
         try {
-            final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL("http://192.168.56.101:8080/BaseX76/rest/"), DataBaseManager.guestUser, DataBaseManager.guestUserPass);
+            final String basexRestUrl = getInitParameter("basexRestUrl");
+//            final String basexRestUrl = "http://tlatest03:8984/rest/";
+            System.out.println("basexRestUrl: " + basexRestUrl);
+            final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), DataBaseManager.guestUser, DataBaseManager.guestUserPass);
             return new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, DataBaseManager.defaultDataBase);
         } catch (MalformedURLException exception) {
             throw new QueryException(exception);
