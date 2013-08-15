@@ -19,7 +19,9 @@ package nl.mpi.yaas.common.db;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -224,6 +226,15 @@ public class DataBaseManager<D, F, M> {
         String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
         long queryMils = System.currentTimeMillis() - startTime;
         String queryTimeString = "Query time: " + queryMils + "ms";
+        final String sampleDateTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());;
+        String statsQuery = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildLink\n"
+                + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
+                + "return\n"
+                + "<CrawlerStats linkcount='{count($childIds)}' documentcount='{count($knownIds)}' queryms='" + queryMils + "' timestamp='" + sampleDateTime + "'/>";
+        String statsDoc = dbAdaptor.executeQuery(databaseName, statsQuery);
+        System.out.println("stats:" + statsDoc);
+        // insert the stats document
+        dbAdaptor.addDocument(databaseName, "CrawlerStats/" + sampleDateTime, statsDoc);
         System.out.println(queryTimeString);
         return queryResult; // the results here need to be split on " ", but the string can be very long so it should not be done by String.split().
     }
