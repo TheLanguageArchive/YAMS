@@ -56,6 +56,7 @@ public abstract class DataBaseManagerTest {
 
     static String testDatabaseName = "unit-test-database";
     static String restUrl = "http://localhost:8984/rest/";
+//    static String restUrl = "http://tlatest03:8984/rest";
     static String restUser = "admin";
     static String restPass = "admin";
 
@@ -314,5 +315,17 @@ public abstract class DataBaseManagerTest {
         Object[] expResult = null;
         final MetadataFileType[] result = dbManager.getTreeFacetTypes(metadataFileTypes);
         assertArrayEquals(expResult, result);
+    }
+
+    /**
+     * Test of getHandlesOfMissing method, of class DataBaseManager.
+     */
+    @Test
+    public void testGetHandlesOfMissing() throws Exception {
+        System.out.println("getHandlesOfMissing");
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        String result = dbManager.getHandlesOfMissing();
+        System.out.println("result:" + result);
+        assertEquals(517, result.length());
     }
 }
