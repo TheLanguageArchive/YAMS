@@ -218,7 +218,7 @@ public class DataBaseManager<D, F, M> {
         long startTime = System.currentTimeMillis();
         String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildLink\n"
                 + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
-                + "let $missingIds := distinct-values($childIds[not(@ID=$knownIds)]/@url)"
+                + "let $missingIds := distinct-values($childIds[not(@ID=$knownIds)]/@URI)"
                 + "return $missingIds[position() le 1000]\n"; // <DataNodeId> </DataNodeId>
         System.out.println("getHandlesOfMissing: " + queryString);
         String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
