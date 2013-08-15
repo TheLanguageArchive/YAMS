@@ -167,6 +167,20 @@ public class DataBaseManager<D, F, M> {
     }
 
     /**
+     * Gets a list of available databases
+     *
+     * @return a list of database names
+     * @throws QueryException
+     */
+    public String[] getDatabaseList() throws QueryException {
+//        String queryResult = dbAdaptor.executeQuery(databaseName, "for $databaseName in db:list()\n"
+//                + "return <String>{$databaseName}</String>");
+        String queryResult = dbAdaptor.executeQuery(databaseName, "db:list()");
+        System.out.println("databaseList: " + queryResult);
+        return queryResult.split(" ");
+    }
+
+    /**
      * Creates a document in the database that holds information on the contents
      * of the database such as document count and root nodes URLs
      *

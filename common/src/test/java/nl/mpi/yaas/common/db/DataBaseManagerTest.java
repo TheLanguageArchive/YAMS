@@ -328,4 +328,15 @@ public abstract class DataBaseManagerTest {
         System.out.println("result:" + result);
         assertEquals(517, result.length());
     }
+
+    /**
+     * Test of getDatabaseList method, of class DataBaseManager.
+     */
+    @Test
+    public void testGetDatabaseList() throws Exception {
+        System.out.println("getDatabaseList");
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        String[] result = dbManager.getDatabaseList();
+        assertTrue("Unexpected db names length: " + result.length, result.length > 0);
+    }
 }
