@@ -34,6 +34,15 @@ import nl.mpi.yaas.shared.WebQueryException;
 //@RemoteServiceRelativePath("SearchOptionsService")
 public class SearchOptionsServiceImpl extends RemoteServiceServlet implements SearchOptionsService {
 
+    public String[] getDatabaseList() throws WebQueryException {
+        try {
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
+            return yaasDatabase.getDatabaseList();
+        } catch (QueryException exception) {
+            throw new WebQueryException(exception);
+        }
+    }
+
     public DatabaseStats getDatabaseStats() throws WebQueryException {
         try {
             DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();

@@ -27,6 +27,8 @@ public interface SearchOptionsService extends RemoteService {
 
     DatabaseStats getDatabaseStats() throws WebQueryException;
 
+    String[] getDatabaseList() throws WebQueryException;
+
     MetadataFileType[] getTypeOptions(MetadataFileType metadataFileType) throws WebQueryException;
 
     MetadataFileType[] getPathOptions(MetadataFileType metadataFileType) throws WebQueryException;
