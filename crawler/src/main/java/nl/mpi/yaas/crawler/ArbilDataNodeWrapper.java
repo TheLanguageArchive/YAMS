@@ -66,6 +66,11 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     }
 
     @Override
+    public String getURI() throws ModelException {
+        return arbilDataNode.getURI().toString();
+    }
+
+    @Override
     public String getLabel() {
         return arbilDataNode.refreshStringValue();
     }
