@@ -47,7 +47,6 @@ public class SingleDataNodeTable extends VerticalPanel {
         }
         add(linksPanel);
         add(grid);
-        rowCounter++;
         for (FieldGroup fieldGroup : fieldGroups) {
             grid.setText(rowCounter, 0, fieldGroup.getFieldName());
             HorizontalPanel horizontalPanel = new HorizontalPanel();

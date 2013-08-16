@@ -252,6 +252,7 @@ public class YaasTreeItem extends TreeItem {
                     final int maxToGet = yaasDataNode.getChildIds().size();
                     if (maxToGet <= loadedCount) {
                         // all child nodes should be visible so we can just return
+                        removeItem(loadingTreeItem);
                         return;
                     }
                     final int nextToLoad = (maxToGet <= loadedCount + 20) ? maxToGet : loadedCount + 20;
