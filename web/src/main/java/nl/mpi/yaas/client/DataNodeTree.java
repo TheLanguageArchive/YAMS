@@ -59,9 +59,9 @@ public class DataNodeTree extends Tree {
 //        });
     }
 
-    public void addResultsToTree(DataNodeId[] dataNodeIds) {
+    public void addResultsToTree(String databaseName, DataNodeId[] dataNodeIds) {
         for (DataNodeId dataNodeId : dataNodeIds) {
-            final YaasTreeItem yaasTreeItem = new YaasTreeItem(dataNodeId, searchOptionsService, dataNodeTable, iconTableBase64);
+            final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeId, searchOptionsService, dataNodeTable, iconTableBase64);
             this.addItem(yaasTreeItem);
         }
         // temp code to add a session
@@ -69,8 +69,8 @@ public class DataNodeTree extends Tree {
         //this.addItem(yaasTreeItem);
     }
 
-    public void addResultsToTree(SerialisableDataNode dataNode) {
-        final YaasTreeItem yaasTreeItem = new YaasTreeItem(dataNode, searchOptionsService, dataNodeTable, iconTableBase64);
+    public void addResultsToTree(String databaseName, SerialisableDataNode dataNode) {
+        final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNode, searchOptionsService, dataNodeTable, iconTableBase64);
         this.addItem(yaasTreeItem);
     }
 }

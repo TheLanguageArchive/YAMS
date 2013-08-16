@@ -40,19 +40,21 @@ public class SearchPanel extends VerticalPanel {
     private final ValueListBox<CriterionJoinType> joinTypeListBox;
     private final VerticalPanel verticalPanel;
     private final ArrayList<SearchCriterionPanel> criterionPanelList = new ArrayList<SearchCriterionPanel>();
+    private final String databaseName;
 
-    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, DataNodeTree dataNodeTree, DataNodeTable dataNodeTable) {
+    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, final String databaseName, DataNodeTree dataNodeTree, DataNodeTable dataNodeTable) {
         this.searchOptionsService = searchOptionsService;
         this.dataNodeTable = dataNodeTable;
         this.dataNodeTree = dataNodeTree;
+        this.databaseName = databaseName;
         verticalPanel = new VerticalPanel();
         initSearchHandler();
-        final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this, searchOptionsService);
+        final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(databaseName, SearchPanel.this, searchOptionsService);
         verticalPanel.add(searchCriterionPanel);
         criterionPanelList.add(searchCriterionPanel);
         Button addRowButton = new Button("add search term", new ClickHandler() {
             public void onClick(ClickEvent event) {
-                addSearchCriterionPanel(new SearchCriterionPanel(SearchPanel.this, SearchPanel.this.searchOptionsService));
+                addSearchCriterionPanel(new SearchCriterionPanel(databaseName, SearchPanel.this, SearchPanel.this.searchOptionsService));
             }
         });
         this.add(verticalPanel);
@@ -88,7 +90,7 @@ public class SearchPanel extends VerticalPanel {
                 for (SearchCriterionPanel eventCriterionPanel : criterionPanelList) {
                     searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
                 }
-                searchOptionsService.performSearch(joinTypeListBox.getValue(), searchParametersList, new AsyncCallback<SerialisableDataNode>() {
+                searchOptionsService.performSearch(databaseName, joinTypeListBox.getValue(), searchParametersList, new AsyncCallback<SerialisableDataNode>() {
                     public void onFailure(Throwable caught) {
                         logger.log(Level.SEVERE, "PerformSearch", caught);
                         searchHandler.signalSearchDone();
@@ -99,7 +101,7 @@ public class SearchPanel extends VerticalPanel {
                         long responseMils = System.currentTimeMillis() - startTime;
                         final String searchTimeMessage = "PerformSearch response time: " + responseMils + " ms";
                         logger.log(Level.INFO, searchTimeMessage);
-                        dataNodeTree.addResultsToTree(result);
+                        dataNodeTree.addResultsToTree(databaseName, result);
                         searchHandler.signalSearchDone();
                         searchButton.setEnabled(true);
                     }

@@ -9,7 +9,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.text.shared.Renderer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -38,9 +37,11 @@ public class SearchCriterionPanel extends HorizontalPanel {
     final private ValueListBox<QueryDataStructures.SearchOption> searchOptionsListBox;
     final private SuggestBox searchTextBox;
     private MultiWordSuggestOracle oracle;
+    private final String databaseName;
 
-    public SearchCriterionPanel(final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
+    public SearchCriterionPanel(String databaseName, final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
         this.searchPanel = searchPanel;
+        this.databaseName = databaseName;
         this.searchOptionsService = searchOptionsService;
         Button removeRowButton = new Button("remove", new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -90,7 +91,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
     }
 
     private void loadTypesOptions() {
-        searchOptionsService.getTypeOptions(null, new AsyncCallback<MetadataFileType[]>() {
+        searchOptionsService.getTypeOptions(databaseName, null, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 logger.log(Level.SEVERE, "TypeOptions", caught);
             }
@@ -107,7 +108,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
     }
 
     private void loadPathsOptions(MetadataFileType type) {
-        searchOptionsService.getPathOptions(type, new AsyncCallback<MetadataFileType[]>() {
+        searchOptionsService.getPathOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 logger.log(Level.SEVERE, "PathsOptions", caught);
             }
@@ -123,7 +124,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
     }
 
     private void loadValuesOptions(MetadataFileType type) {
-        searchOptionsService.getValueOptions(type, new AsyncCallback<MetadataFileType[]>() {
+        searchOptionsService.getValueOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 logger.log(Level.SEVERE, "ValuesOptions", caught);
             }

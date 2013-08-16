@@ -25,21 +25,21 @@ import nl.mpi.yaas.shared.WebQueryException;
 @RemoteServiceRelativePath("searchoptions")
 public interface SearchOptionsService extends RemoteService {
 
-    DatabaseStats getDatabaseStats() throws WebQueryException;
+    DatabaseStats getDatabaseStats(String databaseName) throws WebQueryException;
 
     String[] getDatabaseList() throws WebQueryException;
 
-    MetadataFileType[] getTypeOptions(MetadataFileType metadataFileType) throws WebQueryException;
+    MetadataFileType[] getTypeOptions(String databaseName, MetadataFileType metadataFileType) throws WebQueryException;
 
-    MetadataFileType[] getPathOptions(MetadataFileType metadataFileType) throws WebQueryException;
+    MetadataFileType[] getPathOptions(String databaseName, MetadataFileType metadataFileType) throws WebQueryException;
 
-    MetadataFileType[] getValueOptions(MetadataFileType metadataFileType) throws WebQueryException;
+    MetadataFileType[] getValueOptions(String databaseName, MetadataFileType metadataFileType) throws WebQueryException;
 
-    MetadataFileType[] getTreeFacets(MetadataFileType[] metadataFileTypes) throws WebQueryException;
+    MetadataFileType[] getTreeFacets(String databaseName, MetadataFileType[] metadataFileTypes) throws WebQueryException;
 
-    SerialisableDataNode performSearch(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException;
+    SerialisableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException;
 
-    List<SerialisableDataNode> getDataNodes(ArrayList<DataNodeId> dataNodeIds) throws WebQueryException;
+    List<SerialisableDataNode> getDataNodes(String databaseName, ArrayList<DataNodeId> dataNodeIds) throws WebQueryException;
 
-    IconTableBase64 getImageDataForTypes() throws WebQueryException;
+    IconTableBase64 getImageDataForTypes(String databaseName) throws WebQueryException;
 }

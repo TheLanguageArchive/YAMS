@@ -36,16 +36,16 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public String[] getDatabaseList() throws WebQueryException {
         try {
-            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(DataBaseManager.defaultDataBase);
             return yaasDatabase.getDatabaseList();
         } catch (QueryException exception) {
             throw new WebQueryException(exception);
         }
     }
 
-    public DatabaseStats getDatabaseStats() throws WebQueryException {
+    public DatabaseStats getDatabaseStats(String databaseName) throws WebQueryException {
         try {
-            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
             DatabaseStats databaseStats = yaasDatabase.getDatabaseStats();
             return databaseStats;
         } catch (QueryException exception) {
@@ -53,7 +53,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    private DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDatabase() throws QueryException {
+    private DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDatabase(String databaseName) throws QueryException {
         // the LocalDbAdaptor version of the Arbil database is not intended to multi entry and has be replaced by a REST version
 //        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File(System.getProperty("user.dir"), "yaas-data"));
         try {
@@ -61,15 +61,15 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 //            final String basexRestUrl = "http://tlatest03:8984/rest/";
             System.out.println("basexRestUrl: " + basexRestUrl);
             final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), DataBaseManager.guestUser, DataBaseManager.guestUserPass);
-            return new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, DataBaseManager.defaultDataBase);
+            return new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
         } catch (MalformedURLException exception) {
             throw new QueryException(exception);
         }
     }
 
-    public MetadataFileType[] getTypeOptions(MetadataFileType metadataFileType) throws WebQueryException {
+    public MetadataFileType[] getTypeOptions(String databaseName, MetadataFileType metadataFileType) throws WebQueryException {
         try {
-            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
             MetadataFileType[] metadataPathTypes = yaasDatabase.getMetadataTypes(metadataFileType);
             return metadataPathTypes;
         } catch (QueryException exception) {
@@ -77,9 +77,9 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    public MetadataFileType[] getPathOptions(MetadataFileType metadataFileType) throws WebQueryException {
+    public MetadataFileType[] getPathOptions(String databaseName, MetadataFileType metadataFileType) throws WebQueryException {
         try {
-            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
             MetadataFileType[] metadataFieldTypes = yaasDatabase.getMetadataPaths(metadataFileType);
             return metadataFieldTypes;
         } catch (QueryException exception) {
@@ -87,9 +87,9 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    public MetadataFileType[] getValueOptions(MetadataFileType metadataFileType) throws WebQueryException {
+    public MetadataFileType[] getValueOptions(String databaseName, MetadataFileType metadataFileType) throws WebQueryException {
         try {
-            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
             MetadataFileType[] metadataFieldTypes = yaasDatabase.getMetadataFieldValues(metadataFileType);
             return metadataFieldTypes;
         } catch (QueryException exception) {
@@ -97,9 +97,9 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    public MetadataFileType[] getTreeFacets(MetadataFileType[] metadataFileTypes) throws WebQueryException {
+    public MetadataFileType[] getTreeFacets(String databaseName, MetadataFileType[] metadataFileTypes) throws WebQueryException {
         try {
-            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
             MetadataFileType[] metadataFieldTypes = yaasDatabase.getTreeFacetTypes(metadataFileTypes);
             return metadataFieldTypes;
         } catch (QueryException exception) {
@@ -107,10 +107,10 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    public SerialisableDataNode performSearch(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException {
+    public SerialisableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException {
 //        return new YaasDataNode(criterionJoinType.name());
         try {
-            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
             SerialisableDataNode yaasDataNode = yaasDatabase.getSearchResult(criterionJoinType, searchParametersList);
             return yaasDataNode;
 //            ArrayList<String> returnList = new ArrayList<String>();
@@ -123,9 +123,9 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    public List<SerialisableDataNode> getDataNodes(ArrayList<DataNodeId> dataNodeIds) throws WebQueryException {
+    public List<SerialisableDataNode> getDataNodes(String databaseName, ArrayList<DataNodeId> dataNodeIds) throws WebQueryException {
         try {
-            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
             SerialisableDataNode yaasDataNode = yaasDatabase.getNodeDatasByIDs(dataNodeIds);
             return (List<SerialisableDataNode>) yaasDataNode.getChildList();
         } catch (QueryException exception) {
@@ -133,9 +133,9 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    public IconTableBase64 getImageDataForTypes() throws WebQueryException {
+    public IconTableBase64 getImageDataForTypes(String databaseName) throws WebQueryException {
         try {
-            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase();
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
             final IconTableBase64 nodeIcons = yaasDatabase.getNodeIconsBase64();
             return nodeIcons;
         } catch (PluginException exception) {

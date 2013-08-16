@@ -56,12 +56,14 @@ public class YaasTreeItem extends TreeItem {
     private final TreeItem loadingTreeItem;
     private final TreeItem loadNextTreeItem;
     private static final Logger logger = Logger.getLogger("");
+    private final String databaseName;
 
-    public YaasTreeItem(DataNodeId dataNodeId, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
+    public YaasTreeItem(String databaseName, DataNodeId dataNodeId, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
         super(new HorizontalPanel());
         loadingTreeItem = getLoadingItem();
         this.dataNodeTable = dataNodeTable;
         this.dataNodeId = dataNodeId;
+        this.databaseName = databaseName;
         this.searchOptionsService = searchOptionsService;
         this.iconTableBase64 = iconTableBase64;
         outerPanel = (HorizontalPanel) this.getWidget();
@@ -75,13 +77,14 @@ public class YaasTreeItem extends TreeItem {
         loadDataNode();
     }
 
-    public YaasTreeItem(SerialisableDataNode yaasDataNode, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
+    public YaasTreeItem(String databaseName, SerialisableDataNode yaasDataNode, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
         super(new HorizontalPanel());
         loadingTreeItem = getLoadingItem();
         this.yaasDataNode = yaasDataNode;
         this.searchOptionsService = searchOptionsService;
         this.dataNodeTable = dataNodeTable;
         this.iconTableBase64 = iconTableBase64;
+        this.databaseName = databaseName;
         outerPanel = (HorizontalPanel) this.getWidget();
         checkBox = new CheckBox();
         nodeLabel = new Label();
@@ -151,7 +154,7 @@ public class YaasTreeItem extends TreeItem {
         nodeDetailsAnchor.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 if (singleDataNodeTable == null) {
-                    singleDataNodeTable = new SingleDataNodeTable(yaasDataNode);
+                    singleDataNodeTable = new SingleDataNodeTable(yaasDataNode, this);
                     singleDataNodeTable.setStyleName("yaas-treeNodeDetails");
                     outerPanel.add(singleDataNodeTable);
 //                                 expandButton.setText("<<");
@@ -206,7 +209,7 @@ public class YaasTreeItem extends TreeItem {
             setText("loading...");
             final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
             dataNodeIdList.add(dataNodeId);
-            searchOptionsService.getDataNodes(dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
+            searchOptionsService.getDataNodes(databaseName, dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
                 public void onFailure(Throwable caught) {
                     setText(FAILURE);
                     logger.log(Level.SEVERE, FAILURE, caught);
@@ -237,7 +240,7 @@ public class YaasTreeItem extends TreeItem {
                 removeItem(loadingTreeItem);
                 // add the meta child nodes
                 for (SerialisableDataNode childDataNode : yaasDataNode.getChildList()) {
-                    YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
+                    YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
                     addItem(yaasTreeItem);;
                 }
             } else {
@@ -259,7 +262,7 @@ public class YaasTreeItem extends TreeItem {
                     addItem(new Label(ERROR_GETTING_CHILD_NODES));
                     logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
                 }
-                searchOptionsService.getDataNodes(dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
+                searchOptionsService.getDataNodes(databaseName, dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
                     public void onFailure(Throwable exception) {
                         removeItem(loadingTreeItem);
                         addItem(new Label(LOADING_CHILD_NODES_FAILED));
@@ -273,7 +276,7 @@ public class YaasTreeItem extends TreeItem {
                             addItem(new Label("no child nodes found"));
                         } else {
                             for (SerialisableDataNode childDataNode : dataNodeList) {
-                                YaasTreeItem yaasTreeItem = new YaasTreeItem(childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
+                                YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
                                 addItem(yaasTreeItem);
                             }
                             try {
