@@ -27,6 +27,8 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nl.mpi.yaas.common.data.MetadataFileType;
 
 /**
@@ -36,13 +38,16 @@ import nl.mpi.yaas.common.data.MetadataFileType;
  */
 public class FacetedTree extends VerticalPanel {
 
+    private static final Logger logger = Logger.getLogger("");
     final private SearchOptionsServiceAsync searchOptionsService;
     final private ArrayList<MetadataFileType[]> selectedFacets = new ArrayList<MetadataFileType[]>();
     final private MenuBar menuBar;
     final private Tree facetTree;
+    private final String databaseName;
 
-    public FacetedTree(SearchOptionsServiceAsync searchOptionsService) {
+    public FacetedTree(SearchOptionsServiceAsync searchOptionsService, String databaseName) {
         this.searchOptionsService = searchOptionsService;
+        this.databaseName = databaseName;
         menuBar = new MenuBar();
         facetTree = new Tree();
         add(menuBar);
@@ -76,7 +81,7 @@ public class FacetedTree extends VerticalPanel {
             menuBar.addItem(labelString, getMenuItems(menuIndex++));
         }
         if (!selectedFacets.isEmpty()) {
-            final YaasTreeFacet yaasTreeFacet = new YaasTreeFacet(selectedFacets.get(0)[1], searchOptionsService, null, 0);
+            final YaasTreeFacet yaasTreeFacet = new YaasTreeFacet(databaseName, null, searchOptionsService, null, -1);
             facetTree.addItem(yaasTreeFacet);
             yaasTreeFacet.loadChildFacets(selectedFacets);
         }
@@ -98,9 +103,9 @@ public class FacetedTree extends VerticalPanel {
     }
 
     private void loadTypeOptions(final MenuBar typeMenu, final MetadataFileType type, final int menuIndex) {
-        searchOptionsService.getTypeOptions(type, new AsyncCallback<MetadataFileType[]>() {
+        searchOptionsService.getTypeOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
+                logger.log(Level.SEVERE, "TypeOptions", caught);
             }
 
             public void onSuccess(MetadataFileType[] result) {
@@ -124,9 +129,9 @@ public class FacetedTree extends VerticalPanel {
     }
 
     private void loadFacetOptions(final MenuBar facetMenu, final MetadataFileType type, final int menuIndex) {
-        searchOptionsService.getPathOptions(type, new AsyncCallback<MetadataFileType[]>() {
+        searchOptionsService.getPathOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());
+                logger.log(Level.SEVERE, "FacetOptions", caught);
             }
 
             public void onSuccess(MetadataFileType[] result) {

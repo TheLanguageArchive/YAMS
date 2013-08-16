@@ -21,6 +21,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.TreeItem;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nl.mpi.yaas.common.data.MetadataFileType;
 
 /**
@@ -30,38 +32,50 @@ import nl.mpi.yaas.common.data.MetadataFileType;
  */
 public class YaasTreeFacet extends TreeItem {
 
+    private static final Logger logger = Logger.getLogger("");
     private final MetadataFileType selectedFacet;
     final private SearchOptionsServiceAsync searchOptionsService;
     final private int levelIndex;
     final private YaasTreeFacet parentFacet;
+    private boolean loadRequestMade = false;
+    private final String databaseName;
 
-    public YaasTreeFacet(MetadataFileType selectedFacet, SearchOptionsServiceAsync searchOptionsService, YaasTreeFacet parentFacet, int levelIndex) {
+    public YaasTreeFacet(String databaseName, MetadataFileType selectedFacet, SearchOptionsServiceAsync searchOptionsService, YaasTreeFacet parentFacet, int levelIndex) {
+        this.databaseName = databaseName;
         this.selectedFacet = selectedFacet;
         this.searchOptionsService = searchOptionsService;
         this.parentFacet = parentFacet;
         this.levelIndex = levelIndex;
-        setText(selectedFacet.toString());
+        if (selectedFacet == null) {
+            setText("Selected Facets");
+        } else {
+            setText(selectedFacet.toString());
+        }
     }
 
     private void getParentFacets(MetadataFileType[] parentFacets) {
-        parentFacets[levelIndex] = selectedFacet;
-        parentFacet.getParentFacets(parentFacets);
+        if (levelIndex > 0) {
+            logger.log(Level.INFO, "levelIndex: " + levelIndex + " : " + selectedFacet.toString());
+            parentFacets[levelIndex] = selectedFacet;
+            parentFacet.getParentFacets(parentFacets);
+        }
     }
 
-    protected void loadChildFacetsOnce(ArrayList<MetadataFileType[]> selectedFacets) {
-        if (getChildCount() == 0) {
+    protected synchronized void loadChildFacetsOnce(ArrayList<MetadataFileType[]> selectedFacets) {
+        if (!loadRequestMade) {
+            loadRequestMade = true;
             loadChildFacets(selectedFacets);
         }
     }
 
     protected void loadChildFacets(ArrayList<MetadataFileType[]> selectedFacets) {
         this.addItem(new Image("./loader.gif"));
-        MetadataFileType[] parentFacets = new MetadataFileType[levelIndex + 1];
+        MetadataFileType[] parentFacets = new MetadataFileType[levelIndex + 2];
         if (parentFacet != null) {
-            parentFacet.getParentFacets(parentFacets);
+            getParentFacets(parentFacets);
         }
-        parentFacets[levelIndex] = selectedFacets.get(selectedFacets.size() - 1)[1];
-        searchOptionsService.getTreeFacets(parentFacets, new AsyncCallback<MetadataFileType[]>() {
+        parentFacets[levelIndex + 1] = selectedFacets.get(selectedFacets.size() - 1)[1];
+        searchOptionsService.getTreeFacets(databaseName, parentFacets, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 removeItems();
                 setText(caught.getMessage());
@@ -71,7 +85,7 @@ public class YaasTreeFacet extends TreeItem {
                 removeItems();
                 if (result != null && result.length > 0) {
                     for (final MetadataFileType facetType : result) {
-                        addItem(new YaasTreeFacet(facetType, searchOptionsService, YaasTreeFacet.this, levelIndex + 1));
+                        addItem(new YaasTreeFacet(databaseName, facetType, searchOptionsService, YaasTreeFacet.this, levelIndex + 1));
                     }
                 }
             }
