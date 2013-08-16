@@ -131,6 +131,7 @@ public class YaasTreeItem extends TreeItem {
     private void hideShowExpandButton() {
         final boolean hasFields = yaasDataNode != null && yaasDataNode.getFieldGroups() != null;
         nodeLabel.setVisible(!hasFields);
+        checkBox.setVisible(hasFields);
         nodeDetailsAnchor.setVisible(hasFields);
     }
 

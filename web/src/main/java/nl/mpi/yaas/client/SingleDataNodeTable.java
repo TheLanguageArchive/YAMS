@@ -4,9 +4,8 @@
  */
 package nl.mpi.yaas.client;
 
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -25,36 +24,37 @@ import nl.mpi.flap.model.SerialisableDataNode;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class SingleDataNodeTable extends Grid {
+public class SingleDataNodeTable extends VerticalPanel {
 
     private static final Logger logger = Logger.getLogger("");
 
     public SingleDataNodeTable(final SerialisableDataNode yaasDataNode, ClickHandler closeHandler) {
-        super(yaasDataNode.getFieldGroups().size() + 1, 2);
         final List<FieldGroup> fieldGroups = yaasDataNode.getFieldGroups();
         int rowCounter = 0;
-        final VerticalPanel linksPanel = new VerticalPanel();
-        final Button closeButton = new Button("close", closeHandler);
-        final Button browseButton = new Button("browse", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                    Window.open(yaasDataNode.getURI(), "_blank", "");
-                } catch (ModelException exception) {
-                    logger.log(Level.SEVERE, "ClickEvent", exception);
-                }
-            }
-        });
+        final HorizontalPanel linksPanel = new HorizontalPanel();
+        final Grid grid = new Grid(yaasDataNode.getFieldGroups().size() + 1, 2);
+        final Button closeButton = new Button("x", closeHandler);
+        closeButton.setStyleName("yaas-closeButton");
         linksPanel.add(closeButton);
-        linksPanel.add(browseButton);
-        setWidget(rowCounter, 0, linksPanel);
+        try {
+            final String uri = yaasDataNode.getURI();
+            if (uri != null && uri.length() > 0) {
+                Anchor anchor = new Anchor("view source", uri);
+                linksPanel.add(anchor);
+            }
+        } catch (ModelException exception) {
+            logger.log(Level.SEVERE, "ClickEvent", exception);
+        }
+        add(linksPanel);
+        add(grid);
         rowCounter++;
         for (FieldGroup fieldGroup : fieldGroups) {
-            setText(rowCounter, 0, fieldGroup.getFieldName());
+            grid.setText(rowCounter, 0, fieldGroup.getFieldName());
             HorizontalPanel horizontalPanel = new HorizontalPanel();
             for (DataField dataField : fieldGroup.getFields()) {
                 horizontalPanel.add(new Label(dataField.getFieldValue()));
             }
-            setWidget(rowCounter, 1, horizontalPanel);
+            grid.setWidget(rowCounter, 1, horizontalPanel);
             rowCounter++;
         }
     }

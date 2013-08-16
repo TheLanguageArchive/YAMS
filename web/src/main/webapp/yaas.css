@@ -11,9 +11,9 @@
     background-color:white;
 }
 .yaas-treeNode {
-/*  vertical-align: top;
-    border-style:solid;
-    border-width:1px;*/
+    /*  vertical-align: top;
+        border-style:solid;
+        border-width:1px;*/
 }
 
 .yaas-treeNodeDetails {
@@ -46,8 +46,9 @@ h1 {
 .serverResponseLabelError {
     color: red;
 }
-
-/** Set ids using widget.getElement().setId("idOfElement") */
-#closeButton {
+.yaas-closeButton {
+    position: fixed;
+    right: 0;
+    bottom: 0;
     margin: 15px 6px 6px;
 }
