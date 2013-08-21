@@ -55,6 +55,7 @@ public class Main {
         String databaseUrl = "http://localhost:8984/rest/";
         String databaseUser = "admin";
         String databasePassword = "admin";
+//        String defaultStartUrl = "http://corpus1.mpi.nl/ds/TranslationService/translate?in=1839/00-0000-0000-0001-53A5-2&outFormat=cmdi";
         String defaultStartUrl = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi";
         // create the command line parser
         CommandLineParser parser = new BasicParser(); //DefaultParser();
@@ -119,9 +120,9 @@ public class Main {
                     System.out.println("Looking for and appending missing documents");
                     archiveCrawler.update();
                 }
-                archiveCrawler.clearAndCalculateDbStats();
                 archiveCrawler.insertKnowIcons();
                 if (line.hasOption("f")) {
+                    archiveCrawler.clearAndCalculateDbStats();
                     archiveCrawler.preloadFacets();
                 }
                 System.exit(0); // arbil threads might be requiring this to terminate
