@@ -133,8 +133,7 @@ public class LocalDbAdaptor implements DbAdaptor {
     public String executeQuery(String databaseName, String queryString) throws QueryException {
         try {
             synchronized (databaseLock) {
-                // try getting the cached stats                
-                System.out.println("queryString: " + queryString);
+//                System.out.println("queryString: " + queryString);
                 return new XQuery(queryString).execute(context);
             }
         } catch (BaseXException exception) {
