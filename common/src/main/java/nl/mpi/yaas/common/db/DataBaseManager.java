@@ -554,12 +554,13 @@ public class DataBaseManager<D, F, M> {
 
     private String getSearchConstraint(SearchParameters searchParameters) {
         String typeClause = "/DataNode";
+        String pathClause = "";
         if (searchParameters.getFileType() != null) {
             if (searchParameters.getFileType().getType() != null) {
                 typeClause += "[Type/@Name = '" + searchParameters.getFileType().getType() + "']";
             }
             if (searchParameters.getFieldType().getPath() != null) {
-                typeClause += "[//DataNode/FieldGroup/@Label = '" + searchParameters.getFieldType().getPath() + "']";
+                pathClause += "[@Label = '" + searchParameters.getFieldType().getPath() + "']";
             }
         }
         String fieldsQuery = "";
@@ -572,9 +573,9 @@ public class DataBaseManager<D, F, M> {
                     + "<FieldGroup>{$field}</FieldGroup>\n"
                     + "}\n";
         }
-        return "for $foundNode in collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "["
-                + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData/")
-                + "]\n"
+        return "for $foundNode in collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "[//DataNode/FieldGroup" + pathClause + "["
+                + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "FieldData/")
+                + "]]\n"
                 + "return\n"
                 + "<DataNode>\n"
                 + "{$foundNode/@ID}\n"
