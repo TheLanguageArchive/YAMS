@@ -236,7 +236,7 @@ public class DataBaseManager<D, F, M> {
                 + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                 + "let $missingIds := distinct-values($childIds[not(@ID=$knownIds)]/@URI)"
                 + "return $missingIds[position() le 1000]\n"; // <DataNodeId> </DataNodeId>
-        System.out.println("getHandlesOfMissing: " + queryString);
+//        System.out.println("getHandlesOfMissing: " + queryString);
         String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
         long queryMils = System.currentTimeMillis() - startTime;
         String queryTimeString = "Query time: " + queryMils + "ms";
