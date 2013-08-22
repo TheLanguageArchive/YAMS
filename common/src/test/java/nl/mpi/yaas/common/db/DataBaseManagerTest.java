@@ -265,7 +265,7 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         SerialisableDataNode result1 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
         assertEquals("Search Results", result1.getID());
-        assertEquals(4, result1.getChildList().size());
+        assertEquals(1, result1.getChildList().size());
         searchParametersList.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.not, QueryDataStructures.SearchType.contains, "urban sign languages"));
         SerialisableDataNode result2 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
         assertEquals(null, result2.getChildList());
