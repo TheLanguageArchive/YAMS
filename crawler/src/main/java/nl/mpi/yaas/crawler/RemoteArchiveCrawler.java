@@ -282,6 +282,7 @@ public class RemoteArchiveCrawler {
 
     private void loadAndInsert(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException, CrawlerException, ModelException {
         System.out.println("Loading: " + numberInserted);
+        System.out.println("URL: " + dataNode.getUrlString());
         while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
             dataNode.reloadNode();
             dataNode.waitTillLoaded();
@@ -291,7 +292,6 @@ public class RemoteArchiveCrawler {
 //        loadChildNodes(dataNode);
         if (!dataNode.fileNotFound && !dataNode.isChildNode()) {
 //            System.out.println("Inserting into the database");
-            System.out.println("URL: " + dataNode.getUrlString());
             final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
             insertNodeIcons(dataNode);
             //            arbilDataNodeWrapper.checkChildNodesLoaded();
