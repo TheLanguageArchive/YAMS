@@ -7,7 +7,6 @@ package nl.mpi.yaas.client;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.text.shared.Renderer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -32,6 +31,8 @@ import nl.mpi.yaas.common.data.SearchParameters;
 public class SearchPanel extends VerticalPanel {
 
     private static final Logger logger = Logger.getLogger("");
+    private static final String SEARCH_LABEL = "Search";
+    private static final String SEARCHING_LABEL = "<img src='./loader.gif'/>&nbsp;Searching";
     private final SearchOptionsServiceAsync searchOptionsService;
     private final DataNodeTable dataNodeTable;
     private Button searchButton;
@@ -78,13 +79,14 @@ public class SearchPanel extends VerticalPanel {
     }
 
     private void initSearchHandler() {
-        searchButton = new Button("Search");
+        searchButton = new Button(SEARCH_LABEL);
         searchButton.addStyleName("sendButton");
 
         searchHandler = new SearchHandler() {
             @Override
             void performSearch() {
                 searchButton.setEnabled(false);
+                searchButton.setHTML(SEARCHING_LABEL);
                 final long startTime = System.currentTimeMillis();
                 ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
                 for (SearchCriterionPanel eventCriterionPanel : criterionPanelList) {
@@ -95,6 +97,7 @@ public class SearchPanel extends VerticalPanel {
                         logger.log(Level.SEVERE, "PerformSearch", caught);
                         searchHandler.signalSearchDone();
                         searchButton.setEnabled(true);
+                        searchButton.setHTML(SEARCH_LABEL);
                     }
 
                     public void onSuccess(SerialisableDataNode result) {
@@ -104,6 +107,7 @@ public class SearchPanel extends VerticalPanel {
                         dataNodeTree.addResultsToTree(databaseName, result);
                         searchHandler.signalSearchDone();
                         searchButton.setEnabled(true);
+                        searchButton.setHTML(SEARCH_LABEL);
                     }
                 });
             }
