@@ -235,7 +235,8 @@ public class DataBaseManager<D, F, M> {
         String queryString = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildLink\n"
                 + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                 + "let $missingIds := distinct-values($childIds[not(@ID=$knownIds)]/@URI)"
-                + "return $missingIds[position() le 1000]\n"; // <DataNodeId> </DataNodeId>
+                + "return $missingIds[ends-with(., '.imdi') or ends-with(., '.cmdi')][position() le 1000]\n"; // <DataNodeId> </DataNodeId>
+        System.out.println("filtering by suffix on cmdi and imdi (this must be removed when a better solution is defined)");
 //        System.out.println("getHandlesOfMissing: " + queryString);
         String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
         long queryMils = System.currentTimeMillis() - startTime;
