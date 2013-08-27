@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Set;
 import javax.swing.ImageIcon;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -28,11 +29,13 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
+import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.DataNodeId;
+import nl.mpi.yaas.common.data.DatabaseLinks;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.IconTable;
 import nl.mpi.yaas.common.data.IconTableBase64;
@@ -338,5 +341,55 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         String[] result = dbManager.getDatabaseList();
         assertTrue("Unexpected db names length: " + result.length, result.length > 0);
+    }
+
+    /**
+     * Test of getHandlesOfMissing method, of class DataBaseManager.
+     */
+    @Test
+    public void testGetHandlesOfMissing_0args() throws Exception {
+        System.out.println("getHandlesOfMissing");
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        String expResult = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ageX.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age5.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age3.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age2.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age1.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age0.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age4.imdi";
+        String result = dbManager.getHandlesOfMissing();
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getHandlesOfMissing method, of class DataBaseManager.
+     */
+    @Test
+    public void testGetHandlesOfMissing_DatabaseLinks() throws Exception {
+        System.out.println("getHandlesOfMissing");
+        DatabaseLinks databaseLinks1 = new DatabaseLinks();
+        databaseLinks1.insertRootLink(new DataNodeLink("one"));
+        databaseLinks1.insertRootLink(new DataNodeLink("two"));
+
+        databaseLinks1.insertChildLink(new DataNodeLink("a"));
+        databaseLinks1.insertChildLink(new DataNodeLink("b"));
+        databaseLinks1.insertChildLink(new DataNodeLink("c"));
+        databaseLinks1.insertChildLink(new DataNodeLink("d"));
+        databaseLinks1.insertChildLink(new DataNodeLink("e"));
+        databaseLinks1.insertChildLink(new DataNodeLink("f"));
+        databaseLinks1.insertChildLink(new DataNodeLink("f"));// duplicate
+
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        Set<DataNodeLink> result1 = dbManager.getHandlesOfMissing(databaseLinks1);
+        assertEquals(6, result1.size());
+
+        DatabaseLinks databaseLinks2 = new DatabaseLinks();
+        databaseLinks2.insertRootLink(new DataNodeLink("one"));// duplicate
+        databaseLinks2.insertRootLink(new DataNodeLink("three"));
+
+        databaseLinks2.insertChildLink(new DataNodeLink("f"));// duplicate
+        databaseLinks2.insertChildLink(new DataNodeLink("g"));
+        databaseLinks2.insertChildLink(new DataNodeLink("h"));
+        databaseLinks2.insertChildLink(new DataNodeLink("i"));
+        databaseLinks2.insertChildLink(new DataNodeLink("j"));
+        databaseLinks2.insertChildLink(new DataNodeLink("k"));
+        databaseLinks2.insertChildLink(new DataNodeLink("l"));
+
+        Set<DataNodeLink> result2 = dbManager.getHandlesOfMissing(databaseLinks2);
+        assertEquals(12, result2.size());
     }
 }

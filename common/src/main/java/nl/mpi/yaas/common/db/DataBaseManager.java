@@ -22,16 +22,19 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
+import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.DataNodeId;
+import nl.mpi.yaas.common.data.DatabaseLinks;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.IconTable;
 import nl.mpi.yaas.common.data.IconTableBase64;
@@ -255,6 +258,69 @@ public class DataBaseManager<D, F, M> {
     }
 
     /**
+     * Uses the DatabaseLinks document to get the next batch of missing child
+     * nodes for use when crawling missing documents
+     *
+     * @param DatabaseLinks from the crawler with will be merged and updated
+     * with the DatabaseLinks document in the database
+     * @return the DataNodeLinks of the first N missing documents
+     * @throws PluginException
+     * @throws QueryException
+     */
+    public Set<DataNodeLink> getHandlesOfMissing(DatabaseLinks databaseLinks) throws PluginException, QueryException {
+        long startTime = System.currentTimeMillis();
+        String linksDocument = "DatabaseLinks";
+        DatabaseLinks updatedDatabaseLinks;
+        try {
+            String docTestQueryString = "if(fn:empty(collection(\"" + databaseName + "\")/" + linksDocument + ")) then (0)else(1)";
+            String docTestResult = dbAdaptor.executeQuery(databaseName, docTestQueryString);
+
+            JAXBContext jaxbContext = JAXBContext.newInstance(DatabaseLinks.class, DataNodeLink.class);
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            StringWriter stringWriter = new StringWriter();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.marshal(databaseLinks, stringWriter);
+            if (docTestResult.equals("1")) {
+                // update the document
+                String queryString = "let $updatedLinks := "
+                        + stringWriter.toString()
+                        + "\n"
+                        // add $updatedLinks/RootDocumentLinks[..somehting] to prevent duplicates 
+                        + "insert $updatedLinks/RootDocumentLinks/* into collection(\"" + databaseName + "\")/" + linksDocument + ")//RootDocumentLinks";
+                System.out.println("getHandlesOfMissing: " + queryString);
+                String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
+                System.out.println("queryResult: " + queryResult);
+            } else if (docTestResult.equals("0")) {
+                // add the document
+                dbAdaptor.addDocument(databaseName, linksDocument, stringWriter.toString());
+            } else {
+                throw new QueryException("unexpected state for DatabaseLinks document");
+            }
+            String queryResult = getCachedVersion(dbStatsDocument, "collection(\"" + databaseName + "\")/" + linksDocument);
+            System.out.println("updatedDatabaseLinks: " + queryResult);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            updatedDatabaseLinks = (DatabaseLinks) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), DatabaseLinks.class).getValue();
+        } catch (JAXBException exception) {
+            System.err.println("jaxb error:" + exception.getMessage());
+            throw new PluginException(exception);
+        }
+
+        long queryMils = System.currentTimeMillis() - startTime;
+        String queryTimeString = "Query time: " + queryMils + "ms";
+        final String sampleDateTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());;
+        String statsQuery = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildLink\n"
+                + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
+                + "return\n"
+                + "<CrawlerStats linkcount='{count($childIds)}' documentcount='{count($knownIds)}' queryms='" + queryMils + "' timestamp='" + sampleDateTime + "'/>";
+        String statsDoc = dbAdaptor.executeQuery(databaseName, statsQuery);
+        System.out.println("stats:" + statsDoc);
+        // insert the stats document
+        dbAdaptor.addDocument(databaseName, "CrawlerStats/" + sampleDateTime, statsDoc);
+        System.out.println(queryTimeString);
+        return updatedDatabaseLinks.getChildLinks(); // the results here need to be split on " ", but the string can be very long so it should not be done by String.split().
+    }
+
+    /**
      * Retrieves the document of all the known node types and the icons for each
      * type from the database in base 64 format
      *
@@ -288,9 +354,9 @@ public class DataBaseManager<D, F, M> {
      * @throws QueryException
      */
     public IconTable getNodeIcons() throws PluginException, QueryException {
-        String iconTableQuery = "for $statsDoc in collection(\"" + databaseName + "\")\n"
-                + "where matches(document-uri($statsDoc), '" + iconTableDocument + "')\n"
-                + "return $statsDoc";
+        String iconTableQuery = "for $iconTable in collection(\"" + databaseName + "\")\n"
+                + "where matches(document-uri($iconTable), '" + iconTableDocument + "')\n"
+                + "return $iconTable";
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(IconTable.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
