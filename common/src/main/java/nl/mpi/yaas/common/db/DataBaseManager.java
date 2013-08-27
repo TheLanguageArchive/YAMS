@@ -267,7 +267,7 @@ public class DataBaseManager<D, F, M> {
      * @throws PluginException
      * @throws QueryException
      */
-    public Set<DataNodeLink> getHandlesOfMissing(DatabaseLinks databaseLinks) throws PluginException, QueryException {
+    public Set<DataNodeLink> getHandlesOfMissing(DatabaseLinks databaseLinks, int numberToGet) throws PluginException, QueryException {
         long startTime = System.currentTimeMillis();
         String linksDocument = "DatabaseLinks";
         DatabaseLinks updatedDatabaseLinks;
@@ -285,7 +285,8 @@ public class DataBaseManager<D, F, M> {
                 String queryString = "let $updatedLinks := "
                         + stringWriter.toString().replaceFirst("^\\<\\?[^\\?]*\\?\\>", "") // remove the xml header that xquery cant have in a variable
                         + "\n"
-                        + "return insert node $updatedLinks/RootDocumentLinks[not(@ID=collection(\"" + databaseName + "\")/" + linksDocument + "/RootDocumentLinks/@ID)] into collection(\"" + databaseName + "\")/" + linksDocument;
+                        + "return (insert node $updatedLinks/RootDocumentLinks[not(@ID=collection(\"" + databaseName + "\")/" + linksDocument + "/RootDocumentLinks/@ID)] into collection(\"" + databaseName + "\")/" + linksDocument
+                        + ",\ninsert node $updatedLinks/MissingDocumentLinks[not(@ID=collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks/@ID)] into collection(\"" + databaseName + "\")/" + linksDocument + ")";
                 System.out.println("getHandlesOfMissing: " + queryString);
                 String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
                 System.out.println("queryResult: " + queryResult);
@@ -295,7 +296,7 @@ public class DataBaseManager<D, F, M> {
             } else {
                 throw new QueryException("unexpected state for DatabaseLinks document");
             }
-            String queryResult = dbAdaptor.executeQuery(databaseName, "collection(\"" + databaseName + "\")/" + linksDocument);
+            String queryResult = dbAdaptor.executeQuery(databaseName, "<DatabaseLinks>{collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks[position() le " + numberToGet + "]}</DatabaseLinks>");
             System.out.println("updatedDatabaseLinks: " + queryResult);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             updatedDatabaseLinks = (DatabaseLinks) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), DatabaseLinks.class).getValue();

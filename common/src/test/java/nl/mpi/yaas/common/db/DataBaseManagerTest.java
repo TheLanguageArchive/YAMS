@@ -374,13 +374,12 @@ public abstract class DataBaseManagerTest {
         databaseLinks1.insertChildLink(new DataNodeLink("f"));// duplicate
 
         final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
-        Set<DataNodeLink> result1 = dbManager.getHandlesOfMissing(databaseLinks1);
+        Set<DataNodeLink> result1 = dbManager.getHandlesOfMissing(databaseLinks1, 10);
         assertEquals(6, result1.size());
 
         DatabaseLinks databaseLinks2 = new DatabaseLinks();
         databaseLinks2.insertRootLink(new DataNodeLink("one"));// duplicate
         databaseLinks2.insertRootLink(new DataNodeLink("three"));
-
         databaseLinks2.insertChildLink(new DataNodeLink("f"));// duplicate
         databaseLinks2.insertChildLink(new DataNodeLink("g"));
         databaseLinks2.insertChildLink(new DataNodeLink("h"));
@@ -389,7 +388,10 @@ public abstract class DataBaseManagerTest {
         databaseLinks2.insertChildLink(new DataNodeLink("k"));
         databaseLinks2.insertChildLink(new DataNodeLink("l"));
 
-        Set<DataNodeLink> result2 = dbManager.getHandlesOfMissing(databaseLinks2);
-        assertEquals(12, result2.size());
+        int numberToGet = 3;
+        Set<DataNodeLink> result2 = dbManager.getHandlesOfMissing(databaseLinks2, numberToGet);
+        assertEquals("3", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/RootDocumentLinks)"));
+        assertEquals("12", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/MissingDocumentLinks)"));
+        assertEquals(numberToGet, result2.size());
     }
 }
