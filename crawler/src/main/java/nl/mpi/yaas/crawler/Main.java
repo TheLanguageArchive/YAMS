@@ -118,7 +118,7 @@ public class Main {
                 }
                 if (line.hasOption("a")) {
                     System.out.println("Looking for and appending missing documents");
-                    archiveCrawler.update();
+                    archiveCrawler.updateFast();
                 }
                 archiveCrawler.insertKnowIcons();
                 if (line.hasOption("f")) {
