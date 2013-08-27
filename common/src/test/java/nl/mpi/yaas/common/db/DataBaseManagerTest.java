@@ -387,6 +387,10 @@ public abstract class DataBaseManagerTest {
         databaseLinks2.insertChildLink(new DataNodeLink("j"));
         databaseLinks2.insertChildLink(new DataNodeLink("k"));
         databaseLinks2.insertChildLink(new DataNodeLink("l"));
+        final DataNodeLink dataNodeLink = new DataNodeLink();
+        dataNodeLink.setIdString("0132fd35d7d2fd68faa904613c1bf6ad");
+        dataNodeLink.setNodeUriString("Speaker Ages");
+        databaseLinks2.insertChildLink(dataNodeLink); // this link is to a document that already exists in the database, so it must be removed making the end count 12
 
         int numberToGet = 3;
         Set<DataNodeLink> result2 = dbManager.getHandlesOfMissing(databaseLinks2, numberToGet);
