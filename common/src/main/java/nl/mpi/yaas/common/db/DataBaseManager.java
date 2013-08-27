@@ -286,11 +286,12 @@ public class DataBaseManager<D, F, M> {
                         + stringWriter.toString().replaceFirst("^\\<\\?[^\\?]*\\?\\>", "") // remove the xml header that xquery cant have in a variable
                         + "\n"
                         + "return (insert node $updatedLinks/RootDocumentLinks[not(@ID=collection(\"" + databaseName + "\")/" + linksDocument + "/RootDocumentLinks/@ID)] into collection(\"" + databaseName + "\")/" + linksDocument
-                        + ",\ninsert node $updatedLinks/MissingDocumentLinks[not(@ID=collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks/@ID)] into collection(\"" + databaseName + "\")/" + linksDocument
-                        + ",\ndelete node collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks[@ID = collection(\"" + databaseName + "\")/DataNode/@ID])";
+                        + ",\ninsert node $updatedLinks/MissingDocumentLinks[not(@ID=collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks/@ID)] into collection(\"" + databaseName + "\")/" + linksDocument + ")";
                 System.out.println("getHandlesOfMissing: " + queryString);
                 String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
                 System.out.println("queryResult: " + queryResult);
+                String deleteQuery = "delete node collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks[@ID = collection(\"" + databaseName + "\")/DataNode/@ID]";
+                dbAdaptor.executeQuery(databaseName, deleteQuery);
             } else if (docTestResult.equals("0")) {
                 // add the document
                 dbAdaptor.addDocument(databaseName, linksDocument, stringWriter.toString());
