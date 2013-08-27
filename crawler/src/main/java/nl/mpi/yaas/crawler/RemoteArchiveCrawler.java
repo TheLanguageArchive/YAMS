@@ -17,6 +17,7 @@
  */
 package nl.mpi.yaas.crawler;
 
+import nl.mpi.yaas.common.data.DatabaseLinks;
 import nl.mpi.yaas.common.data.IconTable;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -24,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.StringTokenizer;
 import nl.mpi.arbil.ArbilDesktopInjector;
 import nl.mpi.arbil.ArbilVersion;
@@ -38,6 +40,7 @@ import nl.mpi.arbil.util.ArbilLogConfigurer;
 import nl.mpi.arbil.util.MimeHashQueue;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
+import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
@@ -168,8 +171,53 @@ public class RemoteArchiveCrawler {
         }
     }
 
+    public void updateFast() {
+        DatabaseLinks databaseLinks = new DatabaseLinks();
+        try {
+            boolean continueGetting = true;
+            while (continueGetting) {
+                final Set<DataNodeLink> handlesOfMissing = yaasDatabase.getHandlesOfMissing(databaseLinks, 1000);
+                databaseLinks = new DatabaseLinks();
+                for (DataNodeLink dataNodeLink : handlesOfMissing) {
+                    if (numberInserted >= numberToInsert) {
+                        continueGetting = false;
+                        break;
+                    }
+                    String targetHandle = dataNodeLink.getNodeUriString();
+//                    System.out.println("targetHandle: " + targetHandle);
+                    ArbilDataNodeContainer nodeContainer = null;
+                    ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, new URI(targetHandle));
+//                    System.out.println("arbil url: " + dataNode.getUrlString());
+                    loadAndInsert(yaasDatabase, dataNode, databaseLinks);
+                }
+            }
+            // store the current state
+            yaasDatabase.getHandlesOfMissing(databaseLinks, 0);
+            System.out.println("Update complete");
+        } catch (URISyntaxException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        } catch (InterruptedException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        } catch (PluginException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        } catch (QueryException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        } catch (CrawlerException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        } catch (ModelException exception) {
+            System.out.println(exception.getMessage());
+            System.exit(-1);
+        }
+    }
+
     public void update() {
         System.out.println("FindAndInsertMissingNodes");
+        DatabaseLinks databaseLinks = new DatabaseLinks();
         try {
             // todo: change this to a loop that gets more missing document URLs in blocks of 100 from the db until the max
 //            final IterableResult handlesOfMissing = yaasDatabase.getHandlesOfMissing();
@@ -198,11 +246,13 @@ public class RemoteArchiveCrawler {
                     ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
                     ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, new URI(targetHandle));
 //                    System.out.println("arbil url: " + dataNode.getUrlString());
-                    loadAndInsert(yaasDatabase, dataNode);
+                    loadAndInsert(yaasDatabase, dataNode, databaseLinks);
                 } catch (NoSuchElementException exception) {
                     stringTokenizer = null;
                 }
             }
+            // store the current state
+            yaasDatabase.getHandlesOfMissing(databaseLinks, 0);
             System.out.println("Update complete");
         } catch (URISyntaxException exception) {
             System.out.println(exception.getMessage());
@@ -247,10 +297,14 @@ public class RemoteArchiveCrawler {
 
     public void crawl(URI startURI) {
         System.out.println("crawl");
+        DatabaseLinks databaseLinks = new DatabaseLinks();
         try {
             ArbilDataNodeContainer nodeContainer = null;
+            databaseLinks.insertRootLink(new DataNodeLink(startURI.toString()));
             ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
-            loadAndInsert(yaasDatabase, dataNode);
+            loadAndInsert(yaasDatabase, dataNode, databaseLinks);
+            // store the current state
+            yaasDatabase.getHandlesOfMissing(databaseLinks, 0);
             System.out.println("Crawl complete");
         } catch (InterruptedException exception) {
             System.out.println(exception.getMessage());
@@ -280,7 +334,13 @@ public class RemoteArchiveCrawler {
         }
     }
 
-    private void loadAndInsert(DataBaseManager arbilDatabase, ArbilDataNode dataNode) throws InterruptedException, PluginException, QueryException, CrawlerException, ModelException {
+    private void insertLinks(ArbilDataNodeWrapper dataNode, DatabaseLinks databaseLinks) throws ModelException {
+        for (DataNodeLink nodeLink : dataNode.getChildIds()) {
+            databaseLinks.insertChildLink(nodeLink);
+        }
+    }
+
+    private void loadAndInsert(DataBaseManager arbilDatabase, ArbilDataNode dataNode, DatabaseLinks databaseLinks) throws InterruptedException, PluginException, QueryException, CrawlerException, ModelException {
         System.out.println("Loading: " + numberInserted);
         System.out.println("URL: " + dataNode.getUrlString());
         while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
@@ -294,6 +354,7 @@ public class RemoteArchiveCrawler {
 //            System.out.println("Inserting into the database");
             final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
             insertNodeIcons(dataNode);
+            insertLinks(arbilDataNodeWrapper, databaseLinks);
             //            arbilDataNodeWrapper.checkChildNodesLoaded();
             if (arbilDataNodeWrapper.getID() != null && !arbilDataNodeWrapper.getID().isEmpty()) {
                 arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper, true);
