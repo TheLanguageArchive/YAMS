@@ -282,14 +282,13 @@ public class DataBaseManager<D, F, M> {
             marshaller.marshal(databaseLinks, stringWriter);
             if (docTestResult.equals("1")) {
                 // update the document
-                String queryString = "let $updatedLinks := "
+                String insertString = "let $updatedLinks := "
                         + stringWriter.toString().replaceFirst("^\\<\\?[^\\?]*\\?\\>", "") // remove the xml header that xquery cant have in a variable
                         + "\n"
                         + "return (insert node $updatedLinks/RootDocumentLinks[not(@ID=collection(\"" + databaseName + "\")/" + linksDocument + "/RootDocumentLinks/@ID)] into collection(\"" + databaseName + "\")/" + linksDocument
                         + ",\ninsert node $updatedLinks/MissingDocumentLinks[not(@ID=collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks/@ID)] into collection(\"" + databaseName + "\")/" + linksDocument + ")";
-                System.out.println("getHandlesOfMissing: " + queryString);
-                String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
-                System.out.println("queryResult: " + queryResult);
+//                System.out.println("getHandlesOfMissing: " + queryString);
+                dbAdaptor.executeQuery(databaseName, insertString);
                 String deleteQuery = "delete node collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks[@ID = collection(\"" + databaseName + "\")/DataNode/@ID]";
                 dbAdaptor.executeQuery(databaseName, deleteQuery);
             } else if (docTestResult.equals("0")) {
@@ -299,7 +298,7 @@ public class DataBaseManager<D, F, M> {
                 throw new QueryException("unexpected state for DatabaseLinks document");
             }
             String queryResult = dbAdaptor.executeQuery(databaseName, "<DatabaseLinks>{collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks[position() le " + numberToGet + "]}</DatabaseLinks>");
-            System.out.println("updatedDatabaseLinks: " + queryResult);
+//            System.out.println("updatedDatabaseLinks: " + queryResult);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             updatedDatabaseLinks = (DatabaseLinks) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), DatabaseLinks.class).getValue();
         } catch (JAXBException exception) {
