@@ -74,6 +74,7 @@ public class DataBaseManager<D, F, M> {
     final static public String testDataBase = "yaas-test-data";
     final static public String facetsCollection = "Facets";
     final static public String dbStatsDocument = "DbStats";
+    final static private String linksDocument = "DatabaseLinks";
     final static public String iconTableDocument = "IconTable";
     final private String crawledDataCollection = "CrawledData";
 //    final static public String guestUser = "guestdbuser";
@@ -193,18 +194,12 @@ public class DataBaseManager<D, F, M> {
      */
     public DatabaseStats getDatabaseStats() throws QueryException {
         long startTime = System.currentTimeMillis();
-        String statsQuery = "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
-                + "let $duplicateDocumentCount := count($knownIds) - count(distinct-values($knownIds))\n"
-                + "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildLink/@ID\n" // removing the "/text()" here reduced the query from 310ms to 290ms with 55 documents
-                //                 + "let $missingIds := distinct-values(for $testId in $childIds where not ($knownIds = $testId) return $testId)\n"
-                //                 + "let $rootNodes := distinct-values(for $testId in $knownIds where not ($childIds = $testId) return $testId)\n"
-                // With 55 documents this change (for loop replaced by "[not(.=") decreased the query from 254ms to 237ms and with zero documents it made no difference, but this was doe with out updating the indexes and running the query only once
-                + "let $missingIds := distinct-values($childIds[not(.=$knownIds)])"
-                + "let $rootNodes := distinct-values($knownIds[not(.=$childIds)])"
+        String statsQuery = "let $rootNodes := collection(\"" + databaseName + "\")/" + linksDocument + "/RootDocumentLinks/@ID[not(.=collection(\"" + databaseName + "\")/DataNode/ChildLink/@ID)]/string()\n"
                 + "return <DatabaseStats>\n"
-                + "<KnownDocuments>{count($knownIds)}</KnownDocuments>\n"
-                + "<MissingDocuments>{count($missingIds)}</MissingDocuments>\n"
-                + "<DuplicateDocuments>{$duplicateDocumentCount}</DuplicateDocuments>\n"
+                //                + "<KnownDocuments>{count(collection(\"" + databaseName + "\")/" + crawledDataCollection + ")}</KnownDocuments>\n"
+                + "<KnownDocuments>{count(collection(\"" + databaseName + "\")/DataNode)}</KnownDocuments>\n" // todo: shouldnt this data be in crawledDataCollection?
+                + "<MissingDocuments>{count(collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks)}</MissingDocuments>\n"
+                //                + "<DuplicateDocuments>{$duplicateDocumentCount}</DuplicateDocuments>\n"
                 + "<RootDocuments>{count($rootNodes)}</RootDocuments>\n"
                 + "<Cached>false</Cached>\n"
                 + "{for $rootDocId in $rootNodes return <RootDocumentID>{$rootDocId}</RootDocumentID>}\n"
@@ -269,7 +264,6 @@ public class DataBaseManager<D, F, M> {
      */
     public Set<DataNodeLink> getHandlesOfMissing(DatabaseLinks databaseLinks, int numberToGet) throws PluginException, QueryException {
         long startTime = System.currentTimeMillis();
-        String linksDocument = "DatabaseLinks";
         DatabaseLinks updatedDatabaseLinks;
         try {
             String docTestQueryString = "if(fn:empty(collection(\"" + databaseName + "\")/" + linksDocument + ")) then (0)else(1)";

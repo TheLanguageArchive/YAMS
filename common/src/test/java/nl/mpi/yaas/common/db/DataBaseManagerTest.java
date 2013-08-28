@@ -21,6 +21,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import javax.swing.ImageIcon;
 import javax.xml.bind.JAXBContext;
@@ -69,6 +71,7 @@ public abstract class DataBaseManagerTest {
         DbAdaptor dbAdaptor = getDbAdaptor();
         final DataBaseManager dataBaseManager = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, testDatabaseName);
         dataBaseManager.dropAllRecords();
+        DatabaseLinks databaseLinks = new DatabaseLinks();
         if (insertData) {
             JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -76,8 +79,13 @@ public abstract class DataBaseManagerTest {
                 System.out.println("dataXmlString: " + dataXmlString);
                 SerialisableDataNode dataNode = (SerialisableDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(dataXmlString)), SerialisableDataNode.class).getValue();
                 dataBaseManager.insertIntoDatabase(dataNode, false);
+                final DataNodeLink dataNodeLink = new DataNodeLink();
+                dataNodeLink.setIdString(dataNode.getID());
+                databaseLinks.insertRootLink(dataNodeLink);
+                databaseLinks.insertLinks(dataNode);
             }
         }
+        dataBaseManager.getHandlesOfMissing(databaseLinks, 0);
         dataBaseManager.createIndexes();
         return dataBaseManager;
     }
@@ -94,27 +102,32 @@ public abstract class DataBaseManagerTest {
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
         assertEquals(17, databaseStats.getKnownDocumentsCount());
         assertEquals(7, databaseStats.getMisingDocumentsCount());
-        assertEquals(0, databaseStats.getDuplicateDocumentsCount());
+//        assertEquals(0, databaseStats.getDuplicateDocumentsCount()); // calculating duplicates is very time consuming and is no longer done
         assertEquals(17, databaseStats.getRootDocumentsCount());
-        assertArrayEquals(databaseStats.getRootDocumentsIDs(), new DataNodeId[]{
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-4"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2FA3-5"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2FA4-B"),
-            new DataNodeId("hdl:1839/00-0000-0000-0008-CAD1-B"),
+        final DataNodeId[] expectedArray = new DataNodeId[]{
             new DataNodeId("hdl:1839/00-0000-0000-0008-C805-D"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2C2D-F"),
-            new DataNodeId("hdl:1839/00-0000-0000-000D-B73D-9"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2A9B-9"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2C2D-F"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2E76-0"),
+            new DataNodeId("hdl:1839/00-0000-0000-000D-B73D-9"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2AA2-6"),
             new DataNodeId("hdl:1839/00-0000-0000-0004-D511-0"),
-            new DataNodeId("hdl:1839/00-0000-0000-0004-D512-F"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB4-0"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2E76-0"),
             new DataNodeId("hdl:1839/00-0000-0000-000D-B743-0"),
+            new DataNodeId("hdl:1839/00-0000-0000-0004-D512-F"),
+            new DataNodeId("hdl:1839/00-0000-0000-0008-CAD1-B"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2E77-E"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2FA4-B"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB4-0"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2FA3-5"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-4"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"),
             new DataNodeId("0132fd35d7d2fd68faa904613c1bf6ad")
-        });
+        };
+        final List<DataNodeId> expected = Arrays.<DataNodeId>asList(expectedArray);
+        final List<DataNodeId> actual = Arrays.asList(databaseStats.getRootDocumentsIDs());
+        assertEquals(actual.size(), expected.size());
+        assertArrayEquals(databaseStats.getRootDocumentsIDs(), expectedArray);
+//        assertThat(actual, (Matcher) hasItems(expected));
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
         SerialisableDataNode dataNode = (SerialisableDataNode) dbManager.getNodeDatasByIDs(nodeIDs);
@@ -133,7 +146,7 @@ public abstract class DataBaseManagerTest {
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
         assertEquals(0, databaseStats.getKnownDocumentsCount());
         assertEquals(0, databaseStats.getMisingDocumentsCount());
-        assertEquals(0, databaseStats.getDuplicateDocumentsCount());
+//        assertEquals(0, databaseStats.getDuplicateDocumentsCount());
         assertEquals(0, databaseStats.getRootDocumentsCount());
         Assert.assertArrayEquals(databaseStats.getRootDocumentsIDs(), new String[0]);
 
@@ -362,6 +375,11 @@ public abstract class DataBaseManagerTest {
     public void testGetHandlesOfMissing_DatabaseLinks() throws Exception {
         System.out.println("getHandlesOfMissing");
         DatabaseLinks databaseLinks1 = new DatabaseLinks();
+        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+
+        Set<DataNodeLink> result0 = dbManager.getHandlesOfMissing(databaseLinks1, 10);
+        assertEquals(7, result0.size());
+
         databaseLinks1.insertRootLink(new DataNodeLink("one"));
         databaseLinks1.insertRootLink(new DataNodeLink("two"));
 
@@ -373,9 +391,8 @@ public abstract class DataBaseManagerTest {
         databaseLinks1.insertChildLink(new DataNodeLink("f"));
         databaseLinks1.insertChildLink(new DataNodeLink("f"));// duplicate
 
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         Set<DataNodeLink> result1 = dbManager.getHandlesOfMissing(databaseLinks1, 10);
-        assertEquals(6, result1.size());
+        assertEquals(10, result1.size());
 
         DatabaseLinks databaseLinks2 = new DatabaseLinks();
         databaseLinks2.insertRootLink(new DataNodeLink("one"));// duplicate
@@ -394,8 +411,8 @@ public abstract class DataBaseManagerTest {
 
         int numberToGet = 3;
         Set<DataNodeLink> result2 = dbManager.getHandlesOfMissing(databaseLinks2, numberToGet);
-        assertEquals("3", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/RootDocumentLinks)"));
-        assertEquals("12", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/MissingDocumentLinks)"));
+        assertEquals("20", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/RootDocumentLinks)"));
+        assertEquals("19", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/MissingDocumentLinks)"));
         assertEquals(numberToGet, result2.size());
     }
 }

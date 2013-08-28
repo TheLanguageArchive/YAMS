@@ -22,6 +22,8 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import nl.mpi.flap.model.DataNodeLink;
+import nl.mpi.flap.model.ModelException;
+import nl.mpi.flap.model.SerialisableDataNode;
 
 /**
  * Created on : Aug 26, 2013, 1:44:49 PM
@@ -72,5 +74,13 @@ public class DatabaseLinks {
         rootLinks.addAll(databaseLinks.getRootLinks());
         childLinks.addAll(databaseLinks.getChildLinks());
         recentLinks.addAll(databaseLinks.recentLinks);
+    }
+
+    public void insertLinks(SerialisableDataNode dataNode) throws ModelException {
+        if (dataNode.getChildIds() != null) {
+            for (DataNodeLink nodeLink : dataNode.getChildIds()) {
+                insertChildLink(nodeLink);
+            }
+        }
     }
 }
