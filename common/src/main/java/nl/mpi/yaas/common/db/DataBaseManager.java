@@ -632,20 +632,17 @@ public class DataBaseManager<D, F, M> {
                     + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData[")
                     + "]\n"
                     + "return \n"
-                    + "<FieldGroup>{$field}</FieldGroup>\n"
+                    + "<Highlight>{$field/@Path}</Highlight>\n"
                     + "}\n";
         }
         return "for $foundNode in collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "[//DataNode/FieldGroup" + pathClause + "["
                 + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "FieldData/")
                 + "]]\n"
                 + "return\n"
-                + "<DataNode>\n"
+                + "<ChildLink>\n"
                 + "{$foundNode/@ID}\n"
-                + "{$foundNode/@Label}\n"
                 + fieldsQuery
-                + "<ChildLink ID=\"{$foundNode/@ID}\"/>\n"
-                + "{$foundNode/Type}\n"
-                + "</DataNode>";
+                + "</ChildLink>";
     }
 
     private String getTreeFacetsQuery(MetadataFileType[] metadataFileTypes) {
@@ -782,10 +779,16 @@ public class DataBaseManager<D, F, M> {
         }
         for (SearchParameters parameters : searchParametersList) {
             queryStringBuilder.append("(");
-            queryStringBuilder.append(parameters.getFileType().getType());
-            queryStringBuilder.append(" ");
-            queryStringBuilder.append(parameters.getFieldType().getPath());
-            queryStringBuilder.append(" ");
+            final String type = parameters.getFileType().getType();
+            if (type != null) {
+                queryStringBuilder.append(type);
+                queryStringBuilder.append(" ");
+            }
+            final String path = parameters.getFieldType().getPath();
+            if (path != null) {
+                queryStringBuilder.append(path);
+                queryStringBuilder.append(" ");
+            }
             for (SearchOption option : SearchOption.values()) {
                 if (option.getSearchNegator() == parameters.getSearchNegator() && option.getSearchType() == parameters.getSearchType()) {
                     queryStringBuilder.append(option.toString());
@@ -853,6 +856,7 @@ public class DataBaseManager<D, F, M> {
                 //                + "return $entityNode\n"
                 + "$returnSet"
                 + "}</DataNode>\n");
+        // System.out.println("Query: " + queryStringBuilder);
         final D metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
         return metadataTypesString;
     }
