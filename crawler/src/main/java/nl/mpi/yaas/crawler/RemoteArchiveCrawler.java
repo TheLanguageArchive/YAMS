@@ -177,6 +177,9 @@ public class RemoteArchiveCrawler {
             boolean continueGetting = true;
             while (continueGetting) {
                 final Set<DataNodeLink> handlesOfMissing = yaasDatabase.getHandlesOfMissing(databaseLinks, 1000);
+                if (handlesOfMissing.isEmpty()) {
+                    continueGetting = false;
+                }
                 databaseLinks = new DatabaseLinks();
                 for (DataNodeLink dataNodeLink : handlesOfMissing) {
                     if (numberInserted >= numberToInsert) {
@@ -217,7 +220,6 @@ public class RemoteArchiveCrawler {
 
     public void update() {
         System.out.println("FindAndInsertMissingNodes");
-        DatabaseLinks databaseLinks = new DatabaseLinks();
         try {
             // todo: change this to a loop that gets more missing document URLs in blocks of 100 from the db until the max
 //            final IterableResult handlesOfMissing = yaasDatabase.getHandlesOfMissing();
@@ -246,13 +248,11 @@ public class RemoteArchiveCrawler {
                     ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
                     ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, new URI(targetHandle));
 //                    System.out.println("arbil url: " + dataNode.getUrlString());
-                    loadAndInsert(yaasDatabase, dataNode, databaseLinks);
+                    loadAndInsert(yaasDatabase, dataNode, new DatabaseLinks());
                 } catch (NoSuchElementException exception) {
                     stringTokenizer = null;
                 }
             }
-            // store the current state
-            yaasDatabase.getHandlesOfMissing(databaseLinks, 0);
             System.out.println("Update complete");
         } catch (URISyntaxException exception) {
             System.out.println(exception.getMessage());
@@ -334,12 +334,6 @@ public class RemoteArchiveCrawler {
         }
     }
 
-    private void insertLinks(ArbilDataNodeWrapper dataNode, DatabaseLinks databaseLinks) throws ModelException {
-        for (DataNodeLink nodeLink : dataNode.getChildIds()) {
-            databaseLinks.insertChildLink(nodeLink);
-        }
-    }
-
     private void loadAndInsert(DataBaseManager arbilDatabase, ArbilDataNode dataNode, DatabaseLinks databaseLinks) throws InterruptedException, PluginException, QueryException, CrawlerException, ModelException {
         System.out.println("Loading: " + numberInserted);
         System.out.println("URL: " + dataNode.getUrlString());
@@ -354,7 +348,7 @@ public class RemoteArchiveCrawler {
 //            System.out.println("Inserting into the database");
             final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
             insertNodeIcons(dataNode);
-            insertLinks(arbilDataNodeWrapper, databaseLinks);
+            databaseLinks.insertLinks(arbilDataNodeWrapper);
             //            arbilDataNodeWrapper.checkChildNodesLoaded();
             if (arbilDataNodeWrapper.getID() != null && !arbilDataNodeWrapper.getID().isEmpty()) {
                 arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper, true);
