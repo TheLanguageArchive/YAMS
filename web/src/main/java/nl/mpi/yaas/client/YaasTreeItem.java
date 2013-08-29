@@ -54,13 +54,16 @@ public class YaasTreeItem extends TreeItem {
     private final IconTableBase64 iconTableBase64;
     private final Image iconImage = new Image();
     private final TreeItem loadingTreeItem;
+    private final TreeItem errorTreeItem;
     private final TreeItem loadNextTreeItem;
     private static final Logger logger = Logger.getLogger("");
     private final String databaseName;
+    private int loadedCount = 0;
 
     public YaasTreeItem(String databaseName, DataNodeId dataNodeId, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
         super(new HorizontalPanel());
         loadingTreeItem = getLoadingItem();
+        errorTreeItem = new TreeItem();
         this.dataNodeTable = dataNodeTable;
         this.dataNodeId = dataNodeId;
         this.databaseName = databaseName;
@@ -80,6 +83,7 @@ public class YaasTreeItem extends TreeItem {
     public YaasTreeItem(String databaseName, SerialisableDataNode yaasDataNode, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
         super(new HorizontalPanel());
         loadingTreeItem = getLoadingItem();
+        errorTreeItem = new TreeItem();
         this.yaasDataNode = yaasDataNode;
         this.searchOptionsService = searchOptionsService;
         this.dataNodeTable = dataNodeTable;
@@ -97,7 +101,8 @@ public class YaasTreeItem extends TreeItem {
                 addItem(loadingTreeItem);
             }
         } catch (ModelException exception) {
-            addItem(new Label(ERROR_GETTING_CHILD_NODES));
+            errorTreeItem.setText(ERROR_GETTING_CHILD_NODES);
+            addItem(errorTreeItem);
             logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
         }
         setNodeIcon();
@@ -236,6 +241,7 @@ public class YaasTreeItem extends TreeItem {
 
     public void loadChildNodes() {
         removeItem(loadNextTreeItem);
+        removeItem(errorTreeItem);
         if (yaasDataNode != null) {
             if (yaasDataNode.getChildList() != null) {
                 removeItem(loadingTreeItem);
@@ -246,7 +252,6 @@ public class YaasTreeItem extends TreeItem {
                 }
             } else {
                 addItem(loadingTreeItem);
-                final int loadedCount = getChildCount() - 1; // not counting the loading tree node
                 final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
                 try {
                     final int maxToGet = yaasDataNode.getChildIds().size();
@@ -255,19 +260,24 @@ public class YaasTreeItem extends TreeItem {
                         removeItem(loadingTreeItem);
                         return;
                     }
-                    final int nextToLoad = (maxToGet <= loadedCount + 20) ? maxToGet : loadedCount + 20;
-                    for (DataNodeLink childId : yaasDataNode.getChildIds().subList(loadedCount, nextToLoad)) {
+                    final int numberToGet = 20;
+                    final int firstToGet = (loadedCount == 0) ? loadedCount : loadedCount + 1;
+                    final int lastToGet = (maxToGet < firstToGet + numberToGet) ? maxToGet : firstToGet + numberToGet;
+//                    logger.log(Level.INFO, "loadedCount: " + loadedCount + ", numberToGet: " + numberToGet + ", firstToGet: " + firstToGet + ", lastToGet: " + lastToGet + ", maxToGet: " + maxToGet);
+                    for (DataNodeLink childId : yaasDataNode.getChildIds().subList(firstToGet, lastToGet)) {
                         dataNodeIdList.add(new DataNodeId(childId.getIdString()));
                     }
                 } catch (ModelException exception) {
                     removeItem(loadingTreeItem);
-                    addItem(new Label(ERROR_GETTING_CHILD_NODES));
+                    errorTreeItem.setText(ERROR_GETTING_CHILD_NODES);
+                    addItem(errorTreeItem);
                     logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
                 }
                 searchOptionsService.getDataNodes(databaseName, dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
                     public void onFailure(Throwable exception) {
                         removeItem(loadingTreeItem);
-                        addItem(new Label(LOADING_CHILD_NODES_FAILED));
+                        errorTreeItem.setText(LOADING_CHILD_NODES_FAILED);
+                        addItem(errorTreeItem);
                         logger.log(Level.SEVERE, LOADING_CHILD_NODES_FAILED, exception);
                     }
 
@@ -275,20 +285,22 @@ public class YaasTreeItem extends TreeItem {
 //                        setText("Loaded " + dataNodeList.size() + " child nodes");
                         removeItem(loadingTreeItem);
                         if (dataNodeList == null) {
-                            addItem(new Label("no child nodes found"));
+                            errorTreeItem.setText("some child nodes not found");
+                            addItem(errorTreeItem);
                         } else {
                             for (SerialisableDataNode childDataNode : dataNodeList) {
                                 YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
                                 addItem(yaasTreeItem);
+                                loadedCount++;
                             }
                             try {
                                 final int maxToGet = yaasDataNode.getChildIds().size();
-                                final int loadedCount = getChildCount();
                                 if (loadedCount < maxToGet) {
                                     addItem(loadNextTreeItem);
                                 }
                             } catch (ModelException exception) {
-                                addItem(new Label(ERROR_GETTING_CHILD_NODES));
+                                errorTreeItem.setText(ERROR_GETTING_CHILD_NODES);
+                                addItem(errorTreeItem);
                                 logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
                             }
                         }
