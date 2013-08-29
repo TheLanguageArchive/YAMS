@@ -252,8 +252,8 @@ public class YaasTreeItem extends TreeItem {
                 }
             } else {
                 addItem(loadingTreeItem);
-                final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
                 try {
+                    final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
                     final int maxToGet = yaasDataNode.getChildIds().size();
                     if (maxToGet <= loadedCount) {
                         // all child nodes should be visible so we can just return
@@ -267,46 +267,40 @@ public class YaasTreeItem extends TreeItem {
                     for (DataNodeLink childId : yaasDataNode.getChildIds().subList(firstToGet, lastToGet)) {
                         dataNodeIdList.add(new DataNodeId(childId.getIdString()));
                     }
+                    searchOptionsService.getDataNodes(databaseName, dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
+                        public void onFailure(Throwable exception) {
+                            removeItem(loadingTreeItem);
+                            errorTreeItem.setText(LOADING_CHILD_NODES_FAILED);
+                            addItem(errorTreeItem);
+                            logger.log(Level.SEVERE, LOADING_CHILD_NODES_FAILED, exception);
+                        }
+
+                        public void onSuccess(List<SerialisableDataNode> dataNodeList) {
+//                        setText("Loaded " + dataNodeList.size() + " child nodes");
+                            removeItem(loadingTreeItem);
+                            if (dataNodeList != null) {
+                                for (SerialisableDataNode childDataNode : dataNodeList) {
+                                    YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
+                                    addItem(yaasTreeItem);
+                                    loadedCount++;
+                                }
+                            }
+                            while (lastToGet > loadedCount) {
+                                // when nodes are missing these "not found" nodes are added to keep the paging of the child node array in sync
+                                addItem(new Label("node not found"));
+                                loadedCount++;
+                            }
+                            if (loadedCount < maxToGet) {
+                                addItem(loadNextTreeItem);
+                            }
+                        }
+                    });
                 } catch (ModelException exception) {
                     removeItem(loadingTreeItem);
                     errorTreeItem.setText(ERROR_GETTING_CHILD_NODES);
                     addItem(errorTreeItem);
                     logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
                 }
-                searchOptionsService.getDataNodes(databaseName, dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
-                    public void onFailure(Throwable exception) {
-                        removeItem(loadingTreeItem);
-                        errorTreeItem.setText(LOADING_CHILD_NODES_FAILED);
-                        addItem(errorTreeItem);
-                        logger.log(Level.SEVERE, LOADING_CHILD_NODES_FAILED, exception);
-                    }
-
-                    public void onSuccess(List<SerialisableDataNode> dataNodeList) {
-//                        setText("Loaded " + dataNodeList.size() + " child nodes");
-                        removeItem(loadingTreeItem);
-                        if (dataNodeList == null) {
-                            errorTreeItem.setText("some child nodes not found");
-                            addItem(errorTreeItem);
-                        } else {
-                            for (SerialisableDataNode childDataNode : dataNodeList) {
-                                YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
-                                addItem(yaasTreeItem);
-                                loadedCount++;
-                            }
-                            try {
-                                final int maxToGet = yaasDataNode.getChildIds().size();
-                                if (loadedCount < maxToGet) {
-                                    addItem(loadNextTreeItem);
-                                }
-                            } catch (ModelException exception) {
-                                errorTreeItem.setText(ERROR_GETTING_CHILD_NODES);
-                                addItem(errorTreeItem);
-                                logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
-                            }
-                        }
-
-                    }
-                });
             }
         } else {
 //            addItem(labelChildrenNotLoaded);
