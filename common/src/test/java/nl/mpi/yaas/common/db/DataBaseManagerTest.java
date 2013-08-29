@@ -39,6 +39,7 @@ import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseLinks;
 import nl.mpi.yaas.common.data.DatabaseStats;
+import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.IconTable;
 import nl.mpi.yaas.common.data.IconTableBase64;
 import nl.mpi.yaas.common.data.MetadataFileType;
@@ -67,9 +68,9 @@ public abstract class DataBaseManagerTest {
 
     abstract DbAdaptor getDbAdaptor() throws IOException, QueryException;
 
-    public DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDataBaseManager(boolean insertData) throws IOException, QueryException, JAXBException, PluginException, ModelException {
+    public DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> getDataBaseManager(boolean insertData) throws IOException, QueryException, JAXBException, PluginException, ModelException {
         DbAdaptor dbAdaptor = getDbAdaptor();
-        final DataBaseManager dataBaseManager = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, testDatabaseName);
+        final DataBaseManager dataBaseManager = new DataBaseManager(HighlighableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, testDatabaseName);
         dataBaseManager.dropAllRecords();
         DatabaseLinks databaseLinks = new DatabaseLinks();
         if (insertData) {
@@ -96,7 +97,7 @@ public abstract class DataBaseManagerTest {
      */
     @Test
     public void testSampleData() throws JAXBException, PluginException, QueryException, IOException, ModelException {
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
 
         DatabaseStats databaseStats = dbManager.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
@@ -140,7 +141,7 @@ public abstract class DataBaseManagerTest {
 //        dbAdaptor.dropAllRecords(testDatabaseName);
 //        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, testDatabaseName);
 
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(false);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(false);
         //dbManager.clearDatabaseStats();
         DatabaseStats databaseStats = dbManager.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
@@ -160,7 +161,7 @@ public abstract class DataBaseManagerTest {
 
     @Test
     public void testGetNodeDatasByIDs() throws QueryException, IOException, JAXBException, PluginException, ModelException {
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
 //        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, testDatabaseName);
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
         nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
@@ -174,7 +175,7 @@ public abstract class DataBaseManagerTest {
     @Test
     public void testGetMetadataTypes() throws Exception {
         System.out.println("getMetadataTypes");
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         MetadataFileType metadataFileType = null;
         MetadataFileType[] result = dbManager.getMetadataTypes(metadataFileType);
         assertEquals("All Types", result[0].getLabel());
@@ -191,7 +192,7 @@ public abstract class DataBaseManagerTest {
     @Test
     public void testGetMetadataPaths() throws Exception {
         System.out.println("getMetadataPaths");
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         MetadataFileType[] result1 = dbManager.getMetadataPaths(null);
         assertEquals("All Paths", result1[0].getLabel());
         assertEquals(71, result1[0].getRecordCount());
@@ -220,7 +221,7 @@ public abstract class DataBaseManagerTest {
     @Test
     public void testGetMetadataFieldValues() throws Exception {
         System.out.println("getFieldMetadataTypes");
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         MetadataFileType[] result1 = dbManager.getMetadataFieldValues(null);
         assertEquals("", result1[0].getLabel());
         assertEquals(null, result1[0].getType());
@@ -278,15 +279,17 @@ public abstract class DataBaseManagerTest {
         };
         ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
         searchParametersList.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "urban sign languages"));
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
-        SerialisableDataNode result1 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        HighlighableDataNode result1 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
         assertEquals("Search Results", result1.getID());
-        assertEquals(1, result1.getChildIds().size());
+        assertEquals(1, result1.getHighlighedLinks().size());
         searchParametersList.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.not, QueryDataStructures.SearchType.contains, "urban sign languages"));
-        SerialisableDataNode result2 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
+        HighlighableDataNode result2 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
         assertEquals(null, result2.getChildList());
-        SerialisableDataNode result3 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList);
-        assertEquals(16, result3.getChildIds().size());
+        HighlighableDataNode result3 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList);
+        assertEquals(16, result3.getHighlighedLinks().size());
+        assertEquals(2, result3.getHighlighedLinks().get(0).getHighlightPaths().size());
+        assertEquals(".METATRANSCRIPT.Corpus.Name", result3.getHighlighedLinks().get(0).getHighlightPaths().get(0));
     }
 
     /**
@@ -307,7 +310,7 @@ public abstract class DataBaseManagerTest {
         iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.xml), new ImageIcon(bufferedImage).getImage()));
         iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("s", "c", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
         iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "s", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage).getImage()));
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         final IconTable nodeIcons1 = dbManager.insertNodeIconsIntoDatabase(iconTable);
         // test that all three node dype icons have been added
         assertEquals(3, nodeIcons1.getNodeTypeImageSet().size());
@@ -327,7 +330,7 @@ public abstract class DataBaseManagerTest {
     public void testGetTreeFacetTypes() throws Exception {
         System.out.println("getTreeFacetTypes");
         MetadataFileType[] metadataFileTypes = null;
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         Object[] expResult = null;
         final MetadataFileType[] result = dbManager.getTreeFacetTypes(metadataFileTypes);
         assertArrayEquals(expResult, result);
@@ -339,7 +342,7 @@ public abstract class DataBaseManagerTest {
     @Test
     public void testGetHandlesOfMissing() throws Exception {
         System.out.println("getHandlesOfMissing");
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         String result = dbManager.getHandlesOfMissing();
         System.out.println("result:" + result);
         assertEquals(517, result.length());
@@ -351,7 +354,7 @@ public abstract class DataBaseManagerTest {
     @Test
     public void testGetDatabaseList() throws Exception {
         System.out.println("getDatabaseList");
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         String[] result = dbManager.getDatabaseList();
         assertTrue("Unexpected db names length: " + result.length, result.length > 0);
     }
@@ -362,7 +365,7 @@ public abstract class DataBaseManagerTest {
     @Test
     public void testGetHandlesOfMissing_0args() throws Exception {
         System.out.println("getHandlesOfMissing");
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         String expResult = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ageX.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age5.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age3.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age2.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age1.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age0.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age4.imdi";
         String result = dbManager.getHandlesOfMissing();
         assertEquals(expResult, result);
@@ -375,7 +378,7 @@ public abstract class DataBaseManagerTest {
     public void testGetHandlesOfMissing_DatabaseLinks() throws Exception {
         System.out.println("getHandlesOfMissing");
         DatabaseLinks databaseLinks1 = new DatabaseLinks();
-        final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
 
         Set<DataNodeLink> result0 = dbManager.getHandlesOfMissing(databaseLinks1, 10);
         assertEquals(7, result0.size());

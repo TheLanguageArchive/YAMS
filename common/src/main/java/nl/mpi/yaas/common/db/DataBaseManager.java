@@ -632,17 +632,17 @@ public class DataBaseManager<D, F, M> {
                     + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData[")
                     + "]\n"
                     + "return \n"
-                    + "<Highlight>{$field/@Path}</Highlight>\n"
+                    + "<Highlight>{$field/@Path/string()}</Highlight>\n"
                     + "}\n";
         }
         return "for $foundNode in collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "[//DataNode/FieldGroup" + pathClause + "["
                 + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "FieldData/")
                 + "]]\n"
                 + "return\n"
-                + "<ChildLink>\n"
+                + "<HighlightedLink>\n"
                 + "{$foundNode/@ID}\n"
                 + fieldsQuery
-                + "</ChildLink>";
+                + "</HighlightedLink>";
     }
 
     private String getTreeFacetsQuery(MetadataFileType[] metadataFileTypes) {
