@@ -17,8 +17,8 @@
  */
 package nl.mpi.yaas.common.data;
 
-import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
+import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAttribute;
 import nl.mpi.flap.model.DataNodeLink;
 
 /**
@@ -26,16 +26,26 @@ import nl.mpi.flap.model.DataNodeLink;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class HighlighableDataNodeLink extends DataNodeLink {
+public class DataNodeHighlight extends DataNodeLink implements Serializable {
 
-    private List<String> highlightPaths;
+    private String dataNodeId;
+    private String highlightPath;
 
-    public List<String> getHighlightPaths() {
-        return highlightPaths;
+    public String getDataNodeId() {
+        return dataNodeId;
     }
 
-    @XmlElement(name = "Highlight")
-    public void setHighlightPaths(List<String> highlightPath) {
-        this.highlightPaths = highlightPath;
+    @XmlAttribute(name = "ID")
+    public void setDataNodeId(String dataNodeId) {
+        this.dataNodeId = dataNodeId;
+    }
+
+    public String getHighlightPath() {
+        return highlightPath;
+    }
+
+    @XmlAttribute(name = "Path")
+    public void setHighlightPath(String highlightPath) {
+        this.highlightPath = highlightPath;
     }
 }

@@ -17,8 +17,11 @@
  */
 package nl.mpi.yaas.common.data;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
+import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 
 /**
@@ -26,16 +29,31 @@ import nl.mpi.flap.model.SerialisableDataNode;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class HighlighableDataNode extends SerialisableDataNode {
+public class HighlighableDataNode extends SerialisableDataNode implements Serializable {
 
-    private List<HighlighableDataNodeLink> highlighedLinks;
+    private List<DataNodeHighlight> highlights;
 
-    public List<HighlighableDataNodeLink> getHighlighedLinks() {
-        return highlighedLinks;
+    public List<DataNodeHighlight> getHighlights() {
+        return highlights;
     }
 
-    @XmlElement(name = "HighlightedLink")
-    public void setHighlighedLinks(List<HighlighableDataNodeLink> highlighedLinks) {
-        this.highlighedLinks = highlighedLinks;
+    @XmlElement(name = "Highlight")
+    public void setHighlights(List<DataNodeHighlight> highlighedLinks) {
+        this.highlights = highlighedLinks;
+    }
+
+    public List<DataNodeHighlight> getHighlightsForNode(SerialisableDataNode dataNode) throws ModelException {
+        final String id = dataNode.getID();
+        return getHighlightsForNode(id);
+    }
+
+    public List<DataNodeHighlight> getHighlightsForNode(String id) throws ModelException {
+        List<DataNodeHighlight> highlightList = new ArrayList<DataNodeHighlight>();
+        for (DataNodeHighlight highlight : highlightList) {
+            if (highlight.getIdString().equals(id)) {
+                highlightList.add(highlight);
+            }
+        }
+        return highlightList;
     }
 }

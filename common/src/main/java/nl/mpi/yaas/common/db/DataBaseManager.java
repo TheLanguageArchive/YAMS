@@ -627,22 +627,20 @@ public class DataBaseManager<D, F, M> {
         }
         String fieldsQuery = "";
         if (searchParameters.getSearchNegator() == SearchNegator.is) {
-            fieldsQuery = "{"
-                    + "for $field in $foundNode"
+            fieldsQuery = "for $field in $foundNode"
                     + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData[")
                     + "]\n"
                     + "return \n"
-                    + "<Highlight>{$field/@Path/string()}</Highlight>\n"
-                    + "}\n";
+                    + "<Highlight>{$nodeId, $field/@Path}</Highlight>\n";
         }
         return "for $foundNode in collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "[//DataNode/FieldGroup" + pathClause + "["
                 + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "FieldData/")
                 + "]]\n"
+                + "let $nodeId := $foundNode/@ID\n"
                 + "return\n"
-                + "<HighlightedLink>\n"
-                + "{$foundNode/@ID}\n"
+                + "(<ChildLink>{$nodeId}</ChildLink>,\n"
                 + fieldsQuery
-                + "</HighlightedLink>";
+                + ")";
     }
 
     private String getTreeFacetsQuery(MetadataFileType[] metadataFileTypes) {
@@ -856,6 +854,7 @@ public class DataBaseManager<D, F, M> {
                 //                + "return $entityNode\n"
                 + "$returnSet"
                 + "}</DataNode>\n");
+        // todo: this would be better getting the nodes and doing an instersect on the nodes and only then extracting the fields to highlight
         // System.out.println("Query: " + queryStringBuilder);
         final D metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
         return metadataTypesString;
