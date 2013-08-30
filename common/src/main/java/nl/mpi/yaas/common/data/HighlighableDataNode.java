@@ -48,12 +48,12 @@ public class HighlighableDataNode extends SerialisableDataNode implements Serial
     }
 
     public List<DataNodeHighlight> getHighlightsForNode(String id) throws ModelException {
-        List<DataNodeHighlight> highlightList = new ArrayList<DataNodeHighlight>();
-        for (DataNodeHighlight highlight : highlightList) {
-            if (highlight.getIdString().equals(id)) {
-                highlightList.add(highlight);
+        List<DataNodeHighlight> returnList = new ArrayList<DataNodeHighlight>();
+        for (DataNodeHighlight highlight : highlights) {
+            if (highlight.getDataNodeId().equals(id)) {
+                returnList.add(highlight);
             }
         }
-        return highlightList;
+        return returnList;
     }
 }

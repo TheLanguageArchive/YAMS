@@ -19,14 +19,13 @@ package nl.mpi.yaas.common.data;
 
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAttribute;
-import nl.mpi.flap.model.DataNodeLink;
 
 /**
  * Created on : Aug 28, 2013, 5:24:13 PM
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class DataNodeHighlight extends DataNodeLink implements Serializable {
+public class DataNodeHighlight implements Serializable {
 
     private String dataNodeId;
     private String highlightPath;

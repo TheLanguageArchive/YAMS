@@ -283,11 +283,12 @@ public abstract class DataBaseManagerTest {
         HighlighableDataNode result1 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
         assertEquals("Search Results", result1.getID());
         assertEquals(1, result1.getChildIds().size());
+        assertEquals(2, result1.getHighlights().size());
         searchParametersList.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.not, QueryDataStructures.SearchType.contains, "urban sign languages"));
         HighlighableDataNode result2 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
         assertEquals(null, result2.getChildList());
         HighlighableDataNode result3 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList);
-        assertEquals(16, result3.getChildIds().size());
+        assertEquals(4, result3.getChildIds().size());
         assertEquals(2, result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).size());
         assertEquals(".METATRANSCRIPT.Corpus.Name", result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).get(0).getHighlightPath());
     }

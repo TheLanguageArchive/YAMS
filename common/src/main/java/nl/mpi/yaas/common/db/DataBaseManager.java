@@ -638,9 +638,9 @@ public class DataBaseManager<D, F, M> {
                 + "]]\n"
                 + "let $nodeId := $foundNode/@ID\n"
                 + "return\n"
-                + "(<ChildLink>{$nodeId}</ChildLink>,\n"
+                + "(<ChildLink>{$nodeId}</ChildLink>,(\n"
                 + fieldsQuery
-                + ")";
+                + "))";
     }
 
     private String getTreeFacetsQuery(MetadataFileType[] metadataFileTypes) {
@@ -814,7 +814,7 @@ public class DataBaseManager<D, F, M> {
             queryStringBuilder.append(setCount);
         }
         queryStringBuilder.append("\n"
-                + "for $documentNode in $returnSet\n"
+//                + "for $documentNode in $returnSet\n"
                 + "return\n"
                 /*
                  * This query currently takes 18348.54 ms
