@@ -83,7 +83,7 @@ public abstract class DataBaseManagerTest {
                 final DataNodeLink dataNodeLink = new DataNodeLink();
                 dataNodeLink.setIdString(dataNode.getID());
                 databaseLinks.insertRootLink(dataNodeLink);
-                databaseLinks.insertLinks(dataNode);
+                databaseLinks.insertLinks(dataNodeLink, dataNode);
             }
         }
         dataBaseManager.getHandlesOfMissing(databaseLinks, 0);
@@ -289,8 +289,19 @@ public abstract class DataBaseManagerTest {
         assertEquals(null, result2.getChildList());
         HighlighableDataNode result3 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList);
         assertEquals(4, result3.getChildIds().size());
-        assertEquals(2, result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).size());
-        assertEquals(".METATRANSCRIPT.Corpus.Name", result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).get(0).getHighlightPath());
+        
+//        assertEquals(2, result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).size());
+//        assertEquals(".METATRANSCRIPT.Corpus.Name", result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).get(0).getHighlightPath());
+
+
+        // todo: the not clause is not excluding nodes but including them and needs to have a separate set for excluded nodes
+
+        ArrayList<SearchParameters> searchParametersList2 = new ArrayList<SearchParameters>();
+        searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.equals, "Brazil"));
+        searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.not, QueryDataStructures.SearchType.contains, "urban sign languages"));
+        HighlighableDataNode result4 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList);
+
+        assertEquals(4, result4.getChildIds().size());
     }
 
     /**
@@ -412,7 +423,7 @@ public abstract class DataBaseManagerTest {
         dataNodeLink.setIdString("0132fd35d7d2fd68faa904613c1bf6ad");
         dataNodeLink.setNodeUriString("Speaker Ages");
         databaseLinks2.insertChildLink(dataNodeLink); // this link is to a document that already exists in the database, so it must be removed making the end count 12
-
+        databaseLinks2.insertRecentLink(dataNodeLink);
         int numberToGet = 3;
         Set<DataNodeLink> result2 = dbManager.getHandlesOfMissing(databaseLinks2, numberToGet);
         assertEquals("20", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/RootDocumentLinks)"));

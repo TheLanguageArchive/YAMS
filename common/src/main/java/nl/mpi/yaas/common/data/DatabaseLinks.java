@@ -66,7 +66,7 @@ public class DatabaseLinks {
     }
 
     public Set<DataNodeLink> getRecentLinks() {
-        // todo: recent links are used by the database to update the facets after each run. These recent link areemoved via xquery when the facets are updated.
+        // todo: recent links are used by the database to update the facets after each run. These recent link are removed via xquery when the facets are updated.
         return recentLinks;
     }
 
@@ -76,7 +76,8 @@ public class DatabaseLinks {
         recentLinks.addAll(databaseLinks.recentLinks);
     }
 
-    public void insertLinks(SerialisableDataNode dataNode) throws ModelException {
+    public void insertLinks(DataNodeLink dataNodeLink, SerialisableDataNode dataNode) throws ModelException {
+        recentLinks.add(dataNodeLink);
         if (dataNode.getChildIds() != null) {
             for (DataNodeLink nodeLink : dataNode.getChildIds()) {
                 insertChildLink(nodeLink);

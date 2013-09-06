@@ -279,12 +279,18 @@ public class DataBaseManager<D, F, M> {
                 String insertString = "let $updatedLinks := "
                         + stringWriter.toString().replaceFirst("^\\<\\?[^\\?]*\\?\\>", "") // remove the xml header that xquery cant have in a variable
                         + "\n"
-                        + "return (insert node $updatedLinks/RootDocumentLinks[not(@ID=collection(\"" + databaseName + "\")/" + linksDocument + "/RootDocumentLinks/@ID)] into collection(\"" + databaseName + "\")/" + linksDocument
+                        + "return (\n"
+                        // delete any recently added documents from the missing list
+                        + "delete node collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks[@ID = $updatedLinks/RecentDocumentLinks/@ID]"
+                        // we check that a root node is not already in the kown documents and that new root nodes do not exist in the crawled collection
+                        + ",\ninsert node $updatedLinks/RootDocumentLinks[not(@ID=collection(\"" + databaseName + "\")/" + linksDocument + "/RootDocumentLinks/@ID)][not(@ID=collection(\"" + databaseName + "\")/DataNode/ChildLink)] into collection(\"" + databaseName + "\")/" + linksDocument
+                        // update the list of missing documents
                         + ",\ninsert node $updatedLinks/MissingDocumentLinks[not(@ID=collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks/@ID)] into collection(\"" + databaseName + "\")/" + linksDocument + ")";
-//                System.out.println("getHandlesOfMissing: " + queryString);
                 dbAdaptor.executeQuery(databaseName, insertString);
-                String deleteQuery = "delete node collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks[@ID = collection(\"" + databaseName + "\")/DataNode/@ID]";
-                dbAdaptor.executeQuery(databaseName, deleteQuery);
+                // this seems be slow with the following stats: stats:<CrawlerStats linkcount="215516" documentcount="45955" queryms="8114061" timestamp="20130903132702"/> Query time: 8114061ms
+                // instead we now delete via the list of newly added nodes and filter the inbound list of links
+//                String deleteQuery = "delete node collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks[@ID = collection(\"" + databaseName + "\")/DataNode/@ID]";
+//                dbAdaptor.executeQuery(databaseName, deleteQuery);
             } else if (docTestResult.equals("0")) {
                 // add the document
                 dbAdaptor.addDocument(databaseName, linksDocument, stringWriter.toString());
@@ -807,14 +813,25 @@ public class DataBaseManager<D, F, M> {
             queryStringBuilder.append(getSearchConstraint(searchParameters));
         }
         queryStringBuilder.append("let $returnSet := $documentSet0");
-        for (int setCount = 1; setCount < parameterCounter; setCount++) {
-            queryStringBuilder.append(" ");
-            queryStringBuilder.append(criterionJoinType.name());
-            queryStringBuilder.append(" $documentSet");
-            queryStringBuilder.append(setCount);
+        switch (criterionJoinType) {
+            case intersect:
+                for (int setCount = 1; setCount < parameterCounter; setCount++) {
+                    queryStringBuilder.append("[@ID = $documentSet");
+                    queryStringBuilder.append(setCount);
+                    queryStringBuilder.append("/@ID]");
+                }
+                break;
+            case union:
+                for (int setCount = 1; setCount < parameterCounter; setCount++) {
+                    queryStringBuilder.append(" ");
+                    queryStringBuilder.append(criterionJoinType.name());
+                    queryStringBuilder.append(" $documentSet");
+                    queryStringBuilder.append(setCount);
+                }
+                break;
         }
         queryStringBuilder.append("\n"
-//                + "for $documentNode in $returnSet\n"
+                //                + "for $documentNode in $returnSet\n"
                 + "return\n"
                 /*
                  * This query currently takes 18348.54 ms
