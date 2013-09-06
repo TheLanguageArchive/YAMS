@@ -151,7 +151,7 @@ public class RemoteArchiveCrawler {
     }
 
     public void insertKnowIcons() throws PluginException, QueryException {
-        System.out.println("Inserting the know icons");
+        System.out.println("Inserting the known icons");
         yaasDatabase.insertNodeIconsIntoDatabase(iconTable);
     }
 
@@ -348,7 +348,7 @@ public class RemoteArchiveCrawler {
 //            System.out.println("Inserting into the database");
             final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
             insertNodeIcons(dataNode);
-            databaseLinks.insertLinks(arbilDataNodeWrapper);
+            databaseLinks.insertLinks(new DataNodeLink(dataNode.getUrlString()), arbilDataNodeWrapper);
             //            arbilDataNodeWrapper.checkChildNodesLoaded();
             if (arbilDataNodeWrapper.getID() != null && !arbilDataNodeWrapper.getID().isEmpty()) {
                 arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper, true);
