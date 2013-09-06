@@ -417,28 +417,29 @@ public class DataBaseManager<D, F, M> {
      * @throws PluginException
      * @throws QueryException
      */
-    public void insertIntoDatabase(SerialisableDataNode dataNode, boolean testForDuplicates) throws PluginException, QueryException, ModelException {
-        // test for existing documents with the same ID and throw if one is found
-        if (testForDuplicates) {
-            String existingDocumentQuery = "let $countValue := count(collection(\"" + databaseName + "\")/DataNode[@ID = \"" + dataNode.getID() + "\"])\nreturn $countValue";
-            String existingDocumentResult = dbAdaptor.executeQuery(databaseName, existingDocumentQuery);
-            if (existingDocumentResult.equals("0")) {
-                // use JAXB to serialise and insert the data node into the database
-                try {
-                    JAXBContext jaxbContext = JAXBContext.newInstance(dClass, fClass, mClass);
-                    Marshaller marshaller = jaxbContext.createMarshaller();
-                    StringWriter stringWriter = new StringWriter();
-                    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-                    marshaller.marshal(dataNode, stringWriter);
+    public void insertIntoDatabase(SerialisableDataNode dataNode, boolean throwOnDuplicate) throws PluginException, QueryException, ModelException {
+        // test for existing documents with the same ID and optionally throw if one is found
+        String existingDocumentQuery = "let $countValue := count(collection(\"" + databaseName + "\")/DataNode[@ID = \"" + dataNode.getID() + "\"])\nreturn $countValue";
+        String existingDocumentResult = dbAdaptor.executeQuery(databaseName, existingDocumentQuery);
+        if (existingDocumentResult.equals("0")) {
+            // use JAXB to serialise and insert the data node into the database
+            try {
+                JAXBContext jaxbContext = JAXBContext.newInstance(dClass, fClass, mClass);
+                Marshaller marshaller = jaxbContext.createMarshaller();
+                StringWriter stringWriter = new StringWriter();
+                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+                marshaller.marshal(dataNode, stringWriter);
 //            System.out.println("Data to be inserted:\n" + stringWriter.toString());
-                    dbAdaptor.addDocument(databaseName, crawledDataCollection + "/" + dataNode.getID(), stringWriter.toString());
-                } catch (JAXBException exception) {
-                    System.err.println("jaxb error:" + exception.getMessage());
-                    throw new PluginException(exception);
-                }
-            } else {
-                System.out.println("Existing document found, count: " + existingDocumentResult + " : " + dataNode.getURI());
+                dbAdaptor.addDocument(databaseName, crawledDataCollection + "/" + dataNode.getID(), stringWriter.toString());
+            } catch (JAXBException exception) {
+                System.err.println("jaxb error:" + exception.getMessage());
+                throw new PluginException(exception);
             }
+        } else {
+            if (throwOnDuplicate) {
+                throw new QueryException("Existing document found, count: " + existingDocumentResult + " ID: " + dataNode.getID() + " URL: " + dataNode.getURI());
+            }
+            System.out.println("Existing document found, count: " + existingDocumentResult + " : " + dataNode.getURI());
         }
     }
 

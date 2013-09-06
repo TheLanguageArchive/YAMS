@@ -79,7 +79,7 @@ public abstract class DataBaseManagerTest {
             for (String dataXmlString : TestData.testData) {
                 System.out.println("dataXmlString: " + dataXmlString);
                 SerialisableDataNode dataNode = (SerialisableDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(dataXmlString)), SerialisableDataNode.class).getValue();
-                dataBaseManager.insertIntoDatabase(dataNode, false);
+                dataBaseManager.insertIntoDatabase(dataNode, true);
                 final DataNodeLink dataNodeLink = new DataNodeLink();
                 dataNodeLink.setIdString(dataNode.getID());
                 databaseLinks.insertRootLink(dataNodeLink);
@@ -101,27 +101,21 @@ public abstract class DataBaseManagerTest {
 
         DatabaseStats databaseStats = dbManager.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
-        assertEquals(17, databaseStats.getKnownDocumentsCount());
-        assertEquals(7, databaseStats.getMisingDocumentsCount());
+        assertEquals(56, databaseStats.getKnownDocumentsCount());
+        assertEquals(71, databaseStats.getMisingDocumentsCount());
 //        assertEquals(0, databaseStats.getDuplicateDocumentsCount()); // calculating duplicates is very time consuming and is no longer done
-        assertEquals(17, databaseStats.getRootDocumentsCount());
+        assertEquals(11, databaseStats.getRootDocumentsCount());
         final DataNodeId[] expectedArray = new DataNodeId[]{
-            new DataNodeId("hdl:1839/00-0000-0000-0008-C805-D"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2A9B-9"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2C2D-F"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2E76-0"),
-            new DataNodeId("hdl:1839/00-0000-0000-000D-B73D-9"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2AA2-6"),
-            new DataNodeId("hdl:1839/00-0000-0000-0004-D511-0"),
-            new DataNodeId("hdl:1839/00-0000-0000-000D-B743-0"),
-            new DataNodeId("hdl:1839/00-0000-0000-0004-D512-F"),
-            new DataNodeId("hdl:1839/00-0000-0000-0008-CAD1-B"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2E77-E"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2FA4-B"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB4-0"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2FA3-5"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-4"),
+            new DataNodeId("hdl:1839/00-0000-0000-0008-C805-D1"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2FA4-B2"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2FA4-B1"),
             new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2C2D-F1"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-43"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-44"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-42"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-45"),
+            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-46"),
             new DataNodeId("0132fd35d7d2fd68faa904613c1bf6ad")
         };
         final List<DataNodeId> expected = Arrays.<DataNodeId>asList(expectedArray);
@@ -179,11 +173,11 @@ public abstract class DataBaseManagerTest {
         MetadataFileType metadataFileType = null;
         MetadataFileType[] result = dbManager.getMetadataTypes(metadataFileType);
         assertEquals("All Types", result[0].getLabel());
-        assertEquals(17, result[0].getRecordCount());
+        assertEquals(56, result[0].getRecordCount());
         assertEquals("Corpus", result[1].getLabel());
         assertEquals(1, result[1].getRecordCount());
-        assertEquals("Test", result[2].getLabel());
-        assertEquals(4, result[2].getRecordCount());
+        assertEquals("Subnode", result[3].getLabel());
+        assertEquals(4, result[3].getRecordCount());
     }
 
     /**
@@ -195,7 +189,7 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         MetadataFileType[] result1 = dbManager.getMetadataPaths(null);
         assertEquals("All Paths", result1[0].getLabel());
-        assertEquals(71, result1[0].getRecordCount());
+        assertEquals(173, result1[0].getRecordCount());
         assertEquals("Author", result1[1].getLabel());
         assertEquals(2, result1[1].getRecordCount());
         assertEquals("Keys.Key.CorpusBrowserLink", result1[10].getLabel());
@@ -226,7 +220,7 @@ public abstract class DataBaseManagerTest {
         assertEquals("", result1[0].getLabel());
         assertEquals(null, result1[0].getType());
         assertEquals(null, result1[0].getPath());
-        assertEquals(56, result1[0].getRecordCount());
+        assertEquals(101, result1[0].getRecordCount());
         assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[9].getLabel());
         assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[9].getValue());
         assertEquals(1, result1[9].getRecordCount());
@@ -289,7 +283,7 @@ public abstract class DataBaseManagerTest {
         assertEquals(null, result2.getChildList());
         HighlighableDataNode result3 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList);
         assertEquals(4, result3.getChildIds().size());
-        
+
 //        assertEquals(2, result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).size());
 //        assertEquals(".METATRANSCRIPT.Corpus.Name", result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).get(0).getHighlightPath());
 
@@ -393,7 +387,7 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
 
         Set<DataNodeLink> result0 = dbManager.getHandlesOfMissing(databaseLinks1, 10);
-        assertEquals(7, result0.size());
+        assertEquals(10, result0.size());
 
         databaseLinks1.insertRootLink(new DataNodeLink("one"));
         databaseLinks1.insertRootLink(new DataNodeLink("two"));
@@ -426,8 +420,8 @@ public abstract class DataBaseManagerTest {
         databaseLinks2.insertRecentLink(dataNodeLink);
         int numberToGet = 3;
         Set<DataNodeLink> result2 = dbManager.getHandlesOfMissing(databaseLinks2, numberToGet);
-        assertEquals("20", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/RootDocumentLinks)"));
-        assertEquals("19", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/MissingDocumentLinks)"));
+        assertEquals("59", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/RootDocumentLinks)"));
+        assertEquals("83", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/MissingDocumentLinks)"));
         assertEquals(numberToGet, result2.size());
     }
 }
