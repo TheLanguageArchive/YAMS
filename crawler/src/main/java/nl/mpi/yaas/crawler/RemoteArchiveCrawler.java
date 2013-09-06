@@ -176,6 +176,8 @@ public class RemoteArchiveCrawler {
         try {
             boolean continueGetting = true;
             while (continueGetting) {
+                System.out.println("Links read: " + databaseLinks.getRecentLinks());
+                System.out.println("Links found: " + databaseLinks.getChildLinks());
                 final Set<DataNodeLink> handlesOfMissing = yaasDatabase.getHandlesOfMissing(databaseLinks, 1000);
                 if (handlesOfMissing.isEmpty()) {
                     continueGetting = false;
