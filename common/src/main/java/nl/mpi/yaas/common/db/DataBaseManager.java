@@ -422,22 +422,23 @@ public class DataBaseManager<D, F, M> {
         if (testForDuplicates) {
             String existingDocumentQuery = "let $countValue := count(collection(\"" + databaseName + "\")/DataNode[@ID = \"" + dataNode.getID() + "\"])\nreturn $countValue";
             String existingDocumentResult = dbAdaptor.executeQuery(databaseName, existingDocumentQuery);
-            if (!existingDocumentResult.equals("0")) {
-                throw new QueryException("Existing document found, count: " + existingDocumentResult);
-            }
-        }
-        // use JAXB to serialise and insert the data node into the database
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(dClass, fClass, mClass);
-            Marshaller marshaller = jaxbContext.createMarshaller();
-            StringWriter stringWriter = new StringWriter();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            marshaller.marshal(dataNode, stringWriter);
+            if (existingDocumentResult.equals("0")) {
+                // use JAXB to serialise and insert the data node into the database
+                try {
+                    JAXBContext jaxbContext = JAXBContext.newInstance(dClass, fClass, mClass);
+                    Marshaller marshaller = jaxbContext.createMarshaller();
+                    StringWriter stringWriter = new StringWriter();
+                    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+                    marshaller.marshal(dataNode, stringWriter);
 //            System.out.println("Data to be inserted:\n" + stringWriter.toString());
-            dbAdaptor.addDocument(databaseName, crawledDataCollection + "/" + dataNode.getID(), stringWriter.toString());
-        } catch (JAXBException exception) {
-            System.err.println("jaxb error:" + exception.getMessage());
-            throw new PluginException(exception);
+                    dbAdaptor.addDocument(databaseName, crawledDataCollection + "/" + dataNode.getID(), stringWriter.toString());
+                } catch (JAXBException exception) {
+                    System.err.println("jaxb error:" + exception.getMessage());
+                    throw new PluginException(exception);
+                }
+            } else {
+                System.out.println("Existing document found, count: " + existingDocumentResult + " : " + dataNode.getURI());
+            }
         }
     }
 
