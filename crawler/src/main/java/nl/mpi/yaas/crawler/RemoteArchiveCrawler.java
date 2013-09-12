@@ -161,11 +161,15 @@ public class RemoteArchiveCrawler {
             System.out.println("File type: " + metadataType.getLabel());
             for (MetadataFileType metadataPath : yaasDatabase.getMetadataPaths(metadataType)) {
                 System.out.println("Path type: " + metadataPath.getLabel());
-                final MetadataFileType[] metadataFieldValues = yaasDatabase.getMetadataFieldValues(metadataPath);
-                if (metadataFieldValues != null) {
-                    System.out.println("Values: " + metadataFieldValues.length);
-                } else {
-                    System.out.println("Values: none");
+                try {
+                    final MetadataFileType[] metadataFieldValues = yaasDatabase.getMetadataFieldValues(metadataPath);
+                    if (metadataFieldValues != null) {
+                        System.out.println("Values: " + metadataFieldValues.length);
+                    } else {
+                        System.out.println("Values: none");
+                    }
+                } catch (QueryException exception) {
+                    System.out.println("Failed to get metadata field values: " + exception.getMessage());
                 }
             }
         }
