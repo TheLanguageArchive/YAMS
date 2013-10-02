@@ -116,6 +116,7 @@
         </script>
     </head>
     <body>
+        <a href='yaas.html'>Search</a>
         <div id="chart_div" style="width: 900px; height: 500px;"></div>
         <div id="visualization" style="width: 900px; height: 500px;"></div>
     </body>
