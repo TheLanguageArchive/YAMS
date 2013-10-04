@@ -96,6 +96,7 @@
                 String jsonData;
                 String queryString = " ('[[\"DB\", \"Date Crawled\", \"Time Taken\", \"Time Per Document\", \"Document Count\"]',\n"
                         + "for $dbName in db:list()\n"
+//                        + " where $dbName != '" + DataBaseManager.defaultDataBase + "'\n"
                         + "let $maxDate := max(collection($dbName)/CrawlerStats/@timestamp/string())\n"
                         + "let $minDate := min(collection($dbName)/CrawlerStats/@timestamp/string())\n"
                         + "let $jsDateMin := string-join(('new Date(', substring($minDate, 1, 4), ',', substring($minDate, 5, 2), ',', substring($minDate, 7, 2), ',', substring($minDate, 9, 2), ',', substring($minDate, 11, 2), ',', substring($minDate, 13, 2),')'),'')\n"//',',substring($minDate, 15, 2),
@@ -158,7 +159,7 @@
         <div id="visualization" style="width: 900px; height: 500px;"></div>   
         <% String buttonText;
             if (request.getParameter("databaseName") != null) {
-                buttonText = "Search in '" + request.getParameter("databaseName") + "'";
+                buttonText = "Search in the selected database '" + request.getParameter("databaseName") + "'";
             } else {
                 buttonText = "Go To Search Page";
             }
