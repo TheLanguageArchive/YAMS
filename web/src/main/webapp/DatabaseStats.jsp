@@ -135,7 +135,7 @@
                 data.addRows(<%=jsonData%>.slice(1));
 
                 var options = {
-                    title: 'Crawl Statistics For All Test Databases',
+                    title: 'Crawl Statistics For All Test Databases (click below for details)',
                     hAxis: {title: 'Date Crawled'},
                     vAxis: {title: 'Time Taken'},
                     bubble: {textStyle: {fontSize: 11}}
@@ -155,8 +155,15 @@
         </script>
     </head>
     <body>
-        <a href='yaas.html'>Search</a>
-        <div id="visualization" style="width: 900px; height: 500px;"></div>
+        <div id="visualization" style="width: 900px; height: 500px;"></div>   
+        <% String buttonText;
+            if (request.getParameter("databaseName") != null) {
+                buttonText = "Search in '" + request.getParameter("databaseName") + "'";
+            } else {
+                buttonText = "Go To Search Page";
+            }
+        %>
+        <a href='yaas.html?databaseName=<%=request.getParameter("databaseName")%>'><%=buttonText%></a>
         <div id="chart_div" style="width: 900px; height: 500px;"></div>
     </body>
 </html>
