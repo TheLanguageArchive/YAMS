@@ -31,8 +31,8 @@
             google.load("visualization", "1", {packages: ["corechart"]});
             google.setOnLoadCallback(drawChart);
             function drawChart() {
-                drawVisualization1();
-                drawVisualization2();
+                drawOverviewVisualization();
+                drawDetailedVisualization();
             }
 
             function handleQueryResponse(response) {
@@ -45,26 +45,53 @@
                 visualization = new google.visualization.IntensityMap(document.getElementById('visualization'));
                 visualization.draw(data, null);
             }
+            <%
+                //            final String basexRestUrl = getInitParameter("basexRestUrl");
+                final String basexRestUrl = "http://tlatest03:8984/rest/";
+            %>
 
-
-            function drawVisualization1() {
-                var data = google.visualization.arrayToDataTable([
-                    ['Date Time', 'Records', 'Query Time'],
-                    ['2004', 1000, 400],
-                    ['2005', 1170, 460],
-                    ['2006', 660, 1120],
-                    ['2007', 1030, 540]
-                ]);
-
+            function drawDetailedVisualization() {
+            <%
+                if (request.getParameter("databaseName") != null) {
+                    String jsonDataDetailed;
+                    String queryStringDetailed = " ('[[0,0,0,0]',\n" //[\"timestamp\", \"linkcount\", \"documentcount\", \"queryms\"]',\n"
+                            + "let $dbName := '" + request.getParameter("databaseName") + "'\n"
+                            + "for $crawlerStats in collection($dbName)/CrawlerStats\n"
+                            + "order by $crawlerStats/@timestamp\n"
+                            + "let $dateTime := $crawlerStats/@timestamp/string()\n"
+                            + "let $jsDateTime := string-join(('new Date(', substring($dateTime, 1, 4), ',', substring($dateTime, 5, 2), ',', substring($dateTime, 7, 2), ',', substring($dateTime, 9, 2), ',', substring($dateTime, 11, 2), ',', substring($dateTime, 13, 2),')'),'')\n"
+                            + "let $linkcount := $crawlerStats/@linkcount/string()\n"
+                            + "let $documentcount := $crawlerStats/@documentcount/string()\n"
+                            + "let $queryms := $crawlerStats/@queryms/string()\n"
+                            + "return (',[',string-join(($jsDateTime,$linkcount,$documentcount,$queryms),','),']'),']')\n";
+                    try {
+                        RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), DataBaseManager.guestUser, DataBaseManager.guestUserPass);
+                        jsonDataDetailed = restDbAdaptor.executeQuery(DataBaseManager.defaultDataBase, queryStringDetailed);
+            %>
+//                var data = google.visualization.arrayToDataTable(<%=jsonDataDetailed%>);
+                var data = new google.visualization.DataTable();
+                data.addColumn('date', 'timestamp');
+                data.addColumn('number', 'linkcount');
+                data.addColumn('number', 'documentcount');
+                data.addColumn('number', 'queryms');
+                data.addRows(<%=jsonDataDetailed%>.slice(1));
                 var options = {
-                    title: 'Database Crawing Stats'
+                    title: 'Crawing Stats for "<%=request.getParameter("databaseName")%>"'
                 };
 
                 var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
                 chart.draw(data, options);
+            <%
+            } catch (MalformedURLException exception2) {%>
+            <%=exception2.getMessage() + "<br>"%>
+            <%} catch (QueryException exception2) {%>
+            <%=exception2.getMessage() + "<br>" + queryStringDetailed + "<br>"%>
+            <%}
+                }
+            %>
             }
 
-            function drawVisualization2() {
+            function drawOverviewVisualization() {
             <%
                 String jsonData;
                 String queryString = " ('[[\"DB\", \"Date Crawled\", \"Time Taken\", \"Time Per Document\", \"Document Count\"]',\n"
@@ -78,7 +105,7 @@
                         + "let $timePerDoc := string-join(('(',$jsDateMax,'-',$jsDateMin,')','/',string($documentCount)),'')\n"
                         + " return (',[',string-join((\n"
                         + "string-join(('\"',$dbName,'\"'),''),\n"
-                        + "$minDate,\n"
+                        + "$jsDateMin,\n"
                         + "string-join(($jsDateMax,'-',$jsDateMin),''),\n"
                         //                        + "'0',\n"                        
                         //                        + "string-join(('\"',$dbName,'\"'),''),\n"
@@ -90,8 +117,6 @@
                         + "),','),\n"
                         + "']\n'),']')\n";
                 try {
-                    //            final String basexRestUrl = getInitParameter("basexRestUrl");
-                    final String basexRestUrl = "http://tlatest03:8984/rest/";
                     RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), DataBaseManager.guestUser, DataBaseManager.guestUserPass);
                     jsonData = restDbAdaptor.executeQuery(DataBaseManager.defaultDataBase, queryString);
                 } catch (MalformedURLException exception2) {
@@ -100,7 +125,14 @@
                     jsonData = "[[Error Getting Data][" + exception2.getMessage() + "][" + queryString + "]]";
                 }
             %>
-                var data = google.visualization.arrayToDataTable(<%=jsonData%>);
+//                var data = google.visualization.arrayToDataTable(<%=jsonData%>);
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'DB');
+                data.addColumn('date', 'Date Crawled');
+                data.addColumn('number', 'Time Taken');
+                data.addColumn('number', 'Time Per Document');
+                data.addColumn('number', 'Document Count');
+                data.addRows(<%=jsonData%>.slice(1));
 
                 var options = {
                     title: 'Crawl Statistics For All Test Databases',
@@ -111,13 +143,20 @@
 
                 // Create and draw the visualization.
                 var chart2 = new google.visualization.BubbleChart(document.getElementById('visualization'));
+                google.visualization.events.addListener(chart2, 'select', selectHandler);
+
+                function selectHandler(e) {
+                    var selectedItem = chart2.getSelection()[0];
+                    var value = data.getValue(selectedItem.row, 0);
+                    location.href = "?databaseName=" + value;
+                }
                 chart2.draw(data, options);
             }
         </script>
     </head>
     <body>
         <a href='yaas.html'>Search</a>
-        <div id="chart_div" style="width: 900px; height: 500px;"></div>
         <div id="visualization" style="width: 900px; height: 500px;"></div>
+        <div id="chart_div" style="width: 900px; height: 500px;"></div>
     </body>
 </html>
