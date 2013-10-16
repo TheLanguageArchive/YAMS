@@ -23,6 +23,8 @@ import javax.xml.bind.JAXBException;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.plugin.PluginException;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 
 /**
  * Document : LocalDataBaseManagerTest Created on : April 24, 2013, 17:22 PM
@@ -31,30 +33,13 @@ import nl.mpi.flap.plugin.PluginException;
  */
 public class LocalDataBaseManagerTest extends DataBaseManagerTest {
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
     @Override
     DbAdaptor getDbAdaptor() throws IOException, QueryException {
-        return new LocalDbAdaptor(getTempDirectory());
-    }
-
-    private File getTempDirectory() throws IOException {
-
-//        File tempWorkingDir = File.createTempFile("yaas-db", "-tmp");
-//        File tempWorkingDir = File.createTempFile("yaas-db", Long.toString(System.nanoTime()), new File("./target"));
-        File tempWorkingDir = new File(new File("target").getAbsoluteFile(), "yaas-test-db");
-//        File tempWorkingDir = File.createTempFile("yaas-db", "", new File("./target"));
-        // todo: resolve why basex cant read long file names and move back the the temp dir and delete the old directory
-//        if (tempWorkingDir.exists()) {
-//            if (!tempWorkingDir.delete()) {
-//                throw new RuntimeException("Cannot create temp dir!");
-//            }
-//        }
-//        if (tempWorkingDir.mkdir()) {
-//            tempWorkingDir.deleteOnExit();
-//        } else {
-//            fail("Cannot create temp dir!");
-//        }
-        System.out.println("Using working directory: " + tempWorkingDir.getAbsolutePath());
-        return tempWorkingDir;
+        final File databaseDirectory = folder.newFolder("DatabaseDirectory");
+        return new LocalDbAdaptor(databaseDirectory);
     }
 
     @Override
