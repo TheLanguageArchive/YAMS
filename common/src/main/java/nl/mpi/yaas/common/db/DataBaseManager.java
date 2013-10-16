@@ -309,10 +309,12 @@ public class DataBaseManager<D, F, M> {
         long queryMils = System.currentTimeMillis() - startTime;
         String queryTimeString = "Query time: " + queryMils + "ms";
         final String sampleDateTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());;
+        final long totalMemory = Runtime.getRuntime().totalMemory();
+        final long freeMemory = Runtime.getRuntime().freeMemory();
         String statsQuery = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildLink\n"
                 + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                 + "return\n"
-                + "<CrawlerStats linkcount='{count($childIds)}' documentcount='{count($knownIds)}' queryms='" + queryMils + "' timestamp='" + sampleDateTime + "'/>";
+                + "<CrawlerStats linkcount='{count($childIds)}' documentcount='{count($knownIds)}' queryms='" + queryMils + "' timestamp='" + sampleDateTime + "' freebytes='" + freeMemory + "' totalbytes='" + totalMemory + "'/>";
         String statsDoc = dbAdaptor.executeQuery(databaseName, statsQuery);
         System.out.println("stats:" + statsDoc);
         // insert the stats document
