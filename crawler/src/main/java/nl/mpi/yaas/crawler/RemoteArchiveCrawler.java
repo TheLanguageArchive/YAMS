@@ -78,10 +78,10 @@ public class RemoteArchiveCrawler {
         iconTable = new IconTable();
         final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
         final ArbilDesktopInjector injector = new ArbilDesktopInjector();
-        injector.injectHandlers(versionManager, new ArbilLogConfigurer(versionManager.getApplicationVersion(), "yaas"));
+        final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
+        injector.injectHandlers(arbilSessionStorage, versionManager, new ArbilLogConfigurer(versionManager.getApplicationVersion(), "yaas"));
 
         final ArbilWindowManager arbilWindowManager = injector.getWindowManager();
-        final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
         final MimeHashQueue mockMimeHashQueue = new MimeHashQueue() {
             public void addToQueue(ArbilDataNode dataNode) {
                 throw new UnsupportedOperationException("Not supported yet.");
