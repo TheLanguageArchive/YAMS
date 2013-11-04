@@ -35,8 +35,8 @@ public class DatabaseSelect extends VerticalPanel {
 
     private final ListBox databaseListBox = new ListBox();
     private final SearchOptionsServiceAsync searchOptionsService;
-    private static final String FAILED_TO_GET_THE_DATABASE_LIST = "Failed to get the database list";
-    private static final String PLEASE_SELECT_A_DATABASE = "<please select a database>";
+    private static final String FAILED_TO_GET_THE_DATABASE_LIST = "Failed to get the database list, is the database running?";
+    public static final String PLEASE_SELECT_A_DATABASE = "<please select a database>";
     private static final Logger logger = Logger.getLogger("");
     private final ArrayList<DatabaseNameListener> databaseNameListeners = new ArrayList<DatabaseNameListener>();
     private final String databaseName;
@@ -67,8 +67,9 @@ public class DatabaseSelect extends VerticalPanel {
                 databaseListBox.setSelectedIndex(selectedIndex);
                 databaseListBox.addChangeHandler(new ChangeHandler() {
                     public void onChange(ChangeEvent event) {
+                        final String itemText = databaseListBox.getItemText(databaseListBox.getSelectedIndex());
                         for (DatabaseNameListener databaseNameListener : databaseNameListeners) {
-                            databaseNameListener.setDataBaseName(databaseListBox.getItemText(databaseListBox.getSelectedIndex()));
+                            databaseNameListener.setDataBaseName(itemText);
                         }
                     }
                 });

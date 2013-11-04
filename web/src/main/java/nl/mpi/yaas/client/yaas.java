@@ -35,7 +35,7 @@ public class yaas implements EntryPoint, DatabaseNameListener {
 
     private void setupPage(final String databaseName) {
 //        final String moduleBaseURL = "http://tlatest03.mpi.nl:8080/yaas-gwt-1.0-SNAPSHOT/yaas/";
-        final String dbStatsHref = (databaseName == null) ? "DatabaseStats.jsp" : "DatabaseStats.jsp?databaseName=" + databaseName;
+        final String dbStatsHref = (databaseName == null || DatabaseSelect.PLEASE_SELECT_A_DATABASE.equals(databaseName)) ? "DatabaseStats.jsp" : "DatabaseStats.jsp?databaseName=" + databaseName;
         RootPanel.get("databaseStats").add(new Anchor("View Database Statistics", dbStatsHref));
         RootPanel.get("databaseStats").add(new Label(GWT.getModuleBaseURL()));
         final DatabaseSelect databaseSelectBox = new DatabaseSelect(searchOptionsService, databaseName, this);
