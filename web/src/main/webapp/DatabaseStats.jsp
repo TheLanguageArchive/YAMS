@@ -46,19 +46,23 @@
                 visualization.draw(data, null);
             }
             <%
-                //            final String basexRestUrl = getInitParameter("basexRestUrl");
-                final String basexRestUrl = "http://tlatest03:8984/rest/";
+//                final String basexRestUrl = getInitParameter("basexRestUrl");
+                final String basexRestUrl = "http://localhost:8984/rest/";
             %>
 
             function drawDetailedVisualization() {
             <%
+                String errorMessage2 = "";
                 if (request.getParameter("databaseName") != null) {
-                    String jsonDataDetailed;
-                    String queryStringDetailed = " ('[[0,0,0,0]',\n" //[\"timestamp\", \"linkcount\", \"documentcount\", \"queryms\"]',\n"
+                    String jsonDataDetailed = "[[0,0,0,0]]";
+                    String queryStringDetailed = " ('[[0,0,0,0]',\n" //[''timestamp'', ''linkcount'', ''documentcount'', ''queryms'']',\n"
                             + "let $dbName := '" + request.getParameter("databaseName") + "'\n"
                             + "for $crawlerStats in collection($dbName)/CrawlerStats\n"
                             + "order by $crawlerStats/@timestamp\n"
-                            + "let $dateTime := $crawlerStats/@timestamp/string()\n"
+                            + "let $dateTime := if (empty($crawlerStats/@timestamp)) then \n"
+                            + " '20130000000000'\n"
+                            + "else\n"
+                            + " $crawlerStats/@timestamp/string()\n"
                             + "let $jsDateTime := string-join(('new Date(', substring($dateTime, 1, 4), ',', substring($dateTime, 5, 2), ',', substring($dateTime, 7, 2), ',', substring($dateTime, 9, 2), ',', substring($dateTime, 11, 2), ',', substring($dateTime, 13, 2),')'),'')\n"
                             + "let $linkcount := $crawlerStats/@linkcount/string()\n"
                             + "let $documentcount := $crawlerStats/@documentcount/string()\n"
@@ -67,6 +71,12 @@
                     try {
                         RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), DataBaseManager.guestUser, DataBaseManager.guestUserPass);
                         jsonDataDetailed = restDbAdaptor.executeQuery(DataBaseManager.defaultDataBase, queryStringDetailed);
+                    } catch (MalformedURLException exception2) {
+                        errorMessage2 += exception2.getMessage();
+                    } catch (QueryException exception2) {
+                        errorMessage2 += exception2.getMessage();
+                        errorMessage2 += "<pre>" + queryStringDetailed.replaceAll("\n", "<br>") + "</pre>";
+                    }
             %>
 //                var data = google.visualization.arrayToDataTable(<%=jsonDataDetailed%>);
                 var data = new google.visualization.DataTable();
@@ -81,38 +91,41 @@
 
                 var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
                 chart.draw(data, options);
-            <%
-            } catch (MalformedURLException exception2) {%>
-            <%=exception2.getMessage() + "<br>"%>
-            <%} catch (QueryException exception2) {%>
-            <%=exception2.getMessage() + "<br>" + queryStringDetailed + "<br>"%>
-            <%}
-                }
-            %>
+            <% } %>
             }
 
             function drawOverviewVisualization() {
             <%
-                String jsonData;
-                String queryString = " ('[[\"DB\", \"Date Crawled\", \"Time Taken\", \"Time Per Document\", \"Document Count\"]',\n"
+                String errorMessage1 = "";
+                String jsonData = "[[0][0]]";;
+                String queryString = " ('[[''DB'', ''Date Crawled'', ''Time Taken'', ''Time Per Document'', ''Document Count'']',\n"
                         + "for $dbName in db:list()\n"
-//                        + " where $dbName != '" + DataBaseManager.defaultDataBase + "'\n"
-                        + "let $maxDate := max(collection($dbName)/CrawlerStats/@timestamp/string())\n"
-                        + "let $minDate := min(collection($dbName)/CrawlerStats/@timestamp/string())\n"
+                        //                        + " where $dbName != '" + DataBaseManager.defaultDataBase + "'\n"
+                        + "let $minDate := if (empty(collection($dbName)/CrawlerStats/@timestamp)) then \n"
+                        + " '20130000000000'\n"
+                        + "else\n"
+                        + " min(collection($dbName)/CrawlerStats/@timestamp/string())\n" 
+                        + "let $maxDate := if(empty(collection($dbName)/CrawlerStats/@timestamp)) then \n"
+                        + " '20130000000000'\n"
+                        + "else\n"
+                        + " max(collection($dbName)/CrawlerStats/@timestamp/string())\n"
                         + "let $jsDateMin := string-join(('new Date(', substring($minDate, 1, 4), ',', substring($minDate, 5, 2), ',', substring($minDate, 7, 2), ',', substring($minDate, 9, 2), ',', substring($minDate, 11, 2), ',', substring($minDate, 13, 2),')'),'')\n"//',',substring($minDate, 15, 2),
                         + "let $jsDateMax := string-join(('new Date(', substring($maxDate, 1, 4), ',', substring($maxDate, 5, 2), ',', substring($maxDate, 7, 2), ',', substring($maxDate, 9, 2), ',', substring($maxDate, 11, 2), ',', substring($maxDate, 13, 2),')'),'')\n"//',',substring($maxDate, 15, 2),
                         //                        + "let $facetDocumentCount := count(collection($dbName)/Facets)\n"
                         + "let $documentCount := count(collection($dbName))\n"
-                        + "let $timePerDoc := string-join(('(',$jsDateMax,'-',$jsDateMin,')','/',string($documentCount)),'')\n"
+                        + "let $timePerDoc := if (empty(collection($dbName)/CrawlerStats/@timestamp)) then\n"
+                        + "0\n"
+                        + "else \n"
+                        + " string-join(('(',$jsDateMax,'-',$jsDateMin,')','/',string($documentCount)),'')\n"
                         + " return (',[',string-join((\n"
-                        + "string-join(('\"',$dbName,'\"'),''),\n"
+                        + "string-join(('''',$dbName,''''),''),\n"
                         + "$jsDateMin,\n"
                         + "string-join(($jsDateMax,'-',$jsDateMin),''),\n"
                         //                        + "'0',\n"                        
-                        //                        + "string-join(('\"',$dbName,'\"'),''),\n"
+                        //                        + "string-join(('''',$dbName,''''),''),\n"
                         //                        + "$minDate,\n"
                         //                        + "$maxDate,\n"
-                        //                        + "string-join(('\"',$minDate,'-',$maxDate,'\"'),''),\n"
+                        //                        + "string-join(('''',$minDate,'-',$maxDate,''''),''),\n"
                         + "string($timePerDoc),\n"
                         + "string($documentCount)\n"
                         + "),','),\n"
@@ -121,9 +134,10 @@
                     RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), DataBaseManager.guestUser, DataBaseManager.guestUserPass);
                     jsonData = restDbAdaptor.executeQuery(DataBaseManager.defaultDataBase, queryString);
                 } catch (MalformedURLException exception2) {
-                    jsonData = "[[Error Getting Data][" + exception2.getMessage() + "]]";
+                    errorMessage1 += exception2.getMessage();
                 } catch (QueryException exception2) {
-                    jsonData = "[[Error Getting Data][" + exception2.getMessage() + "][" + queryString + "]]";
+                    errorMessage1 += exception2.getMessage();
+                    errorMessage2 += "<pre>" + queryString.replaceAll("\n", "<br>") + "</pre>";
                 }
             %>
 //                var data = google.visualization.arrayToDataTable(<%=jsonData%>);
@@ -152,10 +166,15 @@
                     location.href = "?databaseName=" + value;
                 }
                 chart2.draw(data, options);
+                document.getElementById("error_div1").innerHTML = "<%=errorMessage1%>";
+                document.getElementById("error_div2").innerHTML = "<%=errorMessage2%>";
             }
-        </script>
+        </script> 
     </head>
     <body>
+        REST URL: <%=basexRestUrl%><br>
+        <div id="error_div1"></div>
+        <div id="error_div2"></div>
         <div id="visualization" style="width: 900px; height: 500px;"></div>   
         <% String buttonText;
             if (request.getParameter("databaseName") != null) {
