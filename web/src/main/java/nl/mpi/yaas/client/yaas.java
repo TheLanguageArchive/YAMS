@@ -2,12 +2,16 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.logging.client.HasWidgetsLogHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RpcRequestBuilder;
 import static com.google.gwt.user.client.rpc.RpcRequestBuilder.MODULE_BASE_HEADER;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 //import com.googlecode.gwtphonegap.client.PhoneGap;
@@ -23,6 +27,8 @@ public class yaas implements EntryPoint, DatabaseNameListener {
     private static final String NO__DATABASE__SELECTED = "No Database Selected";
     private SearchOptionsServiceAsync searchOptionsService;
 //    final PhoneGap phoneGap = GWT.create(PhoneGap.class);
+    private boolean debugMode = false;
+    private final LoggerPanel loggerPanel = new LoggerPanel();
 
     public void onModuleLoad() {
         searchOptionsService = GWT.create(SearchOptionsService.class);
@@ -31,12 +37,24 @@ public class yaas implements EntryPoint, DatabaseNameListener {
             databaseName = DataBaseManager.defaultDataBase;
         }
         setupPage(databaseName);
+        logger.addHandler(new HasWidgetsLogHandler(loggerPanel));
+        RootPanel.get("loggerPanel").add(loggerPanel);
     }
 
     private void setupPage(final String databaseName) {
 //        final String moduleBaseURL = "http://tlatest03.mpi.nl:8080/yaas-gwt-1.0-SNAPSHOT/yaas/";
         final String dbStatsHref = (databaseName == null || DatabaseSelect.PLEASE_SELECT_A_DATABASE.equals(databaseName)) ? "DatabaseStats.jsp" : "DatabaseStats.jsp?databaseName=" + databaseName;
-        RootPanel.get("databaseStats").add(new Anchor("View Database Statistics", dbStatsHref));
+        RootPanel.get("linksPanel").add(new Anchor("View Database Statistics", dbStatsHref));
+        CheckBox debugCheckBox = new CheckBox("debug");
+        debugCheckBox.setValue(debugMode);
+        RootPanel.get("optionsPanel").add(debugCheckBox);
+        debugCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                setDebugMode(event.getValue());
+            }
+        });
+        setDebugMode(debugMode);
         RootPanel.get("databaseStats").add(new Label(GWT.getModuleBaseURL()));
         final DatabaseSelect databaseSelectBox = new DatabaseSelect(searchOptionsService, databaseName, this);
         RootPanel.get("searchOptionsPanel").add(databaseSelectBox);
@@ -91,12 +109,20 @@ public class yaas implements EntryPoint, DatabaseNameListener {
         }
     }
 
+    private void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
+        RootPanel.get("databaseStats").setVisible(debugMode);
+        RootPanel.get("facetedTree").setVisible(debugMode);
+    }
+
     public void setDataBaseName(String databaseName) {
         RootPanel.get("databaseStats").clear();
         RootPanel.get("searchOptionsPanel").clear();
         RootPanel.get("dataNodeTree").clear();
         RootPanel.get("dataNodeTable").clear();
         RootPanel.get("facetedTree").clear();
+        RootPanel.get("linksPanel").clear();
+        RootPanel.get("optionsPanel").clear();
         setupPage(databaseName);
     }
 }

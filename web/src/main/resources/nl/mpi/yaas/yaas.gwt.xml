@@ -23,5 +23,11 @@
     <!-- Specify the paths for translatable code                    -->
     <source path='client' />
     <source path='shared' />
-
+    <!--<add-linker name="xs" />-->
+    <!--http://localhost:8080/web/yaas.html?gwt.codesvr=127.0.0.1:9997-->
+    
+    <set-property name='gwt.logging.enabled' value='TRUE'/>           
+    <set-property name='gwt.logging.consoleHandler' value='ENABLED'/>
+    <set-property name='gwt.logging.firebugHandler' value='ENABLED'/>  
+    <set-property name='gwt.logging.popupHandler' value='DISABLED'/> 
 </module>
