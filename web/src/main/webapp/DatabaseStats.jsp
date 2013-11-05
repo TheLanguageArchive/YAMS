@@ -66,8 +66,10 @@
                             + "let $jsDateTime := string-join(('new Date(', substring($dateTime, 1, 4), ',', substring($dateTime, 5, 2), ',', substring($dateTime, 7, 2), ',', substring($dateTime, 9, 2), ',', substring($dateTime, 11, 2), ',', substring($dateTime, 13, 2),')'),'')\n"
                             + "let $linkcount := $crawlerStats/@linkcount/string()\n"
                             + "let $documentcount := $crawlerStats/@documentcount/string()\n"
-                            + "let $queryms := $crawlerStats/@queryms/string()\n"
-                            + "return (',[',string-join(($jsDateTime,$linkcount,$documentcount,$queryms),','),']'),']')\n";
+                            + "let $querytime := string($crawlerStats/@queryms)\n"
+                            + "let $freebytes := string(($crawlerStats/@freebytes) div 1048576.0)\n"
+                            + "let $totalbytes := string(($crawlerStats/@totalbytes) div 1048576.0)\n"
+                            + "return (',[',string-join(($jsDateTime,$linkcount,$documentcount,$querytime,$freebytes,$totalbytes),','),']'),']')\n";
                     try {
                         RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), DataBaseManager.guestUser, DataBaseManager.guestUserPass);
                         jsonDataDetailed = restDbAdaptor.executeQuery(DataBaseManager.defaultDataBase, queryStringDetailed);
@@ -83,7 +85,9 @@
                 data.addColumn('date', 'timestamp');
                 data.addColumn('number', 'linkcount');
                 data.addColumn('number', 'documentcount');
-                data.addColumn('number', 'queryms');
+                data.addColumn('number', 'query ms');
+                data.addColumn('number', 'mb free');
+                data.addColumn('number', 'mb total');
                 data.addRows(<%=jsonDataDetailed%>.slice(1));
                 var options = {
                     title: 'Crawing Stats for "<%=request.getParameter("databaseName")%>"'
