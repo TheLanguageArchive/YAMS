@@ -25,11 +25,13 @@ public class DatabaseStatsPanel extends VerticalPanel {
 //    final private SearchOptionsServiceAsync searchOptionsService;
 //    final private DataNodeTree dataNodeTree;
     private final String databaseName;
+    private final DatabaseSelect databaseSelect;
 
-    public DatabaseStatsPanel(SearchOptionsServiceAsync searchOptionsService, String databaseName, final DataNodeTree dataNodeTree) {
+    public DatabaseStatsPanel(SearchOptionsServiceAsync searchOptionsService, String databaseName, final DataNodeTree dataNodeTree, DatabaseSelect databaseSelect) {
         this.searchOptionsService = searchOptionsService;
         this.dataNodeTree = dataNodeTree;
         this.databaseName = databaseName;
+        this.databaseSelect = databaseSelect;
         updateDbStats();
     }
 
@@ -45,9 +47,12 @@ public class DatabaseStatsPanel extends VerticalPanel {
             }
 
             public void onSuccess(DatabaseStats result) {
-                DatabaseStatsPanel.this.add(new Label("Known Documents Count: " + result.getKnownDocumentsCount()));
+                final String knownDocumentsText = "Available Documents: " + result.getKnownDocumentsCount();
+                final String missingDocumentsText = "Missing Documents: " + result.getMisingDocumentsCount();
+                databaseSelect.setDatabaseInfoLabel(knownDocumentsText + " " + missingDocumentsText);
+                DatabaseStatsPanel.this.add(new Label(knownDocumentsText));
                 DatabaseStatsPanel.this.add(new Label("Root Documents Count: " + result.getRootDocumentsCount()));
-                DatabaseStatsPanel.this.add(new Label("Missing Documents Count: " + result.getMisingDocumentsCount()));
+                DatabaseStatsPanel.this.add(new Label(missingDocumentsText));
                 DatabaseStatsPanel.this.add(new Label("Duplicate Documents Count: " + result.getDuplicateDocumentsCount()));
                 DatabaseStatsPanel.this.add(new Label("Query time: " + result.getQueryTimeMS() + "ms"));
                 //                final YaasTreeItem yaasTreeItem = new YaasTreeItem();

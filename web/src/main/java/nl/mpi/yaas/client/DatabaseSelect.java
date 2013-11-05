@@ -40,12 +40,19 @@ public class DatabaseSelect extends VerticalPanel {
     private static final Logger logger = Logger.getLogger("");
     private final ArrayList<DatabaseNameListener> databaseNameListeners = new ArrayList<DatabaseNameListener>();
     private final String databaseName;
+    private final Label databaseInfoLabel;
 
     public DatabaseSelect(SearchOptionsServiceAsync searchOptionsService, String databaseName, DatabaseNameListener databaseNameListener) {
         this.searchOptionsService = searchOptionsService;
         add(databaseListBox);
+        databaseInfoLabel = new Label();
+        add(databaseInfoLabel);
         databaseNameListeners.add(databaseNameListener);
         this.databaseName = databaseName;
+    }
+
+    public void setDatabaseInfoLabel(String databaseInfoText) {
+        databaseInfoLabel.setText(databaseInfoText);
     }
 
     public void getDbList() {

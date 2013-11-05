@@ -98,7 +98,7 @@ public class yaas implements EntryPoint, DatabaseNameListener {
                     final DataNodeTable dataNodeTable = new DataNodeTable();
                     final DataNodeTree dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, result);
                     final SearchPanel searchOptionsPanel = new SearchPanel(searchOptionsService, databaseName, dataNodeTree, dataNodeTable);
-                    RootPanel.get("databaseStats").add(new DatabaseStatsPanel(searchOptionsService, databaseName, dataNodeTree));
+                    RootPanel.get("databaseStats").add(new DatabaseStatsPanel(searchOptionsService, databaseName, dataNodeTree, databaseSelectBox));
                     RootPanel.get("databaseStats").add(new IconInfoPanel(result));
 //                RootPanel.get("databaseStats").add(new QueryStatsPanel());
                     RootPanel.get("searchOptionsPanel").add(searchOptionsPanel);
