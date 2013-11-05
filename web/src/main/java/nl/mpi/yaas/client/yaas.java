@@ -114,6 +114,7 @@ public class yaas implements EntryPoint, DatabaseNameListener {
         this.debugMode = debugMode;
         RootPanel.get("databaseStats").setVisible(debugMode);
         RootPanel.get("facetedTree").setVisible(debugMode);
+        RootPanel.get("loggerPanel").setVisible(debugMode);        
     }
 
     public void setDataBaseName(String databaseName) {
