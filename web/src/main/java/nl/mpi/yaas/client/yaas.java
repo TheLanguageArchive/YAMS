@@ -12,6 +12,7 @@ import static com.google.gwt.user.client.rpc.RpcRequestBuilder.MODULE_BASE_HEADE
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 //import com.googlecode.gwtphonegap.client.PhoneGap;
@@ -28,7 +29,7 @@ public class yaas implements EntryPoint, DatabaseNameListener {
     private SearchOptionsServiceAsync searchOptionsService;
 //    final PhoneGap phoneGap = GWT.create(PhoneGap.class);
     private boolean debugMode = false;
-    private final LoggerPanel loggerPanel = new LoggerPanel();
+    private final FlowPanel loggerPanel = new FlowPanel();
 
     public void onModuleLoad() {
         searchOptionsService = GWT.create(SearchOptionsService.class);
