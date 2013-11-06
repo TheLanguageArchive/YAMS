@@ -1,19 +1,19 @@
-/*
- * Copyright (C) 2013 Max Planck Institute for Psycholinguistics
+/**
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later
- * version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package nl.mpi.yaas.common.db;
 
@@ -311,10 +311,11 @@ public class DataBaseManager<D, F, M> {
         final String sampleDateTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());;
         final long totalMemory = Runtime.getRuntime().totalMemory();
         final long freeMemory = Runtime.getRuntime().freeMemory();
+        final long maxMemory = Runtime.getRuntime().maxMemory();
         String statsQuery = "let $childIds := collection(\"" + databaseName + "\")/DataNode/ChildLink\n"
                 + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                 + "return\n"
-                + "<CrawlerStats linkcount='{count($childIds)}' documentcount='{count($knownIds)}' queryms='" + queryMils + "' timestamp='" + sampleDateTime + "' freebytes='" + freeMemory + "' totalbytes='" + totalMemory + "'/>";
+                + "<CrawlerStats linkcount='{count($childIds)}' documentcount='{count($knownIds)}' queryms='" + queryMils + "' timestamp='" + sampleDateTime + "' freebytes='" + freeMemory + "' totalbytes='" + totalMemory + "' maxMemory='" + maxMemory + "'/>";
         String statsDoc = dbAdaptor.executeQuery(databaseName, statsQuery);
         System.out.println("stats:" + statsDoc);
         // insert the stats document
