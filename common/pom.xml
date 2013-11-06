@@ -8,20 +8,20 @@
     The build number is only required when depending on the output in other projects or building to the server.-->
     <version>${plugin.majorVersion}.${plugin.minorVersion}-${plugin.branch}-SNAPSHOT</version>
 <!--    <version>${plugin.majorVersion}.${plugin.minorVersion}.34200-${plugin.branch}</version>-->
+    <parent>
+        <groupId>nl.mpi</groupId>
+        <artifactId>yaas-parent</artifactId>
+        <version>1.0</version>
+    </parent>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <plugin.majorVersion>0</plugin.majorVersion>
         <plugin.minorVersion>1</plugin.minorVersion>
         <plugin.branch>pretesting</plugin.branch>
         <netbeans.hint.license>gpl20</netbeans.hint.license>
-        <plugin.license.copyrightYear>2013</plugin.license.copyrightYear>
         <maven.build.timestamp.format>EEE MMM dd HH:mm:ss z yyyy</maven.build.timestamp.format><!--"Mon Dec 10 14:37:33 CET 2012"-->
         <plugin.build-date>${maven.build.timestamp}</plugin.build-date>
     </properties>    
-    <organization> 
-        <name>Max Planck Institute for Psycholinguistics</name>
-        <url>http://tla.mpi.nl/tools/tla-tools</url>
-    </organization>
     <build>
         <resources>
             <resource>
@@ -103,6 +103,67 @@
                     </entries>
                 </configuration>
             </plugin>
+            <!--            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.8</version>
+                <executions>
+                    <execution>
+                        <id>copy-basex-api</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.basex</groupId>
+                                    <artifactId>basex-api</artifactId>
+                                    <version>7.6</version>
+                                    <type>war</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/testwarfiles</outputDirectory>
+                                    <destFileName>basex-api.war</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <version>6.1.26</version>
+                <configuration>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <stopKey>foo</stopKey>
+                    <stopPort>9999</stopPort>
+                    <contextPath>/</contextPath>
+                    <webApp>
+                        ${project.build.directory}/testwarfiles/basex-api.war 
+                    </webApp>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start-jetty</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>deploy-war</goal>
+                        </goals>
+                        <configuration>
+                            <scanIntervalSeconds>0</scanIntervalSeconds>
+                            <daemon>true</daemon>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-jetty</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>            -->
         </plugins>
     </build>
     <dependencies>
@@ -135,6 +196,13 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <!--    <pluginRepositories>
+        <pluginRepository>
+            <id>basex</id>
+            <name>BaseX Maven Repository</name>
+            <url>http://files.basex.org/maven</url>
+        </pluginRepository>
+    </pluginRepositories>-->
     <repositories>
         <repository>
             <id>MPI</id>
