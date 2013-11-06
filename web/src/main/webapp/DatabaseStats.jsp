@@ -1,3 +1,22 @@
+<%--
+
+    Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+--%>
 <!--
 /*
  * Copyright (C) 2013 Max Planck Institute for Psycholinguistics
@@ -55,7 +74,7 @@
                 String errorMessage2 = "";
                 if (request.getParameter("databaseName") != null) {
                     String jsonDataDetailed = "[[0,0,0,0]]";
-                    String queryStringDetailed = " ('[[0,0,0,0]',\n" //[''timestamp'', ''linkcount'', ''documentcount'', ''queryms'']',\n"
+                    String queryStringDetailed = " ('[[0,0,0,0,0,0]',\n" //[''timestamp'', ''linkcount'', ''documentcount'', ''queryms'']',\n"
                             + "let $dbName := '" + request.getParameter("databaseName") + "'\n"
                             + "for $crawlerStats in collection($dbName)/CrawlerStats\n"
                             // this order by seems to cause problems which might depend on which basex version is being used: + "order by $crawlerStats/@timestamp/string()\n"
@@ -63,13 +82,17 @@
                             + " '20130000000000'\n"
                             + "else\n"
                             + " $crawlerStats/@timestamp/string()\n"
+                            + "let $maxMemory := if (empty($crawlerStats/@maxMemory)) then \n"
+                            + " '0'\n"
+                            + "else\n"
+                            + " string(($crawlerStats/@maxMemory) div 1048576.0)\n"
                             + "let $jsDateTime := string-join(('new Date(', substring($dateTime, 1, 4), ',', substring($dateTime, 5, 2), ',', substring($dateTime, 7, 2), ',', substring($dateTime, 9, 2), ',', substring($dateTime, 11, 2), ',', substring($dateTime, 13, 2),')'),'')\n"
                             + "let $linkcount := $crawlerStats/@linkcount/string()\n"
                             + "let $documentcount := $crawlerStats/@documentcount/string()\n"
                             + "let $querytime := string($crawlerStats/@queryms)\n"
                             + "let $freebytes := string(($crawlerStats/@freebytes) div 1048576.0)\n"
                             + "let $totalbytes := string(($crawlerStats/@totalbytes) div 1048576.0)\n"
-                            + "return (',[',string-join(($jsDateTime,$linkcount,$documentcount,$querytime,$freebytes,$totalbytes),','),']'),']')\n";
+                            + "return (',[',string-join(($jsDateTime,$linkcount,$documentcount,$querytime,$freebytes,$totalbytes,$maxMemory),','),']'),']')\n";
                     try {
                         RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), DataBaseManager.guestUser, DataBaseManager.guestUserPass);
                         jsonDataDetailed = restDbAdaptor.executeQuery(DataBaseManager.defaultDataBase, queryStringDetailed);
@@ -88,6 +111,7 @@
                 data.addColumn('number', 'query ms');
                 data.addColumn('number', 'mb free');
                 data.addColumn('number', 'mb total');
+                data.addColumn('number', 'mb available');
                 data.addRows(<%=jsonDataDetailed%>.slice(1));
                 var options = {
                     title: 'Crawing Stats for "<%=request.getParameter("databaseName")%>"'
@@ -102,7 +126,7 @@
             <%
                 String errorMessage1 = "";
                 String jsonData = "[[0][0]]";;
-                String queryString = " ('[[''DB'', ''Date Crawled'', ''Time Taken'', ''Time Per Document'', ''Document Count'']',\n"
+                String queryString = " ('[[''DB'', ''Date Crawled'', ''Time Taken (hours.minutes)'', ''Time Per Document'', ''Document Count'']',\n"
                         + "for $dbName in db:list()\n"
                         //                        + " where $dbName != '" + DataBaseManager.defaultDataBase + "'\n"
                         + "let $minDate := if (empty(collection($dbName)/CrawlerStats/@timestamp)) then \n"
@@ -124,7 +148,11 @@
                         + " return (',[',string-join((\n"
                         + "string-join(('''',$dbName,''''),''),\n"
                         + "$jsDateMin,\n"
-                        + "string-join(($jsDateMax,'-',$jsDateMin),''),\n"
+                        // this hours minutes value will not be quite correct on the graph, which expects a fraction
+                        + "string-join(("
+                        + "'(Math.floor(',$jsDateMax,'-',$jsDateMin,' / 3600) % 24)'"
+                        + ",'+((Math.floor(',$jsDateMax,'-',$jsDateMin,' / 60) % 60)/100)'"
+                        + "),''),\n"
                         //                        + "'0',\n"                        
                         //                        + "string-join(('''',$dbName,''''),''),\n"
                         //                        + "$minDate,\n"
@@ -148,7 +176,7 @@
                 var data = new google.visualization.DataTable();
                 data.addColumn('string', 'DB');
                 data.addColumn('date', 'Date Crawled');
-                data.addColumn('number', 'Time Taken');
+                data.addColumn('number', 'Time Taken (hours.minutes)');
                 data.addColumn('number', 'Time Per Document');
                 data.addColumn('number', 'Document Count');
                 data.addRows(<%=jsonData%>.slice(1));
@@ -156,7 +184,7 @@
                 var options = {
                     title: 'Crawl Statistics For All Test Databases (click below for details)',
                     hAxis: {title: 'Date Crawled'},
-                    vAxis: {title: 'Time Taken'},
+                    vAxis: {title: 'Time Taken (hours.minutes)'},
                     bubble: {textStyle: {fontSize: 11}}
                 };
 
