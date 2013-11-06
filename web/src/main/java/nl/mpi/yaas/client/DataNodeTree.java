@@ -1,6 +1,20 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.client;
 
@@ -8,8 +22,8 @@ import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
-import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
+import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.IconTableBase64;
 
 /**
@@ -69,8 +83,9 @@ public class DataNodeTree extends Tree {
         //this.addItem(yaasTreeItem);
     }
 
-    public void addResultsToTree(String databaseName, SerialisableDataNode dataNode) {
+    public void addResultsToTree(String databaseName, HighlighableDataNode dataNode) {
         final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNode, searchOptionsService, dataNodeTable, iconTableBase64);
+        yaasTreeItem.setHighlights(dataNode);
         this.addItem(yaasTreeItem);
     }
 }

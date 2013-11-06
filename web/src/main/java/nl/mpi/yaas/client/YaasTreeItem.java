@@ -1,6 +1,20 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.client;
 
@@ -27,7 +41,9 @@ import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.yaas.common.data.DataNodeHighlight;
 import nl.mpi.yaas.common.data.DataNodeId;
+import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.IconTableBase64;
 import nl.mpi.yaas.common.data.NodeTypeImageBase64;
 
@@ -59,6 +75,7 @@ public class YaasTreeItem extends TreeItem {
     private static final Logger logger = Logger.getLogger("");
     private final String databaseName;
     private int loadedCount = 0;
+    List<DataNodeHighlight> highlighedLinks = new ArrayList<DataNodeHighlight>();
 
     public YaasTreeItem(String databaseName, DataNodeId dataNodeId, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
         super(new HorizontalPanel());
@@ -124,6 +141,51 @@ public class YaasTreeItem extends TreeItem {
         loadingItem.add(new Label("loading..."));
         return new TreeItem(loadingItem);
 
+    }
+
+    public void setHighlights(HighlighableDataNode dataNode) {
+        this.highlighedLinks.addAll(dataNode.getHighlights());
+    }
+
+    public void setHighlights(List<DataNodeHighlight> highlighedLinks) {
+        boolean isHighlighted = false;
+        String nodeId = null;
+        try {
+            nodeId = (dataNodeId != null) ? dataNodeId.getIdString() : yaasDataNode.getID();
+        } catch (ModelException exception) {
+            // nothing to do here if there is no URI
+        }
+        if (nodeId != null) {
+            for (DataNodeHighlight highlight : highlighedLinks) {
+                if (nodeId.equals(highlight.getDataNodeId())) {
+                    this.highlighedLinks.add(highlight);
+                    isHighlighted = true;
+                }
+            }
+        } else if (yaasDataNode != null) {
+            try {
+                final String uri = yaasDataNode.getURI();
+                if (uri != null) {
+                    final String[] uriParts = uri.split("#");
+                    if (uriParts != null && uriParts.length >= 2) {
+                        final String fragment = uriParts[1];
+                        for (DataNodeHighlight highlight : highlighedLinks) {
+                            if (highlight.getHighlightPath().startsWith(fragment)) {
+                                this.highlighedLinks.add(highlight);
+                                isHighlighted = true;
+                            }
+                        }
+                    }
+                }
+            } catch (ModelException exception) {
+                // nothing to do here if there is no URI
+            }
+        }
+        if (isHighlighted) {
+            setStyleName("yaas-treeNode-highlighted");
+        } else {
+            setStyleName("yaas-treeNode");
+        }
     }
 
     private void setNodeIcon() {
@@ -248,7 +310,8 @@ public class YaasTreeItem extends TreeItem {
                 // add the meta child nodes
                 for (SerialisableDataNode childDataNode : yaasDataNode.getChildList()) {
                     YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
-                    addItem(yaasTreeItem);;
+                    yaasTreeItem.setHighlights(highlighedLinks);
+                    addItem(yaasTreeItem);
                 }
             } else {
                 addItem(loadingTreeItem);
@@ -281,6 +344,7 @@ public class YaasTreeItem extends TreeItem {
                             if (dataNodeList != null) {
                                 for (SerialisableDataNode childDataNode : dataNodeList) {
                                     YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
+                                    yaasTreeItem.setHighlights(highlighedLinks);
                                     addItem(yaasTreeItem);
                                     loadedCount++;
                                 }

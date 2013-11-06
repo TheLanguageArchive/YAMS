@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchOption;
 import nl.mpi.yaas.common.data.SearchParameters;
@@ -110,7 +110,7 @@ public class SearchPanel extends VerticalPanel {
                 for (SearchCriterionPanel eventCriterionPanel : criterionPanelList) {
                     searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
                 }
-                searchOptionsService.performSearch(databaseName, joinTypeListBox.getValue(), searchParametersList, new AsyncCallback<SerialisableDataNode>() {
+                searchOptionsService.performSearch(databaseName, joinTypeListBox.getValue(), searchParametersList, new AsyncCallback<HighlighableDataNode>() {
                     public void onFailure(Throwable caught) {
                         logger.log(Level.SEVERE, "PerformSearch", caught);
                         searchHandler.signalSearchDone();
@@ -118,7 +118,7 @@ public class SearchPanel extends VerticalPanel {
                         searchButton.setHTML(SEARCH_LABEL);
                     }
 
-                    public void onSuccess(SerialisableDataNode result) {
+                    public void onSuccess(HighlighableDataNode result) {
                         long responseMils = System.currentTimeMillis() - startTime;
                         final String searchTimeMessage = "PerformSearch response time: " + responseMils + " ms";
                         logger.log(Level.INFO, searchTimeMessage);
