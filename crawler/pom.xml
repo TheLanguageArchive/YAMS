@@ -4,6 +4,11 @@
     <name>YAAS Crawler</name>
     <groupId>nl.mpi</groupId>
     <artifactId>yaas-crawler</artifactId>
+    <parent>
+        <groupId>nl.mpi</groupId>
+        <artifactId>yaas-parent</artifactId>
+        <version>1.0</version>
+    </parent>
     <!--<version>${plugin.majorVersion}.${plugin.minorVersion}.0000000-${plugin.branch}</version>-->
     <version>${plugin.majorVersion}.${plugin.minorVersion}-${plugin.branch}-SNAPSHOT</version>
     <properties>
@@ -12,14 +17,9 @@
         <plugin.minorVersion>1</plugin.minorVersion>
         <plugin.branch>pretesting</plugin.branch>
         <netbeans.hint.license>gpl20</netbeans.hint.license>
-        <plugin.license.copyrightYear>2012</plugin.license.copyrightYear>
         <maven.build.timestamp.format>EEE MMM dd HH:mm:ss z yyyy</maven.build.timestamp.format><!--"Mon Dec 10 14:37:33 CET 2012"-->
         <plugin.build-date>${maven.build.timestamp}</plugin.build-date>
-    </properties>    
-    <organization> 
-        <name>Max Planck Institute for Psycholinguistics</name>
-        <url>http://tla.mpi.nl/tools/tla-tools</url>
-    </organization>
+    </properties> 
     <build>
         <resources>
             <resource>
