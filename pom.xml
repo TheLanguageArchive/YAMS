@@ -19,7 +19,7 @@
         <url>https://trac.mpi.nl/wiki/KinOath</url>
     </scm>-->
     <organization> 
-        <name>Max Planck Institute for Psycholinguistics</name> 
+        <name>The Language Archive, Max Planck Institute for Psycholinguistics</name>
         <url>http://tla.mpi.nl/tools/tla-tools</url>
     </organization>
     <properties>
@@ -28,7 +28,7 @@
         <plugin.minorVersion>1</plugin.minorVersion>
         <plugin.branch>pretesting</plugin.branch>
 <!--        <netbeans.hint.license>gpl20</netbeans.hint.license> this hint fails when it is in the parent pom -->
-        <plugin.license.copyrightYear>2012</plugin.license.copyrightYear>
+        <plugin.license.copyrightYear>2013</plugin.license.copyrightYear>
     </properties>
     <build>
         <plugins>
