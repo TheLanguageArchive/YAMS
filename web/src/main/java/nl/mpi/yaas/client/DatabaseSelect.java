@@ -1,25 +1,27 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.client;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -41,6 +43,7 @@ public class DatabaseSelect extends VerticalPanel {
     private final ArrayList<DatabaseNameListener> databaseNameListeners = new ArrayList<DatabaseNameListener>();
     private final String databaseName;
     private final Label databaseInfoLabel;
+    final private Image loadingImage;
 
     public DatabaseSelect(SearchOptionsServiceAsync searchOptionsService, String databaseName, DatabaseNameListener databaseNameListener) {
         this.searchOptionsService = searchOptionsService;
@@ -49,10 +52,14 @@ public class DatabaseSelect extends VerticalPanel {
         add(databaseInfoLabel);
         databaseNameListeners.add(databaseNameListener);
         this.databaseName = databaseName;
+        loadingImage = new Image("./loader.gif");
+        add(loadingImage);
+        loadingImage.setVisible(false);
     }
 
     public void setDatabaseInfoLabel(String databaseInfoText) {
         databaseInfoLabel.setText(databaseInfoText);
+        loadingImage.setVisible(false);
     }
 
     public void getDbList() {
@@ -77,6 +84,7 @@ public class DatabaseSelect extends VerticalPanel {
                         final String itemText = databaseListBox.getItemText(databaseListBox.getSelectedIndex());
                         for (DatabaseNameListener databaseNameListener : databaseNameListeners) {
                             databaseNameListener.setDataBaseName(itemText);
+                            loadingImage.setVisible(true);
                         }
                     }
                 });

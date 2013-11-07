@@ -75,7 +75,7 @@ public class YaasTreeItem extends TreeItem {
     private static final Logger logger = Logger.getLogger("");
     private final String databaseName;
     private int loadedCount = 0;
-    List<DataNodeHighlight> highlighedLinks = new ArrayList<DataNodeHighlight>();
+    private final List<DataNodeHighlight> highlighedLinks = new ArrayList<DataNodeHighlight>();
 
     public YaasTreeItem(String databaseName, DataNodeId dataNodeId, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64) {
         super(new HorizontalPanel());
@@ -182,9 +182,11 @@ public class YaasTreeItem extends TreeItem {
             }
         }
         if (isHighlighted) {
-            setStyleName("yaas-treeNode-highlighted");
+            nodeLabel.setStyleName("yaas-treeNode-highlighted");
+            nodeDetailsAnchor.setStyleName("yaas-treeNode-highlighted");
         } else {
-            setStyleName("yaas-treeNode");
+            nodeLabel.setStyleName("yaas-treeNode");
+            nodeDetailsAnchor.setStyleName("yaas-treeNode");
         }
     }
 
@@ -222,7 +224,7 @@ public class YaasTreeItem extends TreeItem {
         nodeDetailsAnchor.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 if (singleDataNodeTable == null) {
-                    singleDataNodeTable = new SingleDataNodeTable(yaasDataNode, this);
+                    singleDataNodeTable = new SingleDataNodeTable(yaasDataNode, this, highlighedLinks);
                     singleDataNodeTable.setStyleName("yaas-treeNodeDetails");
                     outerPanel.add(singleDataNodeTable);
 //                                 expandButton.setText("<<");

@@ -29,6 +29,7 @@
 }
 .yaas-treeNode {
     font-weight: normal;
+    /*color: gray;*/
     /*  vertical-align: top;
         border-style:solid;
         border-width:1px;*/
@@ -36,6 +37,7 @@
 }
 .yaas-treeNode-highlighted {
     font-weight: bold;
+    /*color: darkblue;*/
     /*  vertical-align: top;
         border-style:solid;
         border-width:1px;*/
