@@ -32,6 +32,7 @@
     /*  vertical-align: top;
         border-style:solid;
         border-width:1px;*/
+    background-color:white;
 }
 .yaas-treeNode-highlighted {
     font-weight: bold;
