@@ -1,19 +1,20 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.common.db;
 
@@ -76,9 +77,9 @@ public abstract class DataBaseManagerTest {
         if (insertData) {
             JAXBContext jaxbContext = JAXBContext.newInstance(SerialisableDataNode.class, DataField.class, DataField.class, DataNodeType.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            for (String dataXmlString : TestData.testData) {
-                System.out.println("dataXmlString: " + dataXmlString);
-                SerialisableDataNode dataNode = (SerialisableDataNode) unmarshaller.unmarshal(new StreamSource(new StringReader(dataXmlString)), SerialisableDataNode.class).getValue();
+            for (String testFileName : TestData.testFiles) {
+                System.out.println("testFileName: " + testFileName);
+                SerialisableDataNode dataNode = (SerialisableDataNode) unmarshaller.unmarshal(new StreamSource(DataBaseManagerTest.class.getResourceAsStream("/testdata/" + testFileName)), SerialisableDataNode.class).getValue();
                 dataBaseManager.insertIntoDatabase(dataNode, true);
                 final DataNodeLink dataNodeLink = new DataNodeLink();
                 dataNodeLink.setIdString(dataNode.getID());
@@ -101,30 +102,50 @@ public abstract class DataBaseManagerTest {
 
         DatabaseStats databaseStats = dbManager.getDatabaseStats();
         System.out.println("DatabaseStats Query Time: " + databaseStats.getQueryTimeMS() + "ms");
-        assertEquals(56, databaseStats.getKnownDocumentsCount());
-        assertEquals(71, databaseStats.getMisingDocumentsCount());
+        assertEquals(28, databaseStats.getKnownDocumentsCount());
+        assertEquals(34, databaseStats.getMisingDocumentsCount());
 //        assertEquals(0, databaseStats.getDuplicateDocumentsCount()); // calculating duplicates is very time consuming and is no longer done
-        assertEquals(11, databaseStats.getRootDocumentsCount());
+        assertEquals(28, databaseStats.getRootDocumentsCount());
         final DataNodeId[] expectedArray = new DataNodeId[]{
-            new DataNodeId("hdl:1839/00-0000-0000-0008-C805-D1"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2FA4-B2"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2FA4-B1"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2C2D-F1"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-43"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-44"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-42"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-45"),
-            new DataNodeId("hdl:1839/00-0000-0000-0001-2AB1-46"),
-            new DataNodeId("0132fd35d7d2fd68faa904613c1bf6ad")
+            new DataNodeId("0b7899a7cd5875b653920820f680da43"),
+            new DataNodeId("0bda78423e1c7619a1e7cd1104aa7e02"),
+            new DataNodeId("0c8a62939fc0a5f90aed345641b96379"),
+            new DataNodeId("0a03166921f32c2d1e6ef4806d09055e"),
+            new DataNodeId("0e6f686abcef53f99f68a445c77068b9"),
+            new DataNodeId("0b0601223681aafdbbdd704f18534a8a"),
+            new DataNodeId("0d296020ab87454caa485073686b4c8c"),
+            new DataNodeId("0d2f15fb77b1ad020a2b710724588118"),
+            new DataNodeId("0b92e5b845d81837447c154dd49d2728"),
+            new DataNodeId("1b8a54ac164c0d79f679546f28a7fd2e"),
+            new DataNodeId("0a5d5d2b11a9e6d9f9f84cb6973b56d6"),
+            new DataNodeId("0a4f1304c0f5d6a5a3c2f0076f68af1d"),
+            new DataNodeId("0b3f141698c5c983daa1ab52ae12e310"),
+            new DataNodeId("0aa7135ea9760514fee9d400ceb66109"),
+            new DataNodeId("0ddef5d81b873c5fb8648ee44b8bb2a4"),
+            new DataNodeId("0a5f98482990d8b5c2d2eff7a53fa326"),
+            new DataNodeId("0f49b8cb9286bb8ca41d40480c0ca6b0"),
+            new DataNodeId("0f4d9cdcd07a1d0c642bb11a0dd1cf2e"),
+            new DataNodeId("0bffddf7dce6209f5b989a39b1392cea"),
+            new DataNodeId("0b01e50850ee4032de418aac477b9d13"),
+            new DataNodeId("1b3964d207c486edc5a3565e2b3eaa51"),
+            new DataNodeId("0ba62767c0ea1bc1bdfd3581462ea2bc"),
+            new DataNodeId("0a646a555c394adf97f10100490dd7f4"),
+            new DataNodeId("0ac15a1d88ec87cf22c086e6861d892a"),
+            new DataNodeId("0ec2bc0633f964958527d1bd3e366f3a"),
+            new DataNodeId("0c13f64dcabfd367e87769de60881f1e"),
+            new DataNodeId("1b0e86d0d3eda6c5981ad31232dd4dbb"),
+            new DataNodeId("0e6a4c84769cebf23a65f2072a895fe8")
         };
         final List<DataNodeId> expected = Arrays.<DataNodeId>asList(expectedArray);
         final List<DataNodeId> actual = Arrays.asList(databaseStats.getRootDocumentsIDs());
-        assertEquals(actual.size(), expected.size());
+        assertEquals(expected.size(), actual.size());
+        for (DataNodeId dataNodeId : databaseStats.getRootDocumentsIDs()) {
+            System.out.println("new DataNodeId(\"" + dataNodeId.getIdString() + "\"),");
+        }
         assertArrayEquals(databaseStats.getRootDocumentsIDs(), expectedArray);
 //        assertThat(actual, (Matcher) hasItems(expected));
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
-        nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
+        nodeIDs.add(new DataNodeId("0a646a555c394adf97f10100490dd7f4"));
         SerialisableDataNode dataNode = (SerialisableDataNode) dbManager.getNodeDatasByIDs(nodeIDs);
         assertEquals(1, dataNode.getChildList().size());
         assertTrue("Query took too long:" + databaseStats.getQueryTimeMS() + "ms", databaseStats.getQueryTimeMS() < 420);
@@ -158,7 +179,7 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
 //        final DataBaseManager instance = new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, testDatabaseName);
         final ArrayList<DataNodeId> nodeIDs = new ArrayList<DataNodeId>();
-        nodeIDs.add(new DataNodeId("hdl:1839/00-0000-0000-0001-2A9A-4"));
+        nodeIDs.add(new DataNodeId("0a4f1304c0f5d6a5a3c2f0076f68af1d"));
         SerialisableDataNode dataNode = (SerialisableDataNode) dbManager.getNodeDatasByIDs(nodeIDs);
         assertEquals(1, dataNode.getChildList().size());
     }
@@ -173,11 +194,11 @@ public abstract class DataBaseManagerTest {
         MetadataFileType metadataFileType = null;
         MetadataFileType[] result = dbManager.getMetadataTypes(metadataFileType);
         assertEquals("All Types", result[0].getLabel());
-        assertEquals(56, result[0].getRecordCount());
+        assertEquals(28, result[0].getRecordCount());
         assertEquals("Corpus", result[1].getLabel());
-        assertEquals(1, result[1].getRecordCount());
-        assertEquals("Subnode", result[3].getLabel());
-        assertEquals(4, result[3].getRecordCount());
+        assertEquals(2, result[1].getRecordCount());
+        assertEquals("Session", result[2].getLabel());
+        assertEquals(26, result[2].getRecordCount());
     }
 
     /**
@@ -189,11 +210,11 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         MetadataFileType[] result1 = dbManager.getMetadataPaths(null);
         assertEquals("All Paths", result1[0].getLabel());
-        assertEquals(173, result1[0].getRecordCount());
-        assertEquals("Author", result1[1].getLabel());
-        assertEquals(2, result1[1].getRecordCount());
-        assertEquals("Keys.Key.CorpusBrowserLink", result1[10].getLabel());
-        assertEquals(2, result1[10].getRecordCount());
+        assertEquals(4464, result1[0].getRecordCount());
+        assertEquals("Access.Date", result1[1].getLabel());
+        assertEquals(195, result1[1].getRecordCount());
+        assertEquals("CommunicationContext.EventStructure", result1[10].getLabel());
+        assertEquals(26, result1[10].getRecordCount());
         MetadataFileType metadataFileType = new MetadataFileType() {
             @Override
             public String getType() {
@@ -202,11 +223,11 @@ public abstract class DataBaseManagerTest {
         };
         MetadataFileType[] result2 = dbManager.getMetadataPaths(metadataFileType);
         assertEquals("All Paths", result2[0].getLabel());
-        assertEquals(3, result2[0].getRecordCount());
+        assertEquals(6, result2[0].getRecordCount());
         assertEquals("Description", result2[1].getLabel());
-        assertEquals(1, result2[1].getRecordCount());
+        assertEquals(2, result2[1].getRecordCount());
         assertEquals("Title", result2[3].getLabel());
-        assertEquals(1, result2[2].getRecordCount());
+        assertEquals(2, result2[2].getRecordCount());
     }
 
     /**
@@ -220,9 +241,9 @@ public abstract class DataBaseManagerTest {
         assertEquals("", result1[0].getLabel());
         assertEquals(null, result1[0].getType());
         assertEquals(null, result1[0].getPath());
-        assertEquals(101, result1[0].getRecordCount());
-        assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[9].getLabel());
-        assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[9].getValue());
+        assertEquals(2929, result1[0].getRecordCount());
+        assertEquals(" 	Author: not applicable      	Title: radio: Radio 1 - Nieuws      	Publisher: not applicable      	Place: not applicable      	Date: not applicable      	Recording date: 2000 	Recording time: Unspecified 	From: national radio     	Produced from: Vlaamse Radio- en Televisieomroep    ", result1[9].getLabel());
+        assertEquals(" 	Author: not applicable      	Title: radio: Radio 1 - Nieuws      	Publisher: not applicable      	Place: not applicable      	Date: not applicable      	Recording date: 2000 	Recording time: Unspecified 	From: national radio     	Produced from: Vlaamse Radio- en Televisieomroep    ", result1[9].getValue());
         assertEquals(1, result1[9].getRecordCount());
         MetadataFileType metadataFileType1 = new MetadataFileType() {
             @Override
@@ -232,11 +253,11 @@ public abstract class DataBaseManagerTest {
         };
         MetadataFileType[] result2 = dbManager.getMetadataFieldValues(metadataFileType1);
         assertEquals("", result1[0].getLabel());
-        assertEquals(2, result2[0].getRecordCount());
-        assertEquals("Centre for Sign Linguistics and Deaf Studies", result1[9].getLabel());
+        assertEquals(1, result2[0].getRecordCount());
+        assertEquals(" 	Author: not applicable      	Title: radio: Radio 1 - Nieuws      	Publisher: not applicable      	Place: not applicable      	Date: not applicable      	Recording date: 2000 	Recording time: Unspecified 	From: national radio     	Produced from: Vlaamse Radio- en Televisieomroep    ", result1[9].getLabel());
         assertEquals("Corpus", result2[1].getType());
         assertEquals(null, result2[1].getPath());
-        assertEquals(1, result2[1].getRecordCount());
+        assertEquals(2, result2[1].getRecordCount());
         MetadataFileType metadataFileType2 = new MetadataFileType() {
             @Override
             public String getType() {
@@ -249,9 +270,9 @@ public abstract class DataBaseManagerTest {
             }
         };
         MetadataFileType[] result3 = dbManager.getMetadataFieldValues(metadataFileType2);
-        assertEquals("Corpus divided by subject age-categories", result3[0].getLabel());
+        assertEquals("Sessions containing subjects of less than 17 years", result3[0].getLabel());
         assertEquals(1, result3[0].getRecordCount());
-        assertEquals(1, result3.length);
+        assertEquals(2, result3.length);
     }
 
     /**
@@ -263,7 +284,7 @@ public abstract class DataBaseManagerTest {
         MetadataFileType metadataFileType1 = new MetadataFileType() {
             @Override
             public String getType() {
-                return "Test";
+                return "Session";
             }
 
             @Override
@@ -286,10 +307,7 @@ public abstract class DataBaseManagerTest {
 
 //        assertEquals(2, result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).size());
 //        assertEquals(".METATRANSCRIPT.Corpus.Name", result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).get(0).getHighlightPath());
-
-
         // todo: the not clause is not excluding nodes but including them and needs to have a separate set for excluded nodes
-
         ArrayList<SearchParameters> searchParametersList2 = new ArrayList<SearchParameters>();
         searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.equals, "Brazil"));
         searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.not, QueryDataStructures.SearchType.contains, "urban sign languages"));
@@ -351,7 +369,7 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         String result = dbManager.getHandlesOfMissing();
         System.out.println("result:" + result);
-        assertEquals(517, result.length());
+        assertEquals(2719, result.length());
     }
 
     /**
@@ -372,7 +390,7 @@ public abstract class DataBaseManagerTest {
     public void testGetHandlesOfMissing_0args() throws Exception {
         System.out.println("getHandlesOfMissing");
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
-        String expResult = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/ageX.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age5.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age3.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age2.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age1.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age0.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age4.imdi";
+        String expResult = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age0_male.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age0_female.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_13.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_14.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_17.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_28.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_31.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_32.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_12.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_30.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_08.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_25.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_16.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_07.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_29.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_09.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_19.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_04.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_18.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_01.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_23.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_26.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_11.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_21.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_27.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_10.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_02.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_06.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_22.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_05.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_20.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_03.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_24.imdi http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_15.imdi";
         String result = dbManager.getHandlesOfMissing();
         assertEquals(expResult, result);
     }
@@ -420,8 +438,8 @@ public abstract class DataBaseManagerTest {
         databaseLinks2.insertRecentLink(dataNodeLink);
         int numberToGet = 3;
         Set<DataNodeLink> result2 = dbManager.getHandlesOfMissing(databaseLinks2, numberToGet);
-        assertEquals("59", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/RootDocumentLinks)"));
-        assertEquals("83", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/MissingDocumentLinks)"));
+        assertEquals("31", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/RootDocumentLinks)"));
+        assertEquals("46", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/MissingDocumentLinks)"));
         assertEquals(numberToGet, result2.size());
     }
 }

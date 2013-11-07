@@ -1,0 +1,44 @@
+<DataNode ID="0ac15a1d88ec87cf22c086e6861d892a" Label="DVD" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/dvd.imdi">
+  <ChildLink ID="7def08375118a000cd670c55acc07d8c" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_13.imdi"/>
+  <ChildLink ID="1f38e133f65888ee0cd3c9338450a8a8" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_14.imdi"/>
+  <ChildLink ID="327d86946c284f9f2fca31a9228fa371" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_17.imdi"/>
+  <ChildLink ID="f3b122fbabbbf360f8bc99ca55692238" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_28.imdi"/>
+  <ChildLink ID="db93ebb75e696697fbc5f5f21b0c7428" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_31.imdi"/>
+  <ChildLink ID="afb1b333e8db0fe0c7150d4995fa8982" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_32.imdi"/>
+  <ChildLink ID="6ad09c978706c59556f682384251aa80" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_12.imdi"/>
+  <ChildLink ID="075bbac335115994f75372e557a17d53" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_30.imdi"/>
+  <ChildLink ID="629b80c6dbb5cfb4f53e6d1c7964bfeb" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_08.imdi"/>
+  <ChildLink ID="84c42c236cb13e2609f9376d3e79a4d0" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_25.imdi"/>
+  <ChildLink ID="e6679a168f22cf3d3081d7a2aead6c33" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_16.imdi"/>
+  <ChildLink ID="23b0e8d6f91cd5be042709c3dcf90154" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_07.imdi"/>
+  <ChildLink ID="b62bfcd0e4814f166dee029bfcc94564" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_29.imdi"/>
+  <ChildLink ID="19d3cd9b959f51d5ebac47a0534c95ce" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_09.imdi"/>
+  <ChildLink ID="c373f0b642fea89f8a91a68f73f4fa43" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_19.imdi"/>
+  <ChildLink ID="c3567683e0858b5c7e5af6ffac9a99b5" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_04.imdi"/>
+  <ChildLink ID="67848cfa578fb6fa725f904147f71d44" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_18.imdi"/>
+  <ChildLink ID="c692b069f0d89a664d9a82352930f788" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_01.imdi"/>
+  <ChildLink ID="bee6725c3ac3783b33b83454d4835902" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_23.imdi"/>
+  <ChildLink ID="300d9cf95a7d5185d4734c4183715405" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_26.imdi"/>
+  <ChildLink ID="6354b13d1aad590b563fa1890ee8316b" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_11.imdi"/>
+  <ChildLink ID="bb35a2cc54f9278e959218bcc3435418" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_21.imdi"/>
+  <ChildLink ID="f5758d2c0a22e051298ac0c01534e3f0" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_27.imdi"/>
+  <ChildLink ID="55557000c8bd1ce1e205f85094af97c1" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_10.imdi"/>
+  <ChildLink ID="318ee57c6a7b5171aac312e91f03ea54" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_02.imdi"/>
+  <ChildLink ID="4d2b49bb0269b62cca440cf7fa3fcedd" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_06.imdi"/>
+  <ChildLink ID="03aa40f0b911d460154811efcbd2446c" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_22.imdi"/>
+  <ChildLink ID="e985005e13eb3c8d88960f5641b69641" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_05.imdi"/>
+  <ChildLink ID="82f5b9ead70ee680430f7afc2845e6c2" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_20.imdi"/>
+  <ChildLink ID="78ad4ed75e348780a8e279e5cea675a2" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_03.imdi"/>
+  <ChildLink ID="f59afa74bbfc6e3bf4ca1d40efffc5e6" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_24.imdi"/>
+  <ChildLink ID="7652af1738843668c0a6f5e7e4405c03" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/CGN_WAV_15.imdi"/>
+  <FieldGroup Label="Name">
+    <FieldData FieldValue="DVD" Path=".METATRANSCRIPT.Corpus.Name"/>
+  </FieldGroup>
+  <FieldGroup Label="Description">
+    <FieldData FieldValue="The sessions put together that have theid audio file on the same DVD" KeyName="" LanguageId="" Path=".METATRANSCRIPT.Corpus.Description"/>
+  </FieldGroup>
+  <FieldGroup Label="Title">
+    <FieldData FieldValue="Sessions per DVD" Path=".METATRANSCRIPT.Corpus.Title"/>
+  </FieldGroup>
+  <Type Format="imdi" ID="imdi.corpus" Name="Corpus"/>
+</DataNode>

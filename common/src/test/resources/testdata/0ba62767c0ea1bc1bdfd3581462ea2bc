@@ -1,0 +1,850 @@
+<DataNode ID="0ba62767c0ea1bc1bdfd3581462ea2bc" Label="fv800988" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi">
+  <DataNode Label="Content (Discourse)" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.MDGroup.Content(1)">
+    <DataNode Label="Languages (1)" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.MDGroup.Content(1).Languages.Language">
+      <DataNode Label="Dutch" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.MDGroup.Content(1).Languages.Language(1)">
+        <FieldGroup Label="Name">
+          <FieldData FieldValue="Dutch" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Languages.Language(1).Name"/>
+        </FieldGroup>
+        <FieldGroup Label="Id">
+          <FieldData FieldValue="RFC1766:x-sil-DUT" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Languages.Language(1).Id"/>
+        </FieldGroup>
+        <Type Format="imdi" ID="subnode" Name="Subnode"/>
+      </DataNode>
+      <Type Format="imdi" ID="subnode" Name="Subnode"/>
+    </DataNode>
+    <FieldGroup Label="CommunicationContext.Interactivity">
+      <FieldData FieldValue="non-interactive" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).CommunicationContext.Interactivity"/>
+    </FieldGroup>
+    <FieldGroup Label="SubGenre">
+      <FieldData FieldValue="Narrative" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).SubGenre"/>
+    </FieldGroup>
+    <FieldGroup Label="Description">
+      <FieldData FieldValue="This file was generated from an IMDI 1.9 file and transformed to IMDI 3.0. The substructure of Genre is replaced by two elements named &quot;Genre&quot; and &quot;SubGenre&quot;. The original content of Genre substructure was: Interactional = '', Discursive = '', Performance = ''. These values have been added as Keys to the Content information." LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Description"/>
+      <FieldData FieldValue="" LanguageId="" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Description(2)"/>
+    </FieldGroup>
+    <FieldGroup Label="Keys.Key.CGN.textClass.target">
+      <FieldData FieldValue="tto,prep1,mod3,dom1" KeyName="CGN.textClass.target" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Keys.Key(4)"/>
+    </FieldGroup>
+    <FieldGroup Label="CommunicationContext.Channel">
+      <FieldData FieldValue="Other" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).CommunicationContext.Channel"/>
+    </FieldGroup>
+    <FieldGroup Label="Keys.Key.IMDI__1_9.Interactional">
+      <FieldData FieldValue="" KeyName="IMDI__1_9.Interactional" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Keys.Key"/>
+      <FieldData FieldValue="" KeyName="IMDI__1_9.Interactional" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Keys.Key(3)"/>
+    </FieldGroup>
+    <FieldGroup Label="Keys.Key.IMDI__1_9.Discursive">
+      <FieldData FieldValue="" KeyName="IMDI__1_9.Discursive" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Keys.Key(2)"/>
+    </FieldGroup>
+    <FieldGroup Label="Keys.Key.CGN.textClass.keywords">
+      <FieldData FieldValue="" KeyName="CGN.textClass.keywords" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Keys.Key(5)"/>
+    </FieldGroup>
+    <FieldGroup Label="CommunicationContext.PlanningType">
+      <FieldData FieldValue="semi-spontaneous" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).CommunicationContext.PlanningType"/>
+    </FieldGroup>
+    <FieldGroup Label="CommunicationContext.EventStructure">
+      <FieldData FieldValue="Monologue" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).CommunicationContext.EventStructure"/>
+    </FieldGroup>
+    <FieldGroup Label="Modalities">
+      <FieldData FieldValue="speech" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Modalities"/>
+    </FieldGroup>
+    <FieldGroup Label="Task">
+      <FieldData FieldValue="Activity: Unspecified" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Task"/>
+    </FieldGroup>
+    <FieldGroup Label="Genre">
+      <FieldData FieldValue="Discourse" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Genre"/>
+    </FieldGroup>
+    <FieldGroup Label="CommunicationContext.SocialContext">
+      <FieldData FieldValue="Private" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).CommunicationContext.SocialContext"/>
+    </FieldGroup>
+    <FieldGroup Label="CommunicationContext.Involvement">
+      <FieldData FieldValue="non-elicited" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).CommunicationContext.Involvement"/>
+    </FieldGroup>
+    <FieldGroup Label="Keys.Key.CGN.activity">
+      <FieldData FieldValue="Unspecified" KeyName="CGN.activity" Path=".METATRANSCRIPT.Session.MDGroup.Content(1).Keys.Key(6)"/>
+    </FieldGroup>
+    <Type Format="imdi" ID="subnode" Name="Subnode"/>
+  </DataNode>
+  <DataNode Label="Sources (1)" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.Resources.Source">
+    <DataNode Label="CGN_WAV_32" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.Resources.Source(1)">
+      <FieldGroup Label="Description">
+        <FieldData FieldValue=" &#x9;Author: Peter Berresford Ellis      &#x9;Title: read aloud text (library for the blind)      &#x9;Publisher: Unspecified      &#x9;Place: Unspecified      &#x9;Date: Unspecified      &#x9;Recording date: 2000 &#x9;Recording time: Unspecified &#x9;From: library for the blind     &#x9;Produced from: Vlaamse Luister- en Braillebibliotheek    " LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Resources.Source(1).Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Format">
+        <FieldData FieldValue="DVD" Path=".METATRANSCRIPT.Session.Resources.Source(1).Format"/>
+      </FieldGroup>
+      <FieldGroup Label="Quality">
+        <FieldData FieldValue="Unknown" Path=".METATRANSCRIPT.Session.Resources.Source(1).Quality"/>
+      </FieldGroup>
+      <FieldGroup Label="CounterPosition.Start">
+        <FieldData FieldValue="Unknown" Path=".METATRANSCRIPT.Session.Resources.Source(1).CounterPosition.Start"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Owner">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.Source(1).Access.Owner"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Organisation">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.Source(1).Access.Contact.Organisation"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Email">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.Source(1).Access.Contact.Email"/>
+      </FieldGroup>
+      <FieldGroup Label="CounterPosition.End">
+        <FieldData FieldValue="Unknown" Path=".METATRANSCRIPT.Session.Resources.Source(1).CounterPosition.End"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Availability">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.Source(1).Access.Availability"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Name">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.Source(1).Access.Contact.Name"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Date">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.Source(1).Access.Date"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Description">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.Source(1).Access.Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Id">
+        <FieldData FieldValue="CGN_WAV_32" Path=".METATRANSCRIPT.Session.Resources.Source(1).Id"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Address">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.Source(1).Access.Contact.Address"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Publisher">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.Source(1).Access.Publisher"/>
+      </FieldGroup>
+      <Type Format="imdi" ID="subnode" Name="Subnode"/>
+    </DataNode>
+    <Type Format="imdi" ID="subnode" Name="Subnode"/>
+  </DataNode>
+  <DataNode Label="WrittenResources (4)" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.Resources.WrittenResource">
+    <DataNode Label="fv800988.pri" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.Resources.WrittenResource(2)">
+      <ChildLink ID="b8e997caa71da4cb89c8c6240d452b88" URI="http://corpus1.mpi.nl/CGN/COREX6/data/annot/xml/pri/comp-o/vl/fv800988.pri"/>
+      <FieldGroup Label="Format">
+        <FieldData FieldValue="text/x-cgn-pri+xml" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Format"/>
+      </FieldGroup>
+      <FieldGroup Label="Type">
+        <FieldData FieldValue="Annotation" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Type"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Organisation">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Access.Contact.Organisation"/>
+      </FieldGroup>
+      <FieldGroup Label="Validation.Description">
+        <FieldData FieldValue="" LanguageId="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Validation.Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Name">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Access.Contact.Name"/>
+      </FieldGroup>
+      <FieldGroup Label="Date">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Date"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Date">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Access.Date"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Description">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Access.Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Address">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Access.Contact.Address"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Publisher">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Access.Publisher"/>
+      </FieldGroup>
+      <FieldGroup Label="Derivation">
+        <FieldData FieldValue="Annotation" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Derivation"/>
+      </FieldGroup>
+      <FieldGroup Label="Size">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Size"/>
+      </FieldGroup>
+      <FieldGroup Label="Description">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Owner">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Access.Owner"/>
+      </FieldGroup>
+      <FieldGroup Label="LanguageId">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).LanguageId"/>
+      </FieldGroup>
+      <FieldGroup Label="Anonymized">
+        <FieldData FieldValue="false" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Anonymized"/>
+      </FieldGroup>
+      <FieldGroup Label="ContentEncoding">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).ContentEncoding"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Email">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Access.Contact.Email"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Availability">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Access.Availability"/>
+      </FieldGroup>
+      <FieldGroup Label="Validation.Methodology">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Validation.Methodology"/>
+      </FieldGroup>
+      <FieldGroup Label="ResourceLink">
+        <FieldData FieldValue="../../../annot/xml/pri/comp-o/vl/fv800988.pri" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).ResourceLink"/>
+      </FieldGroup>
+      <FieldGroup Label="CharacterEncoding">
+        <FieldData FieldValue="ASCII" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).CharacterEncoding"/>
+      </FieldGroup>
+      <FieldGroup Label="MediaResourceLink">
+        <FieldData FieldValue="../../../audio/wav/comp-o/vl/fv800988.wav" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).MediaResourceLink"/>
+      </FieldGroup>
+      <FieldGroup Label="SubType">
+        <FieldData FieldValue="orthography" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).SubType"/>
+      </FieldGroup>
+      <FieldGroup Label="Validation.Type">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(2).Validation.Type"/>
+      </FieldGroup>
+      <Type Format="imdi" ID="subnode" Name="Subnode"/>
+    </DataNode>
+    <DataNode Label="fv800988.eaf" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.Resources.WrittenResource(3)">
+      <ChildLink ID="4b98313b1847de99167fb7f1d9e94cce" URI="http://corpus1.mpi.nl/CGN/COREX6/data/annot/xml/eaf/comp-o/vl/fv800988.eaf"/>
+      <FieldGroup Label="Format">
+        <FieldData FieldValue="text/x-eaf+xml" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Format"/>
+      </FieldGroup>
+      <FieldGroup Label="Type">
+        <FieldData FieldValue="Annotation" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Type"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Organisation">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Access.Contact.Organisation"/>
+      </FieldGroup>
+      <FieldGroup Label="Validation.Description">
+        <FieldData FieldValue="" LanguageId="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Validation.Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Name">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Access.Contact.Name"/>
+      </FieldGroup>
+      <FieldGroup Label="Date">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Date"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Date">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Access.Date"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Description">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Access.Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Address">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Access.Contact.Address"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Publisher">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Access.Publisher"/>
+      </FieldGroup>
+      <FieldGroup Label="Derivation">
+        <FieldData FieldValue="Annotation" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Derivation"/>
+      </FieldGroup>
+      <FieldGroup Label="Size">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Size"/>
+      </FieldGroup>
+      <FieldGroup Label="Description">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Owner">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Access.Owner"/>
+      </FieldGroup>
+      <FieldGroup Label="LanguageId">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).LanguageId"/>
+      </FieldGroup>
+      <FieldGroup Label="Anonymized">
+        <FieldData FieldValue="false" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Anonymized"/>
+      </FieldGroup>
+      <FieldGroup Label="ContentEncoding">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).ContentEncoding"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Email">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Access.Contact.Email"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Availability">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Access.Availability"/>
+      </FieldGroup>
+      <FieldGroup Label="Validation.Methodology">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Validation.Methodology"/>
+      </FieldGroup>
+      <FieldGroup Label="ResourceLink">
+        <FieldData FieldValue="../../../annot/xml/eaf/comp-o/vl/fv800988.eaf" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).ResourceLink"/>
+      </FieldGroup>
+      <FieldGroup Label="CharacterEncoding">
+        <FieldData FieldValue="ASCII" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).CharacterEncoding"/>
+      </FieldGroup>
+      <FieldGroup Label="MediaResourceLink">
+        <FieldData FieldValue="../../../audio/wav/comp-o/vl/fv800988.wav" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).MediaResourceLink"/>
+      </FieldGroup>
+      <FieldGroup Label="SubType">
+        <FieldData FieldValue="phonetics" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).SubType"/>
+      </FieldGroup>
+      <FieldGroup Label="Validation.Type">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Validation.Type"/>
+      </FieldGroup>
+      <Type Format="imdi" ID="subnode" Name="Subnode"/>
+    </DataNode>
+    <DataNode Label="fv800988.tag" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.Resources.WrittenResource(1)">
+      <ChildLink ID="942e38449f601f1c66e49d961e1debe7" URI="http://corpus1.mpi.nl/CGN/COREX6/data/annot/xml/tag/comp-o/vl/fv800988.tag"/>
+      <FieldGroup Label="Format">
+        <FieldData FieldValue="text/x-cgn-tag+xml" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Format"/>
+      </FieldGroup>
+      <FieldGroup Label="Type">
+        <FieldData FieldValue="Annotation" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Type"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Organisation">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Access.Contact.Organisation"/>
+      </FieldGroup>
+      <FieldGroup Label="Validation.Description">
+        <FieldData FieldValue="" LanguageId="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Validation.Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Name">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Access.Contact.Name"/>
+      </FieldGroup>
+      <FieldGroup Label="Date">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Date"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Date">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Access.Date"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Description">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Access.Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Address">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Access.Contact.Address"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Publisher">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Access.Publisher"/>
+      </FieldGroup>
+      <FieldGroup Label="Derivation">
+        <FieldData FieldValue="Annotation" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Derivation"/>
+      </FieldGroup>
+      <FieldGroup Label="Size">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Size"/>
+      </FieldGroup>
+      <FieldGroup Label="Description">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Owner">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Access.Owner"/>
+      </FieldGroup>
+      <FieldGroup Label="LanguageId">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).LanguageId"/>
+      </FieldGroup>
+      <FieldGroup Label="Anonymized">
+        <FieldData FieldValue="false" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Anonymized"/>
+      </FieldGroup>
+      <FieldGroup Label="ContentEncoding">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).ContentEncoding"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Email">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Access.Contact.Email"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Availability">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Access.Availability"/>
+      </FieldGroup>
+      <FieldGroup Label="Validation.Methodology">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Validation.Methodology"/>
+      </FieldGroup>
+      <FieldGroup Label="ResourceLink">
+        <FieldData FieldValue="../../../annot/xml/tag/comp-o/vl/fv800988.tag" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).ResourceLink"/>
+      </FieldGroup>
+      <FieldGroup Label="CharacterEncoding">
+        <FieldData FieldValue="ASCII" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).CharacterEncoding"/>
+      </FieldGroup>
+      <FieldGroup Label="MediaResourceLink">
+        <FieldData FieldValue="../../../audio/wav/comp-o/vl/fv800988.wav" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).MediaResourceLink"/>
+      </FieldGroup>
+      <FieldGroup Label="SubType">
+        <FieldData FieldValue="pos, lemma, marked" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).SubType"/>
+      </FieldGroup>
+      <FieldGroup Label="Validation.Type">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(1).Validation.Type"/>
+      </FieldGroup>
+      <Type Format="imdi" ID="subnode" Name="Subnode"/>
+    </DataNode>
+    <DataNode Label="fv800988.skp" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.Resources.WrittenResource(4)">
+      <ChildLink ID="1f0cb9900e1c363d427b664b77a274be" URI="http://corpus1.mpi.nl/CGN/COREX6/data/annot/corex/skp/comp-o/vl/fv800988.skp"/>
+      <FieldGroup Label="Format">
+        <FieldData FieldValue="text/x-cgn-skp+xml" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Format"/>
+      </FieldGroup>
+      <FieldGroup Label="Type">
+        <FieldData FieldValue="Annotation" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Type"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Organisation">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Access.Contact.Organisation"/>
+      </FieldGroup>
+      <FieldGroup Label="Validation.Description">
+        <FieldData FieldValue="" LanguageId="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Validation.Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Name">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Access.Contact.Name"/>
+      </FieldGroup>
+      <FieldGroup Label="Date">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Date"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Date">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Access.Date"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Description">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Access.Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Address">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Access.Contact.Address"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Publisher">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Access.Publisher"/>
+      </FieldGroup>
+      <FieldGroup Label="Derivation">
+        <FieldData FieldValue="Annotation" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Derivation"/>
+      </FieldGroup>
+      <FieldGroup Label="Size">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Size"/>
+      </FieldGroup>
+      <FieldGroup Label="Description">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Owner">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Access.Owner"/>
+      </FieldGroup>
+      <FieldGroup Label="LanguageId">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).LanguageId"/>
+      </FieldGroup>
+      <FieldGroup Label="Anonymized">
+        <FieldData FieldValue="false" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Anonymized"/>
+      </FieldGroup>
+      <FieldGroup Label="ContentEncoding">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).ContentEncoding"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Email">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Access.Contact.Email"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Availability">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Access.Availability"/>
+      </FieldGroup>
+      <FieldGroup Label="Validation.Methodology">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Validation.Methodology"/>
+      </FieldGroup>
+      <FieldGroup Label="ResourceLink">
+        <FieldData FieldValue="../../../annot/corex/skp/comp-o/vl/fv800988.skp" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).ResourceLink"/>
+      </FieldGroup>
+      <FieldGroup Label="CharacterEncoding">
+        <FieldData FieldValue="ASCII" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).CharacterEncoding"/>
+      </FieldGroup>
+      <FieldGroup Label="MediaResourceLink">
+        <FieldData FieldValue="../../../audio/wav/comp-o/vl/fv800988.wav" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).MediaResourceLink"/>
+      </FieldGroup>
+      <FieldGroup Label="SubType">
+        <FieldData FieldValue="labelling" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).SubType"/>
+      </FieldGroup>
+      <FieldGroup Label="Validation.Type">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(4).Validation.Type"/>
+      </FieldGroup>
+      <Type Format="imdi" ID="subnode" Name="Subnode"/>
+    </DataNode>
+    <Type Format="imdi" ID="subnode" Name="Subnode"/>
+  </DataNode>
+  <DataNode Label="MediaFiles (2)" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.Resources.MediaFile">
+    <DataNode Label="fv800988.wav" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.Resources.MediaFile(2)">
+      <ChildLink ID="db6f8e1a34574b9dfc11a27fcbbe2d01" URI="http://corpus1.mpi.nl/CGN/COREX6/data/audio/wav/comp-o/vl/fv800988.wav"/>
+      <FieldGroup Label="Description">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Format">
+        <FieldData FieldValue="audio/x-wav" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Format"/>
+      </FieldGroup>
+      <FieldGroup Label="Quality">
+        <FieldData FieldValue="Unknown" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Quality"/>
+      </FieldGroup>
+      <FieldGroup Label="Type">
+        <FieldData FieldValue="audio" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Type"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Owner">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Access.Owner"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Organisation">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Access.Contact.Organisation"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Email">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Access.Contact.Email"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Availability">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Access.Availability"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Name">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Access.Contact.Name"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Date">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Access.Date"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Description">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Access.Description"/>
+      </FieldGroup>
+      <FieldGroup Label="ResourceLink">
+        <FieldData FieldValue="../../../audio/wav/comp-o/vl/fv800988.wav" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).ResourceLink"/>
+      </FieldGroup>
+      <FieldGroup Label="TimePosition.End">
+        <FieldData FieldValue="Unknown" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).TimePosition.End"/>
+      </FieldGroup>
+      <FieldGroup Label="TimePosition.Start">
+        <FieldData FieldValue="Unknown" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).TimePosition.Start"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Address">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Access.Contact.Address"/>
+      </FieldGroup>
+      <FieldGroup Label="RecordingConditions">
+        <FieldData FieldValue="CGN.locale= room of average size studio recording Medium= Unspecified microphone= Unspecified noise= Unspecified digitisation.recording= Unspecified digitisation.processing= Unspecified digitisation.status= DIG2" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).RecordingConditions"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Publisher">
+        <FieldData FieldValue="ELDA" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Access.Publisher"/>
+      </FieldGroup>
+      <FieldGroup Label="Size">
+        <FieldData FieldValue="3400K" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Size"/>
+      </FieldGroup>
+      <Type Format="imdi" ID="subnode" Name="Subnode"/>
+    </DataNode>
+    <DataNode Label="fv800988.m4a" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.Resources.MediaFile(1)">
+      <ChildLink ID="46f426a080e85ee38e739870749f651d" URI="http://corpus1.mpi.nl/CGN/COREX6/data/audio/wav/comp-o/vl/fv800988.m4a"/>
+      <FieldGroup Label="Description">
+        <FieldData FieldValue="" LanguageId="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Format">
+        <FieldData FieldValue="audio/mp4" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Format"/>
+      </FieldGroup>
+      <FieldGroup Label="Quality">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Quality"/>
+      </FieldGroup>
+      <FieldGroup Label="Type">
+        <FieldData FieldValue="audio" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Type"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Owner">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Access.Owner"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Organisation">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Access.Contact.Organisation"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Email">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Access.Contact.Email"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Availability">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Access.Availability"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.">
+        <FieldData FieldValue="" KeyName="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Keys.Key"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Name">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Access.Contact.Name"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Date">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Access.Date"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Description">
+        <FieldData FieldValue="" LanguageId="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Access.Description"/>
+      </FieldGroup>
+      <FieldGroup Label="ResourceLink">
+        <FieldData FieldValue="../../../audio/wav/comp-o/vl/fv800988.m4a" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).ResourceLink"/>
+      </FieldGroup>
+      <FieldGroup Label="TimePosition.End">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).TimePosition.End"/>
+      </FieldGroup>
+      <FieldGroup Label="TimePosition.Start">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).TimePosition.Start"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Contact.Address">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Access.Contact.Address"/>
+      </FieldGroup>
+      <FieldGroup Label="RecordingConditions">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).RecordingConditions"/>
+      </FieldGroup>
+      <FieldGroup Label="Access.Publisher">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Access.Publisher"/>
+      </FieldGroup>
+      <FieldGroup Label="Size">
+        <FieldData FieldValue="5502758" Path=".METATRANSCRIPT.Session.Resources.MediaFile(1).Size"/>
+      </FieldGroup>
+      <Type Format="imdi" ID="subnode" Name="Subnode"/>
+    </DataNode>
+    <Type Format="imdi" ID="subnode" Name="Subnode"/>
+  </DataNode>
+  <DataNode Label="Actors (2)" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.MDGroup.Actors.Actor">
+    <DataNode Label="                      " URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.MDGroup.Actors.Actor(2)">
+      <FieldGroup Label="Description">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Contact.Address">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Contact.Address"/>
+      </FieldGroup>
+      <FieldGroup Label="Age">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Age"/>
+      </FieldGroup>
+      <FieldGroup Label="Contact.Name">
+        <FieldData FieldValue="ELIS-UG" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Contact.Name"/>
+      </FieldGroup>
+      <FieldGroup Label="Contact.Organisation">
+        <FieldData FieldValue="ELIS-UG" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Contact.Organisation"/>
+      </FieldGroup>
+      <FieldGroup Label="Contact.Email">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Contact.Email"/>
+      </FieldGroup>
+      <FieldGroup Label="Anonymized">
+        <FieldData FieldValue="false" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Anonymized"/>
+      </FieldGroup>
+      <FieldGroup Label="Code">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Code"/>
+      </FieldGroup>
+      <FieldGroup Label="BirthDate">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).BirthDate"/>
+      </FieldGroup>
+      <FieldGroup Label="Languages">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Languages"/>
+      </FieldGroup>
+      <FieldGroup Label="Name">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Name"/>
+      </FieldGroup>
+      <FieldGroup Label="Education">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Education"/>
+      </FieldGroup>
+      <FieldGroup Label="FamilySocialRole">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).FamilySocialRole"/>
+      </FieldGroup>
+      <FieldGroup Label="FullName">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).FullName"/>
+      </FieldGroup>
+      <FieldGroup Label="EthnicGroup">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).EthnicGroup"/>
+      </FieldGroup>
+      <FieldGroup Label="Role">
+        <FieldData FieldValue="Collector" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Role"/>
+      </FieldGroup>
+      <FieldGroup Label="Sex">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(2).Sex"/>
+      </FieldGroup>
+      <Type Format="imdi" ID="subnode" Name="Subnode"/>
+    </DataNode>
+    <DataNode Label="                      " URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.MDGroup.Actors.Actor(1)">
+      <DataNode Label="Languages (3)" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language">
+        <DataNode Label="unknown    " URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language(2)">
+          <FieldGroup Label="Name">
+            <FieldData FieldValue="unknown    " Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language(2).Name"/>
+          </FieldGroup>
+          <FieldGroup Label="Description">
+            <FieldData FieldValue="Home Language" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language(2).Description"/>
+          </FieldGroup>
+          <FieldGroup Label="Id">
+            <FieldData FieldValue="RFC1766:x-sil-DUT" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language(2).Id"/>
+          </FieldGroup>
+          <Type Format="imdi" ID="subnode" Name="Subnode"/>
+        </DataNode>
+        <DataNode Label="unknown    " URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language(1)">
+          <FieldGroup Label="Name">
+            <FieldData FieldValue="unknown    " Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language(1).Name"/>
+          </FieldGroup>
+          <FieldGroup Label="Description">
+            <FieldData FieldValue="First Language" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language(1).Description"/>
+          </FieldGroup>
+          <FieldGroup Label="Id">
+            <FieldData FieldValue="RFC1766:x-sil-DUT" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language(1).Id"/>
+          </FieldGroup>
+          <Type Format="imdi" ID="subnode" Name="Subnode"/>
+        </DataNode>
+        <DataNode Label="unknown    " URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language(3)">
+          <FieldGroup Label="Name">
+            <FieldData FieldValue="unknown    " Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language(3).Name"/>
+          </FieldGroup>
+          <FieldGroup Label="Description">
+            <FieldData FieldValue="Work Language" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language(3).Description"/>
+          </FieldGroup>
+          <FieldGroup Label="Id">
+            <FieldData FieldValue="RFC1766:x-sil-DUT" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Languages.Language(3).Id"/>
+          </FieldGroup>
+          <Type Format="imdi" ID="subnode" Name="Subnode"/>
+        </DataNode>
+        <Type Format="imdi" ID="subnode" Name="Subnode"/>
+      </DataNode>
+      <FieldGroup Label="Age">
+        <FieldData FieldValue="39" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Age"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.education.type">
+        <FieldData FieldValue="hoger onderwijs of universiteit" KeyName="CGN.education.type" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(13)"/>
+      </FieldGroup>
+      <FieldGroup Label="Code">
+        <FieldData FieldValue="V80099" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Code"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.occupation">
+        <FieldData FieldValue="unknown" KeyName="CGN.occupation" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(15)"/>
+      </FieldGroup>
+      <FieldGroup Label="FullName">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).FullName"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.birth.place">
+        <FieldData FieldValue="B-855" KeyName="CGN.birth.place" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(3)"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.occupation.level">
+        <FieldData FieldValue="occH" KeyName="CGN.occupation.level" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(16)"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.firstLang">
+        <FieldData FieldValue="unknown" KeyName="CGN.firstLang" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(5)"/>
+      </FieldGroup>
+      <FieldGroup Label="Sex">
+        <FieldData FieldValue="Male" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Sex"/>
+      </FieldGroup>
+      <FieldGroup Label="Description">
+        <FieldData FieldValue="none" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Description"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.birth.reg">
+        <FieldData FieldValue="regV3" KeyName="CGN.birth.reg" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(4)"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.homeLang">
+        <FieldData FieldValue="unknown" KeyName="CGN.homeLang" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(6)"/>
+      </FieldGroup>
+      <FieldGroup Label="Contact">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Contact"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.education.placesize">
+        <FieldData FieldValue="sizeX" KeyName="CGN.education.placesize" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(10)"/>
+      </FieldGroup>
+      <FieldGroup Label="Anonymized">
+        <FieldData FieldValue="true" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Anonymized"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.age">
+        <FieldData FieldValue="age3" KeyName="CGN.age" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key"/>
+      </FieldGroup>
+      <FieldGroup Label="BirthDate">
+        <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).BirthDate"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.workLang">
+        <FieldData FieldValue="unknown" KeyName="CGN.workLang" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(7)"/>
+      </FieldGroup>
+      <FieldGroup Label="Name">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Name"/>
+      </FieldGroup>
+      <FieldGroup Label="Education">
+        <FieldData FieldValue="high" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Education"/>
+      </FieldGroup>
+      <FieldGroup Label="FamilySocialRole">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).FamilySocialRole"/>
+      </FieldGroup>
+      <FieldGroup Label="EthnicGroup">
+        <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).EthnicGroup"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.birth.year">
+        <FieldData FieldValue="1961" KeyName="CGN.birth.year" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(2)"/>
+      </FieldGroup>
+      <FieldGroup Label="Role">
+        <FieldData FieldValue="reader for the blind" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Role"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.residence.place">
+        <FieldData FieldValue="B-300" KeyName="CGN.residence.place" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(8)"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.education.reg">
+        <FieldData FieldValue="regV3" KeyName="CGN.education.reg" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(12)"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.residence.reg">
+        <FieldData FieldValue="regV1" KeyName="CGN.residence.reg" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(9)"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.education.level">
+        <FieldData FieldValue="edu1" KeyName="CGN.education.level" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(14)"/>
+      </FieldGroup>
+      <FieldGroup Label="Keys.Key.CGN.education.place">
+        <FieldData FieldValue="B-855" KeyName="CGN.education.place" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Actor(1).Keys.Key(11)"/>
+      </FieldGroup>
+      <Type Format="imdi" ID="subnode" Name="Subnode"/>
+    </DataNode>
+    <Type Format="imdi" ID="subnode" Name="Subnode"/>
+  </DataNode>
+  <DataNode Label="Project" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fv800988.imdi#.METATRANSCRIPT.Session.MDGroup.Project(1)">
+    <FieldGroup Label="Name">
+      <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Project(1).Name"/>
+    </FieldGroup>
+    <FieldGroup Label="Description">
+      <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Project(1).Description"/>
+    </FieldGroup>
+    <FieldGroup Label="Contact.Address">
+      <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Project(1).Contact.Address"/>
+    </FieldGroup>
+    <FieldGroup Label="Contact.Name">
+      <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Project(1).Contact.Name"/>
+    </FieldGroup>
+    <FieldGroup Label="Contact.Organisation">
+      <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Project(1).Contact.Organisation"/>
+    </FieldGroup>
+    <FieldGroup Label="Contact.Email">
+      <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Project(1).Contact.Email"/>
+    </FieldGroup>
+    <FieldGroup Label="Id">
+      <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Project(1).Id"/>
+    </FieldGroup>
+    <FieldGroup Label="Title">
+      <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.MDGroup.Project(1).Title"/>
+    </FieldGroup>
+    <Type Format="imdi" ID="subnode" Name="Subnode"/>
+  </DataNode>
+  <FieldGroup Label="Description">
+    <FieldData FieldValue="Responsibility.Type = SAMPLING" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Description"/>
+    <FieldData FieldValue="Responsibility.Name = ESAT-KUL" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Description(2)"/>
+    <FieldData FieldValue="Responsibility.Type = ORTHOGRAPHIC TRANSCRIPTION" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Description(3)"/>
+    <FieldData FieldValue="Responsibility.Name = ESAT-KUL" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Description(4)"/>
+    <FieldData FieldValue="Responsibility.Type = PART-OF-SPEECH TAGGING" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Description(5)"/>
+    <FieldData FieldValue="Responsibility.Name = CCL-KUL" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Description(6)"/>
+    <FieldData FieldValue="Responsibility.Type = LEMMATISATION" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Description(7)"/>
+    <FieldData FieldValue="Responsibility.Name = CCL-KUL" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Description(8)"/>
+    <FieldData FieldValue="Responsibility.Type = LEXICON LINK-UP" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Description(9)"/>
+    <FieldData FieldValue="Responsibility.Name = CCL-KUL" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Description(10)"/>
+    <FieldData FieldValue="Total number of words = 285" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Description(11)"/>
+    <FieldData FieldValue="CGN Header Date = 1-1-2004" LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.Description(12)"/>
+  </FieldGroup>
+  <FieldGroup Label="Actors.Description">
+    <FieldData FieldValue="   &#x9;Participant interaction =    &#x9;&#x9;&#x9;NOT APPLICABLE   &#x9;&#x9;   &#x9;Number of active participants = 1   &#x9;Number of passive participants = no   &#x9;---------------------------------------------------   &#x9;Active Speaker: not used   &#x9;Passive Speaker: not used   &#x9;Relation: not used   &#x9;Mutual: not used   &#x9;---------------------------------------------------   " LanguageId="ISO639:eng" Path=".METATRANSCRIPT.Session.MDGroup.Actors.Description"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.wrd.available">
+    <FieldData FieldValue="false" KeyName="CGN.wrd.available" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(13)"/>
+  </FieldGroup>
+  <FieldGroup Label="Location.Country">
+    <FieldData FieldValue="Belgium" Path=".METATRANSCRIPT.Session.MDGroup.Location.Country"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.fon.available">
+    <FieldData FieldValue="false" KeyName="CGN.fon.available" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(10)"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.syn.available">
+    <FieldData FieldValue="false" KeyName="CGN.syn.available" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(12)"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.availability">
+    <FieldData FieldValue="CGN_WAV_32" KeyName="CGN.availability" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(8)"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.locale">
+    <FieldData FieldValue="LOC1" KeyName="CGN.locale" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(7)"/>
+  </FieldGroup>
+  <FieldGroup Label="Title">
+    <FieldData FieldValue="read aloud text (library for the blind)" Path=".METATRANSCRIPT.Session.Title"/>
+  </FieldGroup>
+  <FieldGroup Label="Location.Continent">
+    <FieldData FieldValue="Europe" Path=".METATRANSCRIPT.Session.MDGroup.Location.Continent"/>
+  </FieldGroup>
+  <FieldGroup Label="Name">
+    <FieldData FieldValue="fv800988" Path=".METATRANSCRIPT.Session.Name"/>
+  </FieldGroup>
+  <FieldGroup Label="Location.Address">
+    <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.MDGroup.Location.Address"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.recDate">
+    <FieldData FieldValue="2000" KeyName="CGN.recDate" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(5)"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.pro.available">
+    <FieldData FieldValue="false" KeyName="CGN.pro.available" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(11)"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.byteCount">
+    <FieldData FieldValue="3400000" KeyName="CGN.byteCount" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(3)"/>
+  </FieldGroup>
+  <FieldGroup Label="Date">
+    <FieldData FieldValue="2000" Path=".METATRANSCRIPT.Session.Date"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.wordCount">
+    <FieldData FieldValue="285" KeyName="CGN.wordCount" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.segmentation">
+    <FieldData FieldValue="automatic" KeyName="CGN.segmentation" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(9)"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.tempoAv">
+    <FieldData FieldValue="9161" KeyName="CGN.tempoAv" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(4)"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.secCount">
+    <FieldData FieldValue="112" KeyName="CGN.secCount" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(2)"/>
+  </FieldGroup>
+  <FieldGroup Label="Location.Region">
+    <FieldData FieldValue="Unspecified" Path=".METATRANSCRIPT.Session.MDGroup.Location.Region"/>
+  </FieldGroup>
+  <FieldGroup Label="Keys.Key.CGN.locName">
+    <FieldData FieldValue="Unspecified" KeyName="CGN.locName" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(6)"/>
+  </FieldGroup>
+  <Type Format="imdi" ID="imdi.session" Name="Session"/>
+</DataNode>

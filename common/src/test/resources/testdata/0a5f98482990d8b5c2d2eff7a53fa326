@@ -1,0 +1,14 @@
+<DataNode ID="0a5f98482990d8b5c2d2eff7a53fa326" Label="less than 17 years" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age0.imdi">
+  <ChildLink ID="1ad831849f82d29ab36a843b9e77d71d" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age0_male.imdi"/>
+  <ChildLink ID="70c81bb03bac44335a64e90cad7bbcd3" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/age0_female.imdi"/>
+  <FieldGroup Label="Name">
+    <FieldData FieldValue="less than 17 years" Path=".METATRANSCRIPT.Corpus.Name"/>
+  </FieldGroup>
+  <FieldGroup Label="Description">
+    <FieldData FieldValue="Sessions containing subjects of less than 17 years" KeyName="" LanguageId="" Path=".METATRANSCRIPT.Corpus.Description"/>
+  </FieldGroup>
+  <FieldGroup Label="Title">
+    <FieldData FieldValue="Sessions containing subjects of less than 17 years" Path=".METATRANSCRIPT.Corpus.Title"/>
+  </FieldGroup>
+  <Type Format="imdi" ID="imdi.corpus" Name="Corpus"/>
+</DataNode>
