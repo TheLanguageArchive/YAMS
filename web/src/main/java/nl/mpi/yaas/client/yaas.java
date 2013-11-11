@@ -1,19 +1,20 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.client;
 
@@ -30,6 +31,7 @@ import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 //import com.googlecode.gwtphonegap.client.PhoneGap;
@@ -47,6 +49,7 @@ public class yaas implements EntryPoint, DatabaseNameListener {
 //    final PhoneGap phoneGap = GWT.create(PhoneGap.class);
     private boolean debugMode = false;
     private final FlowPanel loggerPanel = new FlowPanel();
+    final private Image loadingImage = new Image("./loader.gif");
 
     public void onModuleLoad() {
         searchOptionsService = GWT.create(SearchOptionsService.class);
@@ -106,9 +109,11 @@ public class yaas implements EntryPoint, DatabaseNameListener {
 //        });
 //        PhonegapUtil.prepareService(serviceDefTarget, moduleBaseURL, "searchoptions");
         if (databaseName != null) {
+            RootPanel.get("searchOptionsPanel").add(loadingImage);
             searchOptionsService.getImageDataForTypes(databaseName, new AsyncCallback<IconTableBase64>() {
                 public void onFailure(Throwable caught) {
                     RootPanel.get("searchOptionsPanel").add(new Label(NO__DATABASE__SELECTED));
+                    RootPanel.get("searchOptionsPanel").remove(loadingImage);
                 }
 
                 public void onSuccess(IconTableBase64 result) {
@@ -122,6 +127,7 @@ public class yaas implements EntryPoint, DatabaseNameListener {
                     RootPanel.get("dataNodeTree").add(dataNodeTree);
                     RootPanel.get("dataNodeTable").add(dataNodeTable);
                     RootPanel.get("facetedTree").add(new FacetedTree(searchOptionsService, databaseName));
+                    RootPanel.get("searchOptionsPanel").remove(loadingImage);
                 }
             });
         }
@@ -131,7 +137,7 @@ public class yaas implements EntryPoint, DatabaseNameListener {
         this.debugMode = debugMode;
         RootPanel.get("databaseStats").setVisible(debugMode);
         RootPanel.get("facetedTree").setVisible(debugMode);
-        RootPanel.get("loggerPanel").setVisible(debugMode);        
+        RootPanel.get("loggerPanel").setVisible(debugMode);
     }
 
     public void setDataBaseName(String databaseName) {

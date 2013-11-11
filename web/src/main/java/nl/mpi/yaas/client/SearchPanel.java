@@ -83,7 +83,7 @@ public class SearchPanel extends VerticalPanel {
         buttonsPanel.add(joinTypeListBox);
         buttonsPanel.add(searchButton);
         this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        this.add(buttonsPanel);
+        this.add(buttonsPanel);     
     }
 
     protected void addSearchCriterionPanel(SearchCriterionPanel criterionPanel) {
@@ -112,7 +112,7 @@ public class SearchPanel extends VerticalPanel {
                 }
                 searchOptionsService.performSearch(databaseName, joinTypeListBox.getValue(), searchParametersList, new AsyncCallback<HighlighableDataNode>() {
                     public void onFailure(Throwable caught) {
-                        logger.log(Level.SEVERE, "PerformSearch", caught);
+                        logger.log(Level.SEVERE, caught.getMessage());
                         searchHandler.signalSearchDone();
                         searchButton.setEnabled(true);
                         searchButton.setHTML(SEARCH_LABEL);

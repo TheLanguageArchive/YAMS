@@ -105,7 +105,7 @@ public class FacetedTree extends VerticalPanel {
     private void loadTypeOptions(final MenuBar typeMenu, final MetadataFileType type, final int menuIndex) {
         searchOptionsService.getTypeOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
-                logger.log(Level.SEVERE, "TypeOptions", caught);
+                logger.log(Level.SEVERE, caught.getMessage());
             }
 
             public void onSuccess(MetadataFileType[] result) {
@@ -131,7 +131,7 @@ public class FacetedTree extends VerticalPanel {
     private void loadFacetOptions(final MenuBar facetMenu, final MetadataFileType type, final int menuIndex) {
         searchOptionsService.getPathOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
-                logger.log(Level.SEVERE, "FacetOptions", caught);
+                logger.log(Level.SEVERE, caught.getMessage());
             }
 
             public void onSuccess(MetadataFileType[] result) {

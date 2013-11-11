@@ -1,19 +1,20 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.client;
 
@@ -25,6 +26,7 @@ import com.google.gwt.text.shared.Renderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.ValueListBox;
@@ -51,6 +53,8 @@ public class SearchCriterionPanel extends HorizontalPanel {
     final private SuggestBox searchTextBox;
     private MultiWordSuggestOracle oracle;
     private final String databaseName;
+    final private Image loadingTypesImage;
+    final private Image loadingPathsImage;
 
     public SearchCriterionPanel(String databaseName, final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
         this.searchPanel = searchPanel;
@@ -65,8 +69,12 @@ public class SearchCriterionPanel extends HorizontalPanel {
         searchTextBox = getSearchTextBox(searchPanel.getSearchHandler());
         fieldsOptionsListBox = getFieldsOptionsListBox();
         typesOptionsListBox = getTypesOptionsListBox();
+        loadingTypesImage = new Image("./loader.gif");
+        loadingPathsImage = new Image("./loader.gif");
         this.add(typesOptionsListBox);
+        add(loadingTypesImage);loadingTypesImage.setVisible(false);
         this.add(fieldsOptionsListBox);
+        add(loadingPathsImage);loadingPathsImage.setVisible(false);
         searchOptionsListBox = searchPanel.getSearchOptionsListBox();
         this.add(searchOptionsListBox);
         this.add(searchTextBox);
@@ -104,9 +112,11 @@ public class SearchCriterionPanel extends HorizontalPanel {
     }
 
     private void loadTypesOptions() {
+        loadingTypesImage.setVisible(true);
         searchOptionsService.getTypeOptions(databaseName, null, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
-                logger.log(Level.SEVERE, "TypeOptions", caught);
+                logger.log(Level.SEVERE, caught.getMessage());
+                loadingTypesImage.setVisible(false);
             }
 
             public void onSuccess(MetadataFileType[] result) {
@@ -115,15 +125,18 @@ public class SearchCriterionPanel extends HorizontalPanel {
                     typesOptionsListBox.setAcceptableValues(Arrays.asList(result));
                     loadPathsOptions(typesOptionsListBox.getValue());
                 }
+                loadingTypesImage.setVisible(false);
             }
         });
 
     }
 
     private void loadPathsOptions(MetadataFileType type) {
+        loadingPathsImage.setVisible(true);
         searchOptionsService.getPathOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
-                logger.log(Level.SEVERE, "PathsOptions", caught);
+                logger.log(Level.SEVERE, caught.getMessage());
+                loadingPathsImage.setVisible(false);
             }
 
             public void onSuccess(MetadataFileType[] result) {
@@ -131,6 +144,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
                     fieldsOptionsListBox.setValue(result[0]);
                     fieldsOptionsListBox.setAcceptableValues(Arrays.asList(result));
                     loadValuesOptions(fieldsOptionsListBox.getValue());
+                    loadingPathsImage.setVisible(false);
                 }
             }
         });
@@ -139,7 +153,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
     private void loadValuesOptions(MetadataFileType type) {
         searchOptionsService.getValueOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
-                logger.log(Level.SEVERE, "ValuesOptions", caught);
+                logger.log(Level.SEVERE, caught.getMessage());
             }
 
             public void onSuccess(MetadataFileType[] result) {

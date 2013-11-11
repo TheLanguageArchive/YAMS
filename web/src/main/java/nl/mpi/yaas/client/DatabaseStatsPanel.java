@@ -57,7 +57,7 @@ public class DatabaseStatsPanel extends VerticalPanel {
         searchOptionsService.getDatabaseStats(databaseName, new AsyncCallback<DatabaseStats>() {
             public void onFailure(Throwable caught) {
                 DatabaseStatsPanel.this.add(new Label(FAILED_TO_GET_THE_DATABASE_STATISTICS));
-                logger.log(Level.SEVERE, FAILED_TO_GET_THE_DATABASE_STATISTICS, caught);
+                logger.log(Level.SEVERE, FAILED_TO_GET_THE_DATABASE_STATISTICS);
             }
 
             public void onSuccess(DatabaseStats result) {
