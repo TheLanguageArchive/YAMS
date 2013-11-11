@@ -1,19 +1,20 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.client;
 
@@ -62,7 +63,6 @@ public class DatabaseStatsPanel extends VerticalPanel {
             public void onSuccess(DatabaseStats result) {
                 final String knownDocumentsText = "Available Documents: " + result.getKnownDocumentsCount();
                 final String missingDocumentsText = "Missing Documents: " + result.getMisingDocumentsCount();
-                databaseSelect.setDatabaseInfoLabel(knownDocumentsText + " " + missingDocumentsText);
                 DatabaseStatsPanel.this.add(new Label(knownDocumentsText));
                 DatabaseStatsPanel.this.add(new Label("Root Documents Count: " + result.getRootDocumentsCount()));
                 DatabaseStatsPanel.this.add(new Label(missingDocumentsText));
@@ -70,6 +70,7 @@ public class DatabaseStatsPanel extends VerticalPanel {
                 DatabaseStatsPanel.this.add(new Label("Query time: " + result.getQueryTimeMS() + "ms"));
                 //                final YaasTreeItem yaasTreeItem = new YaasTreeItem();
                 dataNodeTree.addResultsToTree(databaseName, result.getRootDocumentsIDs());
+                databaseSelect.setDatabaseInfoLabel(knownDocumentsText + " " + missingDocumentsText);
             }
         });
     }
