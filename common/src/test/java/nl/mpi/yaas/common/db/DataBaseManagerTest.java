@@ -289,31 +289,47 @@ public abstract class DataBaseManagerTest {
 
             @Override
             public String getPath() {
-                return "Name";
+                return "Description";
             }
         };
         ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
-        searchParametersList.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "urban sign languages"));
+        searchParametersList.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "Author: not applicable"));
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         HighlighableDataNode result1 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
         assertEquals("Search Results", result1.getID());
-        assertEquals(1, result1.getChildIds().size());
-        assertEquals(2, result1.getHighlights().size());
-        searchParametersList.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.not, QueryDataStructures.SearchType.contains, "urban sign languages"));
+        assertEquals(19, result1.getChildIds().size());
+        assertEquals(19, result1.getHighlights().size());
+        searchParametersList.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "LEMMATISATION"));
         HighlighableDataNode result2 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
         assertEquals(null, result2.getChildList());
         HighlighableDataNode result3 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList);
-        assertEquals(4, result3.getChildIds().size());
+        assertEquals(45, result3.getChildIds().size());
 
 //        assertEquals(2, result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).size());
 //        assertEquals(".METATRANSCRIPT.Corpus.Name", result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).get(0).getHighlightPath());
         // todo: the not clause is not excluding nodes but including them and needs to have a separate set for excluded nodes
         ArrayList<SearchParameters> searchParametersList2 = new ArrayList<SearchParameters>();
-        searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.equals, "Brazil"));
-        searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.not, QueryDataStructures.SearchType.contains, "urban sign languages"));
-        HighlighableDataNode result4 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList);
+        searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "ESAT-KUL"));
+        final HighlighableDataNode searchResult1 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList2);
+        // count of ESAT-KUL = 12 fields 7 files
+        assertEquals(7, searchResult1.getChildIds().size());
+        assertEquals(12, searchResult1.getHighlights().size());
+        searchParametersList2.clear();
+        searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "CCL-KUL"));
+        final HighlighableDataNode searchResult2 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList2);
+        // count of CCL-KUL = 32 fields 10 files
+        assertEquals(10, searchResult2.getChildIds().size());
+        assertEquals(32, searchResult2.getHighlights().size());
+        searchParametersList2.clear();
 
-        assertEquals(4, result4.getChildIds().size());
+        searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "ESAT-KUL"));
+        searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "CCL-KUL"));
+        final HighlighableDataNode searchResult3 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList2);
+        // there are some files which contain both terms, so this should not be correct
+        assertEquals(10, searchResult3.getChildIds().size());
+        assertEquals(44, searchResult3.getHighlights().size());
+
+        assertEquals(7, dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList2).getChildIds().size());
     }
 
     /**
