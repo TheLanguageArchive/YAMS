@@ -39,6 +39,8 @@ public class DatabaseSelect extends VerticalPanel {
     private final SearchOptionsServiceAsync searchOptionsService;
     private static final String FAILED_TO_GET_THE_DATABASE_LIST = "Failed to get the database list, is the database running?";
     public static final String PLEASE_SELECT_A_DATABASE = "<please select a database>";
+    private static final String LOADING_DATABASE_LIST = "Loading database list.";
+    private static final String LOADING_DATABASE = "Loading database.";
     private static final Logger logger = Logger.getLogger("");
     private final ArrayList<DatabaseNameListener> databaseNameListeners = new ArrayList<DatabaseNameListener>();
     private final String databaseName;
@@ -48,13 +50,12 @@ public class DatabaseSelect extends VerticalPanel {
     public DatabaseSelect(SearchOptionsServiceAsync searchOptionsService, String databaseName, DatabaseNameListener databaseNameListener) {
         this.searchOptionsService = searchOptionsService;
         add(databaseListBox);
-        databaseInfoLabel = new Label();
+        databaseInfoLabel = new Label(LOADING_DATABASE_LIST);
         add(databaseInfoLabel);
         databaseNameListeners.add(databaseNameListener);
         this.databaseName = databaseName;
         loadingImage = new Image("./loader.gif");
         add(loadingImage);
-        loadingImage.setVisible(false);
     }
 
     public void setDatabaseInfoLabel(String databaseInfoText) {
@@ -65,11 +66,14 @@ public class DatabaseSelect extends VerticalPanel {
     public void getDbList() {
         searchOptionsService.getDatabaseList(new AsyncCallback<String[]>() {
             public void onFailure(Throwable caught) {
-                add(new Label(FAILED_TO_GET_THE_DATABASE_LIST));
+                databaseInfoLabel.setText(FAILED_TO_GET_THE_DATABASE_LIST);
                 logger.log(Level.SEVERE, FAILED_TO_GET_THE_DATABASE_LIST, caught);
+                loadingImage.setVisible(false);
             }
 
             public void onSuccess(String[] result) {
+                databaseInfoLabel.setText("");
+                loadingImage.setVisible(false);
                 int selectedIndex = 0;
                 databaseListBox.addItem(PLEASE_SELECT_A_DATABASE);
                 for (String databaseNameItem : result) {
@@ -85,6 +89,7 @@ public class DatabaseSelect extends VerticalPanel {
                         for (DatabaseNameListener databaseNameListener : databaseNameListeners) {
                             databaseNameListener.setDataBaseName(itemText);
                             loadingImage.setVisible(true);
+                            databaseInfoLabel.setText(LOADING_DATABASE);
                         }
                     }
                 });
