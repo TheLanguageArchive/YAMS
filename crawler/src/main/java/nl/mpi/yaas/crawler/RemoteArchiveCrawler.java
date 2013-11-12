@@ -202,8 +202,8 @@ public class RemoteArchiveCrawler {
         try {
             boolean continueGetting = true;
             while (continueGetting) {
-                System.out.println("Links read: " + databaseLinks.getRecentLinks());
-                System.out.println("Links found: " + databaseLinks.getChildLinks());
+                System.out.println("Links read: " + databaseLinks.getRecentLinks().size());
+                System.out.println("Links found: " + databaseLinks.getChildLinks().size());
                 final Set<DataNodeLink> handlesOfMissing = yaasDatabase.getHandlesOfMissing(databaseLinks, 1000);
                 if (handlesOfMissing.isEmpty()) {
                     continueGetting = false;
@@ -328,9 +328,10 @@ public class RemoteArchiveCrawler {
         DatabaseLinks databaseLinks = new DatabaseLinks();
         try {
             ArbilDataNodeContainer nodeContainer = null;
-            databaseLinks.insertRootLink(new DataNodeLink(startURI.toString(), null));
             ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
             loadAndInsert(yaasDatabase, dataNode, databaseLinks);
+            // we add the root link after the node is loaded so that the archive handle is known
+            databaseLinks.insertRootLink(new DataNodeLink(dataNode.toString(), dataNode.archiveHandle));
             // store the current state
             yaasDatabase.getHandlesOfMissing(databaseLinks, 0);
             System.out.println("Crawl complete");
