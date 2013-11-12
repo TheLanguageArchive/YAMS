@@ -1,19 +1,20 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.crawler;
 
@@ -27,7 +28,6 @@ import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.flap.plugin.PluginException;
 
 /**
  * Created on : Mar 20, 2013, 5:26:44 PM
@@ -55,7 +55,7 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
         if (!arbilDataNode.isChildNode()) {
             // not all documents have an archive handle, so we are making things simpler by using the URI as the ID
             // String iD = arbilDataNode.getID();
-            String iD = new DataNodeLink(arbilDataNode.getURI().toString()).getIdString();
+            String iD = new DataNodeLink(arbilDataNode.getURI().toString(), arbilDataNode.archiveHandle).getIdString();
 //            if (iD.isEmpty()) {
 //                iD = arbilDataNode.getUrlString();
 //            }
@@ -68,6 +68,11 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     @Override
     public String getURI() throws ModelException {
         return arbilDataNode.getURI().toString();
+    }
+
+    @Override
+    public String getArchiveHandle() {
+        return arbilDataNode.archiveHandle;
     }
 
     @Override
@@ -106,9 +111,9 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
             } else if (arbilDataNode.isSession()) {
                 dataNodeType.setName("Session");
                 dataNodeType.setID("imdi.session");
-            } else if (arbilDataNode.hasResource()) {
-                dataNodeType.setName("Resource");
-                dataNodeType.setID("imdi.resource");
+//            } else if (arbilDataNode.hasResource()) { // a resource node will always be a child node so this would do nothing and is not required
+//                dataNodeType.setName("Resource");
+//                dataNodeType.setID("imdi.resource");
             }
         }
         return dataNodeType;
@@ -124,9 +129,12 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
         List<DataNodeLink> childIds = new ArrayList<DataNodeLink>();
         for (ArbilDataNode childNode : arbilDataNode.getChildArray()) {
             if (!childNode.isChildNode() && childNode.isMetaDataNode()) {
-                // not all documents have an archive handle, so we are making things simpler by using the URI asn the ID
-                childIds.add(new DataNodeLink(childNode.getUrlString()));
+                // not all documents have an archive handle, however if it does exist then it will be used otherwise the URI is used, as the ID via a hash
+                childIds.add(new DataNodeLink(childNode.getUrlString(), childNode.archiveHandle));
             }
+        }
+        if (arbilDataNode.hasResource()) {
+            childIds.add(new DataNodeLink(arbilDataNode.getFullResourceURI().toString(), arbilDataNode.getResourceArchiveHandle()));
         }
         return childIds;
     }

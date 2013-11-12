@@ -328,7 +328,7 @@ public class RemoteArchiveCrawler {
         DatabaseLinks databaseLinks = new DatabaseLinks();
         try {
             ArbilDataNodeContainer nodeContainer = null;
-            databaseLinks.insertRootLink(new DataNodeLink(startURI.toString()));
+            databaseLinks.insertRootLink(new DataNodeLink(startURI.toString(), null));
             ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
             loadAndInsert(yaasDatabase, dataNode, databaseLinks);
             // store the current state
@@ -375,7 +375,7 @@ public class RemoteArchiveCrawler {
 //            System.out.println("Inserting into the database");
             final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
             insertNodeIcons(dataNode);
-            databaseLinks.insertLinks(new DataNodeLink(dataNode.getUrlString()), arbilDataNodeWrapper);
+            databaseLinks.insertLinks(new DataNodeLink(dataNode.getUrlString(), dataNode.archiveHandle), arbilDataNodeWrapper);
             //            arbilDataNodeWrapper.checkChildNodesLoaded();
             if (arbilDataNodeWrapper.getID() != null && !arbilDataNodeWrapper.getID().isEmpty()) {
                 arbilDatabase.insertIntoDatabase(arbilDataNodeWrapper, false);

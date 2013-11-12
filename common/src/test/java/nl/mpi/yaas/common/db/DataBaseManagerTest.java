@@ -423,30 +423,30 @@ public abstract class DataBaseManagerTest {
         Set<DataNodeLink> result0 = dbManager.getHandlesOfMissing(databaseLinks1, 10);
         assertEquals(10, result0.size());
 
-        databaseLinks1.insertRootLink(new DataNodeLink("one"));
-        databaseLinks1.insertRootLink(new DataNodeLink("two"));
+        databaseLinks1.insertRootLink(new DataNodeLink("one", null));
+        databaseLinks1.insertRootLink(new DataNodeLink("two", null));
 
-        databaseLinks1.insertChildLink(new DataNodeLink("a"));
-        databaseLinks1.insertChildLink(new DataNodeLink("b"));
-        databaseLinks1.insertChildLink(new DataNodeLink("c"));
-        databaseLinks1.insertChildLink(new DataNodeLink("d"));
-        databaseLinks1.insertChildLink(new DataNodeLink("e"));
-        databaseLinks1.insertChildLink(new DataNodeLink("f"));
-        databaseLinks1.insertChildLink(new DataNodeLink("f"));// duplicate
+        databaseLinks1.insertChildLink(new DataNodeLink("a", null));
+        databaseLinks1.insertChildLink(new DataNodeLink("b", null));
+        databaseLinks1.insertChildLink(new DataNodeLink("c", null));
+        databaseLinks1.insertChildLink(new DataNodeLink("d", null));
+        databaseLinks1.insertChildLink(new DataNodeLink("e", null));
+        databaseLinks1.insertChildLink(new DataNodeLink("f", null));
+        databaseLinks1.insertChildLink(new DataNodeLink("f", null));// duplicate
 
         Set<DataNodeLink> result1 = dbManager.getHandlesOfMissing(databaseLinks1, 10);
         assertEquals(10, result1.size());
 
         DatabaseLinks databaseLinks2 = new DatabaseLinks();
-        databaseLinks2.insertRootLink(new DataNodeLink("one"));// duplicate
-        databaseLinks2.insertRootLink(new DataNodeLink("three"));
-        databaseLinks2.insertChildLink(new DataNodeLink("f"));// duplicate
-        databaseLinks2.insertChildLink(new DataNodeLink("g"));
-        databaseLinks2.insertChildLink(new DataNodeLink("h"));
-        databaseLinks2.insertChildLink(new DataNodeLink("i"));
-        databaseLinks2.insertChildLink(new DataNodeLink("j"));
-        databaseLinks2.insertChildLink(new DataNodeLink("k"));
-        databaseLinks2.insertChildLink(new DataNodeLink("l"));
+        databaseLinks2.insertRootLink(new DataNodeLink("one", null));// duplicate
+        databaseLinks2.insertRootLink(new DataNodeLink("three", null));
+        databaseLinks2.insertChildLink(new DataNodeLink("f", null));// duplicate
+        databaseLinks2.insertChildLink(new DataNodeLink("g", null));
+        databaseLinks2.insertChildLink(new DataNodeLink("h", null));
+        databaseLinks2.insertChildLink(new DataNodeLink("i", null));
+        databaseLinks2.insertChildLink(new DataNodeLink("j", null));
+        databaseLinks2.insertChildLink(new DataNodeLink("k", null));
+        databaseLinks2.insertChildLink(new DataNodeLink("l", null));
         final DataNodeLink dataNodeLink = new DataNodeLink();
         dataNodeLink.setIdString("0132fd35d7d2fd68faa904613c1bf6ad");
         dataNodeLink.setNodeUriString("Speaker Ages");
