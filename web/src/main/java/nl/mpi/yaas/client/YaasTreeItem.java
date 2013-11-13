@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
+import static nl.mpi.flap.model.DataNodeType.IMDI_RESOURCE;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeHighlight;
@@ -114,8 +115,10 @@ public class YaasTreeItem extends TreeItem {
         setupWidgets();
         setLabel();
         try {
-            if (yaasDataNode.getChildList() != null || yaasDataNode.getChildIds() != null) {
-                addItem(loadingTreeItem);
+            if (!IMDI_RESOURCE.equals(yaasDataNode.getType().getID())) { // do not show child links of imdi resource nodes
+                if (yaasDataNode.getChildList() != null || yaasDataNode.getChildIds() != null) {
+                    addItem(loadingTreeItem);
+                }
             }
         } catch (ModelException exception) {
             errorTreeItem.setText(ERROR_GETTING_CHILD_NODES);
@@ -277,17 +280,20 @@ public class YaasTreeItem extends TreeItem {
         if (loadAttempted == false) {
             loadAttempted = true;
             setText("loading...");
+            addItem(loadingTreeItem);
             final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
             dataNodeIdList.add(dataNodeId);
             searchOptionsService.getDataNodes(databaseName, dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
                 public void onFailure(Throwable caught) {
                     setText(FAILURE);
+                    removeItem(loadingTreeItem);
                     logger.log(Level.SEVERE, FAILURE, caught);
                 }
 
                 public void onSuccess(List<SerialisableDataNode> dataNodeList) {
                     yaasDataNode = dataNodeList.get(0);
                     setLabel();
+                    removeItem(loadingTreeItem);
                     try {
                         if (yaasDataNode.getChildList() != null || yaasDataNode.getChildIds() != null) {
                             addItem(loadingTreeItem);
