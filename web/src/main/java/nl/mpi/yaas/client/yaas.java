@@ -54,9 +54,9 @@ public class yaas implements EntryPoint, DatabaseNameListener {
     public void onModuleLoad() {
         searchOptionsService = GWT.create(SearchOptionsService.class);
         String databaseName = com.google.gwt.user.client.Window.Location.getParameter("databaseName");
-        if (databaseName == null) {
-            databaseName = DataBaseManager.defaultDataBase;
-        }
+//        if (databaseName == null) {
+//            databaseName = DataBaseManager.defaultDataBase;
+//        }
         setupPage(databaseName);
         logger.addHandler(new HasWidgetsLogHandler(loggerPanel));
         RootPanel.get("loggerPanel").add(loggerPanel);
