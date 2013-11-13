@@ -31,6 +31,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataField;
+import nl.mpi.flap.model.DataNodeLink;
+import nl.mpi.flap.model.DataNodeType;
+import static nl.mpi.flap.model.DataNodeType.IMDI_RESOURCE;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
@@ -52,16 +55,43 @@ public class SingleDataNodeTable extends VerticalPanel {
         for (DataNodeHighlight highlight : nodeHighlights) {
             highlightPaths.add(highlight.getHighlightPath());
         }
-        final HorizontalPanel linksPanel = new HorizontalPanel();
+        final HorizontalPanel buttonPanel = new HorizontalPanel();
+        final VerticalPanel linksPanel = new VerticalPanel();
         final Grid grid = new Grid(yaasDataNode.getFieldGroups().size() + 1, 2);
         final Button closeButton = new Button("x", closeHandler);
         closeButton.setStyleName("yaas-closeButton");
-        linksPanel.add(closeButton);
+        buttonPanel.add(closeButton);
+        buttonPanel.add(linksPanel);
         try {
             final String uri = yaasDataNode.getURI();
             if (uri != null && uri.length() > 0) {
-                Anchor anchor = new Anchor("view source", uri);
+                Anchor anchor = new Anchor("Metadata Link", uri);
                 linksPanel.add(anchor);
+            }
+            linksPanel.add(new Label());
+            final String handle = yaasDataNode.getArchiveHandle();
+            if (handle != null && handle.length() > 0) {
+                addHandleLink(handle, linksPanel);
+            }
+            linksPanel.add(new Label());
+//            final String id = yaasDataNode.getID();
+//            if (id != null && id.length() > 0) {
+//                Anchor anchor = new Anchor(id, id);
+//                linksPanel.add(anchor);
+//            }
+//            linksPanel.add(new Label());
+            final DataNodeType nodeType = yaasDataNode.getType();
+//            if (nodeType != null) {
+//                Label typeLabel = new Label(nodeType.getID());
+//                linksPanel.add(typeLabel);
+//            }
+            if (IMDI_RESOURCE.equals(nodeType.getID())) {
+                for (DataNodeLink childLink : yaasDataNode.getChildIds()) {
+                    final String resourceHandle = childLink.getArchiveHandle();
+                    if (resourceHandle != null && resourceHandle.length() > 0) {
+                        addHandleLink(resourceHandle, linksPanel);
+                    }
+                }
             }
             //final String id = yaasDataNode.getID();
 //            Anchor entryAanchor = new Anchor("view entry", "http://tlatest03:8984/rest/"+dbUri);
@@ -70,7 +100,7 @@ public class SingleDataNodeTable extends VerticalPanel {
         } catch (ModelException exception) {
             logger.log(Level.SEVERE, "ClickEvent", exception);
         }
-        add(linksPanel);
+        add(buttonPanel);
         add(grid);
         for (FieldGroup fieldGroup : fieldGroups) {
             grid.setText(rowCounter, 0, fieldGroup.getFieldName());
@@ -87,5 +117,11 @@ public class SingleDataNodeTable extends VerticalPanel {
             grid.setWidget(rowCounter, 1, horizontalPanel);
             rowCounter++;
         }
+    }
+
+    private void addHandleLink(final String resourceHandle, final VerticalPanel linksPanel) {
+        String viewLink = resourceHandle.replace("hdl:", "http://hdl.handle.net/");
+        linksPanel.add(new Anchor("IMDI Browser Link", viewLink + "@view"));
+        linksPanel.add(new Anchor("Download Link", viewLink));
     }
 }
