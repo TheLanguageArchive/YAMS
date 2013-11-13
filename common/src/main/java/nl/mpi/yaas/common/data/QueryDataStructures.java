@@ -26,11 +26,11 @@ public class QueryDataStructures {
 
     public enum SearchOption {
 
-        contains(SearchType.contains, SearchNegator.is, "Contains"),
-        notcontains(SearchType.contains, SearchNegator.not, "Does not contain"),
-        equals(SearchType.equals, SearchNegator.is, "Equals"),
-        notequals(SearchType.equals, SearchNegator.not, "Does not equal"),
-        fuzzy(SearchType.fuzzy, SearchNegator.is, "Fuzzy match");
+        contains(SearchType.contains, SearchNegator.is, "contains"),
+        notcontains(SearchType.contains, SearchNegator.not, "does not contain"),
+        equals(SearchType.equals, SearchNegator.is, "equals"),
+        notequals(SearchType.equals, SearchNegator.not, "does not equal"),
+        fuzzy(SearchType.fuzzy, SearchNegator.is, "fuzzy match");
 
         private SearchOption(SearchType searchType, SearchNegator searchNegator, String displayName) {
             this.searchType = searchType;
