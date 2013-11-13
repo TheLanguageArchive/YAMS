@@ -25,6 +25,7 @@ import nl.mpi.arbil.data.ArbilDataNode;
 import nl.mpi.arbil.templates.ArbilTemplate;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.DataNodeType;
+import static nl.mpi.flap.model.DataNodeType.IMDI_RESOURCE;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
@@ -96,24 +97,30 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
             if (arbilDataNode.isCatalogue()) {
                 dataNodeType.setName("Catalogue");
                 dataNodeType.setID("imdi.catalogue");
-            } else if (arbilDataNode.isChildNode()) {
-                dataNodeType.setName("Subnode");
-                dataNodeType.setID("subnode");
-            } else if (arbilDataNode.isContainerNode()) {
-                dataNodeType.setName("Container");
-                dataNodeType.setID("container");
             } else if (arbilDataNode.isCorpus()) {
                 dataNodeType.setName("Corpus");
                 dataNodeType.setID("imdi.corpus");
-            } else if (arbilDataNode.isDirectory()) {
-                dataNodeType.setName("Directory");
-                dataNodeType.setID("directory");
             } else if (arbilDataNode.isSession()) {
                 dataNodeType.setName("Session");
                 dataNodeType.setID("imdi.session");
-//            } else if (arbilDataNode.hasResource()) { // a resource node will always be a child node so this would do nothing and is not required
-//                dataNodeType.setName("Resource");
-//                dataNodeType.setID("imdi.resource");
+            } else if (arbilDataNode.isContainerNode()) {
+                dataNodeType.setName("Container");
+                dataNodeType.setID("container");
+            } else if (arbilDataNode.hasResource()) { // a resource node will always be a child node so this would do nothing and is not required
+                String mimeTypeForNode = arbilDataNode.getAnyMimeType();
+                if (mimeTypeForNode != null) {
+                    dataNodeType.setName(mimeTypeForNode);
+                    dataNodeType.setID(IMDI_RESOURCE);
+                } else {
+                    dataNodeType.setName("Resource");
+                    dataNodeType.setID(IMDI_RESOURCE);
+                }
+            } else if (arbilDataNode.isChildNode()) {
+                dataNodeType.setName("Subnode");
+                dataNodeType.setID("subnode");
+            } else if (arbilDataNode.isDirectory()) {
+                dataNodeType.setName("Directory");
+                dataNodeType.setID("directory");
             }
         }
         return dataNodeType;

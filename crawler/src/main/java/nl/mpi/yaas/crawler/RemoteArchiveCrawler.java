@@ -329,9 +329,9 @@ public class RemoteArchiveCrawler {
         try {
             ArbilDataNodeContainer nodeContainer = null;
             ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
+            // because we add the root link before the node is loaded the archive handle is not known
+            databaseLinks.insertRootLink(new DataNodeLink(dataNode.getUrlString(), dataNode.archiveHandle));
             loadAndInsert(yaasDatabase, dataNode, databaseLinks);
-            // we add the root link after the node is loaded so that the archive handle is known
-            databaseLinks.insertRootLink(new DataNodeLink(dataNode.toString(), dataNode.archiveHandle));
             // store the current state
             yaasDatabase.getHandlesOfMissing(databaseLinks, 0);
             System.out.println("Crawl complete");
