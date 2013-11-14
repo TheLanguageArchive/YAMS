@@ -507,7 +507,7 @@ public class DataBaseManager<D, F, M> {
 //        return fieldConstraint;
 //    }
 
-    private String getSearchTextConstraint(SearchNegator searchNegator, SearchType searchType, String searchString, String nodeString) {
+    private String getSearchTextConstraint(SearchType searchType, String searchString, String nodeString) {
         final String escapedSearchString = escapeBadChars(searchString);
         String returnString = "";
         switch (searchType) {
@@ -524,14 +524,6 @@ public class DataBaseManager<D, F, M> {
                 break;
             case fuzzy:
                 returnString = nodeString + "@FieldValue contains text '" + escapedSearchString + "' using fuzzy";
-                break;
-        }
-        switch (searchNegator) {
-            case is:
-//                returnString = returnString;
-                break;
-            case not:
-                returnString = "not(" + returnString + ")";
                 break;
         }
         return returnString;
@@ -620,12 +612,11 @@ public class DataBaseManager<D, F, M> {
         return queryStringBuilder.toString();
     }
 
-    private String getSearchFieldConstraint(SearchParameters searchParameters) {
-        String fieldConstraint = getTypeClause(searchParameters.getFieldType());
-        String searchTextConstraint = getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData/");
-        return fieldConstraint + searchTextConstraint;
-    }
-
+//    private String getSearchFieldConstraint(SearchParameters searchParameters) {
+//        String fieldConstraint = getTypeClause(searchParameters.getFieldType());
+//        String searchTextConstraint = getSearchTextConstraint(searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData/");
+//        return fieldConstraint + searchTextConstraint;
+//    }
     private String getSearchConstraint(SearchParameters searchParameters) {
         String typeClause = "/DataNode";
         String pathClause = "";
@@ -640,13 +631,15 @@ public class DataBaseManager<D, F, M> {
         String fieldsQuery = "";
         if (searchParameters.getSearchNegator() == SearchNegator.is) {
             fieldsQuery = "for $field in $foundNode"
-                    + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData[")
+                    + getSearchTextConstraint(searchParameters.getSearchType(), searchParameters.getSearchString(), "//FieldGroup/FieldData[")
                     + "]\n"
                     + "return \n"
                     + "<Highlight>{$nodeId, $field/@Path}</Highlight>\n";
+        } else {
+            fieldsQuery = "<Exclude>{$nodeId}</Exclude>\n";
         }
         return "for $foundNode in collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "[//DataNode/FieldGroup" + pathClause + "["
-                + getSearchTextConstraint(searchParameters.getSearchNegator(), searchParameters.getSearchType(), searchParameters.getSearchString(), "FieldData/")
+                + getSearchTextConstraint(searchParameters.getSearchType(), searchParameters.getSearchString(), "FieldData/")
                 + "]]\n"
                 + "let $nodeId := $foundNode/@ID\n"
                 + "return\n"
@@ -811,11 +804,21 @@ public class DataBaseManager<D, F, M> {
         queryStringBuilder.append("\">");
         queryStringBuilder.append("{\n");
         int parameterCounter = 0;
+        int exclusionCounter = 0;
         for (SearchParameters searchParameters : searchParametersList) {
-            queryStringBuilder.append("let $documentSet");
-            queryStringBuilder.append(parameterCounter);
+            switch (searchParameters.getSearchNegator()) {
+                case is:
+                    queryStringBuilder.append("let $documentSet");
+                    queryStringBuilder.append(parameterCounter);
+                    parameterCounter++;
+                    break;
+                case not:
+                    queryStringBuilder.append("let $exclusionSet");
+                    queryStringBuilder.append(exclusionCounter);
+                    exclusionCounter++;
+                    break;
+            }
             queryStringBuilder.append(" := ");
-            parameterCounter++;
             queryStringBuilder.append(getSearchConstraint(searchParameters));
         }
         queryStringBuilder.append("\nlet $highlightSet := $documentSet0");
@@ -836,8 +839,14 @@ public class DataBaseManager<D, F, M> {
                 }
                 break;
         }
+        queryStringBuilder.append("\nlet $exclusionSet := (()");
+        for (int setCount = 0; setCount < exclusionCounter; setCount++) {
+            queryStringBuilder.append(",$exclusionSet");
+            queryStringBuilder.append(setCount);
+        }
+        queryStringBuilder.append(")\n");
         queryStringBuilder.append("\n"
-                + "let $nodeIdSet := for $nodeId in distinct-values($highlightSet/@ID) return <ChildLink>{$nodeId}</ChildLink>"
+                + "let $nodeIdSet := for $nodeId in distinct-values($highlightSet[not (@ID = $exclusionSet/@ID)]/@ID) return <ChildLink>{$nodeId}</ChildLink>"
                 //                + "for $documentNode in $returnSet\n"
                 + "return\n"
                 /*
@@ -876,7 +885,7 @@ public class DataBaseManager<D, F, M> {
                 //        }
                 //        queryStringBuilder.append("]\n"
                 //                + "return $entityNode\n"
-                + "($highlightSet, $nodeIdSet)"
+                + "($highlightSet[not (@ID = $exclusionSet/@ID)], $nodeIdSet)"
                 + "}</DataNode>\n");
         // todo: this would be better getting the nodes and doing an instersect on the nodes and only then extracting the fields to highlight
         // System.out.println("Query: " + queryStringBuilder);

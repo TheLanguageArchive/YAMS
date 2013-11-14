@@ -324,11 +324,20 @@ public abstract class DataBaseManagerTest {
         searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "ESAT-KUL"));
         searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "CCL-KUL"));
         final HighlighableDataNode searchResult3 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList2);
-        // there are some files which contain both terms, so this should not be correct
+        // there are 10 files which contain both terms
         assertEquals(10, searchResult3.getChildIds().size());
         assertEquals(44, searchResult3.getHighlights().size());
 
         assertEquals(7, dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList2).getChildIds().size());
+
+        searchParametersList2.clear();
+
+        searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.not, QueryDataStructures.SearchType.contains, "ESAT-KUL"));
+        searchParametersList2.add(new SearchParameters(metadataFileType1, metadataFileType1, QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "CCL-KUL"));
+        final HighlighableDataNode searchResult4 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList2);
+        // there are 3 files which contain the one but not the other
+        assertEquals(3, searchResult4.getChildIds().size());
+        assertEquals(9, searchResult4.getHighlights().size());
     }
 
     /**
