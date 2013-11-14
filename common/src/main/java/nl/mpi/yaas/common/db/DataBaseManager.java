@@ -846,7 +846,7 @@ public class DataBaseManager<D, F, M> {
         }
         queryStringBuilder.append(")\n");
         queryStringBuilder.append("\n"
-                + "let $nodeIdSet := for $nodeId in distinct-values($highlightSet[not (@ID = $exclusionSet/@ID)]/@ID) return <ChildLink>{$nodeId}</ChildLink>"
+                + "let $nodeIdSet := for $nodeId in distinct-values($highlightSet[not (@ID = $exclusionSet/@ID)]/@ID) return <ChildLink ID='{$nodeId}'/>\n"
                 //                + "for $documentNode in $returnSet\n"
                 + "return\n"
                 /*
