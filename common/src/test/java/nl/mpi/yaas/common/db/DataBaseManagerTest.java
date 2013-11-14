@@ -20,7 +20,6 @@ package nl.mpi.yaas.common.db;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -303,8 +302,8 @@ public abstract class DataBaseManagerTest {
         HighlighableDataNode result2 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, searchParametersList);
         assertEquals(null, result2.getChildList());
         HighlighableDataNode result3 = dbManager.getSearchResult(QueryDataStructures.CriterionJoinType.union, searchParametersList);
-        assertEquals(45, result3.getChildIds().size());
-
+        assertEquals(26, result3.getChildIds().size());
+        assertEquals(45, result3.getHighlights().size());
 //        assertEquals(2, result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).size());
 //        assertEquals(".METATRANSCRIPT.Corpus.Name", result3.getHighlightsForNode(result3.getChildIds().get(0).getIdString()).get(0).getHighlightPath());
         // todo: the not clause is not excluding nodes but including them and needs to have a separate set for excluded nodes

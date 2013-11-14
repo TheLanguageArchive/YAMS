@@ -1,19 +1,20 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.common.db;
 
@@ -649,9 +650,9 @@ public class DataBaseManager<D, F, M> {
                 + "]]\n"
                 + "let $nodeId := $foundNode/@ID\n"
                 + "return\n"
-                + "(<ChildLink>{$nodeId}</ChildLink>,(\n"
+                + "(\n"
                 + fieldsQuery
-                + "))";
+                + ")";
     }
 
     private String getTreeFacetsQuery(MetadataFileType[] metadataFileTypes) {
@@ -817,7 +818,7 @@ public class DataBaseManager<D, F, M> {
             parameterCounter++;
             queryStringBuilder.append(getSearchConstraint(searchParameters));
         }
-        queryStringBuilder.append("let $returnSet := $documentSet0");
+        queryStringBuilder.append("\nlet $highlightSet := $documentSet0");
         switch (criterionJoinType) {
             case intersect:
                 for (int setCount = 1; setCount < parameterCounter; setCount++) {
@@ -836,6 +837,7 @@ public class DataBaseManager<D, F, M> {
                 break;
         }
         queryStringBuilder.append("\n"
+                + "let $nodeIdSet := for $nodeId in distinct-values($highlightSet/@ID) return <ChildLink>{$nodeId}</ChildLink>"
                 //                + "for $documentNode in $returnSet\n"
                 + "return\n"
                 /*
@@ -874,7 +876,7 @@ public class DataBaseManager<D, F, M> {
                 //        }
                 //        queryStringBuilder.append("]\n"
                 //                + "return $entityNode\n"
-                + "$returnSet"
+                + "($highlightSet, $nodeIdSet)"
                 + "}</DataNode>\n");
         // todo: this would be better getting the nodes and doing an instersect on the nodes and only then extracting the fields to highlight
         // System.out.println("Query: " + queryStringBuilder);
