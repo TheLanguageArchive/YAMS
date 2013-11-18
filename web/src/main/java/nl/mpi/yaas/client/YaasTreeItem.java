@@ -115,7 +115,7 @@ public class YaasTreeItem extends TreeItem {
         setupWidgets();
         setLabel();
         try {
-            if (!IMDI_RESOURCE.equals(yaasDataNode.getType().getID())) { // do not show child links of imdi resource nodes
+            if (yaasDataNode.getType() == null || !IMDI_RESOURCE.equals(yaasDataNode.getType().getID())) { // do not show child links of imdi resource nodes
                 if (yaasDataNode.getChildList() != null || yaasDataNode.getChildIds() != null) {
                     addItem(loadingTreeItem);
                 }
@@ -315,11 +315,14 @@ public class YaasTreeItem extends TreeItem {
         if (yaasDataNode != null) {
             if (yaasDataNode.getChildList() != null) {
                 removeItem(loadingTreeItem);
-                // add the meta child nodes
-                for (SerialisableDataNode childDataNode : yaasDataNode.getChildList()) {
-                    YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
-                    yaasTreeItem.setHighlights(highlighedLinks);
-                    addItem(yaasTreeItem);
+                if (yaasDataNode.getChildList().size() > loadedCount) // add the meta child nodes
+                {
+                    for (SerialisableDataNode childDataNode : yaasDataNode.getChildList()) {
+                        YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, searchOptionsService, dataNodeTable, iconTableBase64);
+                        yaasTreeItem.setHighlights(highlighedLinks);
+                        addItem(yaasTreeItem);
+                        loadedCount++;
+                    }
                 }
             } else {
                 addItem(loadingTreeItem);
