@@ -298,6 +298,27 @@ public abstract class DataBaseManagerTest {
         assertEquals("The sessions put together that have theid audio file on the same DVD", result4[0].getLabel());
 //        assertEquals(1, result3[0].getRecordCount());
         assertEquals(1, result4.length);
+
+        MetadataFileType metadataFileType5 = new MetadataFileType() {
+            @Override
+            public String getType() {
+                return "Corpus";
+            }
+
+            @Override
+            public String getPath() {
+                return null;
+            }
+
+            @Override
+            public String getValue() {
+                return "DVD";
+            }
+        };
+        MetadataFileType[] result5 = dbManager.getMetadataFieldValues(metadataFileType5);
+        assertEquals("DVD", result5[0].getLabel());
+//        assertEquals(1, result3[0].getRecordCount());
+        assertEquals(3, result5.length);
     }
 
     /**

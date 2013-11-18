@@ -459,7 +459,7 @@ public class DataBaseManager<D, F, M> {
                     typeClause += "[FieldData/contains(@FieldValue, '" + metadataFileType.getValue() + "')]";
                 }
             } else if (metadataFileType.getValue() != null) {
-                typeClause += "//DataNode/FieldGroup/FieldData[contains(@FieldValue, '" + metadataFileType.getValue() + "')]";
+                typeClause += "//DataNode/FieldGroup[FieldData/contains(@FieldValue, '" + metadataFileType.getValue() + "')]";
             }
         }
         return typeClause;
