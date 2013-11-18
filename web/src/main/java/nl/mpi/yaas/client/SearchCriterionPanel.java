@@ -56,6 +56,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
     private final String databaseName;
     final private Image loadingTypesImage;
     final private Image loadingPathsImage;
+    final private Image valuesPathsImage;
 
     public SearchCriterionPanel(String databaseName, final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
         this.searchPanel = searchPanel;
@@ -72,6 +73,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
         typesOptionsListBox = getTypesOptionsListBox();
         loadingTypesImage = new Image("./loader.gif");
         loadingPathsImage = new Image("./loader.gif");
+        valuesPathsImage = new Image("./loader.gif");
         this.add(typesOptionsListBox);
         add(loadingTypesImage);
         loadingTypesImage.setVisible(false);
@@ -81,6 +83,8 @@ public class SearchCriterionPanel extends HorizontalPanel {
         searchOptionsListBox = searchPanel.getSearchOptionsListBox();
         this.add(searchOptionsListBox);
         this.add(searchTextBox);
+        this.add(valuesPathsImage);
+        valuesPathsImage.setVisible(false);
         loadTypesOptions();
     }
 
@@ -210,15 +214,16 @@ public class SearchCriterionPanel extends HorizontalPanel {
         oracle = new MultiWordSuggestOracle() {
             @Override
             public void requestSuggestions(final Request request, final Callback callback) {
+                valuesPathsImage.setVisible(true);
                 final MetadataFileType typeSelection = fieldsOptionsListBox.getValue();
                 final MetadataFileType options = new MetadataFileType(typeSelection.getType(), typeSelection.getPath(), request.getQuery());
                 searchOptionsService.getValueOptions(databaseName, options, new AsyncCallback<MetadataFileType[]>() {
                     public void onFailure(Throwable caught) {
+                        valuesPathsImage.setVisible(false);
                         logger.log(Level.SEVERE, caught.getMessage());
                     }
 
                     public void onSuccess(MetadataFileType[] result) {
-
                         ArrayList<Suggestion> suggestionList = new ArrayList<Suggestion>();
                         for (final MetadataFileType type : result) {
                             suggestionList.add(new Suggestion() {
@@ -236,6 +241,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
                         Response response = new Response();
                         response.setSuggestions(suggestionList);
                         callback.onSuggestionsReady(request, response);
+                        valuesPathsImage.setVisible(false);
                     }
                 });
             }
