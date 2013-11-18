@@ -240,23 +240,28 @@ public abstract class DataBaseManagerTest {
         assertEquals("", result1[0].getLabel());
         assertEquals(null, result1[0].getType());
         assertEquals(null, result1[0].getPath());
-        assertEquals(2929, result1[0].getRecordCount());
+//        assertEquals(2929, result1[0].getRecordCount());
         assertEquals(" 	Author: not applicable      	Title: radio: Radio 1 - Nieuws      	Publisher: not applicable      	Place: not applicable      	Date: not applicable      	Recording date: 2000 	Recording time: Unspecified 	From: national radio     	Produced from: Vlaamse Radio- en Televisieomroep    ", result1[9].getLabel());
         assertEquals(" 	Author: not applicable      	Title: radio: Radio 1 - Nieuws      	Publisher: not applicable      	Place: not applicable      	Date: not applicable      	Recording date: 2000 	Recording time: Unspecified 	From: national radio     	Produced from: Vlaamse Radio- en Televisieomroep    ", result1[9].getValue());
-        assertEquals(1, result1[9].getRecordCount());
+//        assertEquals(1, result1[9].getRecordCount());
         MetadataFileType metadataFileType1 = new MetadataFileType() {
             @Override
             public String getType() {
                 return "Corpus";
             }
+
+            @Override
+            public String getPath() {
+                return "Name";
+            }
         };
         MetadataFileType[] result2 = dbManager.getMetadataFieldValues(metadataFileType1);
         assertEquals("", result1[0].getLabel());
-        assertEquals(1, result2[0].getRecordCount());
-        assertEquals(" 	Author: not applicable      	Title: radio: Radio 1 - Nieuws      	Publisher: not applicable      	Place: not applicable      	Date: not applicable      	Recording date: 2000 	Recording time: Unspecified 	From: national radio     	Produced from: Vlaamse Radio- en Televisieomroep    ", result1[9].getLabel());
+//        assertEquals(1, result2[0].getRecordCount());
+        assertEquals("DVD", result2[0].getLabel());
         assertEquals("Corpus", result2[1].getType());
-        assertEquals(null, result2[1].getPath());
-        assertEquals(2, result2[1].getRecordCount());
+        assertEquals("Name", result2[1].getPath());
+//        assertEquals(2, result2[1].getRecordCount());
         MetadataFileType metadataFileType2 = new MetadataFileType() {
             @Override
             public String getType() {
@@ -270,8 +275,29 @@ public abstract class DataBaseManagerTest {
         };
         MetadataFileType[] result3 = dbManager.getMetadataFieldValues(metadataFileType2);
         assertEquals("Sessions containing subjects of less than 17 years", result3[0].getLabel());
-        assertEquals(1, result3[0].getRecordCount());
+//        assertEquals(1, result3[0].getRecordCount());
         assertEquals(2, result3.length);
+
+        MetadataFileType metadataFileType4 = new MetadataFileType() {
+            @Override
+            public String getType() {
+                return "Corpus";
+            }
+
+            @Override
+            public String getPath() {
+                return "Description";
+            }
+
+            @Override
+            public String getValue() {
+                return "DVD";
+            }
+        };
+        MetadataFileType[] result4 = dbManager.getMetadataFieldValues(metadataFileType4);
+        assertEquals("The sessions put together that have theid audio file on the same DVD", result4[0].getLabel());
+//        assertEquals(1, result3[0].getRecordCount());
+        assertEquals(1, result4.length);
     }
 
     /**

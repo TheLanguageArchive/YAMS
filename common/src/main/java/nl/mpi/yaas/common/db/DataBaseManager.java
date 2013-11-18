@@ -455,6 +455,11 @@ public class DataBaseManager<D, F, M> {
             }
             if (metadataFileType.getPath() != null) {
                 typeClause += "//DataNode/FieldGroup[@Label = '" + metadataFileType.getPath() + "']";
+                if (metadataFileType.getValue() != null) {
+                    typeClause += "[FieldData/contains(@FieldValue, '" + metadataFileType.getValue() + "')]";
+                }
+            } else if (metadataFileType.getValue() != null) {
+                typeClause += "//DataNode/FieldGroup/FieldData[contains(@FieldValue, '" + metadataFileType.getValue() + "')]";
             }
         }
         return typeClause;
@@ -667,10 +672,10 @@ public class DataBaseManager<D, F, M> {
                 + "}</MetadataFileType>";
     }
 
-    private String getMetadataFieldValuesQuery(MetadataFileType metadataFileType) {
+    private String getMetadata100FieldValuesQuery(MetadataFileType metadataFileType) {
         String typeClause = getTypeClause(metadataFileType);
         String typeNodes = getTypeNodes(metadataFileType);
-        return "let $fieldValues := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldData/@FieldValue/string()\n"
+        return "let $fieldValues := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldData[position() le 100]/@FieldValue/string()\n"
                 + "return <MetadataFileType>\n"
                 + "{\n"
                 + "for $label in distinct-values($fieldValues)\n"
@@ -679,7 +684,8 @@ public class DataBaseManager<D, F, M> {
                 + "<Label>{$label}</Label>\n"
                 + "<Value>{$label}</Value>\n"
                 + typeNodes
-                + "<Count>{count($fieldValues[. = $label])}</Count></MetadataFileType>\n"
+                //                + "<Count>{count($fieldValues[. = $label])}</Count>"
+                + "</MetadataFileType>\n"
                 + "}</MetadataFileType>";
     }
 
@@ -934,17 +940,18 @@ public class DataBaseManager<D, F, M> {
 //    }
     public M[] getMetadataPaths(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataPathsQuery(metadataFileType);
-        return getMetadataTypes(queryString, getDocumentName(metadataFileType, "paths"));
+        return getMetadataTypes(queryString, getDocumentName(metadataFileType, "paths"), true);
     }
 
     public M[] getMetadataFieldValues(MetadataFileType metadataFileType) throws QueryException {
-        final String queryString = getMetadataFieldValuesQuery(metadataFileType);
-        return getMetadataTypes(queryString, getDocumentName(metadataFileType, "values"));
+        final String queryString = getMetadata100FieldValuesQuery(metadataFileType);
+        //System.out.println("getMetadata100FieldValuesQuery: " + queryString);
+        return getMetadataTypes(queryString, getDocumentName(metadataFileType, "values"), false);
     }
 
     public M[] getMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataTypes();
-        return getMetadataTypes(queryString, getDocumentName(metadataFileType, "types"));
+        return getMetadataTypes(queryString, getDocumentName(metadataFileType, "types"), true);
     }
 
     public M[] getTreeFacetTypes(MetadataFileType[] metadataFileTypes) throws QueryException {
@@ -952,7 +959,7 @@ public class DataBaseManager<D, F, M> {
             System.out.println("Type: " + type);
         }
         final String queryString = getTreeFacetsQuery(metadataFileTypes);
-        return getMetadataTypes(queryString, getDocumentName(metadataFileTypes, "tree"));
+        return getMetadataTypes(queryString, getDocumentName(metadataFileTypes, "tree"), true);
     }
 
 //    public DbTreeNode getSearchTreeData() {
@@ -988,12 +995,17 @@ public class DataBaseManager<D, F, M> {
         }
     }
 
-    private M[] getMetadataTypes(final String queryString, String documentName) throws QueryException {
+    private M[] getMetadataTypes(final String queryString, String documentName, boolean allowCaching) throws QueryException {
         long startTime = System.currentTimeMillis();
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(mClass);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            String queryResult = getCachedVersion(documentName, queryString);
+            final String queryResult;
+            if (allowCaching) {
+                queryResult = getCachedVersion(documentName, queryString);
+            } else {
+                queryResult = dbAdaptor.executeQuery(databaseName, queryString);
+            }
 //            System.out.println("queryString: " + queryString);
 //            queryResult = dbAdaptor.executeQuery(databaseName, queryString);
 //            System.out.println("queryResult: " + queryResult);
