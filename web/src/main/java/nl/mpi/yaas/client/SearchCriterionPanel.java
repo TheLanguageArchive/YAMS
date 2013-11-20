@@ -27,6 +27,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.ValueListBox;
@@ -57,6 +58,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
     final private Image loadingTypesImage;
     final private Image loadingPathsImage;
     final private Image valuesPathsImage;
+    final private Label hintLabel;
 
     public SearchCriterionPanel(String databaseName, final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
         this.searchPanel = searchPanel;
@@ -73,6 +75,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
         typesOptionsListBox = getTypesOptionsListBox();
         loadingTypesImage = new Image("./loader.gif");
         loadingPathsImage = new Image("./loader.gif");
+        hintLabel = new Label();
         valuesPathsImage = new Image("./loader.gif");
         this.add(typesOptionsListBox);
         add(loadingTypesImage);
@@ -84,6 +87,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
         this.add(searchOptionsListBox);
         this.add(searchTextBox);
         this.add(valuesPathsImage);
+        this.add(hintLabel);
         valuesPathsImage.setVisible(false);
         loadTypesOptions();
     }
@@ -214,6 +218,12 @@ public class SearchCriterionPanel extends HorizontalPanel {
         oracle = new MultiWordSuggestOracle() {
             @Override
             public void requestSuggestions(final Request request, final Callback callback) {
+//                if (request.getQuery().length() < 3) {
+//                    // ignore queries that are less that 2 letters long
+//                    Response response = new Response(Collections.<Suggestion>emptyList());
+//                    callback.onSuggestionsReady(request, response);
+//                    return;
+//                }
                 valuesPathsImage.setVisible(true);
                 final MetadataFileType typeSelection = fieldsOptionsListBox.getValue();
                 final MetadataFileType options = new MetadataFileType(typeSelection.getType(), typeSelection.getPath(), request.getQuery());
@@ -221,26 +231,29 @@ public class SearchCriterionPanel extends HorizontalPanel {
                     public void onFailure(Throwable caught) {
                         valuesPathsImage.setVisible(false);
                         logger.log(Level.SEVERE, caught.getMessage());
+                        hintLabel.setText("hint: try specifying a type and or path before typing");
                     }
 
                     public void onSuccess(MetadataFileType[] result) {
+                        hintLabel.setText("");
                         ArrayList<Suggestion> suggestionList = new ArrayList<Suggestion>();
-                        for (final MetadataFileType type : result) {
-                            suggestionList.add(new Suggestion() {
+                        if (result != null) {
+                            for (final MetadataFileType type : result) {
+                                suggestionList.add(new Suggestion() {
 
-                                public String getDisplayString() {
-                                    return type.getValue();
-                                }
+                                    public String getDisplayString() {
+                                        return type.getValue();
+                                    }
 
-                                public String getReplacementString() {
-                                    return type.getValue();
-                                }
-                            });
-                            logger.log(Level.INFO, type.getValue());
+                                    public String getReplacementString() {
+                                        return type.getValue();
+                                    }
+                                });
+                                logger.log(Level.INFO, type.getValue());
+                            }
+                            Response response = new Response(suggestionList);
+                            callback.onSuggestionsReady(request, response);
                         }
-                        Response response = new Response();
-                        response.setSuggestions(suggestionList);
-                        callback.onSuggestionsReady(request, response);
                         valuesPathsImage.setVisible(false);
                     }
                 });
