@@ -8,12 +8,15 @@
     <version>1.0</version>
     <description>Parent pom for the metadata search YAAS</description>
     <modules>
-        <module>swing</module>
         <module>web</module>
         <module>common</module>
         <module>crawler</module>
     </modules>
-    
+    <parent>
+        <groupId>nl.mpi</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.7.0</version>
+    </parent>
     <!--    <scm>
         <developerConnection>scm:svn:https://svn.mpi.nl/LAT/Kinnate/trunk/</developerConnection>
         <url>https://trac.mpi.nl/wiki/KinOath</url>
@@ -27,7 +30,7 @@
         <plugin.majorVersion>1</plugin.majorVersion>
         <plugin.minorVersion>1</plugin.minorVersion>
         <plugin.branch>pretesting</plugin.branch>
-<!--        <netbeans.hint.license>gpl20</netbeans.hint.license> this hint fails when it is in the parent pom -->
+        <!--        <netbeans.hint.license>gpl20</netbeans.hint.license> this hint fails when it is in the parent pom -->
         <plugin.license.copyrightYear>2013</plugin.license.copyrightYear>
     </properties>
     <build>
@@ -59,7 +62,26 @@
             </plugin>
         </plugins>
     </build>
-    
+    <repositories>
+        <repository>
+            <id>MPI</id>
+            <name>MPI LAT Repository</name>
+            <url>https://lux15.mpi.nl/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>MPI</id>
+            <name>MPI LAT Repository</name>
+            <url>https://lux15.mpi.nl/nexus/content/groups/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
     <distributionManagement>
         <snapshotRepository>
             <id>MPI-Snapshots</id>

@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2012 Max Planck Institute for Psycholinguistics
+/**
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,9 +37,9 @@ public class RemoteArchiveCrawlerTest extends TestCase {
      * Test of crawl method, of class RemoteArchiveCrawler.
      */
     public void testCrawl() throws QueryException, URISyntaxException {
-        RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(RemoteArchiveCrawler.DbType.TestDB, 3, "http://192.168.56.101:8080/BaseX76/rest/", "admin", "admin");
-        //            URI startURI = new URI("http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi");
-        URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
-        archiveCrawler.crawl(startURI);
+//        RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(RemoteArchiveCrawler.DbType.TestDB, 3, restUrl, restUser, restPass);
+//        //            URI startURI = new URI("http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi");
+//        URI startURI = new URI("http://corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
+//        archiveCrawler.crawl(startURI);
     }
 }

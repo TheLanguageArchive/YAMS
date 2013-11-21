@@ -1,0 +1,18 @@
+
+Install the war file into tomcat and edit the context.xml.
+The parameters in the context.xml file are as follows:
+"basexRestUrl" points to the relevant BaseX server REST interface eg "http://localhost:8984/rest/"
+"basexUser" a read only user that will be used to perform searches
+"basexPass" the password of the read only user
+
+It is recommended to use the zip file version of BaseX and edit the ./bin/basexhttp start script to allocate adequate ram to hold the indexes in memory:
+    # Options for virtual machine
+    VM=-Xmx######m
+
+The read only guest user can be created by starting the command line client: ./basexclient
+create user yaasguest
+grant read to yaasguest
+
+The database can then be started with: ./bin/basexhttp
+
+Once a crawl has been completed the resulting database can be moved into the data directory of the running BaseX server.

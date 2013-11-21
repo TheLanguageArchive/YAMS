@@ -259,6 +259,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
                 });
             }
         };
-        return new SuggestBox(oracle);
+        final SuggestBox suggestBox = new SuggestBox(oracle);
+        return suggestBox;
     }
 }

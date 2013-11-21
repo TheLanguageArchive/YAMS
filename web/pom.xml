@@ -11,20 +11,31 @@
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>YAAS GWT</name>
-
+    <parent>
+        <groupId>nl.mpi</groupId>
+        <artifactId>yaas-parent</artifactId>
+        <version>1.0</version>
+    </parent>
     <properties>
         <!-- Convenience property to set the GWT version -->
-        <gwtVersion>2.5.0</gwtVersion>
+        <!--<gwtVersion>2.5.1</gwtVersion>-->
+        <gwtVersion>2.5.1</gwtVersion>
         <!-- GWT needs at least java 1.5 -->
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.hint.license>gpl20</netbeans.hint.license>  
+        <netbeans.hint.license>gpl20</netbeans.hint.license>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-servlet</artifactId>
+            <artifactId>gwt-codeserver</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>              <!--remove this--> 
             <version>${gwtVersion}</version>
             <scope>runtime</scope>
         </dependency>
@@ -63,6 +74,16 @@
             <artifactId>yaas-common</artifactId>
             <version>0.1-pretesting-SNAPSHOT</version>
         </dependency>
+        <!--        <dependency>
+            <groupId>com.googlecode.gwtphonegap</groupId>
+            <artifactId>gwtphonegap</artifactId>
+            <version>2.4.0.0</version>
+        </dependency>-->
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>javax.servlet.jsp-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -75,7 +96,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>2.5.0</version>
+                <version>${gwtVersion}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -88,8 +109,8 @@
                 </executions>
                 <!-- Plugin configuration. There are many available options, see 
                 gwt-maven-plugin documentation at codehaus.org -->
-                <configuration>
-                    <style>DETAILED</style><!-- this 'stype detailed' turns off the javascrip obfuscaton -->
+                <configuration> 
+                    <style>DETAILED</style><!-- this 'style detailed' turns off the javascript obfuscaton -->
                     <runTarget>yaas.html</runTarget>
                     <hostedWebapp>${webappDirectory}</hostedWebapp>
                     <i18nMessagesBundle>nl.mpi.yaas.client.Messages</i18nMessagesBundle>
@@ -124,7 +145,113 @@
                     <debug>true</debug>
                 </configuration>
             </plugin>
+            <plugin>
+                <!--                                		 
+		    License plugin checks for presence of license header in all source files (with some exceptions, see excludes below).
+		    You can use this plugin to actually insert or fix the license headers by running maven with the following goal:
+
+		    mvn license:format
+
+                    For more info, see <http://mathieu.carbou.free.fr/p/maven-license-plugin/>.
+                -->
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.9.0</version> 
+                <configuration>
+                    <header>${project.basedir}/src/license-header.txt</header>
+                    <strictCheck>false</strictCheck>
+                    <properties>
+                        <year>${plugin.license.copyrightYear}</year>
+                        <organization>${project.organization.name}</organization>
+                    </properties>
+                    <mapping>
+                        <svg>XML_STYLE</svg>
+                        <imdi>XML_STYLE</imdi>
+                        <cmdi>XML_STYLE</cmdi>
+                    </mapping>
+                    <excludes>
+                        <exclude>nbactions.xml</exclude>
+                        <exclude>nb-configuration.xml</exclude>
+                        <exclude>**/*.txt</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.3</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>nl.mpi</groupId>
+                        <artifactId>mpi-deploy</artifactId>
+                        <version>1.0</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.artifactId}-${project.version}-r${buildNumber}</finalName>
+                            <descriptorRefs>
+                                <descriptorRef>mpi-deploy</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
-
+    <!--    <profiles>
+        <profile>
+            <id>dev</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>1.4</version>
+                        <executions>
+                            <execution>
+                                <id>add-source</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                </goals>
+                                <configuration>
+                                    <sources>
+                                        <source>../common/src/main/java</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>add-resource</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-resource</goal>
+                                </goals>
+                                <configuration>
+                                    <resources>
+                                        <resource>
+                                            <directory>../common/src/main/resources</directory>
+                                            <targetPath>resources</targetPath>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>-->
 </project>

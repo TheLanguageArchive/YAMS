@@ -54,6 +54,16 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         return (initParameterRestUrl != null && !initParameterRestUrl.isEmpty()) ? initParameterRestUrl : "http://localhost:8984/rest/";
 //        return "http://tlatest06:8984/rest/";
     }
+    
+    private String getBasexUser() {
+        final String initParameterRestUrl = getInitParameter("basexUser");
+        return (initParameterRestUrl != null && !initParameterRestUrl.isEmpty()) ? initParameterRestUrl : DataBaseManager.guestUser;
+    }
+    
+    private String getBasexPass() {
+        final String initParameterRestUrl = getInitParameter("basexPass");
+        return (initParameterRestUrl != null && !initParameterRestUrl.isEmpty()) ? initParameterRestUrl : DataBaseManager.guestUser;
+    }
 
     public String[] getDatabaseList() throws WebQueryException {
         try {
@@ -80,7 +90,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         String basexRestUrl = getBasexRestUrl();
         System.out.println("basexRestUrl: " + basexRestUrl);
         try {
-            final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), DataBaseManager.guestUser, DataBaseManager.guestUserPass);
+            final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), getBasexUser(), getBasexPass());
             return new DataBaseManager<HighlighableDataNode, DataField, MetadataFileType>(HighlighableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
         } catch (MalformedURLException exception) {
             throw new QueryException("Failed to open the database connection at: " + basexRestUrl + " " + exception.getMessage());
