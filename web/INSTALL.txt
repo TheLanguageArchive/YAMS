@@ -16,3 +16,10 @@ grant read to yaasguest
 The database can then be started with: ./bin/basexhttp
 
 Once a crawl has been completed the resulting database can be moved into the data directory of the running BaseX server.
+
+If however you prefer to use the BaseX war file in tomcat then you will need to configure the database in the web.xml
+An example is to be found here: https://github.com/BaseXdb/basex-api/blob/master/src/main/webapp/WEB-INF/web.xml
+For more information see: http://docs.basex.org/wiki/Web_Application#Servlet_Container
+Because this application does not need write access to the database it may be adequate to have only one limited user defined in the web.xml
+You can also change the db admin password and add additional users in the .basexperm configuration file in the server root.
+

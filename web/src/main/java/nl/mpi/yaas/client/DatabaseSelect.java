@@ -67,7 +67,7 @@ public class DatabaseSelect extends VerticalPanel {
         searchOptionsService.getDatabaseList(new AsyncCallback<String[]>() {
             public void onFailure(Throwable caught) {
                 databaseInfoLabel.setText(FAILED_TO_GET_THE_DATABASE_LIST);
-                logger.log(Level.SEVERE, FAILED_TO_GET_THE_DATABASE_LIST);
+                logger.log(Level.SEVERE, caught.getMessage());
                 loadingImage.setVisible(false);
             }
 

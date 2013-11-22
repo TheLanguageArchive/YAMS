@@ -26,20 +26,10 @@
 
     <!-- Servlets -->
     <servlet>
-        <servlet-name>greetServlet</servlet-name>
-        <servlet-class>nl.mpi.yaas.server.GreetingServiceImpl</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>searchOptionsServlet</servlet-name>
         <servlet-class>nl.mpi.yaas.server.SearchOptionsServiceImpl</servlet-class>
     </servlet>
     
-    <servlet-mapping>
-        <servlet-name>greetServlet</servlet-name>
-        <url-pattern>/yaas/greet</url-pattern>
-    </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>searchOptionsServlet</servlet-name>
         <url-pattern>/yaas/searchoptions</url-pattern>

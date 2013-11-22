@@ -50,19 +50,22 @@ import nl.mpi.yaas.shared.WebQueryException;
 public class SearchOptionsServiceImpl extends RemoteServiceServlet implements SearchOptionsService {
 
     private String getBasexRestUrl() {
-        final String initParameterRestUrl = getInitParameter("basexRestUrl");
-        return (initParameterRestUrl != null && !initParameterRestUrl.isEmpty()) ? initParameterRestUrl : "http://localhost:8984/rest/";
+        final String initParameterRestUrl = getServletContext().getInitParameter("basexRestUrl");
+        return initParameterRestUrl;
+//        return (initParameterRestUrl != null && !initParameterRestUrl.isEmpty()) ? initParameterRestUrl : "http://localhost:8984/rest/";
 //        return "http://tlatest06:8984/rest/";
     }
-    
+
     private String getBasexUser() {
-        final String initParameterRestUrl = getInitParameter("basexUser");
-        return (initParameterRestUrl != null && !initParameterRestUrl.isEmpty()) ? initParameterRestUrl : DataBaseManager.guestUser;
+        final String initParameterUser = getServletContext().getInitParameter("basexUser");
+        return initParameterUser;
+//        return (initParameterUser != null && !initParameterUser.isEmpty()) ? initParameterUser : DataBaseManager.guestUser;
     }
-    
+
     private String getBasexPass() {
-        final String initParameterRestUrl = getInitParameter("basexPass");
-        return (initParameterRestUrl != null && !initParameterRestUrl.isEmpty()) ? initParameterRestUrl : DataBaseManager.guestUser;
+        final String initParameterPass = getServletContext().getInitParameter("basexPass");
+        return initParameterPass;
+//        return (initParameterPass != null && !initParameterPass.isEmpty()) ? initParameterPass : DataBaseManager.guestUser;
     }
 
     public String[] getDatabaseList() throws WebQueryException {

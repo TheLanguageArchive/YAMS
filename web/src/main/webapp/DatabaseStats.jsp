@@ -45,10 +45,6 @@
                 visualization = new google.visualization.IntensityMap(document.getElementById('visualization'));
                 visualization.draw(data, null);
             }
-            <%
-//                final String basexRestUrl = getInitParameter("basexRestUrl");
-                final String basexRestUrl = "http://localhost:8984/rest/";
-            %>
 
             function drawDetailedVisualization() {
             <%
@@ -75,7 +71,7 @@
                             + "let $totalbytes := string(($crawlerStats/@totalbytes) div 1048576.0)\n"
                             + "return (',[',string-join(($jsDateTime,$linkcount,$documentcount,$querytime,$freebytes,$totalbytes,$maxMemory),','),']'),']')\n";
                     try {
-                        RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), DataBaseManager.guestUser, DataBaseManager.guestUserPass);
+                        RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(config.getServletContext().getInitParameter("basexRestUrl")), config.getServletContext().getInitParameter("basexUser"), config.getServletContext().getInitParameter("basexPass"));
                         jsonDataDetailed = restDbAdaptor.executeQuery(DataBaseManager.defaultDataBase, queryStringDetailed);
                     } catch (MalformedURLException exception2) {
                         errorMessage2 += exception2.getMessage();
@@ -144,7 +140,7 @@
                         + "),','),\n"
                         + "']\n'),']')\n";
                 try {
-                    RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), DataBaseManager.guestUser, DataBaseManager.guestUserPass);
+                    RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(config.getServletContext().getInitParameter("basexRestUrl")), config.getServletContext().getInitParameter("basexUser"), config.getServletContext().getInitParameter("basexPass"));
                     jsonData = restDbAdaptor.executeQuery(DataBaseManager.defaultDataBase, queryString);
                 } catch (MalformedURLException exception2) {
                     errorMessage1 += exception2.getMessage();
@@ -185,7 +181,7 @@
         </script> 
     </head>
     <body>
-        REST URL: <%=basexRestUrl%><br>
+        REST URL: <%=config.getServletContext().getInitParameter("basexRestUrl")%><br>
         <div id="error_div1"></div>
         <div id="error_div2"></div>
         <div id="visualization" style="width: 900px; height: 500px;"></div>   
