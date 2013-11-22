@@ -12,6 +12,7 @@ It is recommended to use the zip file version of BaseX and edit the ./bin/basexh
 The read only guest user can be created by starting the command line client: ./basexclient
 create user yaasguest
 grant read to yaasguest
+For more details see: http://docs.basex.org/wiki/User_Management
 
 The database can then be started with: ./bin/basexhttp
 
@@ -23,3 +24,10 @@ For more information see: http://docs.basex.org/wiki/Web_Application#Servlet_Con
 Because this application does not need write access to the database it may be adequate to have only one limited user defined in the web.xml
 You can also change the db admin password and add additional users in the .basexperm configuration file in the server root.
 
+In addition it may be convenient to interrogate the database via Curl:
+
+To list the users and permissions databases on the localhost rest interface:
+curl -u user:pass -i -X POST -H "Content-Type: application/xml" -d "<command xmlns='http://basex.org/rest'><text>show users</text></command>" "http://localhost:8984/rest/"
+
+To list the databases on the localhost rest interface:
+curl -u user:pass -i -X POST -H "Content-Type: application/xml" -d "<command xmlns='http://basex.org/rest'><text>list</text></command>" "http://localhost:8984/rest/"
