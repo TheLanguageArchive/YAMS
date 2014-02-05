@@ -1,19 +1,20 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.common.db;
 
@@ -26,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import org.basex.util.Base64;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on : Apr 8, 2013, 10:48:43 AM
@@ -36,6 +38,7 @@ public class RestDbAdaptor implements DbAdaptor {
 
     final private URL restUrl;
     final private String encodedPass;
+    final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
 
     public RestDbAdaptor(URL restUrl, String userName, String userPass) {
         this.restUrl = restUrl;
@@ -46,21 +49,21 @@ public class RestDbAdaptor implements DbAdaptor {
     public void dropAndRecreateDb(String databaseName) throws QueryException {
         try {
             URL databaseUrl = new URL(restUrl, databaseName);
-            System.out.println("dropAndRecreateDb DELETE: " + databaseUrl);
+            logger.debug("dropAndRecreateDb DELETE: " + databaseUrl);
             HttpURLConnection conn = (HttpURLConnection) databaseUrl.openConnection();
             conn.setRequestMethod("DELETE");
             conn.setRequestProperty("Authorization", "Basic " + encodedPass);
             final int responseCode = conn.getResponseCode();
-//            System.out.println("HTTP response: " + responseCode);            
+//            logger.debug("HTTP response: " + responseCode);            
             conn.disconnect();
             if (responseCode != HttpURLConnection.HTTP_OK) {
 //                throw new QueryException("HTTP response: " + responseCode);
                 // this is not exceptional and will happen on the first run when the db does not exist
-                System.out.println("Failed to delete old database, maybe it does not exist");
+                logger.debug("Failed to delete old database, maybe it does not exist");
             }
         } catch (IOException exception) {
             // this is not exceptional and will happen on the first run when the db does not exist
-            System.out.println("Failed to delete old database, maybe it does not exist: " + exception.getMessage());
+            logger.debug("Failed to delete old database, maybe it does not exist: " + exception.getMessage());
         }
         checkDbExists(databaseName);
     }
@@ -69,7 +72,7 @@ public class RestDbAdaptor implements DbAdaptor {
         String deleteAllQuery = "for $document in collection('" + databaseName + "') "
                 // + "return fn:delete('" + databaseName + "', fn:substring-after(base-uri($document), '/'))";
                 + "return fn:delete('" + databaseName + "', base-uri($document))";
-        System.out.println("deleteAllQuery: " + deleteAllQuery);
+        logger.debug("deleteAllQuery: " + deleteAllQuery);
         executeQuery(databaseName, deleteAllQuery);
     }
 
@@ -80,15 +83,15 @@ public class RestDbAdaptor implements DbAdaptor {
             connectionGet.setRequestMethod("GET");
             connectionGet.setRequestProperty("Authorization", "Basic " + encodedPass);
             final int getResponseCode = connectionGet.getResponseCode();
-//            System.out.println("HTTP response: " + responseCode);
+//            logger.debug("HTTP response: " + responseCode);
             connectionGet.disconnect();
             if (getResponseCode != HttpURLConnection.HTTP_OK) {
-                System.out.println("checkDbExists PUT: " + databaseUrl);
+                logger.debug("checkDbExists PUT: " + databaseUrl);
                 HttpURLConnection connectionPut = (HttpURLConnection) databaseUrl.openConnection();
                 connectionPut.setRequestMethod("PUT");
                 connectionPut.setRequestProperty("Authorization", "Basic " + encodedPass);
                 final int putResponseCode = connectionPut.getResponseCode();
-//            System.out.println("HTTP response: " + responseCode);
+//            logger.debug("HTTP response: " + responseCode);
                 connectionPut.disconnect();
                 if (putResponseCode != HttpURLConnection.HTTP_CREATED) {
                     throw new QueryException("HTTP response: " + putResponseCode);
@@ -107,18 +110,18 @@ public class RestDbAdaptor implements DbAdaptor {
             conn.setRequestProperty("Authorization", "Basic " + encodedPass);
             conn.setRequestProperty("Content-Type", "application/xml");
             OutputStream out = conn.getOutputStream();
-//            System.out.println("executeQuery POST: " + restUrl + " : " + commandString);
+//            logger.debug("executeQuery POST: " + restUrl + " : " + commandString);
             out.write(commandString.getBytes("UTF-8"));
             out.close();
             final int responseCode = conn.getResponseCode();
             final String responseMessage = conn.getResponseMessage();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                System.out.println("command ok");
+                logger.debug("command ok");
             }
             // output the response which is only for debugging
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
             for (String line; (line = bufferedReader.readLine()) != null;) {
-                System.out.println("response: " + line);
+                logger.debug("response: " + line);
             }
             bufferedReader.close();
             // end output
@@ -143,7 +146,7 @@ public class RestDbAdaptor implements DbAdaptor {
     public void addDocument(String databaseName, String documentName, String documentContents) throws QueryException {
         try {
             URL documentUrl = new URL(restUrl, databaseName + "/" + documentName); //.replaceAll(":", "-").replaceAll("/", "-"));
-            System.out.println("addDocument PUT: " + documentUrl);
+            logger.debug("addDocument PUT: " + documentUrl);
             HttpURLConnection conn = (HttpURLConnection) documentUrl.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod("PUT");
@@ -154,7 +157,7 @@ public class RestDbAdaptor implements DbAdaptor {
             out.close();
             final int responseCode = conn.getResponseCode();
             final String responseMessage = conn.getResponseMessage();
-//            System.out.println("HTTP response: " + responseCode);
+//            logger.debug("HTTP response: " + responseCode);
             conn.disconnect();
             if (responseCode != HttpURLConnection.HTTP_CREATED) {
                 throw new QueryException("HTTP response: " + responseCode + " : responseMessage: " + responseMessage + " : documentUrl: " + documentUrl);
@@ -167,12 +170,12 @@ public class RestDbAdaptor implements DbAdaptor {
     public void deleteDocument(String databaseName, String documentName) throws QueryException {
         try {
             URL documentUrl = new URL(restUrl, databaseName + "/" + documentName); //.replaceAll(":", "-").replaceAll("/", "-"));
-            System.out.println("deleteDocument DELETE: " + documentUrl);
+            logger.debug("deleteDocument DELETE: " + documentUrl);
             HttpURLConnection conn = (HttpURLConnection) documentUrl.openConnection();
             conn.setRequestMethod("DELETE");
             conn.setRequestProperty("Authorization", "Basic " + encodedPass);
             final int responseCode = conn.getResponseCode();
-//            System.out.println("HTTP response: " + responseCode);
+//            logger.debug("HTTP response: " + responseCode);
             conn.disconnect();
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 throw new QueryException("HTTP response: " + responseCode);
@@ -196,29 +199,29 @@ public class RestDbAdaptor implements DbAdaptor {
             String bodyString = "<query xmlns=\"http://basex.org/rest\">\n"
                     + "  <text><![CDATA[" + queryString + "]]></text>\n"
                     + "</query>";
-//            System.out.println("executeQuery POST: " + restUrl + " : " + bodyString);
+//            logger.debug("executeQuery POST: " + restUrl + " : " + bodyString);
             out.write(bodyString.getBytes("UTF-8"));
             out.close();
             final int responseCode = conn.getResponseCode();
             final String responseMessage = conn.getResponseMessage();
             long responseMils = System.currentTimeMillis() - startTime;
             String queryTimeString = "response time: " + responseMils + "ms";
-            System.out.println(queryTimeString);
+            logger.debug(queryTimeString);
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                System.out.println("Reading response");
+                logger.debug("Reading response");
                 for (String line; (line = bufferedReader.readLine()) != null;) {
-//                    System.out.println("response: " + line);
+//                    logger.debug("response: " + line);
 //                    System.out.print(".");
                     replaceMe.append(line);
                 }
                 bufferedReader.close();
             }
-            System.out.println(".");
+            logger.debug(".");
             conn.disconnect();
             long totalMils = System.currentTimeMillis() - startTime;
             String totalTimeString = "total time: " + totalMils + "ms";
-            System.out.println(totalTimeString);
+            logger.debug(totalTimeString);
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 throw new QueryException("HTTP response: " + responseCode + " " + responseMessage);
             }
@@ -232,12 +235,12 @@ public class RestDbAdaptor implements DbAdaptor {
         try {
             for (String command : new String[]{"CREATE+INDEX+TEXT", "CREATE+INDEX+ATTRIBUTE", "CREATE+INDEX+FULLTEXT", "optimize+all"}) {
                 URL databaseUrl = new URL(restUrl, databaseName + "?command=" + command);
-                System.out.println("createIndexes GET: " + databaseUrl);
+                logger.debug("createIndexes GET: " + databaseUrl);
                 HttpURLConnection conn = (HttpURLConnection) databaseUrl.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("Authorization", "Basic " + encodedPass);
                 final int responseCode = conn.getResponseCode();
-//            System.out.println("HTTP response: " + responseCode);
+//            logger.debug("HTTP response: " + responseCode);
                 conn.disconnect();
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     throw new QueryException("HTTP response: " + responseCode);

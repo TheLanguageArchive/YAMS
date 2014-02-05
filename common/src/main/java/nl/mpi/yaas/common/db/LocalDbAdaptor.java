@@ -48,10 +48,10 @@ public class LocalDbAdaptor implements DbAdaptor {
 
     public LocalDbAdaptor(File dbPath) throws QueryException {
         dbPathDir = new File(dbPath, "BaseXData");
-        System.out.println("dbPathDir: " + dbPathDir.toString());
+        logger.debug("dbPathDir: " + dbPathDir.toString());
         dbPathDir.mkdir();
         try {
-            System.out.println("dbpath exists: " + dbPathDir.exists());
+            logger.debug("dbpath exists: " + dbPathDir.exists());
             synchronized (databaseLock) {
                 new Set("DBPATH", dbPathDir).execute(context);
             }
@@ -62,7 +62,7 @@ public class LocalDbAdaptor implements DbAdaptor {
     }
 
     public void checkDbExists(String databaseName) throws QueryException {
-        System.out.println("databaseName: " + databaseName);
+        logger.debug("databaseName: " + databaseName);
         try {
             synchronized (databaseLock) {
                 new Open(databaseName).execute(context);
@@ -84,19 +84,19 @@ public class LocalDbAdaptor implements DbAdaptor {
 //        String suffixFilter = "*.*mdi";
         try {
             synchronized (databaseLock) {
-//    System.out.print(new InfoDB().execute(context));
+//    logger.debug(new InfoDB().execute(context));
 //    new DropIndex("text").execute(context);
 //    new DropIndex("attribute").execute(context);
 //    new DropIndex("fulltext").execute(context);
                 new DropDB(databaseName).execute(context);
 //                new Set("CREATEFILTER", suffixFilter).execute(context);
 //                final File cacheDirectory = getDatabaseProjectDirectory(databaseName);
-//                System.out.println("cacheDirectory: " + cacheDirectory);
+//                logger.debug("cacheDirectory: " + cacheDirectory);
 //                new CreateDB(databaseName, cacheDirectory.toString()).execute(context);
                 new CreateDB(databaseName).execute(context);
-//                System.out.println("Create full text index");
+//                logger.debug("Create full text index");
 //                new CreateIndex("fulltext").execute(context); // note that the indexes appear to be created by default, so this step might be redundant
-                System.out.print(new InfoDB().execute(context));
+                logger.debug(new InfoDB().execute(context));
             }
         } catch (BaseXException exception) {
             throw new QueryException(exception.getMessage(), exception);
@@ -133,7 +133,7 @@ public class LocalDbAdaptor implements DbAdaptor {
     public String executeQuery(String databaseName, String queryString) throws QueryException {
         try {
             synchronized (databaseLock) {
-//                System.out.println("queryString: " + queryString);
+//                logger.debug("queryString: " + queryString);
                 return new XQuery(queryString).execute(context);
             }
         } catch (BaseXException exception) {

@@ -148,10 +148,10 @@ public class DataBaseManager<D, F, M> {
     public void createIndexes() throws QueryException {
         long startTime = System.currentTimeMillis();
         dbAdaptor.createIndexes(databaseName);
-//        System.out.println("queryResult: " + queryResult);
+//        logger.debug("queryResult: " + queryResult);
         long queryMils = System.currentTimeMillis() - startTime;
         String queryTimeString = "Create indexes time: " + queryMils + "ms";
-        System.out.println(queryTimeString);
+        logger.debug(queryTimeString);
     }
 
     private String getCachedVersion(String cachedDocument, String queryString) throws QueryException {
@@ -167,7 +167,7 @@ public class DataBaseManager<D, F, M> {
             // insert the stats as a document
             dbAdaptor.addDocument(databaseName, cachedDocument, resultCacheFlagged);
         }
-//        System.out.println("queryResult: " + queryResult);
+//        logger.debug("queryResult: " + queryResult);
         return queryResult;
     }
 
@@ -181,7 +181,7 @@ public class DataBaseManager<D, F, M> {
 //        String queryResult = dbAdaptor.executeQuery(databaseName, "for $databaseName in db:list()\n"
 //                + "return <String>{$databaseName}</String>");
         String queryResult = dbAdaptor.executeQuery(databaseName, "db:list()");
-        System.out.println("databaseList: " + queryResult);
+        logger.debug("databaseList: " + queryResult);
         return queryResult.split(" ");
     }
 
@@ -213,7 +213,7 @@ public class DataBaseManager<D, F, M> {
             long queryMils = System.currentTimeMillis() - startTime;
 //            String queryTimeString = "DatabaseStats Query time: " + queryMils + "ms";
             databaseStats.setQueryTimeMS(queryMils);
-//            System.out.println(queryTimeString);
+//            logger.debug(queryTimeString);
             return databaseStats;
         } catch (JAXBException exception) {
             logger.debug(exception.getMessage());
@@ -235,8 +235,8 @@ public class DataBaseManager<D, F, M> {
                 + "let $knownIds := collection(\"" + databaseName + "\")/DataNode/@ID\n"
                 + "let $missingIds := distinct-values($childIds[not(@ID=$knownIds)]/@URI)"
                 + "return $missingIds[matches(., '\\.[icIC][mM][dD][iI]$')][position() le 1000]\n"; // <DataNodeId> </DataNodeId>
-        System.out.println("filtering by suffix on cmdi and imdi (this must be removed when a better solution is defined)");
-//        System.out.println("getHandlesOfMissing: " + queryString);
+        logger.debug("filtering by suffix on cmdi and imdi (this must be removed when a better solution is defined)");// todo: resolve this issue
+//        logger.debug("getHandlesOfMissing: " + queryString);
         String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
         long queryMils = System.currentTimeMillis() - startTime;
         String queryTimeString = "Query time: " + queryMils + "ms";
@@ -246,10 +246,10 @@ public class DataBaseManager<D, F, M> {
                 + "return\n"
                 + "<CrawlerStats linkcount='{count($childIds)}' documentcount='{count($knownIds)}' queryms='" + queryMils + "' timestamp='" + sampleDateTime + "'/>";
         String statsDoc = dbAdaptor.executeQuery(databaseName, statsQuery);
-        System.out.println("stats:" + statsDoc);
+        logger.debug("stats:" + statsDoc);
         // insert the stats document
         dbAdaptor.addDocument(databaseName, "CrawlerStats/" + sampleDateTime, statsDoc);
-        System.out.println(queryTimeString);
+        logger.debug(queryTimeString);
         return queryResult; // the results here need to be split on " ", but the string can be very long so it should not be done by String.split().
     }
 
@@ -299,7 +299,7 @@ public class DataBaseManager<D, F, M> {
                 throw new QueryException("unexpected state for DatabaseLinks document");
             }
             String queryResult = dbAdaptor.executeQuery(databaseName, "<DatabaseLinks>{collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks[position() le " + numberToGet + "]}</DatabaseLinks>");
-//            System.out.println("updatedDatabaseLinks: " + queryResult);
+//            logger.debug("updatedDatabaseLinks: " + queryResult);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             updatedDatabaseLinks = (DatabaseLinks) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), DatabaseLinks.class).getValue();
         } catch (JAXBException exception) {
@@ -318,10 +318,10 @@ public class DataBaseManager<D, F, M> {
                 + "return\n"
                 + "<CrawlerStats linkcount='{count($childIds)}' documentcount='{count($knownIds)}' queryms='" + queryMils + "' timestamp='" + sampleDateTime + "' freebytes='" + freeMemory + "' totalbytes='" + totalMemory + "' maxMemory='" + maxMemory + "'/>";
         String statsDoc = dbAdaptor.executeQuery(databaseName, statsQuery);
-        System.out.println("stats:" + statsDoc);
+        logger.debug("stats:" + statsDoc);
         // insert the stats document
         dbAdaptor.addDocument(databaseName, "CrawlerStats/" + sampleDateTime, statsDoc);
-        System.out.println(queryTimeString);
+        logger.debug(queryTimeString);
         return updatedDatabaseLinks.getChildLinks(); // the results here need to be split on " ", but the string can be very long so it should not be done by String.split().
     }
 
@@ -343,7 +343,7 @@ public class DataBaseManager<D, F, M> {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             queryResult = dbAdaptor.executeQuery(databaseName, iconTableQuery);
-//            System.out.println("queryResult: " + queryResult);
+//            logger.debug("queryResult: " + queryResult);
             return (IconTableBase64) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), IconTableBase64.class).getValue();
         } catch (JAXBException exception) {
             throw new PluginException(exception);
@@ -367,7 +367,7 @@ public class DataBaseManager<D, F, M> {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             queryResult = dbAdaptor.executeQuery(databaseName, iconTableQuery);
-//            System.out.println("queryResult: " + queryResult);
+//            logger.debug("queryResult: " + queryResult);
             return (IconTable) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), IconTable.class).getValue();
         } catch (JAXBException exception) {
             throw new PluginException(exception);
@@ -392,7 +392,7 @@ public class DataBaseManager<D, F, M> {
             }
         } catch (PluginException exception) {
             // if there is not icon document here that can be normal if it is the first run
-            System.out.println("Error getting existing IconTableDocument (this is normal on the first run).");
+            logger.debug("Error getting existing IconTableDocument (this is normal on the first run).");
         }
         dbAdaptor.deleteDocument(databaseName, iconTableDocument);
         // use JAXB to serialise and insert the IconTable into the database
@@ -402,7 +402,7 @@ public class DataBaseManager<D, F, M> {
             StringWriter stringWriter = new StringWriter();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(iconTable, stringWriter);
-            //System.out.println("NodeIcons to be inserted:\n" + stringWriter.toString());
+            //logger.debug("NodeIcons to be inserted:\n" + stringWriter.toString());
             dbAdaptor.addDocument(databaseName, iconTableDocument, stringWriter.toString());
         } catch (JAXBException exception) {
             System.err.println("jaxb error:" + exception.getMessage());
@@ -433,7 +433,7 @@ public class DataBaseManager<D, F, M> {
                 StringWriter stringWriter = new StringWriter();
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
                 marshaller.marshal(dataNode, stringWriter);
-//            System.out.println("Data to be inserted:\n" + stringWriter.toString());
+//            logger.debug("Data to be inserted:\n" + stringWriter.toString());
                 dbAdaptor.addDocument(databaseName, crawledDataCollection + "/" + dataNode.getID(), stringWriter.toString());
             } catch (JAXBException exception) {
                 System.err.println("jaxb error:" + exception.getMessage());
@@ -443,7 +443,7 @@ public class DataBaseManager<D, F, M> {
             if (throwOnDuplicate) {
                 throw new QueryException("Existing document found, count: " + existingDocumentResult + " ID: " + dataNode.getID() + " URL: " + dataNode.getURI());
             }
-            System.out.println("Existing document found, count: " + existingDocumentResult + " : " + dataNode.getURI());
+            logger.debug("Existing document found, count: " + existingDocumentResult + " : " + dataNode.getURI());
         }
     }
 
@@ -498,7 +498,7 @@ public class DataBaseManager<D, F, M> {
                 documentName += "/" + type + "/" + path;
             }
         }
-        System.out.println("documentName: " + documentName);
+        logger.debug("documentName: " + documentName);
         return documentName;
     }
 //    private String getFieldConstraint(MetadataFileType fieldType) {
@@ -894,7 +894,7 @@ public class DataBaseManager<D, F, M> {
                 + "($highlightSet[not (@ID = $exclusionSet/@ID)], $nodeIdSet)"
                 + "}</DataNode>\n");
         // todo: this would be better getting the nodes and doing an instersect on the nodes and only then extracting the fields to highlight
-        // System.out.println("Query: " + queryStringBuilder);
+        // logger.debug("Query: " + queryStringBuilder);
         final D metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
         return metadataTypesString;
     }
@@ -945,7 +945,7 @@ public class DataBaseManager<D, F, M> {
 
     public M[] getMetadataFieldValues(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadata100FieldValuesQuery(metadataFileType);
-        //System.out.println("getMetadata100FieldValuesQuery: " + queryString);
+        //logger.debug("getMetadata100FieldValuesQuery: " + queryString);
         return getMetadataTypes(queryString, getDocumentName(metadataFileType, "values"), false);
     }
 
@@ -956,7 +956,7 @@ public class DataBaseManager<D, F, M> {
 
     public M[] getTreeFacetTypes(MetadataFileType[] metadataFileTypes) throws QueryException {
         for (MetadataFileType type : metadataFileTypes) {
-            System.out.println("Type: " + type);
+            logger.debug("Type: " + type);
         }
         final String queryString = getTreeFacetsQuery(metadataFileTypes);
         return getMetadataTypes(queryString, getDocumentName(metadataFileTypes, "tree"), true);
@@ -977,9 +977,9 @@ public class DataBaseManager<D, F, M> {
             JAXBContext jaxbContext = JAXBContext.newInstance(dClass);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
-//                System.out.println("queryString: " + queryString);
+//                logger.debug("queryString: " + queryString);
             queryResult = dbAdaptor.executeQuery(databaseName, queryString);
-//            System.out.println("queryResult: " + queryResult);
+//            logger.debug("queryResult: " + queryResult);
             D rootTreeNode = (D) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), dClass).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
             int resultCount = 0;
@@ -987,7 +987,7 @@ public class DataBaseManager<D, F, M> {
                 resultCount = 1;
             }
             String queryTimeString = "Query time: " + queryMils + "ms for " + resultCount + " entities";
-            System.out.println(queryTimeString);
+            logger.debug(queryTimeString);
             return rootTreeNode;
         } catch (JAXBException exception) {
             logger.debug(exception.getMessage());
@@ -1006,9 +1006,9 @@ public class DataBaseManager<D, F, M> {
             } else {
                 queryResult = dbAdaptor.executeQuery(databaseName, queryString);
             }
-//            System.out.println("queryString: " + queryString);
+//            logger.debug("queryString: " + queryString);
 //            queryResult = dbAdaptor.executeQuery(databaseName, queryString);
-//            System.out.println("queryResult: " + queryResult);
+//            logger.debug("queryResult: " + queryResult);
             M foundEntities = (M) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), MetadataFileType.class).getValue();
             long queryMils = System.currentTimeMillis() - startTime;
             final M[] entityDataArray = (M[]) ((MetadataFileType) foundEntities).getChildMetadataTypes();
@@ -1017,7 +1017,7 @@ public class DataBaseManager<D, F, M> {
                 resultCount = entityDataArray.length;
             }
             String queryTimeString = "Query time: " + queryMils + "ms for " + resultCount + " entities";
-            System.out.println(queryTimeString);
+            logger.debug(queryTimeString);
 //            selectedEntity.appendTempLabel(queryTimeString);
             return (M[]) ((MetadataFileType) foundEntities).getChildMetadataTypes();
         } catch (JAXBException exception) {
