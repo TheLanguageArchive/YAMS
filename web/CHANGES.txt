@@ -1,2 +1,5 @@
+2014-02-05
+Added a logger configuration file as requested.
+Added some css and images.
 2013-11-21
 First testing deployment package provided.
