@@ -25,6 +25,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link type="text/css" rel="stylesheet" href="yaas.css">
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
         <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script type="text/javascript">
@@ -181,18 +182,23 @@
         </script> 
     </head>
     <body>
-        REST URL: <%=config.getServletContext().getInitParameter("basexRestUrl")%><br>
-        <div id="error_div1"></div>
-        <div id="error_div2"></div>
-        <div id="visualization" style="width: 900px; height: 500px;"></div>   
-        <% String buttonText;
-            if (request.getParameter("databaseName") != null) {
-                buttonText = "Search in the selected database '" + request.getParameter("databaseName") + "'";
-            } else {
-                buttonText = "Go To Search Page";
-            }
-        %>
-        <a href='yaas.html?databaseName=<%=request.getParameter("databaseName")%>'><%=buttonText%></a>
-        <div id="chart_div" style="width: 900px; height: 500px;"></div>
+        <h1 id="header">YAAS Web Prototype Statistics</h1>
+        <div id="main2">
+            <div  id="main">
+                REST URL: <%=config.getServletContext().getInitParameter("basexRestUrl")%><br>
+                <div id="error_div1"></div>
+                <div id="error_div2"></div>
+                <div id="visualization" style="width: 900px; height: 500px;"></div>   
+                <% String buttonText;
+                    if (request.getParameter("databaseName") != null) {
+                        buttonText = "Search in the selected database '" + request.getParameter("databaseName") + "'";
+                    } else {
+                        buttonText = "Go To Search Page";
+                    }
+                %>
+                <a href='yaas.html?databaseName=<%=request.getParameter("databaseName")%>'><%=buttonText%></a>
+                <div id="chart_div" style="width: 900px; height: 500px;"></div>
+            </div>
+        </div>
     </body>
 </html>

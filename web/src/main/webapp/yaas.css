@@ -27,12 +27,20 @@
     border-width:1px;
     background-color:white;
 }
+
+/*.gwt-Tree .gwt-TreeNode {
+    border-left: 1px solid #005284;
+    zoom: 1; // i wonder if this might make the buttons bigger 
+}*/
+
 .yaas-treeNode {
     font-weight: normal;
     /*color: gray;*/
     /*  vertical-align: top;
         border-style:solid;
         border-width:1px;*/
+    /*background-color: aquamarine;*/
+    /*background-size: 15px 30px;*/
     background-color:white;
 }
 .yaas-treeNode-highlighted {
@@ -42,6 +50,8 @@
         border-style:solid;
         border-width:1px;*/
     background-color:#ccffff;
+/*    background-color: aquamarine;
+    background-size: 15px 15px;*/
 }
 .yaas-treeNodeDetails {
     border-style:solid;
@@ -79,3 +89,50 @@ h1 {
     top: 0;
     /*margin: 15px 6px 6px;*/
 }
+#header {
+    background:  url(images/header2.png) top repeat-x;
+    width:100%;
+    margin: 0px auto 0px;
+    padding: 0px;
+    clear: both;
+    height: 182px;
+}
+#main {
+    margin: 0px;
+    clear: both;
+    height: 100%;
+    width: 100%;
+    padding-top: 1em;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    background: url(images/sidebarcolor.png) top repeat-x; 
+}
+#main2 {
+    margin: 0px;
+    height: 100%;
+    width: 100%;
+    padding-top:0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    background:  url(images/wrapkleur.png);
+    /*background-size: auto 100%;*/
+}
+
+.annotationblock{
+    border: 1px solid #d5d5d5;
+}
+html, body {
+    height:100%;
+} 
+/*html {
+    background-color:#FF0000;
+    height: 100%;
+    width: 100%;
+}
+body {
+    background-color:#FF0000;
+    height: 100%;
+    width: 100%;
+}*/
