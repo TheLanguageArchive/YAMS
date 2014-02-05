@@ -41,7 +41,7 @@
         border-width:1px;*/
     /*background-color: aquamarine;*/
     /*background-size: 15px 30px;*/
-    background-color:white;
+    /*background-color:white;*/
 }
 .yaas-treeNode-highlighted {
     font-weight: bold;
@@ -50,8 +50,8 @@
         border-style:solid;
         border-width:1px;*/
     background-color:#ccffff;
-/*    background-color: aquamarine;
-    background-size: 15px 15px;*/
+    /*    background-color: aquamarine;
+        background-size: 15px 15px;*/
 }
 .yaas-treeNodeDetails {
     border-style:solid;
@@ -125,6 +125,7 @@ h1 {
 }
 html, body {
     height:100%;
+    margin: 0px;
 } 
 /*html {
     background-color:#FF0000;

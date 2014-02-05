@@ -92,7 +92,8 @@
                 data.addColumn('number', 'mb available');
                 data.addRows(<%=jsonDataDetailed%>.slice(1));
                 var options = {
-                    title: 'Crawing Stats for "<%=request.getParameter("databaseName")%>"'
+                    title: 'Crawing Stats for "<%=request.getParameter("databaseName")%>"',
+                    backgroundColor: {fill: 'transparent'}
                 };
 
                 var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
@@ -163,7 +164,8 @@
                     title: 'Crawl Statistics For All Test Databases (click below for details)',
                     hAxis: {title: 'Date Crawled'},
                     vAxis: {title: 'Time Taken (hours.minutes)'},
-                    bubble: {textStyle: {fontSize: 11}}
+                    bubble: {textStyle: {fontSize: 11}},
+                    backgroundColor: {fill: 'transparent'}
                 };
 
                 // Create and draw the visualization.
@@ -188,7 +190,7 @@
                 REST URL: <%=config.getServletContext().getInitParameter("basexRestUrl")%><br>
                 <div id="error_div1"></div>
                 <div id="error_div2"></div>
-                <div id="visualization" style="width: 900px; height: 500px;"></div>   
+                <div id="visualization" style="width: 900px; height: 500px;">&nbsp;</div>   
                 <% String buttonText;
                     if (request.getParameter("databaseName") != null) {
                         buttonText = "Search in the selected database '" + request.getParameter("databaseName") + "'";
@@ -197,8 +199,9 @@
                     }
                 %>
                 <a href='yaas.html?databaseName=<%=request.getParameter("databaseName")%>'><%=buttonText%></a>
-                <div id="chart_div" style="width: 900px; height: 500px;"></div>
+                <div id="chart_div" style="width: 900px; height: 500px;">&nbsp;</div>
             </div>
         </div>
+        <div id="main2">&nbsp;</div>
     </body>
 </html>
