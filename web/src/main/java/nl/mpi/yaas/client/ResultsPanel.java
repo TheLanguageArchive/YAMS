@@ -25,6 +25,11 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import nl.mpi.flap.model.DataNodeLink;
+import nl.mpi.flap.model.ModelException;
+import static nl.mpi.yaas.client.YaasTreeItem.FAILURE;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.IconTableBase64;
@@ -35,6 +40,7 @@ import nl.mpi.yaas.common.data.IconTableBase64;
  */
 public class ResultsPanel extends TabPanel {
 
+    private static final Logger logger = Logger.getLogger("");
     final DataNodeTable dataNodeTable;
     final SearchOptionsServiceAsync searchOptionsService;
     private final IconTableBase64 iconTableBase64;
@@ -55,10 +61,23 @@ public class ResultsPanel extends TabPanel {
     }
 
     public void addResultsTree(String databaseName, HighlighableDataNode dataNode) {
-        final DataNodeTree dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, iconTableBase64);
-        dataNodeTree.addResultsToTree(databaseName, dataNode);
-        this.addClosableTab(dataNodeTree, dataNode.getLabel());
-        this.selectTab(this.getWidgetIndex(dataNodeTree));
+        try {
+            if (dataNode.getChildIds() != null) {
+                final DataNodeTree dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, iconTableBase64);
+                for (DataNodeLink childId : dataNode.getChildIds()) {
+                    dataNodeTree.addResultsToTree(databaseName, childId, dataNode);
+                }
+                this.addClosableTab(dataNodeTree, dataNode.getLabel());
+                this.selectTab(this.getWidgetIndex(dataNodeTree));
+            } else {
+                final Label label = new Label("No results found");
+                this.addClosableTab(label, dataNode.getLabel());
+                this.selectTab(this.getWidgetIndex(label));
+            }
+        } catch (ModelException exception) {
+            logger.log(Level.SEVERE, FAILURE, exception);
+        }
+
     }
 
     private void addClosableTab(final Widget widget, String text) {

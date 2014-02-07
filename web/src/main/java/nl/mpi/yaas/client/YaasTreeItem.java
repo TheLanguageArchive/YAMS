@@ -148,6 +148,9 @@ public class YaasTreeItem extends TreeItem {
 
     public void setHighlights(HighlighableDataNode dataNode) {
         this.highlighedLinks.addAll(dataNode.getHighlights());
+//        root nodes of a search result always need to be highlighted        
+        nodeLabel.setStyleName("yaas-treeNode-highlighted");
+        nodeDetailsAnchor.setStyleName("yaas-treeNode-highlighted");
     }
 
     public void setHighlights(List<DataNodeHighlight> highlighedLinks) {

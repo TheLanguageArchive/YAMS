@@ -22,6 +22,7 @@ import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
+import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.IconTableBase64;
@@ -59,9 +60,16 @@ public class DataNodeTree extends Tree {
                 if (selectedItem instanceof YaasTreeItem) {
                     YaasTreeItem yaasTreeItem = (YaasTreeItem) selectedItem;
                     yaasTreeItem.loadChildNodes();
+//                    History.newItem(yaasTreeItem.getYaasDataNode().getArchiveHandle());
                 }
             }
         });
+//        addCloseHandler(new CloseHandler<TreeItem>() {
+//
+//            public void onClose(CloseEvent<TreeItem> event) {
+////                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//            }
+//        });
 //        addSelectionHandler(new SelectionHandler<TreeItem>() {
 //            public void onSelection(SelectionEvent event) {
 //                final Object selectedItem = event.getSelectedItem();
@@ -75,6 +83,12 @@ public class DataNodeTree extends Tree {
 
     public void addResultsToTree(String databaseName, DataNodeId dataNodeId) {
         final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeId, searchOptionsService, dataNodeTable, iconTableBase64);
+        this.addItem(yaasTreeItem);
+    }
+
+    public void addResultsToTree(String databaseName, DataNodeLink dataNodeLink, HighlighableDataNode dataNode) {
+        final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(dataNodeLink.getIdString()), searchOptionsService, dataNodeTable, iconTableBase64);
+        yaasTreeItem.setHighlights(dataNode);
         this.addItem(yaasTreeItem);
     }
 
