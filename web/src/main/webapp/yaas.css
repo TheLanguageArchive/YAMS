@@ -95,7 +95,7 @@ h1 {
     margin: 0px auto 0px;
     padding: 0px;
     clear: both;
-    height: 182px;
+    height: 135px;
 }
 #main {
     margin: 0px;
@@ -152,6 +152,8 @@ h1 {
 html, body {
     height:100%;
     margin: 0px;
+    /*background:#89B5B9;*/    
+    background:  url(images/wrapkleur.png);
 } 
 /*html {
     background-color:#FF0000;
