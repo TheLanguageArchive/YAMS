@@ -33,7 +33,7 @@ import nl.mpi.yaas.common.data.DatabaseStats;
 public class DatabaseStatsPanel extends VerticalPanel {
 
     private final SearchOptionsServiceAsync searchOptionsService;
-    private final DataNodeTree dataNodeTree;
+    private final ResultsPanel resultsPanel;
     private static final Logger logger = Logger.getLogger("");
     private static final String FAILED_TO_GET_THE_DATABASE_STATISTICS = "Failed to get the database statistics";
 //    final private SearchOptionsServiceAsync searchOptionsService;
@@ -41,9 +41,9 @@ public class DatabaseStatsPanel extends VerticalPanel {
     private final String databaseName;
     private final DatabaseSelect databaseSelect;
 
-    public DatabaseStatsPanel(SearchOptionsServiceAsync searchOptionsService, String databaseName, final DataNodeTree dataNodeTree, DatabaseSelect databaseSelect) {
+    public DatabaseStatsPanel(SearchOptionsServiceAsync searchOptionsService, String databaseName, final ResultsPanel resultsPanel, DatabaseSelect databaseSelect) {
         this.searchOptionsService = searchOptionsService;
-        this.dataNodeTree = dataNodeTree;
+        this.resultsPanel = resultsPanel;
         this.databaseName = databaseName;
         this.databaseSelect = databaseSelect;
         updateDbStats();
@@ -69,7 +69,7 @@ public class DatabaseStatsPanel extends VerticalPanel {
                 DatabaseStatsPanel.this.add(new Label("Duplicate Documents Count: " + result.getDuplicateDocumentsCount()));
                 DatabaseStatsPanel.this.add(new Label("Query time: " + result.getQueryTimeMS() + "ms"));
                 //                final YaasTreeItem yaasTreeItem = new YaasTreeItem();
-                dataNodeTree.addResultsToTree(databaseName, result.getRootDocumentsIDs());
+                resultsPanel.addDatabaseTree(databaseName, result.getRootDocumentsIDs());
                 databaseSelect.setDatabaseInfoLabel(knownDocumentsText + " " + missingDocumentsText);
             }
         });

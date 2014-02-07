@@ -55,16 +55,16 @@ public class SearchPanel extends VerticalPanel {
     private final DataNodeTable dataNodeTable;
     private Button searchButton;
     private SearchHandler searchHandler;
-    private final DataNodeTree dataNodeTree;
+    private final ResultsPanel resultsPanel;
     private final ValueListBox<CriterionJoinType> joinTypeListBox;
     private final VerticalPanel verticalPanel;
     private final ArrayList<SearchCriterionPanel> criterionPanelList = new ArrayList<SearchCriterionPanel>();
     private final String databaseName;
 
-    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, final String databaseName, DataNodeTree dataNodeTree, DataNodeTable dataNodeTable) {
+    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, final String databaseName, ResultsPanel resultsPanel, DataNodeTable dataNodeTable) {
         this.searchOptionsService = searchOptionsService;
         this.dataNodeTable = dataNodeTable;
-        this.dataNodeTree = dataNodeTree;
+        this.resultsPanel = resultsPanel;
         this.databaseName = databaseName;
         verticalPanel = new VerticalPanel();
         initSearchHandler();
@@ -83,7 +83,7 @@ public class SearchPanel extends VerticalPanel {
         buttonsPanel.add(joinTypeListBox);
         buttonsPanel.add(searchButton);
         this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        this.add(buttonsPanel);     
+        this.add(buttonsPanel);
     }
 
     protected void addSearchCriterionPanel(SearchCriterionPanel criterionPanel) {
@@ -122,7 +122,7 @@ public class SearchPanel extends VerticalPanel {
                         long responseMils = System.currentTimeMillis() - startTime;
                         final String searchTimeMessage = "PerformSearch response time: " + responseMils + " ms";
                         logger.log(Level.INFO, searchTimeMessage);
-                        dataNodeTree.addResultsToTree(databaseName, result);
+                        resultsPanel.addResultsTree(databaseName, result);
                         searchHandler.signalSearchDone();
                         searchButton.setEnabled(true);
                         searchButton.setHTML(SEARCH_LABEL);

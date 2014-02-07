@@ -119,6 +119,32 @@ h1 {
     background:  url(images/wrapkleur.png);
     /*background-size: auto 100%;*/
 }
+.gwt-TabPanel {
+    float: left;
+    width: 664px;
+    margin: 0px;
+    height: 100%;
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-bottom: 370px;
+    padding-left: 0px;
+    /*background:#ffffff;*/
+    min-height: 420px;
+}
+
+.gwt-TabPanelBottom {
+    padding: 2px;
+    /*height: auto;*/
+    height:100%;
+    width: auto;
+    margin-top: 0px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    margin-left: 10px;
+    /*background-color: none;*/    
+    background:#ffffff;
+    border: 0px solid #d5d5d5;
+}
 
 .annotationblock{
     border: 1px solid #d5d5d5;

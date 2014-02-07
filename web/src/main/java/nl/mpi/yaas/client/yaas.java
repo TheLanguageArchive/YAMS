@@ -22,6 +22,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.logging.client.HasWidgetsLogHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -38,7 +39,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 //import com.googlecode.gwtphonegap.client.util.PhonegapUtil;
 import java.util.logging.Logger;
 import nl.mpi.yaas.common.data.IconTableBase64;
-import nl.mpi.yaas.common.db.DataBaseManager;
 
 public class yaas implements EntryPoint, DatabaseNameListener {
 
@@ -82,20 +82,25 @@ public class yaas implements EntryPoint, DatabaseNameListener {
         databaseSelectBox.getDbList();
         final ServiceDefTarget serviceDefTarget = (ServiceDefTarget) searchOptionsService;
         RootPanel.get("databaseStats").add(new Label(serviceDefTarget.getServiceEntryPoint()));
-        if (GWT.getHostPageBaseURL().startsWith("file://")) {
-            RootPanel.get("databaseStats").add(new Label("Changing Service Target"));
-            final String baseUrl = GWT.getModuleBaseURL().replace("file:///android_asset/www", "http://tlatest06.mpi.nl:8080/yaas-gwt-1.0-SNAPSHOT");
-            serviceDefTarget.setServiceEntryPoint(baseUrl + serviceDefTarget.getServiceEntryPoint().replace(GWT.getModuleBaseURL(), ""));
-            serviceDefTarget.setRpcRequestBuilder(new RpcRequestBuilder() {
-                @Override
-                protected void doFinish(RequestBuilder requestBuilder) {
-                    super.doFinish(requestBuilder);
-                    requestBuilder.setHeader(MODULE_BASE_HEADER, baseUrl);
-                }
-            });
-            RootPanel.get("databaseStats").add(new Label(GWT.getModuleBaseURL()));
-            RootPanel.get("databaseStats").add(new Label(serviceDefTarget.getServiceEntryPoint()));
-        }
+//        if (GWT.getHostPageBaseURL().startsWith("file://")) {
+//            RootPanel.get("databaseStats").add(new Label("Changing Service Target"));
+//            final String baseUrl = GWT.getModuleBaseURL().replace("file:///android_asset/www", "http://lux17.mpi.nl/ds/yaas2");
+//            serviceDefTarget.setServiceEntryPoint(baseUrl + serviceDefTarget.getServiceEntryPoint().replace(GWT.getModuleBaseURL(), ""));
+//            serviceDefTarget.setRpcRequestBuilder(new RpcRequestBuilder() {
+//                @Override
+//                protected void doFinish(RequestBuilder requestBuilder) {
+//                    super.doFinish(requestBuilder);
+//                    requestBuilder.setHeader(MODULE_BASE_HEADER, baseUrl);
+//                }
+//            });
+//            RootPanel.get("databaseStats").add(new Label(GWT.getModuleBaseURL()));
+//            RootPanel.get("databaseStats").add(new Label(serviceDefTarget.getServiceEntryPoint()));
+//
+//            PhonegapUtil.prepareService(serviceDefTarget, "http://lux17.mpi.nl/", "ds/yaas/yaas/searchoptions");
+////  HandlerManager eventBus = new HandlerManager(null);
+////  AppController appViewer = new AppController(rpcService, eventBus);
+////  appViewer.go(RootPanel.get());
+//        }
         //        serviceDefTarget.setServiceEntryPoint("http://tlatest03.mpi.nl:8080/yaas-gwt-1.0-SNAPSHOT/yaas/searchoptions");
 ////        serviceDefTarget.setServiceEntryPoint(moduleUrl + relativeServiceUrl);
 //
@@ -118,13 +123,13 @@ public class yaas implements EntryPoint, DatabaseNameListener {
 
                 public void onSuccess(IconTableBase64 result) {
                     final DataNodeTable dataNodeTable = new DataNodeTable();
-                    final DataNodeTree dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, result);
-                    final SearchPanel searchOptionsPanel = new SearchPanel(searchOptionsService, databaseName, dataNodeTree, dataNodeTable);
-                    RootPanel.get("databaseStats").add(new DatabaseStatsPanel(searchOptionsService, databaseName, dataNodeTree, databaseSelectBox));
+                    final ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, result);
+                    final SearchPanel searchOptionsPanel = new SearchPanel(searchOptionsService, databaseName, resultsPanel, dataNodeTable);
+                    RootPanel.get("databaseStats").add(new DatabaseStatsPanel(searchOptionsService, databaseName, resultsPanel, databaseSelectBox));
                     RootPanel.get("databaseStats").add(new IconInfoPanel(result));
 //                RootPanel.get("databaseStats").add(new QueryStatsPanel());
                     RootPanel.get("searchOptionsPanel").add(searchOptionsPanel);
-                    RootPanel.get("dataNodeTree").add(dataNodeTree);
+                    RootPanel.get("resultsPanel").add(resultsPanel);
                     RootPanel.get("dataNodeTable").add(dataNodeTable);
                     RootPanel.get("facetedTree").add(new FacetedTree(searchOptionsService, databaseName));
                     RootPanel.get("searchOptionsPanel").remove(loadingImage);
@@ -143,7 +148,7 @@ public class yaas implements EntryPoint, DatabaseNameListener {
     public void setDataBaseName(String databaseName) {
         RootPanel.get("databaseStats").clear();
         RootPanel.get("searchOptionsPanel").clear();
-        RootPanel.get("dataNodeTree").clear();
+        RootPanel.get("resultsPanel").clear();
         RootPanel.get("dataNodeTable").clear();
         RootPanel.get("facetedTree").clear();
         RootPanel.get("linksPanel").clear();
