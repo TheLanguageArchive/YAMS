@@ -71,7 +71,7 @@ public class QueryDataStructures {
 
     public enum CriterionJoinType {
 
-        union("Union"), intersect("Interesection"); //, except("Difference");
+        union("Union (match any)"), intersect("Intersection (match all)"); //, except("Difference");
         final private String displayName;
 
         private CriterionJoinType(String displayName) {
