@@ -24,7 +24,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
@@ -60,20 +62,27 @@ public class ResultsPanel extends TabPanel {
         this.selectTab(this.getWidgetIndex(dataNodeTree));
     }
 
-    public void addResultsTree(String databaseName, HighlighableDataNode dataNode) {
+    public void addResultsTree(String databaseName, HighlighableDataNode dataNode, long responseTimeMils) {
         try {
-            if (dataNode.getChildIds() != null) {
+            VerticalPanel verticalPanel = new VerticalPanel();
+            final List<DataNodeLink> childIds = dataNode.getChildIds();
+            if (childIds != null) {
                 final DataNodeTree dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, iconTableBase64);
-                for (DataNodeLink childId : dataNode.getChildIds()) {
+                for (DataNodeLink childId : childIds) {
                     dataNodeTree.addResultsToTree(databaseName, childId, dataNode);
                 }
-                this.addClosableTab(dataNodeTree, dataNode.getLabel());
-                this.selectTab(this.getWidgetIndex(dataNodeTree));
+                // add a label showing the time taken by a search and the result count
+                final Label timeLabel = new Label("found " + childIds.size() + " in " + responseTimeMils + "ms");
+                verticalPanel.add(timeLabel);
+                verticalPanel.add(dataNodeTree);
             } else {
                 final Label label = new Label("No results found");
-                this.addClosableTab(label, dataNode.getLabel());
-                this.selectTab(this.getWidgetIndex(label));
+                verticalPanel.add(label);
+                final Label timeLabel = new Label(responseTimeMils + "ms");
+                verticalPanel.add(timeLabel);
             }
+            this.addClosableTab(verticalPanel, dataNode.getLabel());
+            this.selectTab(this.getWidgetIndex(verticalPanel));
         } catch (ModelException exception) {
             logger.log(Level.SEVERE, FAILURE, exception);
         }
@@ -87,7 +96,12 @@ public class ResultsPanel extends TabPanel {
         button.addClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
+                final int widgetIndex = ResultsPanel.this.getWidgetIndex(widget);
+                final int selectedTab = ResultsPanel.this.getTabBar().getSelectedTab();
                 ResultsPanel.this.remove(widget);
+                if (selectedTab == widgetIndex) {
+                    ResultsPanel.this.selectTab(widgetIndex - 1);
+                }
             }
         });
         horizontalPanel.add(label);
