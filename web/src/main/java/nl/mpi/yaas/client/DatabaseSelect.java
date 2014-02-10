@@ -25,7 +25,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,7 +32,7 @@ import java.util.logging.Logger;
  * @since Nov 4, 2013 4:02:36 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class DatabaseSelect extends VerticalPanel {
+public class DatabaseSelect extends VerticalPanel implements HistoryListener {
 
     private final ListBox databaseListBox = new ListBox();
     private final SearchOptionsServiceAsync searchOptionsService;
@@ -42,20 +41,36 @@ public class DatabaseSelect extends VerticalPanel {
     private static final String LOADING_DATABASE_LIST = "Loading database list.";
     private static final String LOADING_DATABASE = "Loading database.";
     private static final Logger logger = Logger.getLogger("");
-    private final ArrayList<DatabaseNameListener> databaseNameListeners = new ArrayList<DatabaseNameListener>();
-    private final String databaseName;
+    private final HistoryController historyController;
     private final Label databaseInfoLabel;
     final private Image loadingImage;
 
-    public DatabaseSelect(SearchOptionsServiceAsync searchOptionsService, String databaseName, DatabaseNameListener databaseNameListener) {
+    public DatabaseSelect(SearchOptionsServiceAsync searchOptionsService, HistoryController historyController) {
         this.searchOptionsService = searchOptionsService;
         add(databaseListBox);
         databaseInfoLabel = new Label(LOADING_DATABASE_LIST);
         add(databaseInfoLabel);
-        databaseNameListeners.add(databaseNameListener);
-        this.databaseName = databaseName;
+        this.historyController = historyController;
+//        this.databaseName = databaseName;
         loadingImage = new Image("./loader.gif");
         add(loadingImage);
+    }
+
+    public void historyChange() {
+        final String databaseName = historyController.getDatabaseName();
+        if (databaseName != null && !databaseName.isEmpty()) {
+            for (int index = 0; index < databaseListBox.getItemCount(); index++) {
+                if (databaseListBox.getSelectedIndex() != index) {
+                    if (databaseName.equals(databaseListBox.getItemText(index))) {
+                        logger.log(Level.INFO, databaseName);
+                        databaseListBox.setSelectedIndex(index);
+//                        loadingImage.setVisible(true);
+//                        databaseInfoLabel.setText(LOADING_DATABASE);
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     public void setDatabaseInfoLabel(String databaseInfoText) {
@@ -78,7 +93,7 @@ public class DatabaseSelect extends VerticalPanel {
                 databaseListBox.addItem(PLEASE_SELECT_A_DATABASE);
                 for (String databaseNameItem : result) {
                     databaseListBox.addItem(databaseNameItem);
-                    if (databaseNameItem.equals(databaseName)) {
+                    if (databaseNameItem.equals(historyController.getDatabaseName())) {
                         selectedIndex = databaseListBox.getItemCount() - 1;
                     }
                 }
@@ -86,10 +101,10 @@ public class DatabaseSelect extends VerticalPanel {
                 databaseListBox.addChangeHandler(new ChangeHandler() {
                     public void onChange(ChangeEvent event) {
                         final String itemText = databaseListBox.getItemText(databaseListBox.getSelectedIndex());
-                        for (DatabaseNameListener databaseNameListener : databaseNameListeners) {
-                            databaseNameListener.setDataBaseName(itemText);
-                            loadingImage.setVisible(true);
-                            databaseInfoLabel.setText(LOADING_DATABASE);
+                        if (PLEASE_SELECT_A_DATABASE.equals(itemText)) {
+                            historyController.setDatabaseName(null);
+                        } else {
+                            historyController.setDatabaseName(itemText);
                         }
                     }
                 });

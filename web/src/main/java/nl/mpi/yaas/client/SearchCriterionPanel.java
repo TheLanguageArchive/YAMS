@@ -44,7 +44,7 @@ import nl.mpi.yaas.common.data.QueryDataStructures;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class SearchCriterionPanel extends HorizontalPanel {
+public class SearchCriterionPanel extends HorizontalPanel implements HistoryListener {
 
     private static final Logger logger = Logger.getLogger("");
     final private SearchOptionsServiceAsync searchOptionsService;
@@ -54,15 +54,16 @@ public class SearchCriterionPanel extends HorizontalPanel {
     final private ValueListBox<QueryDataStructures.SearchOption> searchOptionsListBox;
     final private SuggestBox searchTextBox;
     private MultiWordSuggestOracle oracle;
-    private final String databaseName;
+    private final HistoryController historyController;
     final private Image loadingTypesImage;
     final private Image loadingPathsImage;
     final private Image valuesPathsImage;
     final private Label hintLabel;
+    private String lastUsedDatabase = null;
 
-    public SearchCriterionPanel(String databaseName, final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
+    public SearchCriterionPanel(HistoryController historyController, final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
         this.searchPanel = searchPanel;
-        this.databaseName = databaseName;
+        this.historyController = historyController;
         this.searchOptionsService = searchOptionsService;
         Button removeRowButton = new Button("remove", new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -89,7 +90,14 @@ public class SearchCriterionPanel extends HorizontalPanel {
         this.add(valuesPathsImage);
         this.add(hintLabel);
         valuesPathsImage.setVisible(false);
-        loadTypesOptions();
+    }
+
+    public void historyChange() {
+        final String databaseName = historyController.getDatabaseName();
+        if (databaseName != null && !databaseName.equals(lastUsedDatabase)) {
+            lastUsedDatabase = databaseName;
+            loadTypesOptions();
+        }
     }
 
     public MetadataFileType getMetadataFileType() {
@@ -124,7 +132,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
 
     private void loadTypesOptions() {
         loadingTypesImage.setVisible(true);
-        searchOptionsService.getTypeOptions(databaseName, null, new AsyncCallback<MetadataFileType[]>() {
+        searchOptionsService.getTypeOptions(historyController.getDatabaseName(), null, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 logger.log(Level.SEVERE, caught.getMessage());
                 loadingTypesImage.setVisible(false);
@@ -144,7 +152,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
 
     private void loadPathsOptions(MetadataFileType type) {
         loadingPathsImage.setVisible(true);
-        searchOptionsService.getPathOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
+        searchOptionsService.getPathOptions(historyController.getDatabaseName(), type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 logger.log(Level.SEVERE, caught.getMessage());
                 loadingPathsImage.setVisible(false);
@@ -227,7 +235,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
                 valuesPathsImage.setVisible(true);
                 final MetadataFileType typeSelection = fieldsOptionsListBox.getValue();
                 final MetadataFileType options = new MetadataFileType(typeSelection.getType(), typeSelection.getPath(), request.getQuery());
-                searchOptionsService.getValueOptions(databaseName, options, new AsyncCallback<MetadataFileType[]>() {
+                searchOptionsService.getValueOptions(historyController.getDatabaseName(), options, new AsyncCallback<MetadataFileType[]>() {
                     public void onFailure(Throwable caught) {
                         valuesPathsImage.setVisible(false);
                         logger.log(Level.SEVERE, caught.getMessage());

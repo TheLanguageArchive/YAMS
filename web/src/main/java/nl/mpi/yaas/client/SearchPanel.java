@@ -52,6 +52,7 @@ public class SearchPanel extends VerticalPanel {
     private static final String NO_VALUE = "<no value>";
     private static final String DEMO_LIST_BOX_STYLE = "demo-ListBox";
     private final SearchOptionsServiceAsync searchOptionsService;
+    private final HistoryController historyController;
     private final DataNodeTable dataNodeTable;
     private Button searchButton;
     private SearchHandler searchHandler;
@@ -59,21 +60,21 @@ public class SearchPanel extends VerticalPanel {
     private final ValueListBox<CriterionJoinType> joinTypeListBox;
     private final VerticalPanel verticalPanel;
     private final ArrayList<SearchCriterionPanel> criterionPanelList = new ArrayList<SearchCriterionPanel>();
-    private final String databaseName;
 
-    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, final String databaseName, ResultsPanel resultsPanel, DataNodeTable dataNodeTable) {
+    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, ResultsPanel resultsPanel, DataNodeTable dataNodeTable) {
         this.searchOptionsService = searchOptionsService;
+        this.historyController = historyController;
         this.dataNodeTable = dataNodeTable;
         this.resultsPanel = resultsPanel;
-        this.databaseName = databaseName;
         verticalPanel = new VerticalPanel();
         initSearchHandler();
-        final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(databaseName, SearchPanel.this, searchOptionsService);
+        final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(historyController, SearchPanel.this, searchOptionsService);
+        historyController.addHistoryListener(searchCriterionPanel);
         verticalPanel.add(searchCriterionPanel);
         criterionPanelList.add(searchCriterionPanel);
         Button addRowButton = new Button(ADD_SEARCH_TERM, new ClickHandler() {
             public void onClick(ClickEvent event) {
-                addSearchCriterionPanel(new SearchCriterionPanel(databaseName, SearchPanel.this, SearchPanel.this.searchOptionsService));
+                addSearchCriterionPanel(new SearchCriterionPanel(historyController, SearchPanel.this, SearchPanel.this.searchOptionsService));
             }
         });
         this.add(verticalPanel);
@@ -89,9 +90,11 @@ public class SearchPanel extends VerticalPanel {
     protected void addSearchCriterionPanel(SearchCriterionPanel criterionPanel) {
         criterionPanelList.add(criterionPanel);
         verticalPanel.add(criterionPanel);
+        historyController.addHistoryListener(criterionPanel);
     }
 
     protected void removeSearchCriterionPanel(SearchCriterionPanel criterionPanel) {
+        historyController.removeHistoryListener(criterionPanel);
         criterionPanelList.remove(criterionPanel);
         verticalPanel.remove(criterionPanel);
     }
@@ -110,7 +113,7 @@ public class SearchPanel extends VerticalPanel {
                 for (SearchCriterionPanel eventCriterionPanel : criterionPanelList) {
                     searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
                 }
-                searchOptionsService.performSearch(databaseName, joinTypeListBox.getValue(), searchParametersList, new AsyncCallback<HighlighableDataNode>() {
+                searchOptionsService.performSearch(historyController.getDatabaseName(), joinTypeListBox.getValue(), searchParametersList, new AsyncCallback<HighlighableDataNode>() {
                     public void onFailure(Throwable caught) {
                         logger.log(Level.SEVERE, caught.getMessage());
                         searchHandler.signalSearchDone();
@@ -122,7 +125,7 @@ public class SearchPanel extends VerticalPanel {
                         long responseMils = System.currentTimeMillis() - startTime;
                         final String searchTimeMessage = "PerformSearch response time: " + responseMils + " ms";
                         logger.log(Level.INFO, searchTimeMessage);
-                        resultsPanel.addResultsTree(databaseName, result, responseMils);
+                        resultsPanel.addResultsTree(historyController.getDatabaseName(), result, responseMils);
                         searchHandler.signalSearchDone();
                         searchButton.setEnabled(true);
                         searchButton.setHTML(SEARCH_LABEL);

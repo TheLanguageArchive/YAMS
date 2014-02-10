@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+/*
+ * Copyright (C) 2014 The Language Archive, Max Planck Institute for Psycholinguistics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,11 +18,10 @@
 package nl.mpi.yaas.client;
 
 /**
- * Created on : Aug 15, 2013, 3:51:36 PM
- *
+ * @since Feb 10, 2014 2:17:59 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public interface DatabaseNameListener {
+public interface HistoryListener {
 
-    public void setDataBaseName(String databaseName);
+    public void historyChange();
 }

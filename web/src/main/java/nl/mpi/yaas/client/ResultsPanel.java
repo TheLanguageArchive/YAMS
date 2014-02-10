@@ -40,26 +40,54 @@ import nl.mpi.yaas.common.data.IconTableBase64;
  * @since Feb 06, 2014 11:37 AM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class ResultsPanel extends TabPanel {
+public class ResultsPanel extends TabPanel implements HistoryListener {
 
     private static final Logger logger = Logger.getLogger("");
-    final DataNodeTable dataNodeTable;
-    final SearchOptionsServiceAsync searchOptionsService;
-    private final IconTableBase64 iconTableBase64;
+    private final DataNodeTable dataNodeTable;
+    private final SearchOptionsServiceAsync searchOptionsService;
+    private final HistoryController historyController;
+    private IconTableBase64 iconTableBase64;
+//    final String lastDatabaseName;
+    private DataNodeTree dataNodeTree;
 
-    public ResultsPanel(final DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64) {
+    public ResultsPanel(final DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController) {
         this.dataNodeTable = dataNodeTable;
         this.searchOptionsService = searchOptionsService;
+        this.historyController = historyController;
+        this.setVisible(false);
+    }
+
+    public void historyChange() {
+//        final String databaseName = historyController.getDatabaseName();
+//        if (databaseName != null&& !lastDatabaseName.equals(databaseName)) {
+//            RootPanel.get("searchOptionsPanel").add(loadingImage);
+//            searchOptionsService.getImageDataForTypes(databaseName, new AsyncCallback<IconTableBase64>() {
+//                public void onFailure(Throwable caught) {
+//                    RootPanel.get("searchOptionsPanel").add(new Label(NO__DATABASE__SELECTED));
+//                    RootPanel.get("searchOptionsPanel").remove(loadingImage);
+//                }
+//
+//                public void onSuccess(IconTableBase64 result) {
+//
+//                }
+//            });
+//        }
+    }
+
+    public void setIconTableBase64(IconTableBase64 iconTableBase64) {
         this.iconTableBase64 = iconTableBase64;
     }
 
     public void addDatabaseTree(String databaseName, DataNodeId[] dataNodeIds) {
-        final DataNodeTree dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, iconTableBase64);
+        // todo: this could end up being a threading issue with iconTableBase64 being set from the wrong database
+        remove(dataNodeTree);
+        dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, iconTableBase64);
         for (DataNodeId dataNodeId : dataNodeIds) {
             dataNodeTree.addResultsToTree(databaseName, dataNodeId);
         }
-        this.add(dataNodeTree, databaseName);
+        this.insert(dataNodeTree, databaseName, 0);
         this.selectTab(this.getWidgetIndex(dataNodeTree));
+        this.setVisible(true);
     }
 
     public void addResultsTree(String databaseName, HighlighableDataNode dataNode, long responseTimeMils) {
@@ -86,7 +114,7 @@ public class ResultsPanel extends TabPanel {
         } catch (ModelException exception) {
             logger.log(Level.SEVERE, FAILURE, exception);
         }
-
+        this.setVisible(true);
     }
 
     private void addClosableTab(final Widget widget, String text) {
