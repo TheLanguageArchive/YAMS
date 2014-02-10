@@ -122,7 +122,7 @@ public class SearchPanel extends VerticalPanel {
                         long responseMils = System.currentTimeMillis() - startTime;
                         final String searchTimeMessage = "PerformSearch response time: " + responseMils + " ms";
                         logger.log(Level.INFO, searchTimeMessage);
-                        resultsPanel.addResultsTree(databaseName, result);
+                        resultsPanel.addResultsTree(databaseName, result, responseMils);
                         searchHandler.signalSearchDone();
                         searchButton.setEnabled(true);
                         searchButton.setHTML(SEARCH_LABEL);
