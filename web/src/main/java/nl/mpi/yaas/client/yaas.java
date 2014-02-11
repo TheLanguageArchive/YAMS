@@ -64,6 +64,7 @@ public class yaas implements EntryPoint, HistoryListener {
         History.addValueChangeHandler(historyController);
         logger.addHandler(new HasWidgetsLogHandler(loggerPanel));
         RootPanel.get("loggerPanel").add(loggerPanel);
+        History.fireCurrentHistoryState();
     }
 
     private void setupPage(final HistoryController historyController) {
@@ -124,6 +125,7 @@ public class yaas implements EntryPoint, HistoryListener {
         final DataNodeTable dataNodeTable = new DataNodeTable();
         resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
         searchOptionsPanel = new SearchPanel(searchOptionsService, historyController, resultsPanel, dataNodeTable);
+        historyController.addHistoryListener(searchOptionsPanel);
         searchOptionsPanel.setVisible(false);
         loadingImage.setVisible(false);
         final DatabaseStatsPanel databaseStatsPanel = new DatabaseStatsPanel(searchOptionsService, resultsPanel, databaseSelectBox, historyController);

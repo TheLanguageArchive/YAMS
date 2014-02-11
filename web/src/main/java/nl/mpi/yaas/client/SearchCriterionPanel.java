@@ -44,26 +44,26 @@ import nl.mpi.yaas.common.data.QueryDataStructures;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class SearchCriterionPanel extends HorizontalPanel implements HistoryListener {
+public class SearchCriterionPanel extends HorizontalPanel {
 
     private static final Logger logger = Logger.getLogger("");
     final private SearchOptionsServiceAsync searchOptionsService;
-    final private SearchPanel searchPanel;
     final private ValueListBox<MetadataFileType> typesOptionsListBox;
+    private MetadataFileType[] knownFileTypes = null;
     final private ValueListBox<MetadataFileType> fieldsOptionsListBox;
+    private MetadataFileType[] knownFieldTypes = null;
     final private ValueListBox<QueryDataStructures.SearchOption> searchOptionsListBox;
     final private SuggestBox searchTextBox;
     private MultiWordSuggestOracle oracle;
-    private final HistoryController historyController;
     final private Image loadingTypesImage;
     final private Image loadingPathsImage;
     final private Image valuesPathsImage;
     final private Label hintLabel;
-    private String lastUsedDatabase = null;
+    private String databaseName = null;
+    private MetadataFileType defaultFileType = null;
+    private MetadataFileType defaultPathType = null;
 
-    public SearchCriterionPanel(HistoryController historyController, final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
-        this.searchPanel = searchPanel;
-        this.historyController = historyController;
+    public SearchCriterionPanel(final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
         this.searchOptionsService = searchOptionsService;
         Button removeRowButton = new Button("remove", new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -92,11 +92,22 @@ public class SearchCriterionPanel extends HorizontalPanel implements HistoryList
         valuesPathsImage.setVisible(false);
     }
 
-    public void historyChange() {
-        final String databaseName = historyController.getDatabaseName();
-        if (databaseName != null && !databaseName.equals(lastUsedDatabase)) {
-            lastUsedDatabase = databaseName;
-            loadTypesOptions();
+    public void setDatabase(String databaseName) {
+        this.databaseName = databaseName;
+        loadTypesOptions();
+    }
+
+    public void setDefaultValues(MetadataFileType defaultFileType, MetadataFileType defaultPathType, QueryDataStructures.SearchNegator negatorType, QueryDataStructures.SearchType searchType, String defaultSearchString) {
+        this.defaultFileType = defaultFileType;
+        this.defaultPathType = defaultPathType;
+        setDefaultFileTypeSelection();
+        setDefaultFieldTypeSelection();
+        searchTextBox.setText(defaultSearchString);
+        // set the search type
+        for (QueryDataStructures.SearchOption currentSearchType : QueryDataStructures.SearchOption.values()) {
+            if (currentSearchType.getSearchNegator().equals(negatorType) && currentSearchType.getSearchType().equals(searchType)) {
+                searchOptionsListBox.setValue(currentSearchType);
+            }
         }
     }
 
@@ -132,7 +143,7 @@ public class SearchCriterionPanel extends HorizontalPanel implements HistoryList
 
     private void loadTypesOptions() {
         loadingTypesImage.setVisible(true);
-        searchOptionsService.getTypeOptions(historyController.getDatabaseName(), null, new AsyncCallback<MetadataFileType[]>() {
+        searchOptionsService.getTypeOptions(databaseName, null, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 logger.log(Level.SEVERE, caught.getMessage());
                 loadingTypesImage.setVisible(false);
@@ -140,19 +151,53 @@ public class SearchCriterionPanel extends HorizontalPanel implements HistoryList
 
             public void onSuccess(MetadataFileType[] result) {
                 if (result != null && result.length > 0) {
-                    typesOptionsListBox.setValue(result[0]);
+                    knownFileTypes = result;
                     typesOptionsListBox.setAcceptableValues(Arrays.asList(result));
+                    setDefaultFileTypeSelection();
                     loadPathsOptions(typesOptionsListBox.getValue());
                 }
                 loadingTypesImage.setVisible(false);
             }
         });
+    }
 
+    private void setDefaultFileTypeSelection() {
+        if (knownFileTypes != null) {
+            if (defaultFileType == null) {
+                typesOptionsListBox.setValue(knownFileTypes[0]);
+            } else {
+                for (MetadataFileType fileType : knownFileTypes) {
+                    if (fileType.getType() != null) {
+                        if (defaultFileType.getType().equals(fileType.getType())) {
+                            typesOptionsListBox.setValue(fileType);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void setDefaultFieldTypeSelection() {
+        if (knownFieldTypes != null) {
+            if (defaultPathType == null) {
+                fieldsOptionsListBox.setValue(knownFieldTypes[0]);
+            } else {
+                for (MetadataFileType fieldType : knownFieldTypes) {
+                    if (fieldType.getPath() != null) {
+                        if (defaultPathType.getPath().equals(fieldType.getPath())) {
+                            fieldsOptionsListBox.setValue(fieldType);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void loadPathsOptions(MetadataFileType type) {
         loadingPathsImage.setVisible(true);
-        searchOptionsService.getPathOptions(historyController.getDatabaseName(), type, new AsyncCallback<MetadataFileType[]>() {
+        searchOptionsService.getPathOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 logger.log(Level.SEVERE, caught.getMessage());
                 loadingPathsImage.setVisible(false);
@@ -160,9 +205,10 @@ public class SearchCriterionPanel extends HorizontalPanel implements HistoryList
 
             public void onSuccess(MetadataFileType[] result) {
                 if (result != null && result.length > 0) {
-                    fieldsOptionsListBox.setValue(result[0]);
+                    knownFieldTypes = result;
                     fieldsOptionsListBox.setAcceptableValues(Arrays.asList(result));
                     loadingPathsImage.setVisible(false);
+                    setDefaultFieldTypeSelection();
                 }
             }
         });
@@ -235,7 +281,7 @@ public class SearchCriterionPanel extends HorizontalPanel implements HistoryList
                 valuesPathsImage.setVisible(true);
                 final MetadataFileType typeSelection = fieldsOptionsListBox.getValue();
                 final MetadataFileType options = new MetadataFileType(typeSelection.getType(), typeSelection.getPath(), request.getQuery());
-                searchOptionsService.getValueOptions(historyController.getDatabaseName(), options, new AsyncCallback<MetadataFileType[]>() {
+                searchOptionsService.getValueOptions(databaseName, options, new AsyncCallback<MetadataFileType[]>() {
                     public void onFailure(Throwable caught) {
                         valuesPathsImage.setVisible(false);
                         logger.log(Level.SEVERE, caught.getMessage());

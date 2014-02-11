@@ -23,6 +23,8 @@ import com.google.gwt.user.client.History;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.yaas.common.data.QueryDataStructures;
+import nl.mpi.yaas.common.data.SearchParameters;
 
 /**
  * @since Feb 07, 2014 16:01 PM (creation date)
@@ -30,14 +32,17 @@ import java.util.logging.Logger;
  */
 public class HistoryController implements ValueChangeHandler<String> {
 
-    private String databaseName = "";
     ArrayList<HistoryListener> historyListeners = new ArrayList<HistoryListener>();
     private static final Logger logger = Logger.getLogger("");
+    final private HistoryData historyData;
+
+    public HistoryController() {
+        this.historyData = new HistoryData();
+    }
 
     public void onValueChange(ValueChangeEvent<String> event) {
-        String historyToken = event.getValue().toString();
-//        logger.log(Level.INFO, historyToken);
-        setStateFromHistory(historyToken);
+        this.historyData.parseHistoryToken(event.getValue());
+        setStateFromHistory();
     }
 
     public void addHistoryListener(HistoryListener historyListener) {
@@ -48,29 +53,36 @@ public class HistoryController implements ValueChangeHandler<String> {
         historyListeners.remove(historyListener);
     }
 
-    private void setStateFromHistory(String historyToken) {
-//        if (historyToken.substring(0, 3).equals("db:")) {.substring(2)
-        final String[] historyParts = historyToken.split(",");
-        if (historyParts != null && historyParts.length > 0) {
-            databaseName = historyParts[0];
-//            logger.log(Level.INFO, databaseName);
-            for (HistoryListener historyListener : historyListeners) {
-                historyListener.historyChange();
-            }
+    private void setStateFromHistory() {
+        for (HistoryListener historyListener : historyListeners) {
+            historyListener.historyChange();
         }
     }
 
     public String getDatabaseName() {
-        return databaseName;
+        return historyData.getDatabaseName();
     }
 
     public void setDatabaseName(String databaseName) {
-        this.databaseName = databaseName;
-        if (databaseName == null) {
-            History.newItem("");
-        } else {
-            History.newItem(/*"db:" +*/databaseName + ",");
-        }
+        historyData.setDatabaseName(databaseName);
+        updateHistory();
     }
 
+    public QueryDataStructures.CriterionJoinType getCriterionJoinType() {
+        return historyData.getCriterionJoinType();
+    }
+
+    public ArrayList<SearchParameters> getSearchParametersList() {
+        return historyData.getSearchParametersList();
+    }
+
+    public void setSearchParameters(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) {
+        historyData.setCriterionJoinType(criterionJoinType);
+        historyData.setSearchParametersList(searchParametersList);
+        History.newItem(historyData.getHistoryToken(), false);
+    }
+
+    private void updateHistory() {
+        History.newItem(historyData.getHistoryToken());
+    }
 }

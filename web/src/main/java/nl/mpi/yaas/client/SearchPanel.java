@@ -42,7 +42,7 @@ import nl.mpi.yaas.common.data.SearchParameters;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class SearchPanel extends VerticalPanel {
+public class SearchPanel extends VerticalPanel implements HistoryListener {
 
     private static final Logger logger = Logger.getLogger("");
     private static final String SEARCH_LABEL = "Search";
@@ -53,6 +53,7 @@ public class SearchPanel extends VerticalPanel {
     private static final String DEMO_LIST_BOX_STYLE = "demo-ListBox";
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
+    private String lastUsedDatabase = null;
     private final DataNodeTable dataNodeTable;
     private Button searchButton;
     private SearchHandler searchHandler;
@@ -68,13 +69,12 @@ public class SearchPanel extends VerticalPanel {
         this.resultsPanel = resultsPanel;
         verticalPanel = new VerticalPanel();
         initSearchHandler();
-        final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(historyController, SearchPanel.this, searchOptionsService);
-        historyController.addHistoryListener(searchCriterionPanel);
+        final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this, searchOptionsService);
         verticalPanel.add(searchCriterionPanel);
         criterionPanelList.add(searchCriterionPanel);
         Button addRowButton = new Button(ADD_SEARCH_TERM, new ClickHandler() {
             public void onClick(ClickEvent event) {
-                addSearchCriterionPanel(new SearchCriterionPanel(historyController, SearchPanel.this, SearchPanel.this.searchOptionsService));
+                addSearchCriterionPanel(new SearchCriterionPanel(SearchPanel.this, SearchPanel.this.searchOptionsService));
             }
         });
         this.add(verticalPanel);
@@ -87,14 +87,47 @@ public class SearchPanel extends VerticalPanel {
         this.add(buttonsPanel);
     }
 
+    public void historyChange() {
+        final CriterionJoinType criterionJoinType = historyController.getCriterionJoinType();
+        if (criterionJoinType == null) {
+            joinTypeListBox.setValue(CriterionJoinType.values()[0]);
+        } else {
+            joinTypeListBox.setValue(criterionJoinType);
+        }
+        final ArrayList<SearchParameters> searchParametersList = historyController.getSearchParametersList();
+        if (searchParametersList != null) {
+            while (searchParametersList.size() < criterionPanelList.size()) {
+                removeSearchCriterionPanel(criterionPanelList.get(criterionPanelList.size() - 1));
+            }
+            while (searchParametersList.size() > criterionPanelList.size()) {
+                addSearchCriterionPanel(new SearchCriterionPanel(SearchPanel.this, SearchPanel.this.searchOptionsService));
+            }
+            for (int panelIndex = 0; panelIndex < criterionPanelList.size(); panelIndex++) {
+                final SearchParameters historyValues = searchParametersList.get(panelIndex);
+                criterionPanelList.get(panelIndex).setDefaultValues(historyValues.getFileType(), historyValues.getFieldType(), historyValues.getSearchNegator(), historyValues.getSearchType(), historyValues.getSearchString());
+            }
+        } else {
+            while (!criterionPanelList.isEmpty()) {
+                removeSearchCriterionPanel(criterionPanelList.get(0));
+            }
+            addSearchCriterionPanel(new SearchCriterionPanel(SearchPanel.this, SearchPanel.this.searchOptionsService));
+        }
+        final String databaseName = historyController.getDatabaseName();
+        if (databaseName != null && !databaseName.equals(lastUsedDatabase)) {
+            lastUsedDatabase = databaseName;
+            for (SearchCriterionPanel eventCriterionPanel : criterionPanelList) {
+                eventCriterionPanel.setDatabase(databaseName);
+            }
+        }
+    }
+
     protected void addSearchCriterionPanel(SearchCriterionPanel criterionPanel) {
         criterionPanelList.add(criterionPanel);
         verticalPanel.add(criterionPanel);
-        historyController.addHistoryListener(criterionPanel);
+        criterionPanel.setDatabase(lastUsedDatabase);
     }
 
     protected void removeSearchCriterionPanel(SearchCriterionPanel criterionPanel) {
-        historyController.removeHistoryListener(criterionPanel);
         criterionPanelList.remove(criterionPanel);
         verticalPanel.remove(criterionPanel);
     }
@@ -113,6 +146,7 @@ public class SearchPanel extends VerticalPanel {
                 for (SearchCriterionPanel eventCriterionPanel : criterionPanelList) {
                     searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
                 }
+                historyController.setSearchParameters(joinTypeListBox.getValue(), searchParametersList);
                 searchOptionsService.performSearch(historyController.getDatabaseName(), joinTypeListBox.getValue(), searchParametersList, new AsyncCallback<HighlighableDataNode>() {
                     public void onFailure(Throwable caught) {
                         logger.log(Level.SEVERE, caught.getMessage());
