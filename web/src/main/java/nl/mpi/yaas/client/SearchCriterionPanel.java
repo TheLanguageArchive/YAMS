@@ -163,7 +163,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
 
     private void setDefaultFileTypeSelection() {
         if (knownFileTypes != null) {
-            if (defaultFileType == null) {
+            if (defaultFileType == null || defaultFileType.getType().equals("")) {
                 typesOptionsListBox.setValue(knownFileTypes[0]);
             } else {
                 for (MetadataFileType fileType : knownFileTypes) {
@@ -180,7 +180,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
 
     private void setDefaultFieldTypeSelection() {
         if (knownFieldTypes != null) {
-            if (defaultPathType == null) {
+            if (defaultPathType == null || defaultPathType.getPath().equals("")) {
                 fieldsOptionsListBox.setValue(knownFieldTypes[0]);
             } else {
                 for (MetadataFileType fieldType : knownFieldTypes) {

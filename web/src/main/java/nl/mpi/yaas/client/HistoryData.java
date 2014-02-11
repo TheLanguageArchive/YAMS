@@ -85,6 +85,7 @@ public class HistoryData {
 
     public void parseHistoryToken(String historyToken) {
         logger.log(Level.INFO, historyToken);
+        ArrayList<SearchParameters> searchParametersListTemp = new ArrayList<SearchParameters>();
         final String[] historyParts = historyToken.split(",");
         if (historyParts != null && historyParts.length > 0) {
             databaseName = historyParts[0];
@@ -97,26 +98,20 @@ public class HistoryData {
             int searchParametersIndex = 0;
             final int paramStartIndex = 2;
             final int paramCount = 5;
-            ArrayList<SearchParameters> searchParametersListTemp = new ArrayList<SearchParameters>();
             while (historyParts.length > paramStartIndex + (searchParametersIndex * paramCount)) {
                 final int currentParamIndex = paramStartIndex + searchParametersIndex * paramCount;
                 final String fileType = historyParts[currentParamIndex];
-                logger.log(Level.INFO, fileType);
                 final String fieldType = historyParts[currentParamIndex + 1];
-                logger.log(Level.INFO, fieldType);
                 final String negatorType = historyParts[currentParamIndex + 2];
-                logger.log(Level.INFO, negatorType);
                 final String searchType = historyParts[currentParamIndex + 3];
-                logger.log(Level.INFO, searchType);
                 final String searchText = historyParts[currentParamIndex + 4].replaceAll("%2C", ",");
-                logger.log(Level.INFO, searchText);
                 searchParametersListTemp.add(new SearchParameters(new MetadataFileType(fileType, null, null), new MetadataFileType(null, fieldType, null), QueryDataStructures.SearchNegator.valueOf(negatorType), QueryDataStructures.SearchType.valueOf(searchType), searchText));
                 searchParametersIndex++;
             }
-            searchParametersList = searchParametersListTemp;
         } else {
             criterionJoinType = null;
         }
+        searchParametersList = searchParametersListTemp;
     }
 
     public QueryDataStructures.CriterionJoinType getCriterionJoinType() {

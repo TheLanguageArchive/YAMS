@@ -58,15 +58,18 @@ public class DatabaseSelect extends VerticalPanel implements HistoryListener {
 
     public void historyChange() {
         final String databaseName = historyController.getDatabaseName();
-        if (databaseName != null && !databaseName.isEmpty()) {
-            for (int index = 0; index < databaseListBox.getItemCount(); index++) {
-                if (databaseListBox.getSelectedIndex() != index) {
-                    if (databaseName.equals(databaseListBox.getItemText(index))) {
-                        logger.log(Level.INFO, databaseName);
-                        databaseListBox.setSelectedIndex(index);
+        if (databaseName != null) {
+            if (databaseName.isEmpty()) {
+                databaseListBox.setSelectedIndex(0);
+            } else {
+                for (int index = 0; index < databaseListBox.getItemCount(); index++) {
+                    if (databaseListBox.getSelectedIndex() != index) {
+                        if (databaseName.equals(databaseListBox.getItemText(index))) {
+                            databaseListBox.setSelectedIndex(index);
 //                        loadingImage.setVisible(true);
 //                        databaseInfoLabel.setText(LOADING_DATABASE);
-                        return;
+                            return;
+                        }
                     }
                 }
             }

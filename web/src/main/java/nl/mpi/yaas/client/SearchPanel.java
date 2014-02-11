@@ -95,7 +95,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
             joinTypeListBox.setValue(criterionJoinType);
         }
         final ArrayList<SearchParameters> searchParametersList = historyController.getSearchParametersList();
-        if (searchParametersList != null) {
+        if (searchParametersList != null && !searchParametersList.isEmpty()) {
             while (searchParametersList.size() < criterionPanelList.size()) {
                 removeSearchCriterionPanel(criterionPanelList.get(criterionPanelList.size() - 1));
             }
@@ -110,7 +110,10 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
             while (!criterionPanelList.isEmpty()) {
                 removeSearchCriterionPanel(criterionPanelList.get(0));
             }
-            addSearchCriterionPanel(new SearchCriterionPanel(SearchPanel.this, SearchPanel.this.searchOptionsService));
+            if (historyController.getDatabaseName() != null) {
+                final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this, SearchPanel.this.searchOptionsService);
+                addSearchCriterionPanel(searchCriterionPanel);
+            }
         }
         final String databaseName = historyController.getDatabaseName();
         if (databaseName != null && !databaseName.equals(lastUsedDatabase)) {

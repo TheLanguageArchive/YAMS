@@ -55,30 +55,34 @@ public class DatabaseStatsPanel extends VerticalPanel implements HistoryListener
     private void updateDbStats() {
         DatabaseStatsPanel.this.clear();
         final String databaseName = historyController.getDatabaseName();
-        if (databaseName != null && !databaseName.isEmpty()) {
-            DatabaseStatsPanel.this.add(new Label("Current Database: " + databaseName));
-            //        this.searchOptionsService = searchOptionsService;
-            //        this.dataNodeTree = dataNodeTree;
-            //        DatabaseStatsPanel.this.add(new Label("Getting Database Stats"));
-            searchOptionsService.getDatabaseStats(databaseName, new AsyncCallback<DatabaseStats>() {
-                public void onFailure(Throwable caught) {
-                    DatabaseStatsPanel.this.add(new Label(FAILED_TO_GET_THE_DATABASE_STATISTICS));
-                    logger.log(Level.SEVERE, FAILED_TO_GET_THE_DATABASE_STATISTICS);
-                }
+        if (databaseName != null) {
+            if (databaseName.isEmpty()) {
+                resultsPanel.removeDatabaseTree();
+            } else {
+                DatabaseStatsPanel.this.add(new Label("Current Database: " + databaseName));
+                //        this.searchOptionsService = searchOptionsService;
+                //        this.dataNodeTree = dataNodeTree;
+                //        DatabaseStatsPanel.this.add(new Label("Getting Database Stats"));
+                searchOptionsService.getDatabaseStats(databaseName, new AsyncCallback<DatabaseStats>() {
+                    public void onFailure(Throwable caught) {
+                        DatabaseStatsPanel.this.add(new Label(FAILED_TO_GET_THE_DATABASE_STATISTICS));
+                        logger.log(Level.SEVERE, FAILED_TO_GET_THE_DATABASE_STATISTICS);
+                    }
 
-                public void onSuccess(DatabaseStats result) {
-                    final String knownDocumentsText = "Available Documents: " + result.getKnownDocumentsCount();
-                    final String missingDocumentsText = "Missing Documents: " + result.getMisingDocumentsCount();
-                    DatabaseStatsPanel.this.add(new Label(knownDocumentsText));
-                    DatabaseStatsPanel.this.add(new Label("Root Documents Count: " + result.getRootDocumentsCount()));
-                    DatabaseStatsPanel.this.add(new Label(missingDocumentsText));
-                    DatabaseStatsPanel.this.add(new Label("Duplicate Documents Count: " + result.getDuplicateDocumentsCount()));
-                    DatabaseStatsPanel.this.add(new Label("Query time: " + result.getQueryTimeMS() + "ms"));
-                    //                final YaasTreeItem yaasTreeItem = new YaasTreeItem();
-                    resultsPanel.addDatabaseTree(databaseName, result.getRootDocumentsIDs());
-                    databaseSelect.setDatabaseInfoLabel(knownDocumentsText + " " + missingDocumentsText);
-                }
-            });
+                    public void onSuccess(DatabaseStats result) {
+                        final String knownDocumentsText = "Available Documents: " + result.getKnownDocumentsCount();
+                        final String missingDocumentsText = "Missing Documents: " + result.getMisingDocumentsCount();
+                        DatabaseStatsPanel.this.add(new Label(knownDocumentsText));
+                        DatabaseStatsPanel.this.add(new Label("Root Documents Count: " + result.getRootDocumentsCount()));
+                        DatabaseStatsPanel.this.add(new Label(missingDocumentsText));
+                        DatabaseStatsPanel.this.add(new Label("Duplicate Documents Count: " + result.getDuplicateDocumentsCount()));
+                        DatabaseStatsPanel.this.add(new Label("Query time: " + result.getQueryTimeMS() + "ms"));
+                        //                final YaasTreeItem yaasTreeItem = new YaasTreeItem();
+                        resultsPanel.addDatabaseTree(databaseName, result.getRootDocumentsIDs());
+                        databaseSelect.setDatabaseInfoLabel(knownDocumentsText + " " + missingDocumentsText);
+                    }
+                });
+            }
         }
     }
 }

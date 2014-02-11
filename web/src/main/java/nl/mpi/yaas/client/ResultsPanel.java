@@ -90,6 +90,11 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
         this.setVisible(true);
     }
 
+    public void removeDatabaseTree() {
+        remove(dataNodeTree);
+        this.setVisible(this.getTabBar().getTabCount() > 0);
+    }
+
     public void addResultsTree(String databaseName, HighlighableDataNode dataNode, long responseTimeMils) {
         try {
             VerticalPanel verticalPanel = new VerticalPanel();
