@@ -29,13 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-codeserver</artifactId>
-            <version>${gwtVersion}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-servlet</artifactId>              <!--remove this--> 
+            <artifactId>gwt-servlet</artifactId>
             <version>${gwtVersion}</version>
             <scope>runtime</scope>
         </dependency>
@@ -79,16 +73,12 @@
             <groupId>nl.mpi</groupId>
             <artifactId>yaas-common</artifactId>
             <version>0.1-pretesting-SNAPSHOT</version>
-        </dependency>
-        <!--        <dependency>
-            <groupId>com.googlecode.gwtphonegap</groupId>
-            <artifactId>gwtphonegap</artifactId>
-            <version>2.4.0.0</version>
-        </dependency>-->
-        <dependency>
-            <groupId>javax.servlet.jsp</groupId>
-            <artifactId>javax.servlet.jsp-api</artifactId>
-            <version>2.3.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>basex</artifactId>
+                    <groupId>org.basex</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
