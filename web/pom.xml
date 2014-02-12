@@ -73,12 +73,6 @@
             <groupId>nl.mpi</groupId>
             <artifactId>yaas-common</artifactId>
             <version>0.1-pretesting-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>basex</artifactId>
-                    <groupId>org.basex</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 
