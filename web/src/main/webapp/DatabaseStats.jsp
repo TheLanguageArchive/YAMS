@@ -22,6 +22,22 @@
 <%@page import="nl.mpi.yaas.common.db.DataBaseManager"%>
 <%@page import="nl.mpi.yaas.common.db.RestDbAdaptor"%>
 <%@page import="java.net.URL"%>
+<%@page import="org.slf4j.LoggerFactory"%>
+<%!
+    final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
+    private String basexRestUrl = "";
+    private String basexUser = "";
+    private String basexPass = "";
+
+    public void init() throws ServletException {
+        basexRestUrl = getServletContext().getInitParameter("basexRestUrl");
+        basexUser = getServletContext().getInitParameter("basexUser");
+        basexPass = getServletContext().getInitParameter("basexPass");
+    }
+%>
+<%
+       String databaseName = request.getParameter("databaseName");
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -50,10 +66,10 @@
             function drawDetailedVisualization() {
             <%
                 String errorMessage2 = "";
-                if (request.getParameter("databaseName") != null) {
+                if (databaseName != null && !databaseName.isEmpty()) {
                     String jsonDataDetailed = "[[0,0,0,0]]";
                     String queryStringDetailed = " ('[[0,0,0,0,0,0]',\n" //[''timestamp'', ''linkcount'', ''documentcount'', ''queryms'']',\n"
-                            + "let $dbName := '" + request.getParameter("databaseName") + "'\n"
+                            + "let $dbName := '" + databaseName + "'\n"
                             + "for $crawlerStats in collection($dbName)/CrawlerStats\n"
                             // this order by seems to cause problems which might depend on which basex version is being used: + "order by $crawlerStats/@timestamp/string()\n"
                             + "let $dateTime := if (empty($crawlerStats/@timestamp)) then \n"
@@ -72,7 +88,7 @@
                             + "let $totalbytes := string(($crawlerStats/@totalbytes) div 1048576.0)\n"
                             + "return (',[',string-join(($jsDateTime,$linkcount,$documentcount,$querytime,$freebytes,$totalbytes,$maxMemory),','),']'),']')\n";
                     try {
-                        RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(config.getServletContext().getInitParameter("basexRestUrl")), config.getServletContext().getInitParameter("basexUser"), config.getServletContext().getInitParameter("basexPass"));
+                        RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), basexUser, basexPass);
                         jsonDataDetailed = restDbAdaptor.executeQuery(DataBaseManager.defaultDataBase, queryStringDetailed);
                     } catch (MalformedURLException exception2) {
                         errorMessage2 += exception2.getMessage();
@@ -92,7 +108,7 @@
                 data.addColumn('number', 'mb available');
                 data.addRows(<%=jsonDataDetailed%>.slice(1));
                 var options = {
-                    title: 'Crawing Stats for "<%=request.getParameter("databaseName")%>"',
+                    title: 'Crawing Stats for "<%=databaseName%>"',
                     backgroundColor: {fill: 'transparent'}
                 };
 
@@ -142,7 +158,7 @@
                         + "),','),\n"
                         + "']\n'),']')\n";
                 try {
-                    RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(config.getServletContext().getInitParameter("basexRestUrl")), config.getServletContext().getInitParameter("basexUser"), config.getServletContext().getInitParameter("basexPass"));
+                    RestDbAdaptor restDbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), basexUser, basexPass);
                     jsonData = restDbAdaptor.executeQuery(DataBaseManager.defaultDataBase, queryString);
                 } catch (MalformedURLException exception2) {
                     errorMessage1 += exception2.getMessage();
@@ -187,18 +203,18 @@
         <h1 id="header">YAAS Web Prototype Statistics</h1>
         <div id="main2">
             <div  id="main">
-                REST URL: <%=config.getServletContext().getInitParameter("basexRestUrl")%><br>
+                REST URL: <%= basexRestUrl%><br>
                 <div id="error_div1"></div>
                 <div id="error_div2"></div>
                 <div id="visualization" style="width: 900px; height: 500px;">&nbsp;</div>   
                 <% String buttonText;
-                    if (request.getParameter("databaseName") != null) {
-                        buttonText = "Search in the selected database '" + request.getParameter("databaseName") + "'";
+                    if (databaseName != null && !databaseName.isEmpty()) {
+                        buttonText = "Search in the selected database '" + databaseName + "'";
                     } else {
                         buttonText = "Go To Search Page";
                     }
                 %>
-                <a href='yaas.html?databaseName=<%=request.getParameter("databaseName")%>'><%=buttonText%></a>
+                <a href='yaas.html#<%=databaseName%>'><%=buttonText%></a>
                 <div id="chart_div" style="width: 900px; height: 500px;">&nbsp;</div>
             </div>
         </div>
