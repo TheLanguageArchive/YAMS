@@ -19,7 +19,7 @@
     <properties>
         <!-- Convenience property to set the GWT version -->
         <!--<gwtVersion>2.5.1</gwtVersion>-->
-        <gwtVersion>2.5.1</gwtVersion>
+        <gwtVersion>2.6.0-rc3</gwtVersion>
         <!-- GWT needs at least java 1.5 -->
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -63,6 +63,12 @@
             <version>1.0.0.GA</version>
             <classifier>sources</classifier>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${project.logging.slf4jVersion}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>nl.mpi</groupId>
@@ -110,7 +116,7 @@
                 <!-- Plugin configuration. There are many available options, see 
                 gwt-maven-plugin documentation at codehaus.org -->
                 <configuration> 
-                    <style>DETAILED</style><!-- this 'style detailed' turns off the javascript obfuscaton -->
+                    <!--<style>DETAILED</style> this 'style detailed' turns off the javascript obfuscaton -->
                     <runTarget>yaas.html</runTarget>
                     <hostedWebapp>${webappDirectory}</hostedWebapp>
                     <i18nMessagesBundle>nl.mpi.yaas.client.Messages</i18nMessagesBundle>
