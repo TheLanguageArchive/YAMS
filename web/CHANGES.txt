@@ -1,3 +1,20 @@
+2014-02-12
+Added log4j as a dependency as per Eric's request.
+Bumped the GWT version used.
+Removed some dependencies.
+Corrected an issue reading the config.xml parameters and updated the link back to the search page to the new history format.
+Implemented the use of the browser history in the application messaging so that the browser back button and bookmarks can work.
+Corrected some layout issues.
+Added a label showing the time taken by a search and the result count.
+When a tab is closed the preceding tab is now selected automatically.
+Added a message when no results are found in a search.
+Removed the wrapper node from the search results so that all found nodes are visible at a glance.
+Tweaked the css to resolve a background image issue.
+Corrected spelling error and added more descriptive text.
+Improved the main page layout so that you do not have to scroll down to the bottom of the page in order to see the tree top node of the database. 
+Added a "delete search results" option.
+Updated the logger configuration.
+Tweaked the css for visual effect.
 2014-02-05
 Added a logger configuration file as requested.
 Added some css and images.
