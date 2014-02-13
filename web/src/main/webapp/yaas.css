@@ -61,6 +61,27 @@
     border-style:solid;
     border-width:1px;
 }
+.yaas-media-viewer{
+    max-height: 200px;
+    max-width: 400px;
+}
+.yaas-media-viewer-full-screen{
+    height: 100%;
+    width: 100%;
+    left: 0px; 
+    top: 0px; 
+    visibility: visible; 
+    position: fixed; 
+    overflow: visible;
+}
+.yaas-media-viewer-close-button{
+    right: 10px; 
+    top: 10px; 
+    visibility: visible; 
+    position: fixed; 
+    overflow: visible;
+    color: #d5d5d5
+}
 /** Example rules used by the template application (remove for your app) */
 h1 {
     font-size: 2em;

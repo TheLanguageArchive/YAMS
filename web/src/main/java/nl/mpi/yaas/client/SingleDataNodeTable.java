@@ -18,10 +18,13 @@
  */
 package nl.mpi.yaas.client;
 
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -65,31 +68,32 @@ public class SingleDataNodeTable extends VerticalPanel {
         try {
             final String uri = yaasDataNode.getURI();
             if (uri != null && uri.length() > 0) {
-                Anchor anchor = new Anchor("Metadata Link", uri);
+                Anchor anchor = new Anchor("Metadata Link");
+                anchor.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent event) {
+                        Window.open(uri, "_blank", "");
+                    }
+                });
                 linksPanel.add(anchor);
             }
             linksPanel.add(new Label());
-            final String handle = yaasDataNode.getArchiveHandle();
-            if (handle != null && handle.length() > 0) {
-                addHandleLink(handle, linksPanel);
+            final String archiveHandle = yaasDataNode.getArchiveHandle();
+            if (archiveHandle != null && archiveHandle.length() > 0) {
+                final String viewLink = archiveHandle.replace("hdl:", "http://hdl.handle.net/");
+                final Anchor imdiBrowserLink = new Anchor("IMDI Browser Link");
+                imdiBrowserLink.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent event) {
+                        Window.open(viewLink + "@view", "_blank", "");
+                    }
+                });
+                linksPanel.add(imdiBrowserLink);
             }
-            linksPanel.add(new Label());
-//            final String id = yaasDataNode.getID();
-//            if (id != null && id.length() > 0) {
-//                Anchor anchor = new Anchor(id, id);
-//                linksPanel.add(anchor);
-//            }
-//            linksPanel.add(new Label());
             final DataNodeType nodeType = yaasDataNode.getType();
-//            if (nodeType != null) {
-//                Label typeLabel = new Label(nodeType.getID());
-//                linksPanel.add(typeLabel);
-//            }
-            if (yaasDataNode.getType() != null && IMDI_RESOURCE.equals(nodeType.getID())) {
+            if (nodeType != null && IMDI_RESOURCE.equals(nodeType.getID())) {
                 for (DataNodeLink childLink : yaasDataNode.getChildIds()) {
                     final String resourceHandle = childLink.getArchiveHandle();
                     if (resourceHandle != null && resourceHandle.length() > 0) {
-                        addHandleLink(resourceHandle, linksPanel);
+                        linksPanel.add(new ResourceViewer(resourceHandle));
                         // get the resource permissions
 //                        String url = "http://127.0.0.1:8888/yaas.html";//http://lux17.mpi.nl/ds/accessinfo/rest/info/" + resourceHandle.replace(":", "%3A");
 //                        JsonpRequestBuilder jsonp = new JsonpRequestBuilder();
@@ -161,7 +165,7 @@ public class SingleDataNodeTable extends VerticalPanel {
             grid.setText(rowCounter, 0, fieldGroup.getFieldName());
             HorizontalPanel horizontalPanel = new HorizontalPanel();
             for (DataField dataField : fieldGroup.getFields()) {
-                final Label label = new Label(dataField.getFieldValue());
+                final HTML label = new HTML(dataField.getFieldValue());
                 horizontalPanel.add(label);
                 if (highlightPaths.contains(dataField.getPath())) {
                     label.setStyleName("yaas-treeNode-highlighted");
@@ -172,11 +176,5 @@ public class SingleDataNodeTable extends VerticalPanel {
             grid.setWidget(rowCounter, 1, horizontalPanel);
             rowCounter++;
         }
-    }
-
-    private void addHandleLink(final String resourceHandle, final VerticalPanel linksPanel) {
-        String viewLink = resourceHandle.replace("hdl:", "http://hdl.handle.net/");
-        linksPanel.add(new Anchor("IMDI Browser Link", viewLink + "@view"));
-        linksPanel.add(new Anchor("Download Link", viewLink));
     }
 }
