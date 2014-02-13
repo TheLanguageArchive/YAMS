@@ -147,28 +147,38 @@ public class YaasTreeItem extends TreeItem {
     }
 
     public void setHighlights(HighlighableDataNode dataNode) {
-        this.highlighedLinks.addAll(dataNode.getHighlights());
-//        root nodes of a search result always need to be highlighted        
-        nodeLabel.setStyleName("yaas-treeNode-highlighted");
-        nodeDetailsAnchor.setStyleName("yaas-treeNode-highlighted");
+        boolean isHighlighted = false;
+        boolean childHighlighted = false;
+//        root nodes of a search result always need to be highlighted    
+        for (DataNodeHighlight highlight : dataNode.getHighlights()) {
+            if (highlight.getDataNodeId().equals(dataNodeId.getIdString())) {
+                this.highlighedLinks.add(highlight);
+                if (highlight.getHighlightPath().contains("(")) {
+                    childHighlighted = true;
+                } else {
+                    isHighlighted = true;
+                    break; // no need to look further
+                };
+            }
+        }
+        if (isHighlighted) {
+            nodeLabel.setStyleName("yaas-treeNode-highlighted");
+            nodeDetailsAnchor.setStyleName("yaas-treeNode-highlighted");
+        } else if (childHighlighted) {
+            nodeLabel.setStyleName("yaas-childNode-highlighted");
+            nodeDetailsAnchor.setStyleName("yaas-childNode-highlighted");
+        } else {
+            nodeLabel.setStyleName("yaas-treeNode");
+            nodeDetailsAnchor.setStyleName("yaas-treeNode");
+        }
     }
 
     public void setHighlights(List<DataNodeHighlight> highlighedLinks) {
         boolean isHighlighted = false;
-        String nodeId = null;
-        try {
-            nodeId = (dataNodeId != null) ? dataNodeId.getIdString() : yaasDataNode.getID();
-        } catch (ModelException exception) {
-            // nothing to do here if there is no URI
-        }
-        if (nodeId != null) {
-            for (DataNodeHighlight highlight : highlighedLinks) {
-                if (nodeId.equals(highlight.getDataNodeId())) {
-                    this.highlighedLinks.add(highlight);
-                    isHighlighted = true;
-                }
-            }
-        } else if (yaasDataNode != null) {
+        boolean childHighlighted = false;
+        if (yaasDataNode == null) {
+            logger.warning("Data node is not loaded when applying tree highlights.");
+        } else {
             try {
                 final String uri = yaasDataNode.getURI();
                 if (uri != null) {
@@ -176,20 +186,31 @@ public class YaasTreeItem extends TreeItem {
                     if (uriParts != null && uriParts.length >= 2) {
                         final String fragment = uriParts[1];
                         for (DataNodeHighlight highlight : highlighedLinks) {
-                            if (highlight.getHighlightPath().startsWith(fragment)) {
+                            final String highlightPath = highlight.getHighlightPath();
+                            if (highlightPath.startsWith(fragment)) {
                                 this.highlighedLinks.add(highlight);
-                                isHighlighted = true;
+                                final String remainder = highlightPath.substring(fragment.length());
+                                if (remainder.contains("(")) {
+                                    childHighlighted = true;
+                                } else {
+                                    isHighlighted = true;
+                                    break; // no need to look further
+                                };
                             }
                         }
                     }
                 }
             } catch (ModelException exception) {
                 // nothing to do here if there is no URI
+                logger.warning(exception.getMessage());
             }
         }
         if (isHighlighted) {
             nodeLabel.setStyleName("yaas-treeNode-highlighted");
             nodeDetailsAnchor.setStyleName("yaas-treeNode-highlighted");
+        } else if (childHighlighted) {
+            nodeLabel.setStyleName("yaas-childNode-highlighted");
+            nodeDetailsAnchor.setStyleName("yaas-childNode-highlighted");
         } else {
             nodeLabel.setStyleName("yaas-treeNode");
             nodeDetailsAnchor.setStyleName("yaas-treeNode");
