@@ -39,6 +39,7 @@ import nl.mpi.yaas.common.db.DataBaseManager;
 import nl.mpi.yaas.common.db.DbAdaptor;
 import nl.mpi.yaas.common.db.RestDbAdaptor;
 import nl.mpi.yaas.shared.WebQueryException;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on : Jan 30, 2013, 5:23:13 PM
@@ -48,6 +49,8 @@ import nl.mpi.yaas.shared.WebQueryException;
 @SuppressWarnings("serial")
 //@RemoteServiceRelativePath("SearchOptionsService")
 public class SearchOptionsServiceImpl extends RemoteServiceServlet implements SearchOptionsService {
+
+    final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
 
     private String getBasexRestUrl() {
         final String initParameterRestUrl = getServletContext().getInitParameter("basexRestUrl");
@@ -69,6 +72,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
     }
 
     public String[] getDatabaseList() throws WebQueryException {
+//        logger.info("getDatabaseList");
         try {
             DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(DataBaseManager.defaultDataBase);
             return yaasDatabase.getDatabaseList();
