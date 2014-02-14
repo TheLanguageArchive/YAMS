@@ -20,6 +20,6 @@
 -->
 <Context path="/yaas">
     <Parameter name="basexRestUrl" value="http://localhost:8984/rest/" override="false"/>
-    <Parameter name="basexUser" value="yaasguest" override="false"/>
-    <Parameter name="basexPass" value="minfc8u4ng6s" override="false"/>
+    <Parameter name="basexUser" value="user" override="false"/>
+    <Parameter name="basexPass" value="pass" override="false"/>
 </Context>
