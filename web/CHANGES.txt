@@ -1,3 +1,15 @@
+2014-02-14
+Tidied up the context.xml.
+Added the logger to the RPC service.
+Disabled the options "Union" and "Intersection" option for single term searches.
+Moved the multi node table into a panel that can be moved, collapsed and that will expend to the contents of the table.
+Modified the database statistics link so that it updates better when the user selects a database and when the back button of the browser is used.
+Set the year to match that required by the license plugin's current configuration.
+When a link is clicked in the tree to view either the metadata or the IMDI browser they are now opened in a new window.
+When the user clicks to view a resource file they are now offered a preview panel and an optional full screen view of the resource eg video.
+The user can also directly download a resource via a direct link.
+Added a visual distinction between 'highlighted path' and 'highlighted node' in the search results.
+Re-added the basex jar.
 2014-02-12
 Added log4j as a dependency as per Eric's request.
 Bumped the GWT version used.
