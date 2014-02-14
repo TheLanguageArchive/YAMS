@@ -53,6 +53,7 @@ public class yaas implements EntryPoint, HistoryListener {
     final Label noDatabaseLabel = new Label(NO__DATABASE__SELECTED);
     final private Image loadingImage = new Image("./loader.gif");
     private String lastUsedDatabase = null;
+    private Anchor statisticsPageAnchor;
 
     public void onModuleLoad() {
         searchOptionsService = GWT.create(SearchOptionsService.class);
@@ -67,11 +68,17 @@ public class yaas implements EntryPoint, HistoryListener {
         History.fireCurrentHistoryState();
     }
 
+    private void setStatisticsLink(String databaseName) {
+        final String dbStatsHref = (databaseName == null || databaseName.isEmpty()) ? "DatabaseStats.jsp" : "DatabaseStats.jsp?databaseName=" + databaseName;
+        statisticsPageAnchor.setHref(dbStatsHref);
+    }
+
     private void setupPage(final HistoryController historyController) {
 //        final String moduleBaseURL = "http://tlatest03.mpi.nl:8080/yaas-gwt-1.0-SNAPSHOT/yaas/";
         final String databaseName = historyController.getDatabaseName();
-        final String dbStatsHref = (databaseName == null || DatabaseSelect.PLEASE_SELECT_A_DATABASE.equals(databaseName)) ? "DatabaseStats.jsp" : "DatabaseStats.jsp?databaseName=" + databaseName;
-        RootPanel.get("linksPanel").add(new Anchor("View Database Statistics", dbStatsHref));
+        statisticsPageAnchor = new Anchor("View Database Statistics");
+        setStatisticsLink(databaseName);
+        RootPanel.get("linksPanel").add(statisticsPageAnchor);
         CheckBox debugCheckBox = new CheckBox("debug");
         debugCheckBox.setValue(debugMode);
         RootPanel.get("optionsPanel").add(debugCheckBox);
@@ -137,7 +144,7 @@ public class yaas implements EntryPoint, HistoryListener {
         RootPanel.get("searchOptionsPanel").add(loadingImage);
         RootPanel.get("searchOptionsPanel").add(searchOptionsPanel);
         RootPanel.get("resultsPanel").add(resultsPanel);
-        RootPanel.get("dataNodeTable").add(dataNodeTable);
+//        RootPanel.get("dataNodeTable").add(dataNodeTable);
         RootPanel.get("facetedTree").add(new FacetedTree(searchOptionsService, databaseName));
     }
 
@@ -160,6 +167,7 @@ public class yaas implements EntryPoint, HistoryListener {
 //    }
     public void historyChange() {
         final String databaseName = historyController.getDatabaseName();
+        setStatisticsLink(databaseName);
         if (databaseName != null && !databaseName.equals(lastUsedDatabase)) {
             lastUsedDatabase = databaseName;
             loadingImage.setVisible(true);
