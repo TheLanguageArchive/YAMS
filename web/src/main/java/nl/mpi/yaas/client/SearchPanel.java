@@ -128,11 +128,13 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
         criterionPanelList.add(criterionPanel);
         verticalPanel.add(criterionPanel);
         criterionPanel.setDatabase(lastUsedDatabase);
+        joinTypeListBox.setVisible(criterionPanelList.size() > 1);
     }
 
     protected void removeSearchCriterionPanel(SearchCriterionPanel criterionPanel) {
         criterionPanelList.remove(criterionPanel);
         verticalPanel.remove(criterionPanel);
+        joinTypeListBox.setVisible(criterionPanelList.size() > 1);
     }
 
     private void initSearchHandler() {
