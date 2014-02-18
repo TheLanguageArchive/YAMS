@@ -1,0 +1,36 @@
+
+Install the war file into tomcat and edit the context.xml.
+The parameters in the context.xml file are as follows:
+"basexRestUrl" points to the relevant BaseX server REST interface eg "http://localhost:8984/rest/"
+"basexUser" a read only user that will be used to perform searches
+"basexPass" the password of the read only user
+
+It is recommended to use the zip file version of BaseX and edit the ./bin/basexhttp start script to allocate adequate ram to hold the indexes in memory:
+    # Options for virtual machine
+    VM=-Xmx######m
+
+The read only guest user can be created by starting the command line client: ./basexclient
+create user yaasguest
+grant read to yaasguest
+For more details see: http://docs.basex.org/wiki/User_Management
+
+The database can then be started with: ./bin/basexhttp
+
+Once a crawl has been completed the resulting database can be moved into the data directory of the running BaseX server.
+
+If however you prefer to use the BaseX war file in tomcat then you will need to configure the database in the web.xml
+An example is to be found here: https://github.com/BaseXdb/basex-api/blob/master/src/main/webapp/WEB-INF/web.xml
+For more information see: http://docs.basex.org/wiki/Web_Application#Servlet_Container
+Because this application does not need write access to the database it may be adequate to have only one limited user defined in the web.xml
+You can also change the db admin password and add additional users in the .basexperm configuration file in the server root.
+
+In addition it may be convenient to interrogate the database via Curl:
+
+To list the users and permissions databases on the localhost rest interface:
+curl -u user:pass -i -X POST -H "Content-Type: application/xml" -d "<command xmlns='http://basex.org/rest'><text>show users</text></command>" "http://localhost:8984/rest/"
+
+To list the databases on the localhost rest interface:
+curl -u user:pass -i -X POST -H "Content-Type: application/xml" -d "<command xmlns='http://basex.org/rest'><text>list</text></command>" "http://localhost:8984/rest/"
+
+
+todo: add files to set the DB user permissions

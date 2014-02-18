@@ -1,0 +1,2 @@
+YAMS REST is a web service used by the CMDI/IMDI archive metadata search tool YAAS that is based on Arbil datanodes. There are two parts, the crawler which is run from the command line and the web application which is run in tomcat.
+The crawling process is done directly to a local BaseX database. When the crawl is complete the resulting database is moved into the running BaseX instance. The web application can select from the various databases available and only requires read-only access to the databases.
