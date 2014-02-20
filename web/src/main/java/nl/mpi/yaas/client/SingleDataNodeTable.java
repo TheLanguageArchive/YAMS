@@ -87,6 +87,24 @@ public class SingleDataNodeTable extends VerticalPanel {
                     }
                 });
                 linksPanel.add(imdiBrowserLink);
+
+                final String cmdiBrowserLink = "http://lux16.mpi.nl/ds/metadata_browser/?" + archiveHandle;
+                final Anchor cmdiBrowserAnchor = new Anchor("CMDI Browser Link");
+                cmdiBrowserAnchor.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent event) {
+                        Window.open(cmdiBrowserLink, "_blank", "");
+                    }
+                });
+                linksPanel.add(cmdiBrowserAnchor);
+
+                final String trovaLink = "https://lux16.mpi.nl/ds/trova/search.jsp?hdl=" + archiveHandle;
+                final Anchor trovaAnchor = new Anchor("Trova Link");
+                trovaAnchor.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent event) {
+                        Window.open(trovaLink, "_blank", "");
+                    }
+                });
+                linksPanel.add(trovaAnchor);
             }
             final DataNodeType nodeType = yaasDataNode.getType();
             if (nodeType != null && IMDI_RESOURCE.equals(nodeType.getID())) {
