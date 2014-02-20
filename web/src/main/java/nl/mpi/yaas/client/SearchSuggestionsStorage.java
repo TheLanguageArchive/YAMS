@@ -34,6 +34,8 @@ public class SearchSuggestionsStorage {
     private static final Logger logger = Logger.getLogger("");
     private static final String DONE_KEY = "|done";
     private static final String DONE_FLAG = "true";
+    private String lastKey = null;
+    private String[] lastResult = null;
 
     final private Storage suggestionsStorage;
 
@@ -58,7 +60,10 @@ public class SearchSuggestionsStorage {
     public String[] getValues(String database, String type, String path) {
         if (suggestionsStorage != null) {
             String key = getKey(database, type, path);
-            return getRawValues(key);
+            if (!key.equals(lastKey)) {
+                lastResult = getRawValues(key);
+            }
+            return lastResult;
         } else {
             return new String[0];
         }
