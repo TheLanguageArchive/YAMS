@@ -189,7 +189,7 @@ public class RestDbAdaptor implements DbAdaptor {
         // todo: it would be better to consume the string as it becomes available, however this will get complicated when one query depends on another such as the get missing ID list in the crawler.
         StringBuilder replaceMe = new StringBuilder();
         try {
-            long startTime = System.currentTimeMillis();
+//            long startTime = System.currentTimeMillis();
             HttpURLConnection conn = (HttpURLConnection) restUrl.openConnection();
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
@@ -204,12 +204,12 @@ public class RestDbAdaptor implements DbAdaptor {
             out.close();
             final int responseCode = conn.getResponseCode();
             final String responseMessage = conn.getResponseMessage();
-            long responseMils = System.currentTimeMillis() - startTime;
-            String queryTimeString = "response time: " + responseMils + "ms";
-            logger.debug(queryTimeString);
+//            long responseMils = System.currentTimeMillis() - startTime;
+//            String queryTimeString = "response time: " + responseMils + "ms";
+//            logger.debug(queryTimeString);
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                logger.debug("Reading response");
+//                logger.info("Reading response");
                 for (String line; (line = bufferedReader.readLine()) != null;) {
 //                    logger.debug("response: " + line);
 //                    System.out.print(".");
@@ -217,11 +217,11 @@ public class RestDbAdaptor implements DbAdaptor {
                 }
                 bufferedReader.close();
             }
-            logger.debug(".");
+//            logger.debug(".");
             conn.disconnect();
-            long totalMils = System.currentTimeMillis() - startTime;
-            String totalTimeString = "total time: " + totalMils + "ms";
-            logger.debug(totalTimeString);
+//            long totalMils = System.currentTimeMillis() - startTime;
+//            String totalTimeString = "total time: " + totalMils + "ms";
+//            logger.debug(totalTimeString);
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 throw new QueryException("HTTP response: " + responseCode + " " + responseMessage);
             }
