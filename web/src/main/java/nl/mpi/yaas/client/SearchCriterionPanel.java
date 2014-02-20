@@ -30,10 +30,13 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.SuggestOracle;
+import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 import com.google.gwt.user.client.ui.ValueListBox;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.yaas.common.data.MetadataFileType;
@@ -48,6 +51,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
 
     private static final Logger logger = Logger.getLogger("");
     final private SearchOptionsServiceAsync searchOptionsService;
+    static private boolean requestInProgress = false;
     final private ValueListBox<MetadataFileType> typesOptionsListBox;
     private MetadataFileType[] knownFileTypes = null;
     final private ValueListBox<MetadataFileType> fieldsOptionsListBox;
@@ -62,9 +66,11 @@ public class SearchCriterionPanel extends HorizontalPanel {
     private String databaseName = null;
     private MetadataFileType defaultFileType = null;
     private MetadataFileType defaultPathType = null;
+    private final SearchSuggestionsStorage searchSuggestionsStorage;
 
     public SearchCriterionPanel(final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
         this.searchOptionsService = searchOptionsService;
+        searchSuggestionsStorage = new SearchSuggestionsStorage();
         Button removeRowButton = new Button("remove", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 searchPanel.removeSearchCriterionPanel(SearchCriterionPanel.this);
@@ -230,12 +236,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
                 }
             }
         });
-        widget.addStyleName("demo-ListBox");
-        widget.addValueChangeHandler(new ValueChangeHandler<MetadataFileType>() {
-            public void onValueChange(ValueChangeEvent<MetadataFileType> event) {
-                clearSuggestOracle();
-            }
-        });
+        widget.addStyleName("fieldsListBox");
         return widget;
     }
 
@@ -255,7 +256,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
                 }
             }
         });
-        widget.addStyleName("demo-ListBox");
+        widget.addStyleName("typesListBox");
         widget.addValueChangeHandler(new ValueChangeHandler<MetadataFileType>() {
             public void onValueChange(ValueChangeEvent<MetadataFileType> event) {
                 loadPathsOptions(event.getValue());
@@ -264,56 +265,83 @@ public class SearchCriterionPanel extends HorizontalPanel {
         return widget;
     }
 
-    private void clearSuggestOracle() {
-        oracle.clear();
+    private void updateSuggestOracle(final SuggestOracle.Request request, final SuggestOracle.Callback callback) {
+//        oracle.clear();
+        final String path = getMetadataFieldType().getPath();
+        final String type = getMetadataFileType().getType();
+        final String searchText = getSearchText();
+        logger.info("loading stored suggestions");
+        final String[] values = searchSuggestionsStorage.getValues(databaseName, type, path);
+//        oracle.addAll(Arrays.asList(values));
+        ArrayList<Suggestion> suggestionList = new ArrayList<Suggestion>();
+        for (final String entry : values) {
+            if (entry.toLowerCase().contains(searchText.toLowerCase())) {
+                suggestionList.add(new Suggestion() {
+
+                    public String getDisplayString() {
+                        return entry;
+                    }
+
+                    public String getReplacementString() {
+                        return entry;
+                    }
+                });
+//                logger.log(Level.INFO, entry);
+            }
+        }
+        SuggestOracle.Response response = new SuggestOracle.Response(suggestionList);
+        callback.onSuggestionsReady(request, response);
     }
 
     private SuggestBox createTextBox() {
         oracle = new MultiWordSuggestOracle() {
             @Override
             public void requestSuggestions(final Request request, final Callback callback) {
-//                if (request.getQuery().length() < 3) {
-//                    // ignore queries that are less that 2 letters long
-//                    Response response = new Response(Collections.<Suggestion>emptyList());
-//                    callback.onSuggestionsReady(request, response);
-//                    return;
-//                }
-                valuesPathsImage.setVisible(true);
-                final MetadataFileType typeSelection = fieldsOptionsListBox.getValue();
-                final MetadataFileType options = new MetadataFileType(typeSelection.getType(), typeSelection.getPath(), request.getQuery());
-                searchOptionsService.getValueOptions(databaseName, options, new AsyncCallback<MetadataFileType[]>() {
-                    public void onFailure(Throwable caught) {
-                        valuesPathsImage.setVisible(false);
-                        logger.log(Level.SEVERE, caught.getMessage());
-                        hintLabel.setText("hint: try specifying a type and or path before typing");
-                    }
-
-                    public void onSuccess(MetadataFileType[] result) {
-                        hintLabel.setText("");
-                        ArrayList<Suggestion> suggestionList = new ArrayList<Suggestion>();
-                        if (result != null) {
-                            for (final MetadataFileType type : result) {
-                                suggestionList.add(new Suggestion() {
-
-                                    public String getDisplayString() {
-                                        return type.getValue();
-                                    }
-
-                                    public String getReplacementString() {
-                                        return type.getValue();
-                                    }
-                                });
-                                logger.log(Level.INFO, type.getValue());
-                            }
-                            Response response = new Response(suggestionList);
-                            callback.onSuggestionsReady(request, response);
+//                logger.info(request.getQuery());
+                final String searchText = getSearchText();
+                final String path = getMetadataFieldType().getPath();
+                final String type = getMetadataFileType().getType();
+                updateSuggestOracle(request, callback);
+                if (searchSuggestionsStorage.isDone(databaseName, type, path, searchText) || requestInProgress) {
+                    logger.info("relying on old suggestions");
+                } else {
+                    requestInProgress = true;
+                    logger.info("requesting new suggestions");
+                    searchSuggestionsStorage.setDone(databaseName, type, path, searchText);
+                    valuesPathsImage.setVisible(true);
+                    final MetadataFileType typeSelection = fieldsOptionsListBox.getValue();
+                    final MetadataFileType options = new MetadataFileType(typeSelection.getType(), typeSelection.getPath(), request.getQuery());
+                    searchOptionsService.getValueOptions(databaseName, options, new AsyncCallback<MetadataFileType[]>() {
+                        public void onFailure(Throwable caught) {
+                            requestInProgress = false;
+                            valuesPathsImage.setVisible(false);
+                            logger.log(Level.SEVERE, caught.getMessage());
+                            hintLabel.setText("hint: try specifying a type and or path before typing");
                         }
-                        valuesPathsImage.setVisible(false);
-                    }
-                });
+
+                        public void onSuccess(MetadataFileType[] result) {
+                            requestInProgress = false;
+                            hintLabel.setText("");
+                            HashSet<String> suggestions = new HashSet();
+                            if (result != null) {
+//                                logger.info(result.length + "new suggestions");
+                                for (final MetadataFileType type : result) {
+//                                    logger.info(type.getValue());
+                                    suggestions.add(type.getValue());
+                                }
+                                searchSuggestionsStorage.addValues(databaseName, type, path, suggestions);
+                            } else {
+                                logger.info("no new suggestions");
+                            }
+                            updateSuggestOracle(request, callback);
+                            valuesPathsImage.setVisible(false);
+                        }
+                    });
+                }
             }
         };
         final SuggestBox suggestBox = new SuggestBox(oracle);
+        suggestBox.setAutoSelectEnabled(false);
         return suggestBox;
     }
 }
