@@ -49,6 +49,9 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
     private IconTableBase64 iconTableBase64;
 //    final String lastDatabaseName;
     private DataNodeTree dataNodeTree;
+    // todo: replace the variabls dataNodeTreeRootIds and dataNodeTreeDb by updating the web service provide all the required information (db, root nodes, icons, stats) in one connection
+    private DataNodeId[] dataNodeTreeRootIds = null;
+    private String dataNodeTreeDb = null;
 
     public ResultsPanel(final DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController) {
         this.dataNodeTable = dataNodeTable;
@@ -76,11 +79,17 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
 
     public void setIconTableBase64(IconTableBase64 iconTableBase64) {
         this.iconTableBase64 = iconTableBase64;
+        if (dataNodeTreeRootIds != null) {
+            // todo: replace this overly complicated reload process by updating the web service provide all the required information (db, root nodes, icons, stats) in one connection
+            addDatabaseTree(dataNodeTreeDb, dataNodeTreeRootIds);
+        }
     }
 
     public void addDatabaseTree(String databaseName, DataNodeId[] dataNodeIds) {
         // todo: this could end up being a threading issue with iconTableBase64 being set from the wrong database
         remove(dataNodeTree);
+        dataNodeTreeRootIds = dataNodeIds;
+        dataNodeTreeDb = databaseName;
         dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, iconTableBase64);
         for (DataNodeId dataNodeId : dataNodeIds) {
             dataNodeTree.addResultsToTree(databaseName, dataNodeId);
