@@ -61,6 +61,11 @@ public class DataNodeTable extends DialogBox {
     public void removeDataNode(SerialisableDataNode yaasDataNode) {
         dataNodes.remove(yaasDataNode);
         updateTable();
+        if (dataNodes.isEmpty()) {
+            this.hide();
+        } else {
+            this.center();
+        }
     }
 
     public void addDataNode(SerialisableDataNode yaasDataNode) {
