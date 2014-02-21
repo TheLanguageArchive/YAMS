@@ -38,6 +38,7 @@ import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseLinks;
+import nl.mpi.yaas.common.data.DatabaseList;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.IconTable;
@@ -236,7 +237,7 @@ public abstract class DataBaseManagerTest {
     public void testGetMetadataFieldValues() throws Exception {
         System.out.println("getFieldMetadataTypes");
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
-        MetadataFileType[] result1 = dbManager.getMetadataFieldValues(null);
+        MetadataFileType[] result1 = dbManager.getMetadataFieldValues(null, 10);
         assertEquals("", result1[0].getLabel());
         assertEquals(null, result1[0].getType());
         assertEquals(null, result1[0].getPath());
@@ -255,7 +256,7 @@ public abstract class DataBaseManagerTest {
                 return "Name";
             }
         };
-        MetadataFileType[] result2 = dbManager.getMetadataFieldValues(metadataFileType1);
+        MetadataFileType[] result2 = dbManager.getMetadataFieldValues(metadataFileType1, 10);
         assertEquals("", result1[0].getLabel());
 //        assertEquals(1, result2[0].getRecordCount());
         assertEquals("DVD", result2[0].getLabel());
@@ -273,7 +274,7 @@ public abstract class DataBaseManagerTest {
                 return "Description";
             }
         };
-        MetadataFileType[] result3 = dbManager.getMetadataFieldValues(metadataFileType2);
+        MetadataFileType[] result3 = dbManager.getMetadataFieldValues(metadataFileType2, 10);
         assertEquals("Sessions containing subjects of less than 17 years", result3[0].getLabel());
 //        assertEquals(1, result3[0].getRecordCount());
         assertEquals(2, result3.length);
@@ -294,7 +295,7 @@ public abstract class DataBaseManagerTest {
                 return "DVD";
             }
         };
-        MetadataFileType[] result4 = dbManager.getMetadataFieldValues(metadataFileType4);
+        MetadataFileType[] result4 = dbManager.getMetadataFieldValues(metadataFileType4, 10);
         assertEquals("The sessions put together that have theid audio file on the same DVD", result4[0].getLabel());
 //        assertEquals(1, result3[0].getRecordCount());
         assertEquals(1, result4.length);
@@ -315,7 +316,7 @@ public abstract class DataBaseManagerTest {
                 return "DVD";
             }
         };
-        MetadataFileType[] result5 = dbManager.getMetadataFieldValues(metadataFileType5);
+        MetadataFileType[] result5 = dbManager.getMetadataFieldValues(metadataFileType5, 10);
         assertEquals("DVD", result5[0].getLabel());
 //        assertEquals(1, result3[0].getRecordCount());
         assertEquals(3, result5.length);
@@ -452,6 +453,19 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         String[] result = dbManager.getDatabaseList();
         assertTrue("Unexpected db names length: " + result.length, result.length > 0);
+    }
+
+    /**
+     * Test of getDatabaseList method, of class DataBaseManager.
+     */
+    @Test
+    @Ignore
+    public void testGetDatabaseStatsList() throws Exception {
+        System.out.println("getDatabaseList");
+        final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        dbManager.getDatabaseStats();
+        DatabaseList result = dbManager.getDatabaseStatsList();
+        assertTrue("Unexpected db names length: " + result.getDatabaseList().size(), result.getDatabaseList().size() > 0);
     }
 
     /**

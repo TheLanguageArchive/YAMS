@@ -36,6 +36,7 @@ import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseLinks;
+import nl.mpi.yaas.common.data.DatabaseList;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.IconTable;
 import nl.mpi.yaas.common.data.IconTableBase64;
@@ -183,6 +184,34 @@ public class DataBaseManager<D, F, M> {
         String queryResult = dbAdaptor.executeQuery(databaseName, "db:list()");
         logger.debug("databaseList: " + queryResult);
         return queryResult.split(" ");
+    }
+
+    public DatabaseList getDatabaseStatsList() throws QueryException {
+        long startTime = System.currentTimeMillis();
+        String databaseListQuery = "<DatabaseList>{\n"
+                + "for $dbName in db:list() return <Database><name>{$dbName}</name>{"
+                + "for $statsDoc in collection($dbName)/" + dbStatsDocument + "\n"
+                + "return $statsDoc,\n"
+                + "for $iconDoc in collection($dbName)/" + iconTableDocument + "\n"
+                + "return $iconDoc\n"
+                + "}</Database>}</DatabaseList>\n";
+        String queryResult;
+        System.out.println("databaseListQuery:" + databaseListQuery);
+        queryResult = dbAdaptor.executeQuery(databaseName, databaseListQuery);
+        System.out.println("queryResult: " + queryResult);
+        logger.info("databaseListQuery: " + databaseListQuery);
+        logger.info("databaseList: " + queryResult);
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(DatabaseList.class, DatabaseStats.class, DataNodeId.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            DatabaseList databaseList = (DatabaseList) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), DatabaseList.class).getValue();
+            long queryMils = System.currentTimeMillis() - startTime;
+            databaseList.setQueryTimeMS(queryMils);
+            return databaseList;
+        } catch (JAXBException exception) {
+            logger.debug(exception.getMessage());
+            throw new QueryException("Error getting DatabaseStatsList", exception);
+        }
     }
 
     /**
@@ -672,10 +701,10 @@ public class DataBaseManager<D, F, M> {
                 + "}</MetadataFileType>";
     }
 
-    private String getMetadata100FieldValuesQuery(MetadataFileType metadataFileType) {
+    private String getMetadataFieldValuesQuery(MetadataFileType metadataFileType, int maxResults) {
         String typeClause = getTypeClause(metadataFileType);
         String typeNodes = getTypeNodes(metadataFileType);
-        return "let $fieldValues := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldData[position() le 100]/@FieldValue/string()\n"
+        return "let $fieldValues := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldData[position() le " + maxResults + "]/@FieldValue/string()\n"
                 + "return <MetadataFileType>\n"
                 + "{\n"
                 + "for $label in distinct-values($fieldValues)\n"
@@ -943,8 +972,8 @@ public class DataBaseManager<D, F, M> {
         return getMetadataTypes(queryString, getDocumentName(metadataFileType, "paths"), true);
     }
 
-    public M[] getMetadataFieldValues(MetadataFileType metadataFileType) throws QueryException {
-        final String queryString = getMetadata100FieldValuesQuery(metadataFileType);
+    public M[] getMetadataFieldValues(MetadataFileType metadataFileType, int maxResults) throws QueryException {
+        final String queryString = getMetadataFieldValuesQuery(metadataFileType, maxResults);
         //logger.debug("getMetadata100FieldValuesQuery: " + queryString);
         return getMetadataTypes(queryString, getDocumentName(metadataFileType, "values"), false);
     }
@@ -972,7 +1001,7 @@ public class DataBaseManager<D, F, M> {
     }
 
     private D getDbTreeNode(String queryString) throws QueryException {
-        long startTime = System.currentTimeMillis();
+//        long startTime = System.currentTimeMillis();
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(dClass);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -981,13 +1010,13 @@ public class DataBaseManager<D, F, M> {
             queryResult = dbAdaptor.executeQuery(databaseName, queryString);
 //            logger.debug("queryResult: " + queryResult);
             D rootTreeNode = (D) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), dClass).getValue();
-            long queryMils = System.currentTimeMillis() - startTime;
-            int resultCount = 0;
-            if (rootTreeNode != null) {
-                resultCount = 1;
-            }
-            String queryTimeString = "Query time: " + queryMils + "ms for " + resultCount + " entities";
-            logger.debug(queryTimeString);
+//            long queryMils = System.currentTimeMillis() - startTime;
+//            int resultCount = 0;
+//            if (rootTreeNode != null) {
+//                resultCount = 1;
+//            }
+//            String queryTimeString = "Query time: " + queryMils + "ms for " + resultCount + " entities";
+//            logger.debug(queryTimeString);
             return rootTreeNode;
         } catch (JAXBException exception) {
             logger.debug(exception.getMessage());
