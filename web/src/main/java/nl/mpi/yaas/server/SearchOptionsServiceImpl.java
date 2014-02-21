@@ -95,7 +95,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         // the LocalDbAdaptor version of the Arbil database is not intended to multi entry and has be replaced by a REST version
 //        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File(System.getProperty("user.dir"), "yaas-data"));
         String basexRestUrl = getBasexRestUrl();
-        System.out.println("basexRestUrl: " + basexRestUrl);
+//        System.out.println("basexRestUrl: " + basexRestUrl);
         try {
             final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), getBasexUser(), getBasexPass());
             return new DataBaseManager<HighlighableDataNode, DataField, MetadataFileType>(HighlighableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
@@ -127,7 +127,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
     public MetadataFileType[] getValueOptions(String databaseName, MetadataFileType metadataFileType) throws WebQueryException {
         try {
             DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
-            MetadataFileType[] metadataFieldTypes = yaasDatabase.getMetadataFieldValues(metadataFileType);
+            MetadataFileType[] metadataFieldTypes = yaasDatabase.getMetadataFieldValues(metadataFileType, 5);
             return metadataFieldTypes;
         } catch (QueryException exception) {
             throw new WebQueryException(exception.getMessage());
