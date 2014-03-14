@@ -91,9 +91,7 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
         dataNodeTreeRootIds = dataNodeIds;
         dataNodeTreeDb = databaseName;
         dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, iconTableBase64);
-        for (DataNodeId dataNodeId : dataNodeIds) {
-            dataNodeTree.addResultsToTree(databaseName, dataNodeId);
-        }
+        dataNodeTree.addResultsToTree(databaseName, dataNodeIds);
         this.insert(dataNodeTree, databaseName, 0);
         this.selectTab(this.getWidgetIndex(dataNodeTree));
         this.setVisible(true);
@@ -110,9 +108,7 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
             final List<DataNodeLink> childIds = dataNode.getChildIds();
             if (childIds != null) {
                 final DataNodeTree dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, iconTableBase64);
-                for (DataNodeLink childId : childIds) {
-                    dataNodeTree.addResultsToTree(databaseName, childId, dataNode);
-                }
+                dataNodeTree.addResultsToTree(databaseName, childIds, dataNode);
                 // add a label showing the time taken by a search and the result count
                 final Label timeLabel = new Label("found " + childIds.size() + " in " + responseTimeMils + "ms");
                 verticalPanel.add(timeLabel);

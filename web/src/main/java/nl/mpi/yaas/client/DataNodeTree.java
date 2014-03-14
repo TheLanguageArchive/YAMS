@@ -18,10 +18,15 @@
  */
 package nl.mpi.yaas.client;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
+import java.util.List;
+import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.HighlighableDataNode;
@@ -37,6 +42,7 @@ public class DataNodeTree extends Tree {
     final DataNodeTable dataNodeTable;
     final SearchOptionsServiceAsync searchOptionsService;
     private final IconTableBase64 iconTableBase64;
+    private static final Logger logger = Logger.getLogger("");
 
     public DataNodeTree(final DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64) {
         this.dataNodeTable = dataNodeTable;
@@ -81,20 +87,54 @@ public class DataNodeTree extends Tree {
 //        });
     }
 
-    public void addResultsToTree(String databaseName, DataNodeId dataNodeId) {
-        final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeId, searchOptionsService, dataNodeTable, iconTableBase64);
-        this.addItem(yaasTreeItem);
+    public void addResultsToTree(final String databaseName, final DataNodeId[] dataNodeIds) {
+        addPagingButton(new Pageable() {
+            public void addYaasTreeItem(int index) {
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], searchOptionsService, dataNodeTable, iconTableBase64);
+                DataNodeTree.this.addItem(yaasTreeItem);
+            }
+
+            public int getCount() {
+                return dataNodeIds.length;
+            }
+        });
     }
 
-    public void addResultsToTree(String databaseName, DataNodeLink dataNodeLink, HighlighableDataNode dataNode) {
-        final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(dataNodeLink.getIdString()), searchOptionsService, dataNodeTable, iconTableBase64);
-        yaasTreeItem.setHighlights(dataNode);
-        this.addItem(yaasTreeItem);
+    public void addResultsToTree(final String databaseName, final List<DataNodeLink> rootIds, final HighlighableDataNode dataNode) {
+        addPagingButton(new Pageable() {
+
+            public void addYaasTreeItem(int index) {
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), searchOptionsService, dataNodeTable, iconTableBase64);
+                yaasTreeItem.setHighlights(dataNode);
+                DataNodeTree.this.addItem(yaasTreeItem);
+            }
+
+            public int getCount() {
+                return rootIds.size();
+            }
+        });
     }
 
-    public void addResultsToTree(String databaseName, HighlighableDataNode dataNode) {
-        final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNode, searchOptionsService, dataNodeTable, iconTableBase64);
-        yaasTreeItem.setHighlights(dataNode);
-        this.addItem(yaasTreeItem);
+    private void addPagingButton(final Pageable pageable) {
+        final Button loadNextButton = new Button("Load More");
+        final TreeItem loadNextTreeItem = new TreeItem(loadNextButton);
+        final ClickHandler clickHandler = new ClickHandler() {
+            private int loadedCount = 0;
+
+            public void onClick(ClickEvent event) {
+                DataNodeTree.this.removeItem(loadNextTreeItem);
+                int numberToLoad = 10;
+                while (loadedCount < pageable.getCount() && numberToLoad > 0) {
+                    pageable.addYaasTreeItem(loadedCount);
+                    numberToLoad--;
+                    loadedCount++;
+                }
+                if (loadedCount < pageable.getCount()) {
+                    DataNodeTree.this.addItem(loadNextTreeItem);
+                }
+            }
+        };
+        clickHandler.onClick(null);
+        loadNextButton.addClickHandler(clickHandler);
     }
 }
