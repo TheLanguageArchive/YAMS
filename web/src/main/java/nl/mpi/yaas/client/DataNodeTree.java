@@ -23,6 +23,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import java.util.List;
@@ -39,8 +40,8 @@ import nl.mpi.yaas.common.data.IconTableBase64;
  */
 public class DataNodeTree extends Tree {
 
-    final DataNodeTable dataNodeTable;
-    final SearchOptionsServiceAsync searchOptionsService;
+    private final DataNodeTable dataNodeTable;
+    private final SearchOptionsServiceAsync searchOptionsService;
     private final IconTableBase64 iconTableBase64;
     private static final Logger logger = Logger.getLogger("");
 
@@ -90,7 +91,7 @@ public class DataNodeTree extends Tree {
     public void addResultsToTree(final String databaseName, final DataNodeId[] dataNodeIds) {
         addPagingButton(new Pageable() {
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], searchOptionsService, dataNodeTable, iconTableBase64);
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], searchOptionsService, dataNodeTable, iconTableBase64, null);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }
 
@@ -101,10 +102,13 @@ public class DataNodeTree extends Tree {
     }
 
     public void addResultsToTree(final String databaseName, final List<DataNodeLink> rootIds, final HighlighableDataNode dataNode) {
+        final TreeItem treeItem = new TreeItem(new HorizontalPanel());
+        final TreeTableHeader treeTableHeader = new TreeTableHeader(treeItem);
+        this.addItem(treeItem);
         addPagingButton(new Pageable() {
 
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), searchOptionsService, dataNodeTable, iconTableBase64);
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), searchOptionsService, dataNodeTable, iconTableBase64, treeTableHeader);
                 yaasTreeItem.setHighlights(dataNode);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }
