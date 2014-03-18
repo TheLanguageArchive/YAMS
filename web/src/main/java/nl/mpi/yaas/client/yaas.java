@@ -94,6 +94,9 @@ public class yaas implements EntryPoint, HistoryListener {
         historyController.addHistoryListener(this);
         historyController.addHistoryListener(databaseSelectBox);
         RootPanel.get("searchOptionsPanel").add(databaseSelectBox);
+        final ConciseSearchBox conciseSearchBox = new ConciseSearchBox(historyController);
+        historyController.addHistoryListener(conciseSearchBox);
+        RootPanel.get("searchOptionsPanel").add(conciseSearchBox);
         databaseSelectBox.getDbList();
         final ServiceDefTarget serviceDefTarget = (ServiceDefTarget) searchOptionsService;
         RootPanel.get("databaseStats").add(new Label(serviceDefTarget.getServiceEntryPoint()));

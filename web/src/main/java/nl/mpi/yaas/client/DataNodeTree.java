@@ -24,6 +24,7 @@ import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import java.util.List;
@@ -43,6 +44,7 @@ public class DataNodeTree extends Tree {
     private final DataNodeTable dataNodeTable;
     private final SearchOptionsServiceAsync searchOptionsService;
     private final IconTableBase64 iconTableBase64;
+    final PopupPanel popupPanel = new PopupPanel(true);
     private static final Logger logger = Logger.getLogger("");
 
     public DataNodeTree(final DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64) {
@@ -91,7 +93,7 @@ public class DataNodeTree extends Tree {
     public void addResultsToTree(final String databaseName, final DataNodeId[] dataNodeIds) {
         addPagingButton(new Pageable() {
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], searchOptionsService, dataNodeTable, iconTableBase64, null);
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], searchOptionsService, dataNodeTable, iconTableBase64, null, popupPanel);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }
 
@@ -108,7 +110,7 @@ public class DataNodeTree extends Tree {
         addPagingButton(new Pageable() {
 
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), searchOptionsService, dataNodeTable, iconTableBase64, treeTableHeader);
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), searchOptionsService, dataNodeTable, iconTableBase64, treeTableHeader, popupPanel);
                 yaasTreeItem.setHighlights(dataNode);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }

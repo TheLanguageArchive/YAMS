@@ -22,7 +22,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -51,7 +50,8 @@ public class SingleDataNodeTable extends VerticalPanel {
 
     private static final Logger logger = Logger.getLogger("");
 
-    public SingleDataNodeTable(final SerialisableDataNode yaasDataNode, ClickHandler closeHandler, List<DataNodeHighlight> nodeHighlights) {
+    public SingleDataNodeTable(final SerialisableDataNode yaasDataNode, List<DataNodeHighlight> nodeHighlights) {
+        setStyleName("yaas-treeNodeDetails");
         final List<FieldGroup> fieldGroups = yaasDataNode.getFieldGroups();
         int rowCounter = 0;
         Set<String> highlightPaths = new HashSet<String>();
@@ -61,9 +61,9 @@ public class SingleDataNodeTable extends VerticalPanel {
         final HorizontalPanel buttonPanel = new HorizontalPanel();
         final VerticalPanel linksPanel = new VerticalPanel();
         final Grid grid = new Grid(yaasDataNode.getFieldGroups().size() + 1, 2);
-        final Button closeButton = new Button("x", closeHandler);
-        closeButton.setStyleName("yaas-closeButton");
-        buttonPanel.add(closeButton);
+//        final Button closeButton = new Button("x", closeHandler);
+//        closeButton.setStyleName("yaas-closeButton");
+//        buttonPanel.add(closeButton);
         buttonPanel.add(linksPanel);
         try {
             final String uri = yaasDataNode.getURI();
