@@ -17,7 +17,9 @@
  */
 package nl.mpi.yaas.client;
 
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import nl.mpi.yaas.common.data.QueryDataStructures;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
@@ -27,21 +29,28 @@ import nl.mpi.yaas.common.data.SearchParameters;
  * @since Mar 18, 2014 1:27:32 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class ConciseSearchBox extends Label implements HistoryListener {
+public class ConciseSearchBox extends HorizontalPanel implements HistoryListener {
 
     private final HistoryController historyController;
+    private final TextBox searchBox;
+    private final Button searchButton;
 
     public ConciseSearchBox(HistoryController historyController) {
         this.historyController = historyController;
+        searchBox = new TextBox();
+        searchButton = new Button("search");
+        this.add(searchBox);
+        this.add(searchButton);
     }
 
     public void historyChange() {
         StringBuilder searchStringBuilder = new StringBuilder();
 //        if (historyController.getDatabaseName().equals("EWE-2013-11-13")) {
-        searchStringBuilder.append("db:");
-        searchStringBuilder.append(historyController.getDatabaseName());
-        searchStringBuilder.append(" ");
-//        }
+        if (!historyController.getDatabaseName().isEmpty()) {
+            searchStringBuilder.append("db:");
+            searchStringBuilder.append(historyController.getDatabaseName());
+            searchStringBuilder.append(" ");
+        }
         if (historyController.getCriterionJoinType().equals(QueryDataStructures.CriterionJoinType.intersect)) {
             searchStringBuilder.append("match:all ");
         }
@@ -72,6 +81,6 @@ public class ConciseSearchBox extends Label implements HistoryListener {
             searchStringBuilder.append(searchParameter.getSearchString());
             searchStringBuilder.append("\" ");
         }
-        setText(searchStringBuilder.toString());
+        searchBox.setText(searchStringBuilder.toString());
     }
 }
