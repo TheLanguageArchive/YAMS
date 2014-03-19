@@ -17,13 +17,11 @@
  */
 package nl.mpi.yaas.client;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import nl.mpi.yaas.common.data.QueryDataStructures;
-import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
-import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
-import nl.mpi.yaas.common.data.SearchParameters;
 
 /**
  * @since Mar 18, 2014 1:27:32 PM (creation date)
@@ -35,52 +33,20 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
     private final TextBox searchBox;
     private final Button searchButton;
 
-    public ConciseSearchBox(HistoryController historyController) {
+    public ConciseSearchBox(final HistoryController historyController) {
         this.historyController = historyController;
         searchBox = new TextBox();
-        searchButton = new Button("search");
+        searchButton = new Button("search", new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+                new ConciseSearchParser().parseConciseSearch(historyController, searchBox.getText());
+            }
+        });
         this.add(searchBox);
         this.add(searchButton);
     }
 
     public void historyChange() {
-        StringBuilder searchStringBuilder = new StringBuilder();
-//        if (historyController.getDatabaseName().equals("EWE-2013-11-13")) {
-        if (!historyController.getDatabaseName().isEmpty()) {
-            searchStringBuilder.append("db:");
-            searchStringBuilder.append(historyController.getDatabaseName());
-            searchStringBuilder.append(" ");
-        }
-        if (historyController.getCriterionJoinType().equals(QueryDataStructures.CriterionJoinType.intersect)) {
-            searchStringBuilder.append("match:all ");
-        }
-        for (SearchParameters searchParameter : historyController.getSearchParametersList()) {
-            if (!searchParameter.getFileType().getType().isEmpty()) {
-                searchStringBuilder.append("file:");
-                searchStringBuilder.append(searchParameter.getFileType().getType());
-                searchStringBuilder.append(" ");
-            }
-            if (!searchParameter.getFieldType().getPath().isEmpty()) {
-                searchStringBuilder.append("field:");
-                searchStringBuilder.append(searchParameter.getFieldType().getPath());
-                searchStringBuilder.append(" ");
-            }
-            if (!searchParameter.getSearchType().equals(SearchType.equals)) {
-                searchStringBuilder.append(" ");
-                searchStringBuilder.append(searchParameter.getSearchType());
-                searchStringBuilder.append(" ");
-            }
-            // the + parameter is by default
-//            if (searchParameter.getSearchNegator().equals(SearchNegator.is)) {
-//                searchStringBuilder.append("+");
-//            }
-            if (searchParameter.getSearchNegator().equals(SearchNegator.not)) {
-                searchStringBuilder.append("-");
-            }
-            searchStringBuilder.append("\"");
-            searchStringBuilder.append(searchParameter.getSearchString());
-            searchStringBuilder.append("\" ");
-        }
-        searchBox.setText(searchStringBuilder.toString());
+        searchBox.setText(new ConciseSearchParser().getConciseString(historyController));
     }
 }

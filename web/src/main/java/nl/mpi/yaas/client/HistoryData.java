@@ -34,6 +34,7 @@ public class HistoryData {
     private String databaseName = "";
     private QueryDataStructures.CriterionJoinType criterionJoinType;
     private ArrayList<SearchParameters> searchParametersList;
+    public final QueryDataStructures.CriterionJoinType defaultCriterionJoinType = QueryDataStructures.CriterionJoinType.union;
 
     public String getDatabaseName() {
         return databaseName;
@@ -109,7 +110,7 @@ public class HistoryData {
                 searchParametersIndex++;
             }
         } else {
-            criterionJoinType = null;
+            criterionJoinType = defaultCriterionJoinType;
         }
         searchParametersList = searchParametersListTemp;
     }
