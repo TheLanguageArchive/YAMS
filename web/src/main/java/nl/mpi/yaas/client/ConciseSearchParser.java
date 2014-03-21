@@ -17,6 +17,7 @@
  */
 package nl.mpi.yaas.client;
 
+import java.util.logging.Logger;
 import nl.mpi.yaas.common.data.QueryDataStructures;
 import nl.mpi.yaas.common.data.SearchParameters;
 
@@ -26,22 +27,27 @@ import nl.mpi.yaas.common.data.SearchParameters;
  */
 public class ConciseSearchParser {
 
-    public void parseConciseSearch(HistoryController historyController, String searchString) {
+    private static final Logger logger = Logger.getLogger("");
 
+    public HistoryData parseConciseSearch(String searchString) {
+        // todo: parse the actual search string
+        final HistoryData historyData = new HistoryData();
+        return historyData;
     }
 
     public String getConciseString(HistoryController historyController) {
+        final HistoryData historyData = historyController.getHistoryData();
         StringBuilder searchStringBuilder = new StringBuilder();
 //        if (historyController.getDatabaseName().equals("EWE-2013-11-13")) {
-        if (!historyController.getDatabaseName().isEmpty()) {
+        if (!historyData.getDatabaseName().isEmpty() && !historyController.getDefaultDatabase().equals(historyData.getDatabaseName())) {
             searchStringBuilder.append("db:");
-            searchStringBuilder.append(historyController.getDatabaseName());
+            searchStringBuilder.append(historyData.getDatabaseName());
             searchStringBuilder.append(" ");
         }
-        if (historyController.getCriterionJoinType().equals(QueryDataStructures.CriterionJoinType.intersect)) {
+        if (historyData.getCriterionJoinType().equals(QueryDataStructures.CriterionJoinType.intersect)) {
             searchStringBuilder.append("match:all ");
         }
-        for (SearchParameters searchParameter : historyController.getSearchParametersList()) {
+        for (SearchParameters searchParameter : historyData.getSearchParametersList()) {
             if (!searchParameter.getFileType().getType().isEmpty()) {
                 searchStringBuilder.append("file:");
                 searchStringBuilder.append(searchParameter.getFileType().getType());

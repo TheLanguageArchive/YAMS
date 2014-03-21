@@ -21,7 +21,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.yaas.common.data.QueryDataStructures;
 import nl.mpi.yaas.common.data.SearchParameters;
@@ -35,14 +34,24 @@ public class HistoryController implements ValueChangeHandler<String> {
     ArrayList<HistoryListener> historyListeners = new ArrayList<HistoryListener>();
     private static final Logger logger = Logger.getLogger("");
     final private HistoryData historyData;
+    private String defaultDatabase = "";
 
     public HistoryController() {
         this.historyData = new HistoryData();
     }
 
+    public void setDefaultDatabase(String defaultDatabase) {
+        this.defaultDatabase = defaultDatabase;
+        historyData.setDatabaseName(defaultDatabase);
+    }
+
+    public String getDefaultDatabase() {
+        return defaultDatabase;
+    }
+
     public void onValueChange(ValueChangeEvent<String> event) {
         this.historyData.parseHistoryToken(event.getValue());
-        setStateFromHistory();
+        notifyListeners();
     }
 
     public void addHistoryListener(HistoryListener historyListener) {
@@ -53,7 +62,7 @@ public class HistoryController implements ValueChangeHandler<String> {
         historyListeners.remove(historyListener);
     }
 
-    private void setStateFromHistory() {
+    private void notifyListeners() {
         for (HistoryListener historyListener : historyListeners) {
             historyListener.historyChange();
         }
@@ -65,7 +74,7 @@ public class HistoryController implements ValueChangeHandler<String> {
 
     public void setDatabaseName(String databaseName) {
         historyData.setDatabaseName(databaseName);
-        updateHistory();
+        updateHistory(true); // todo: this should probably be a notify not history event
     }
 
     public QueryDataStructures.CriterionJoinType getCriterionJoinType() {
@@ -79,10 +88,14 @@ public class HistoryController implements ValueChangeHandler<String> {
     public void setSearchParameters(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) {
         historyData.setCriterionJoinType(criterionJoinType);
         historyData.setSearchParametersList(searchParametersList);
-        History.newItem(historyData.getHistoryToken(), false);
+        notifyListeners();
     }
 
-    private void updateHistory() {
-        History.newItem(historyData.getHistoryToken());
+    private void updateHistory(boolean issueEvent) {
+        History.newItem(historyData.getHistoryToken(), issueEvent);
+    }
+
+    public HistoryData getHistoryData() {
+        return historyData;
     }
 }

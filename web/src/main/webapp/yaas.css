@@ -17,6 +17,9 @@
  */
 /** Add css rules here for your application. */
 
+.yams-ConciseSearchBox .gwt-TextBox {
+    width: 600px;
+}
 .yaas-floatingTable {
     position: fixed;
     right: 0;

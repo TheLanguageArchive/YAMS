@@ -91,6 +91,9 @@ public class DatabaseSelect extends VerticalPanel implements HistoryListener {
 
             public void onSuccess(String[] result) {
                 databaseInfoLabel.setText("");
+                if (result.length > 0) {
+                    historyController.setDefaultDatabase(result[0]);
+                }
                 loadingImage.setVisible(false);
                 int selectedIndex = 0;
                 databaseListBox.addItem(PLEASE_SELECT_A_DATABASE);
