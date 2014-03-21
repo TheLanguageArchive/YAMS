@@ -51,7 +51,7 @@ public class HistoryController implements ValueChangeHandler<String> {
 
     public void onValueChange(ValueChangeEvent<String> event) {
         this.historyData.parseHistoryToken(event.getValue());
-        notifyListeners();
+        notifyHistoryListeners();
     }
 
     public void addHistoryListener(HistoryListener historyListener) {
@@ -62,9 +62,17 @@ public class HistoryController implements ValueChangeHandler<String> {
         historyListeners.remove(historyListener);
     }
 
-    private void notifyListeners() {
+    private void notifyHistoryListeners() {
+        //logger.info("notifyHistoryListeners");
         for (HistoryListener historyListener : historyListeners) {
             historyListener.historyChange();
+        }
+    }
+
+    private void notifyUiListeners() {
+        //logger.info("notifyUiListeners");
+        for (HistoryListener historyListener : historyListeners) {
+            historyListener.userSelectionChange();
         }
     }
 
@@ -85,13 +93,22 @@ public class HistoryController implements ValueChangeHandler<String> {
         return historyData.getSearchParametersList();
     }
 
+//    public void setCriterionJoinType(QueryDataStructures.CriterionJoinType criterionJoinType) {
+//        historyData.setCriterionJoinType(criterionJoinType);
+//        notifyUiListeners();
+//    }
+//
+//    public void setSearchParameters(ArrayList<SearchParameters> searchParametersList) {
+//        historyData.setSearchParametersList(searchParametersList);
+//        notifyUiListeners();
+//    }
     public void setSearchParameters(QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) {
         historyData.setCriterionJoinType(criterionJoinType);
         historyData.setSearchParametersList(searchParametersList);
-        notifyListeners();
+        notifyUiListeners();
     }
 
-    private void updateHistory(boolean issueEvent) {
+    public void updateHistory(boolean issueEvent) {
         History.newItem(historyData.getHistoryToken(), issueEvent);
     }
 

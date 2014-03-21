@@ -48,6 +48,10 @@ public class DatabaseStatsPanel extends VerticalPanel implements HistoryListener
         this.historyController = historyController;
     }
 
+    public void userSelectionChange() {
+        // nothing needs to be done in this class
+    }
+
     public void historyChange() {
         updateDbStats();
     }

@@ -23,5 +23,9 @@ package nl.mpi.yaas.client;
  */
 public interface HistoryListener {
 
+    // the history change is fired when a browser history event occurs
     public void historyChange();
+
+    // the user selection even fires when the value of a ui item is changed but no other action is taken
+    public void userSelectionChange();
 }

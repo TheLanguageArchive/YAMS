@@ -69,6 +69,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
     private final SearchSuggestionsStorage searchSuggestionsStorage;
 
     public SearchCriterionPanel(final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
+        this.setStyleName("yams-SearchCriterionPanel");
         this.searchOptionsService = searchOptionsService;
         searchSuggestionsStorage = new SearchSuggestionsStorage();
         Button removeRowButton = new Button("remove", new ClickHandler() {
@@ -236,7 +237,6 @@ public class SearchCriterionPanel extends HorizontalPanel {
                 }
             }
         });
-        widget.addStyleName("fieldsListBox");
         return widget;
     }
 
@@ -256,7 +256,6 @@ public class SearchCriterionPanel extends HorizontalPanel {
                 }
             }
         });
-        widget.addStyleName("typesListBox");
         widget.addValueChangeHandler(new ValueChangeHandler<MetadataFileType>() {
             public void onValueChange(ValueChangeEvent<MetadataFileType> event) {
                 loadPathsOptions(event.getValue());

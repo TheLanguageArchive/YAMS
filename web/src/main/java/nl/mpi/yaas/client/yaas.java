@@ -93,12 +93,12 @@ public class yaas implements EntryPoint, HistoryListener {
         setDebugMode(debugMode);
         RootPanel.get("databaseStats").add(new Label(GWT.getModuleBaseURL()));
         DisclosurePanel disclosurePanel = new DisclosurePanel("Search Options");
-                final DatabaseSelect databaseSelectBox = new DatabaseSelect(searchOptionsService, historyController);
+        final DatabaseSelect databaseSelectBox = new DatabaseSelect(searchOptionsService, historyController);
         historyController.addHistoryListener(this);
         historyController.addHistoryListener(databaseSelectBox);
         VerticalPanel verticalPanel = new VerticalPanel();
         verticalPanel.add(databaseSelectBox);
-        final ConciseSearchBox conciseSearchBox = new ConciseSearchBox(historyController);
+        final ConciseSearchBox conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, resultsPanel);
         historyController.addHistoryListener(conciseSearchBox);
         RootPanel.get("searchOptionsPanel").add(conciseSearchBox);
         databaseSelectBox.getDbList();
@@ -198,5 +198,9 @@ public class yaas implements EntryPoint, HistoryListener {
                 }
             });
         }
+    }
+
+    public void userSelectionChange() {
+        // nothing needs to be done in this class
     }
 }

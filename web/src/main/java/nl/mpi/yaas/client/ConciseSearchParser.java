@@ -48,12 +48,12 @@ public class ConciseSearchParser {
             searchStringBuilder.append("match:all ");
         }
         for (SearchParameters searchParameter : historyData.getSearchParametersList()) {
-            if (!searchParameter.getFileType().getType().isEmpty()) {
+            if (searchParameter.getFileType().getType() != null && !searchParameter.getFileType().getType().isEmpty()) {
                 searchStringBuilder.append("file:");
                 searchStringBuilder.append(searchParameter.getFileType().getType());
                 searchStringBuilder.append(" ");
             }
-            if (!searchParameter.getFieldType().getPath().isEmpty()) {
+            if (searchParameter.getFieldType().getPath() != null && !searchParameter.getFieldType().getPath().isEmpty()) {
                 searchStringBuilder.append("field:");
                 searchStringBuilder.append(searchParameter.getFieldType().getPath());
                 searchStringBuilder.append(" ");

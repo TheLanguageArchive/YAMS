@@ -60,6 +60,10 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
         this.setVisible(false);
     }
 
+    public void userSelectionChange() {
+        // nothing needs to be done in this class
+    }
+
     public void historyChange() {
 //        final String databaseName = historyController.getDatabaseName();
 //        if (databaseName != null&& !lastDatabaseName.equals(databaseName)) {

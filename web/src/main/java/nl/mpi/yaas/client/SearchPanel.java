@@ -21,7 +21,6 @@ package nl.mpi.yaas.client;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.text.shared.Renderer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -30,9 +29,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yaas.common.data.QueryDataStructures.SearchOption;
 import nl.mpi.yaas.common.data.SearchParameters;
@@ -85,6 +82,10 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
         buttonsPanel.add(searchButton);
         this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
         this.add(buttonsPanel);
+    }
+
+    public void userSelectionChange() {
+        // nothing needs to be done in this class
     }
 
     public void historyChange() {
@@ -141,35 +142,22 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
         searchButton = new Button(SEARCH_LABEL);
         searchButton.addStyleName(sendButtonStyle);
 
-        searchHandler = new SearchHandler() {
+        searchHandler = new SearchHandler(historyController, searchOptionsService, resultsPanel) {
             @Override
-            void performSearch() {
+            void prepareSearch() {
                 searchButton.setEnabled(false);
                 searchButton.setHTML(SEARCHING_LABEL);
-                final long startTime = System.currentTimeMillis();
                 ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
                 for (SearchCriterionPanel eventCriterionPanel : criterionPanelList) {
                     searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
                 }
                 historyController.setSearchParameters(joinTypeListBox.getValue(), searchParametersList);
-                searchOptionsService.performSearch(historyController.getDatabaseName(), joinTypeListBox.getValue(), searchParametersList, new AsyncCallback<HighlighableDataNode>() {
-                    public void onFailure(Throwable caught) {
-                        logger.log(Level.SEVERE, caught.getMessage());
-                        searchHandler.signalSearchDone();
-                        searchButton.setEnabled(true);
-                        searchButton.setHTML(SEARCH_LABEL);
-                    }
+            }
 
-                    public void onSuccess(HighlighableDataNode result) {
-                        long responseMils = System.currentTimeMillis() - startTime;
-                        final String searchTimeMessage = "PerformSearch response time: " + responseMils + " ms";
-                        logger.log(Level.INFO, searchTimeMessage);
-                        resultsPanel.addResultsTree(historyController.getDatabaseName(), result, responseMils);
-                        searchHandler.signalSearchDone();
-                        searchButton.setEnabled(true);
-                        searchButton.setHTML(SEARCH_LABEL);
-                    }
-                });
+            @Override
+            void finaliseSearch() {
+                searchButton.setEnabled(true);
+                searchButton.setHTML(SEARCH_LABEL);
             }
         };
         searchButton.addClickHandler(searchHandler);
@@ -216,6 +204,12 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
         widget.addStyleName(DEMO_LIST_BOX_STYLE);
         widget.setValue(CriterionJoinType.intersect);
         widget.setAcceptableValues(Arrays.asList(CriterionJoinType.values()));
+//        widget.addValueChangeHandler(new ValueChangeHandler<CriterionJoinType>() {
+//
+//            public void onValueChange(ValueChangeEvent<CriterionJoinType> event) {
+//                historyController.setCriterionJoinType(event.getValue());
+//            }
+//        });
         return widget;
     }
 

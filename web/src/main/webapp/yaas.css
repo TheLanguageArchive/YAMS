@@ -20,6 +20,9 @@
 .yams-ConciseSearchBox .gwt-TextBox {
     width: 600px;
 }
+yams-SearchCriterionPanel{
+
+}
 .yaas-floatingTable {
     position: fixed;
     right: 0;

@@ -105,7 +105,8 @@ public class HistoryData {
                 final String fieldType = historyParts[currentParamIndex + 1];
                 final String negatorType = historyParts[currentParamIndex + 2];
                 final String searchType = historyParts[currentParamIndex + 3];
-                final String searchText = historyParts[currentParamIndex + 4].replaceAll("%2C", ",");
+                // if the user is searching for "" then the last element will not exist
+                final String searchText = (historyParts.length < currentParamIndex + 5) ? "" : historyParts[currentParamIndex + 4].replaceAll("%2C", ",");
                 searchParametersListTemp.add(new SearchParameters(new MetadataFileType(fileType, null, null), new MetadataFileType(null, fieldType, null), QueryDataStructures.SearchNegator.valueOf(negatorType), QueryDataStructures.SearchType.valueOf(searchType), searchText));
                 searchParametersIndex++;
             }

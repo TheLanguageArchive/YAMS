@@ -56,6 +56,10 @@ public class DatabaseSelect extends VerticalPanel implements HistoryListener {
         add(loadingImage);
     }
 
+    public void userSelectionChange() {
+        // nothing needs to be done in this class
+    }
+
     public void historyChange() {
         final String databaseName = historyController.getDatabaseName();
         if (databaseName != null) {

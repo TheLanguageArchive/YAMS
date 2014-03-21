@@ -22,6 +22,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import java.util.logging.Logger;
 
 /**
  * @since Mar 18, 2014 1:27:32 PM (creation date)
@@ -29,17 +30,20 @@ import com.google.gwt.user.client.ui.TextBox;
  */
 public class ConciseSearchBox extends HorizontalPanel implements HistoryListener {
 
+    private static final Logger logger = Logger.getLogger("");
     private final HistoryController historyController;
     private final TextBox searchBox;
     private final Button searchButton;
 
-    public ConciseSearchBox(final HistoryController historyController) {
+    public ConciseSearchBox(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, ResultsPanel resultsPanel) {
+        this.setStyleName("yams-ConciseSearchBox");
         this.historyController = historyController;
         searchBox = new TextBox();
         searchButton = new Button("search", new ClickHandler() {
 
             public void onClick(ClickEvent event) {
-                new ConciseSearchParser().parseConciseSearch(historyController, searchBox.getText());
+                final HistoryData searchParameters = new ConciseSearchParser().parseConciseSearch(searchBox.getText());
+                historyController.setSearchParameters(searchParameters.getCriterionJoinType(), searchParameters.getSearchParametersList());
             }
         });
         this.add(searchBox);
@@ -47,6 +51,13 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
     }
 
     public void historyChange() {
+//        logger.info("historyChange");
         searchBox.setText(new ConciseSearchParser().getConciseString(historyController));
+    }
+
+    public void userSelectionChange() {
+//        logger.info("userSelectionChange");
+        // in this case we need to do the same thing on a user selection change as for a history change event
+        historyChange();
     }
 }
