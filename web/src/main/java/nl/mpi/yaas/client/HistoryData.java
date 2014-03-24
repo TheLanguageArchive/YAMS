@@ -18,6 +18,7 @@
 package nl.mpi.yaas.client;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.yaas.common.data.MetadataFileType;
@@ -32,6 +33,7 @@ public class HistoryData {
 
     private static final Logger logger = Logger.getLogger("");
     private String databaseName = "";
+    private final HashSet<String> searchHandles = new HashSet<String>();
     private QueryDataStructures.CriterionJoinType criterionJoinType;
     private ArrayList<SearchParameters> searchParametersList;
     public final QueryDataStructures.CriterionJoinType defaultCriterionJoinType = QueryDataStructures.CriterionJoinType.union;
@@ -130,5 +132,9 @@ public class HistoryData {
 
     public void setSearchParametersList(ArrayList<SearchParameters> searchParametersList) {
         this.searchParametersList = searchParametersList;
+    }
+
+    public void addSearchHandle(String handleString) {
+        searchHandles.add(handleString);
     }
 }

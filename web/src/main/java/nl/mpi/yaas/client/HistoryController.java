@@ -84,6 +84,9 @@ public class HistoryController implements ValueChangeHandler<String> {
         historyData.setDatabaseName(databaseName);
         updateHistory(true); // todo: this should probably be a notify not history event
     }
+    public void addSearchHandle(String handleString) {
+        historyData.addSearchHandle(handleString);
+    }
 
     public QueryDataStructures.CriterionJoinType getCriterionJoinType() {
         return historyData.getCriterionJoinType();

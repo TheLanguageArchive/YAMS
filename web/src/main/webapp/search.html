@@ -1,0 +1,76 @@
+<!--
+
+    Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+-->
+<!doctype html>
+<!-- The DOCTYPE declaration above will set the    -->
+<!-- browser's rendering engine into               -->
+<!-- "Standards Mode". Replacing this declaration  -->
+<!-- with a "Quirks Mode" doctype may lead to some -->
+<!-- differences in layout.                        -->
+
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+        <!--                                                               -->
+        <!-- Consider inlining CSS to reduce the number of requested files -->
+        <!--                                                               -->
+        <!--        <link type="text/css" rel="stylesheet" href="yaas.css">-->
+
+        <!--                                           -->
+        <!-- Any title is fine                         -->
+        <!--                                           -->
+        <title>YAMS Metadata Search</title>
+
+        <!--                                           -->
+        <!-- This script loads your compiled module.   -->
+        <!-- If you add any GWT meta tags, they must   -->
+        <!-- be added before this line.                -->
+        <!--                                           -->
+        <script type="text/javascript" language="javascript" src="yaas/yaas.nocache.js"></script>
+    </head>
+
+    <!--                                           -->
+    <!-- The body can have arbitrary html, or      -->
+    <!-- you can leave the body empty if you want  -->
+    <!-- to create a completely dynamic UI.        -->
+    <!--                                           -->
+    <body>
+
+        <!-- OPTIONAL: include this if you want history support -->
+        <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
+
+        <!-- RECOMMENDED if your web app will not function without JavaScript enabled -->
+        <noscript>
+        <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+            Your web browser must have JavaScript enabled
+            in order for this application to display correctly.
+        </div>
+        </noscript>
+        <div id="main2"><div id="main">
+                <table border="0"><tr><td  width="100%" style="vertical-align: top;">
+                            <table style="vertical-align: top;">
+                                <tr><td id="searchOptionsPanel"></td><td align="right" valign="top" rowspan="3"></td></tr>
+                                <tr><td id="resultsPanel"></td></tr>
+                                <tr><td id="facetedTree"></td></tr>
+                            </table></td><td style="vertical-align: top;"><div id="linksPanel" style="visibility: hidden"></div><br><div id="optionsPanel" style="visibility: hidden"></div><br><div id="databaseStats"></div></td></tr></table>
+                <div id="loggerPanel"></div><br>
+                <div id="dataNodeTable" class="yaas-floatingTable"></div>
+            </div></div></body>
+</html>

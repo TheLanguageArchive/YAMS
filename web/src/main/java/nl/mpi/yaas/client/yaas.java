@@ -59,10 +59,10 @@ public class yaas implements EntryPoint, HistoryListener {
 
     public void onModuleLoad() {
         searchOptionsService = GWT.create(SearchOptionsService.class);
-//        String databaseName = com.google.gwt.user.client.Window.Location.getParameter("databaseName");
-//        if (databaseName == null) {
-//            databaseName = DataBaseManager.defaultDataBase;
-//        }      
+        String searchHandle = com.google.gwt.user.client.Window.Location.getParameter("hdl");
+        if (searchHandle != null) {
+            historyController.addSearchHandle(searchHandle);
+        }
         setupPage(historyController);
         History.addValueChangeHandler(historyController);
         logger.addHandler(new HasWidgetsLogHandler(loggerPanel));
