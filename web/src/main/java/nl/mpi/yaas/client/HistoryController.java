@@ -33,7 +33,7 @@ public class HistoryController implements ValueChangeHandler<String> {
 
     ArrayList<HistoryListener> historyListeners = new ArrayList<HistoryListener>();
     private static final Logger logger = Logger.getLogger("");
-    final private HistoryData historyData;
+    private HistoryData historyData;
     private String defaultDatabase = "";
 
     public HistoryController() {
@@ -42,7 +42,9 @@ public class HistoryController implements ValueChangeHandler<String> {
 
     public void setDefaultDatabase(String defaultDatabase) {
         this.defaultDatabase = defaultDatabase;
-        historyData.setDatabaseName(defaultDatabase);
+        if (historyData.getDatabaseName().isEmpty()) {
+            historyData.setDatabaseName(defaultDatabase);
+        }
     }
 
     public String getDefaultDatabase() {
@@ -84,6 +86,7 @@ public class HistoryController implements ValueChangeHandler<String> {
         historyData.setDatabaseName(databaseName);
         updateHistory(true); // todo: this should probably be a notify not history event
     }
+
     public void addSearchHandle(String handleString) {
         historyData.addSearchHandle(handleString);
     }
@@ -117,5 +120,10 @@ public class HistoryController implements ValueChangeHandler<String> {
 
     public HistoryData getHistoryData() {
         return historyData;
+    }
+
+    public void setHistoryData(HistoryData historyData) {
+        this.historyData = historyData;
+        notifyUiListeners();
     }
 }

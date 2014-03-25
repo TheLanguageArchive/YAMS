@@ -31,9 +31,10 @@ public class ConciseSearchParser {
 
     private static final String QUOTE_CHAR = "\"";
     private static final String SPLIT_CHAR = " ";
-    private static final String COMMAND_STRING = ":";
     private static final String NEGATOR_CHAR = "-";
     private static final QueryDataStructures.SearchNegator DEFAULT_NEGATOR = QueryDataStructures.SearchNegator.is;
+    private static final String COMMAND_STRING = ":";
+    private static final String DB_COMMAND = "db" + COMMAND_STRING;
 
     private static final Logger logger = Logger.getLogger("");
 
@@ -71,7 +72,7 @@ public class ConciseSearchParser {
                 searchTerm.append(SPLIT_CHAR);
             }
             if (!parameter.isEmpty()) {
-                if (!isConsumedCommand) {
+                if (!isConsumedCommand && !withinQuote) {
                     for (QueryDataStructures.SearchType currentType : QueryDataStructures.SearchType.values()) {
                         if (currentType.name().equals(parameter)) {
                             searchType = currentType;
@@ -79,7 +80,13 @@ public class ConciseSearchParser {
                         }
                     }
                 }
-                if (!withinQuote && parameter.contains(COMMAND_STRING)) {
+                if (!isConsumedCommand && !withinQuote && parameter.startsWith(DB_COMMAND)) {
+                    historyData.setDatabaseName(parameter.substring(DB_COMMAND.length()));
+                    isConsumedCommand = true;
+                }
+                if (!isConsumedCommand && !withinQuote && parameter.contains(COMMAND_STRING)) {
+                    logger.info("unused command found:");
+                    logger.info(parameter);
                     isConsumedCommand = true;
                 }
                 if (!isConsumedCommand) {

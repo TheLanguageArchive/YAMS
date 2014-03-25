@@ -98,6 +98,8 @@ public class yaas implements EntryPoint, HistoryListener {
         historyController.addHistoryListener(databaseSelectBox);
         VerticalPanel verticalPanel = new VerticalPanel();
         verticalPanel.add(databaseSelectBox);
+        final DataNodeTable dataNodeTable = new DataNodeTable();
+        resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
         final ConciseSearchBox conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, resultsPanel);
         historyController.addHistoryListener(conciseSearchBox);
         RootPanel.get("searchOptionsPanel").add(conciseSearchBox);
@@ -136,8 +138,6 @@ public class yaas implements EntryPoint, HistoryListener {
 //        });
 //        PhonegapUtil.prepareService(serviceDefTarget, moduleBaseURL, "searchoptions");
         iconInfoPanel = new IconInfoPanel();
-        final DataNodeTable dataNodeTable = new DataNodeTable();
-        resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
         searchOptionsPanel = new SearchPanel(searchOptionsService, historyController, resultsPanel, dataNodeTable);
         historyController.addHistoryListener(searchOptionsPanel);
         searchOptionsPanel.setVisible(false);

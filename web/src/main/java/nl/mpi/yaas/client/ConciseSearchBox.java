@@ -17,8 +17,6 @@
  */
 package nl.mpi.yaas.client;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -39,13 +37,24 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
         this.setStyleName("yams-ConciseSearchBox");
         this.historyController = historyController;
         searchBox = new TextBox();
-        searchButton = new Button("search", new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
+        searchButton = new Button("search");
+        SearchHandler searchHandler = new SearchHandler(historyController, searchOptionsService, resultsPanel) {
+            @Override
+            void prepareSearch() {
+                searchButton.setEnabled(false);
                 final HistoryData searchParameters = new ConciseSearchParser().parseConciseSearch(searchBox.getText());
-                historyController.setSearchParameters(searchParameters.getCriterionJoinType(), searchParameters.getSearchParametersList());
+                historyController.setHistoryData(searchParameters);
+//                searchButton.setHTML(SEARCHING_LABEL);
             }
-        });
+
+            @Override
+            void finaliseSearch() {
+                searchButton.setEnabled(true);
+//                searchButton.setHTML(SEARCH_LABEL);
+            }
+        };
+        searchButton.addClickHandler(searchHandler);
+        searchBox.addKeyUpHandler(searchHandler);
         this.add(searchBox);
         this.add(searchButton);
     }

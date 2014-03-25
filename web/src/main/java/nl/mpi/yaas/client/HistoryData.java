@@ -34,8 +34,8 @@ public class HistoryData {
     private static final Logger logger = Logger.getLogger("");
     private String databaseName = "";
     private final HashSet<String> searchHandles = new HashSet<String>();
-    private QueryDataStructures.CriterionJoinType criterionJoinType;
-    private ArrayList<SearchParameters> searchParametersList;
+    private QueryDataStructures.CriterionJoinType criterionJoinType = QueryDataStructures.CriterionJoinType.union;
+    private ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
     public final QueryDataStructures.CriterionJoinType defaultCriterionJoinType = QueryDataStructures.CriterionJoinType.union;
 
     public String getDatabaseName() {
