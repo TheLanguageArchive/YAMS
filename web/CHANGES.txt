@@ -1,3 +1,13 @@
+2014-03-25
+Moved the array of dropdown boxes into an assisted search panel that is shown only by user action.
+Added the concise search box that supports all of the search parameters available via the assisted search.
+Added the mythical tree table for the search results. More work will need to be done to allow for resizable columns.
+Added paging to all trees including search results.
+Removed some info level logging to keep Eric's logs shiny.
+Tweaked the search hints and the way they are requested more server friendly.
+Added a combined data base list/info query to reduce the calls to the server (more work to be done).
+Corrected an issue where table stays at the top of the page, where you cannot see it after unchecking a tree node to remove an item.
+Added a function to hide the table when no rows are left to show.
 2014-02-14
 Tidied up the context.xml.
 Added the logger to the RPC service.
