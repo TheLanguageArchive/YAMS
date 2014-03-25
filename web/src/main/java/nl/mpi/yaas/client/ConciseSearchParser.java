@@ -34,15 +34,20 @@ public class ConciseSearchParser {
     private static final String NEGATOR_CHAR = "-";
     private static final QueryDataStructures.SearchNegator DEFAULT_NEGATOR = QueryDataStructures.SearchNegator.is;
     private static final String COMMAND_STRING = ":";
+    private static final String JOIN_TYPE_INTERSECT = "all";
+    private static final String JOIN_TYPE_UNION = "any";
     private static final String DB_COMMAND = "db" + COMMAND_STRING;
+    private static final String FILE_COMMAND = "type" + COMMAND_STRING;
+    private static final String FIELD_COMMAND = "path" + COMMAND_STRING;
+    private static final String MATCH_COMMAND = "match" + COMMAND_STRING;
 
     private static final Logger logger = Logger.getLogger("");
 
     public HistoryData parseConciseSearch(String searchString) {
         // while we would prefer to use StringTokenzier we cannot because this section will be used in javascript via GWT
         final HistoryData historyData = new HistoryData();
-        final MetadataFileType type = new MetadataFileType(null, "", "");
-        final MetadataFileType path = new MetadataFileType("", null, "");
+        MetadataFileType type = new MetadataFileType(null, "", "");
+        MetadataFileType path = new MetadataFileType("", null, "");
         QueryDataStructures.SearchNegator searchNegator = DEFAULT_NEGATOR;
         QueryDataStructures.SearchType searchType = QueryDataStructures.SearchType.equals;
         final ArrayList<SearchParameters> searchParametersList = historyData.getSearchParametersList();
@@ -80,8 +85,31 @@ public class ConciseSearchParser {
                         }
                     }
                 }
+                if (!isConsumedCommand && !withinQuote && parameter.startsWith(MATCH_COMMAND)) {
+                    final String commandString = parameter.substring(MATCH_COMMAND.length());
+                    if (JOIN_TYPE_UNION.equals(commandString)) {
+                        historyData.setCriterionJoinType(QueryDataStructures.CriterionJoinType.union);
+                    }
+                    if (JOIN_TYPE_INTERSECT.equals(commandString)) {
+                        historyData.setCriterionJoinType(QueryDataStructures.CriterionJoinType.intersect);
+                    }
+//                    for (QueryDataStructures.CriterionJoinType currentType : QueryDataStructures.CriterionJoinType.values()) {
+//                        if (currentType.name().equals(commandString)) {
+//                            historyData.setCriterionJoinType(currentType);
+//                        }
+//                    }
+                    isConsumedCommand = true;
+                }
                 if (!isConsumedCommand && !withinQuote && parameter.startsWith(DB_COMMAND)) {
                     historyData.setDatabaseName(parameter.substring(DB_COMMAND.length()));
+                    isConsumedCommand = true;
+                }
+                if (!isConsumedCommand && !withinQuote && parameter.startsWith(FILE_COMMAND)) {
+                    type = new MetadataFileType(parameter.substring(FILE_COMMAND.length()), "", "");
+                    isConsumedCommand = true;
+                }
+                if (!isConsumedCommand && !withinQuote && parameter.startsWith(FIELD_COMMAND)) {
+                    path = new MetadataFileType("", parameter.substring(FIELD_COMMAND.length()), "");
                     isConsumedCommand = true;
                 }
                 if (!isConsumedCommand && !withinQuote && parameter.contains(COMMAND_STRING)) {
@@ -113,39 +141,39 @@ public class ConciseSearchParser {
         StringBuilder searchStringBuilder = new StringBuilder();
 //        if (historyController.getDatabaseName().equals("EWE-2013-11-13")) {
         if (!historyData.getDatabaseName().isEmpty() && !historyController.getDefaultDatabase().equals(historyData.getDatabaseName())) {
-            searchStringBuilder.append("db:");
+            searchStringBuilder.append(DB_COMMAND);
             searchStringBuilder.append(historyData.getDatabaseName());
-            searchStringBuilder.append(" ");
+            searchStringBuilder.append(SPLIT_CHAR);
         }
         if (historyData.getCriterionJoinType().equals(QueryDataStructures.CriterionJoinType.intersect)) {
-            searchStringBuilder.append("match:all ");
+            searchStringBuilder.append(MATCH_COMMAND + JOIN_TYPE_INTERSECT + SPLIT_CHAR);
         }
         for (SearchParameters searchParameter : historyData.getSearchParametersList()) {
             if (searchParameter.getFileType().getType() != null && !searchParameter.getFileType().getType().isEmpty()) {
-                searchStringBuilder.append("file:");
+                searchStringBuilder.append(FILE_COMMAND);
                 searchStringBuilder.append(searchParameter.getFileType().getType());
-                searchStringBuilder.append(" ");
+                searchStringBuilder.append(SPLIT_CHAR);
             }
             if (searchParameter.getFieldType().getPath() != null && !searchParameter.getFieldType().getPath().isEmpty()) {
-                searchStringBuilder.append("field:");
+                searchStringBuilder.append(FIELD_COMMAND);
                 searchStringBuilder.append(searchParameter.getFieldType().getPath());
-                searchStringBuilder.append(" ");
+                searchStringBuilder.append(SPLIT_CHAR);
             }
             if (!searchParameter.getSearchType().equals(QueryDataStructures.SearchType.equals)) {
-                searchStringBuilder.append(" ");
+                searchStringBuilder.append(SPLIT_CHAR);
                 searchStringBuilder.append(searchParameter.getSearchType());
-                searchStringBuilder.append(" ");
+                searchStringBuilder.append(SPLIT_CHAR);
             }
             // the + parameter is by default
 //            if (searchParameter.getSearchNegator().equals(SearchNegator.is)) {
 //                searchStringBuilder.append("+");
 //            }
             if (searchParameter.getSearchNegator().equals(QueryDataStructures.SearchNegator.not)) {
-                searchStringBuilder.append("-");
+                searchStringBuilder.append(NEGATOR_CHAR);
             }
-            searchStringBuilder.append("\"");
+            searchStringBuilder.append(QUOTE_CHAR);
             searchStringBuilder.append(searchParameter.getSearchString());
-            searchStringBuilder.append("\" ");
+            searchStringBuilder.append(QUOTE_CHAR + SPLIT_CHAR);
         }
         return searchStringBuilder.toString();
     }
