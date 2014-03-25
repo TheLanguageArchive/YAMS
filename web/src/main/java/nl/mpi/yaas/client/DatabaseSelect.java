@@ -20,13 +20,12 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.yaas.common.data.DatabaseStats;
 
 /**
  * @since Nov 4, 2013 4:02:36 PM (creation date)
@@ -35,29 +34,43 @@ import java.util.logging.Logger;
 public class DatabaseSelect extends VerticalPanel implements HistoryListener {
 
     private final ListBox databaseListBox = new ListBox();
-    private final SearchOptionsServiceAsync searchOptionsService;
     private static final String FAILED_TO_GET_THE_DATABASE_LIST = "Failed to get the database list, is the database running?";
     public static final String PLEASE_SELECT_A_DATABASE = "<please select a database>";
     private static final String LOADING_DATABASE_LIST = "Loading database list.";
     private static final String LOADING_DATABASE = "Loading database.";
     private static final Logger logger = Logger.getLogger("");
     private final HistoryController historyController;
+    private final DatabaseInfo databaseInfo;
     private final Label databaseInfoLabel;
     final private Image loadingImage;
 
-    public DatabaseSelect(SearchOptionsServiceAsync searchOptionsService, HistoryController historyController) {
-        this.searchOptionsService = searchOptionsService;
+    public DatabaseSelect(final HistoryController historyController, DatabaseInfo databaseInfo) {
         add(databaseListBox);
         databaseInfoLabel = new Label(LOADING_DATABASE_LIST);
         add(databaseInfoLabel);
         this.historyController = historyController;
-//        this.databaseName = databaseName;
+        this.databaseInfo = databaseInfo;
         loadingImage = new Image("./loader.gif");
         add(loadingImage);
+        databaseListBox.addChangeHandler(new ChangeHandler() {
+            public void onChange(ChangeEvent event) {
+                final String itemText = databaseListBox.getItemText(databaseListBox.getSelectedIndex());
+                if (PLEASE_SELECT_A_DATABASE.equals(itemText)) {
+                    historyController.setDatabaseName(null);
+                } else {
+                    historyController.setDatabaseName(itemText);
+                }
+            }
+        });
     }
 
     public void userSelectionChange() {
-        // nothing needs to be done in this class
+        if (databaseInfo.hasDatabaseError()) {
+            showError();
+        } else {
+            setDatabaseNames(databaseInfo.getDatabaseList());
+            showDatabaseInfo(databaseInfo.getDatabaseStats(historyController.getDatabaseName()));
+        }
     }
 
     public void historyChange() {
@@ -85,40 +98,35 @@ public class DatabaseSelect extends VerticalPanel implements HistoryListener {
         loadingImage.setVisible(false);
     }
 
-    public void getDbList() {
-        searchOptionsService.getDatabaseList(new AsyncCallback<String[]>() {
-            public void onFailure(Throwable caught) {
-                databaseInfoLabel.setText(FAILED_TO_GET_THE_DATABASE_LIST);
-                logger.log(Level.SEVERE, caught.getMessage());
-                loadingImage.setVisible(false);
-            }
+    private void showError() {
+        databaseInfoLabel.setText(FAILED_TO_GET_THE_DATABASE_LIST);
+        loadingImage.setVisible(false);
+    }
 
-            public void onSuccess(String[] result) {
-                databaseInfoLabel.setText("");
-                if (result.length > 0) {
-                    historyController.setDefaultDatabase(result[0]);
+    private void showDatabaseInfo(DatabaseStats result) {
+        if (result != null) {
+            final String knownDocumentsText = "Available Documents: " + result.getKnownDocumentsCount();
+            final String missingDocumentsText = "Missing Documents: " + result.getMisingDocumentsCount();
+            setDatabaseInfoLabel(knownDocumentsText + " " + missingDocumentsText);
+        } else {
+            databaseInfoLabel.setText("");
+        }
+    }
+
+    private void setDatabaseNames(String[] databaseNames) {
+        // only if our list does not match the server list do we do anything here because the database list will not change within the scope of a page
+        if (databaseNames.length != databaseListBox.getItemCount() - 1) {
+            loadingImage.setVisible(false);
+            int selectedIndex = 0;
+            databaseListBox.clear();
+            databaseListBox.addItem(PLEASE_SELECT_A_DATABASE);
+            for (String databaseNameItem : databaseNames) {
+                databaseListBox.addItem(databaseNameItem);
+                if (databaseNameItem.equals(historyController.getDatabaseName())) {
+                    selectedIndex = databaseListBox.getItemCount() - 1;
                 }
-                loadingImage.setVisible(false);
-                int selectedIndex = 0;
-                databaseListBox.addItem(PLEASE_SELECT_A_DATABASE);
-                for (String databaseNameItem : result) {
-                    databaseListBox.addItem(databaseNameItem);
-                    if (databaseNameItem.equals(historyController.getDatabaseName())) {
-                        selectedIndex = databaseListBox.getItemCount() - 1;
-                    }
-                }
-                databaseListBox.setSelectedIndex(selectedIndex);
-                databaseListBox.addChangeHandler(new ChangeHandler() {
-                    public void onChange(ChangeEvent event) {
-                        final String itemText = databaseListBox.getItemText(databaseListBox.getSelectedIndex());
-                        if (PLEASE_SELECT_A_DATABASE.equals(itemText)) {
-                            historyController.setDatabaseName(null);
-                        } else {
-                            historyController.setDatabaseName(itemText);
-                        }
-                    }
-                });
             }
-        });
+            databaseListBox.setSelectedIndex(selectedIndex);
+        }
     }
 }

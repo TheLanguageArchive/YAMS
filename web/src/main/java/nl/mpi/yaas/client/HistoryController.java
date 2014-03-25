@@ -84,7 +84,7 @@ public class HistoryController implements ValueChangeHandler<String> {
 
     public void setDatabaseName(String databaseName) {
         historyData.setDatabaseName(databaseName);
-        updateHistory(true); // todo: this should probably be a notify not history event
+        notifyUiListeners();
     }
 
     public void addSearchHandle(String handleString) {
@@ -124,6 +124,10 @@ public class HistoryController implements ValueChangeHandler<String> {
 
     public void setHistoryData(HistoryData historyData) {
         this.historyData = historyData;
+        notifyUiListeners();
+    }
+
+    public void fireDatabaseInfoEvent() {
         notifyUiListeners();
     }
 }

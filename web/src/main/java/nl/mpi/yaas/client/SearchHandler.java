@@ -41,9 +41,11 @@ public abstract class SearchHandler implements ClickHandler, KeyUpHandler {
     private final Object searchLockObject = new Object();
     private final SearchOptionsServiceAsync searchOptionsService;
     private final ResultsPanel resultsPanel;
+    private final DatabaseInfo databaseInfo;
 
-    public SearchHandler(HistoryController historyController, SearchOptionsServiceAsync searchOptionsService, ResultsPanel resultsPanel) {
+    public SearchHandler(HistoryController historyController, DatabaseInfo databaseInfo, SearchOptionsServiceAsync searchOptionsService, ResultsPanel resultsPanel) {
         this.historyController = historyController;
+        this.databaseInfo = databaseInfo;
         this.searchOptionsService = searchOptionsService;
         this.resultsPanel = resultsPanel;
     }
@@ -90,7 +92,8 @@ public abstract class SearchHandler implements ClickHandler, KeyUpHandler {
                 long responseMils = System.currentTimeMillis() - startTime;
                 final String searchTimeMessage = "PerformSearch response time: " + responseMils + " ms";
                 logger.log(Level.INFO, searchTimeMessage);
-                resultsPanel.addResultsTree(historyController.getDatabaseName(), result, responseMils);
+                final String databaseName = historyController.getDatabaseName();
+                resultsPanel.addResultsTree(databaseName, databaseInfo.getDatabaseIcons(databaseName), result, responseMils);
                 signalSearchDone();
                 finaliseSearch();
                 historyController.updateHistory(false);

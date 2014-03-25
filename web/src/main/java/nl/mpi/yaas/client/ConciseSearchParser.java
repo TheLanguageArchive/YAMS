@@ -140,7 +140,7 @@ public class ConciseSearchParser {
         final HistoryData historyData = historyController.getHistoryData();
         StringBuilder searchStringBuilder = new StringBuilder();
 //        if (historyController.getDatabaseName().equals("EWE-2013-11-13")) {
-        if (!historyData.getDatabaseName().isEmpty() && !historyController.getDefaultDatabase().equals(historyData.getDatabaseName())) {
+        if (historyData.getDatabaseName() != null && !historyData.getDatabaseName().isEmpty() && !historyController.getDefaultDatabase().equals(historyData.getDatabaseName())) {
             searchStringBuilder.append(DB_COMMAND);
             searchStringBuilder.append(historyData.getDatabaseName());
             searchStringBuilder.append(SPLIT_CHAR);

@@ -46,12 +46,8 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
     private final DataNodeTable dataNodeTable;
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
-    private IconTableBase64 iconTableBase64;
 //    final String lastDatabaseName;
-    private DataNodeTree dataNodeTree;
     // todo: replace the variabls dataNodeTreeRootIds and dataNodeTreeDb by updating the web service provide all the required information (db, root nodes, icons, stats) in one connection
-    private DataNodeId[] dataNodeTreeRootIds = null;
-    private String dataNodeTreeDb = null;
 
     public ResultsPanel(final DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController) {
         this.dataNodeTable = dataNodeTable;
@@ -81,32 +77,7 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
 //        }
     }
 
-    public void setIconTableBase64(IconTableBase64 iconTableBase64) {
-        this.iconTableBase64 = iconTableBase64;
-        if (dataNodeTreeRootIds != null) {
-            // todo: replace this overly complicated reload process by updating the web service provide all the required information (db, root nodes, icons, stats) in one connection
-            addDatabaseTree(dataNodeTreeDb, dataNodeTreeRootIds);
-        }
-    }
-
-    public void addDatabaseTree(String databaseName, DataNodeId[] dataNodeIds) {
-        // todo: this could end up being a threading issue with iconTableBase64 being set from the wrong database
-        remove(dataNodeTree);
-        dataNodeTreeRootIds = dataNodeIds;
-        dataNodeTreeDb = databaseName;
-        dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, iconTableBase64);
-        dataNodeTree.addResultsToTree(databaseName, dataNodeIds);
-        this.insert(dataNodeTree, databaseName, 0);
-        this.selectTab(this.getWidgetIndex(dataNodeTree));
-        this.setVisible(true);
-    }
-
-    public void removeDatabaseTree() {
-        remove(dataNodeTree);
-        this.setVisible(this.getTabBar().getTabCount() > 0);
-    }
-
-    public void addResultsTree(String databaseName, HighlighableDataNode dataNode, long responseTimeMils) {
+    public void addResultsTree(String databaseName, IconTableBase64 iconTableBase64, HighlighableDataNode dataNode, long responseTimeMils) {
         try {
             VerticalPanel verticalPanel = new VerticalPanel();
             final List<DataNodeLink> childIds = dataNode.getChildIds();

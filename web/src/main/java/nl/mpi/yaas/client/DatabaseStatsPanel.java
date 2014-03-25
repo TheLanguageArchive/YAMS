@@ -18,10 +18,8 @@
  */
 package nl.mpi.yaas.client;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.yaas.common.data.DatabaseStats;
 
@@ -32,61 +30,51 @@ import nl.mpi.yaas.common.data.DatabaseStats;
  */
 public class DatabaseStatsPanel extends VerticalPanel implements HistoryListener {
 
-    private final SearchOptionsServiceAsync searchOptionsService;
-    private final ResultsPanel resultsPanel;
     private static final Logger logger = Logger.getLogger("");
     private static final String FAILED_TO_GET_THE_DATABASE_STATISTICS = "Failed to get the database statistics";
-//    final private SearchOptionsServiceAsync searchOptionsService;
-//    final private DataNodeTree dataNodeTree;
-    private final DatabaseSelect databaseSelect;
     private final HistoryController historyController;
+    private final DatabaseInfo databaseInfo;
+    private String databaseName = null;
 
-    public DatabaseStatsPanel(SearchOptionsServiceAsync searchOptionsService, final ResultsPanel resultsPanel, DatabaseSelect databaseSelect, HistoryController historyController) {
-        this.searchOptionsService = searchOptionsService;
-        this.resultsPanel = resultsPanel;
-        this.databaseSelect = databaseSelect;
+    public DatabaseStatsPanel(DatabaseInfo databaseInfo, HistoryController historyController) {
         this.historyController = historyController;
+        this.databaseInfo = databaseInfo;
     }
 
     public void userSelectionChange() {
-        // nothing needs to be done in this class
+        if (!databaseInfo.ready()) {
+            DatabaseStatsPanel.this.add(new Label("Getting Database Stats"));
+        } else {
+            final String currentDatabaseName = historyController.getDatabaseName();
+            if (databaseName == null || !databaseName.equals(currentDatabaseName)) {
+                databaseName = currentDatabaseName;
+                DatabaseStatsPanel.this.clear();
+                if (databaseInfo.hasDatabaseError()) {
+                    showError();
+                }
+                showDatabaseInfo(databaseInfo.getDatabaseStats(currentDatabaseName));
+            }
+        }
     }
 
     public void historyChange() {
-        updateDbStats();
+        userSelectionChange();
     }
 
-    private void updateDbStats() {
-        DatabaseStatsPanel.this.clear();
-        final String databaseName = historyController.getDatabaseName();
-        if (databaseName != null) {
-            if (databaseName.isEmpty()) {
-                resultsPanel.removeDatabaseTree();
-            } else {
-                DatabaseStatsPanel.this.add(new Label("Current Database: " + databaseName));
-                //        this.searchOptionsService = searchOptionsService;
-                //        this.dataNodeTree = dataNodeTree;
-                //        DatabaseStatsPanel.this.add(new Label("Getting Database Stats"));
-                searchOptionsService.getDatabaseStats(databaseName, new AsyncCallback<DatabaseStats>() {
-                    public void onFailure(Throwable caught) {
-                        DatabaseStatsPanel.this.add(new Label(FAILED_TO_GET_THE_DATABASE_STATISTICS));
-                        logger.log(Level.SEVERE, FAILED_TO_GET_THE_DATABASE_STATISTICS);
-                    }
+    private void showError() {
+        DatabaseStatsPanel.this.add(new Label(FAILED_TO_GET_THE_DATABASE_STATISTICS));
+    }
 
-                    public void onSuccess(DatabaseStats result) {
-                        final String knownDocumentsText = "Available Documents: " + result.getKnownDocumentsCount();
-                        final String missingDocumentsText = "Missing Documents: " + result.getMisingDocumentsCount();
-                        DatabaseStatsPanel.this.add(new Label(knownDocumentsText));
-                        DatabaseStatsPanel.this.add(new Label("Root Documents Count: " + result.getRootDocumentsCount()));
-                        DatabaseStatsPanel.this.add(new Label(missingDocumentsText));
-                        DatabaseStatsPanel.this.add(new Label("Duplicate Documents Count: " + result.getDuplicateDocumentsCount()));
-                        DatabaseStatsPanel.this.add(new Label("Query time: " + result.getQueryTimeMS() + "ms"));
-                        //                final YaasTreeItem yaasTreeItem = new YaasTreeItem();
-                        resultsPanel.addDatabaseTree(databaseName, result.getRootDocumentsIDs());
-                        databaseSelect.setDatabaseInfoLabel(knownDocumentsText + " " + missingDocumentsText);
-                    }
-                });
-            }
+    private void showDatabaseInfo(DatabaseStats result) {
+        if (result != null) {
+            DatabaseStatsPanel.this.add(new Label("Current Database: " + databaseName));
+            final String knownDocumentsText = "Available Documents: " + result.getKnownDocumentsCount();
+            final String missingDocumentsText = "Missing Documents: " + result.getMisingDocumentsCount();
+            DatabaseStatsPanel.this.add(new Label(knownDocumentsText));
+            DatabaseStatsPanel.this.add(new Label("Root Documents Count: " + result.getRootDocumentsCount()));
+            DatabaseStatsPanel.this.add(new Label(missingDocumentsText));
+            DatabaseStatsPanel.this.add(new Label("Duplicate Documents Count: " + result.getDuplicateDocumentsCount()));
+            DatabaseStatsPanel.this.add(new Label("Query time: " + result.getQueryTimeMS() + "ms"));
         }
     }
 }

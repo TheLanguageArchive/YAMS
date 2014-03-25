@@ -33,12 +33,12 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
     private final TextBox searchBox;
     private final Button searchButton;
 
-    public ConciseSearchBox(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, ResultsPanel resultsPanel) {
+    public ConciseSearchBox(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInfo databaseInfo, ResultsPanel resultsPanel) {
         this.setStyleName("yams-ConciseSearchBox");
         this.historyController = historyController;
         searchBox = new TextBox();
         searchButton = new Button("search");
-        SearchHandler searchHandler = new SearchHandler(historyController, searchOptionsService, resultsPanel) {
+        SearchHandler searchHandler = new SearchHandler(historyController, databaseInfo, searchOptionsService, resultsPanel) {
             @Override
             void prepareSearch() {
                 searchButton.setEnabled(false);
@@ -57,6 +57,7 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
         searchBox.addKeyUpHandler(searchHandler);
         this.add(searchBox);
         this.add(searchButton);
+        // todo: add an oracal for commands and values
     }
 
     public void historyChange() {

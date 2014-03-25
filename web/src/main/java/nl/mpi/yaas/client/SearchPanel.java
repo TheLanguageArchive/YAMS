@@ -58,10 +58,12 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
     private final ValueListBox<CriterionJoinType> joinTypeListBox;
     private final VerticalPanel verticalPanel;
     private final ArrayList<SearchCriterionPanel> criterionPanelList = new ArrayList<SearchCriterionPanel>();
+    private final DatabaseInfo databaseInfo;
 
-    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, ResultsPanel resultsPanel, DataNodeTable dataNodeTable) {
+    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInfo databaseInfo, ResultsPanel resultsPanel, DataNodeTable dataNodeTable) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
+        this.databaseInfo = databaseInfo;
         this.dataNodeTable = dataNodeTable;
         this.resultsPanel = resultsPanel;
         verticalPanel = new VerticalPanel();
@@ -142,7 +144,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
         searchButton = new Button(SEARCH_LABEL);
         searchButton.addStyleName(sendButtonStyle);
 
-        searchHandler = new SearchHandler(historyController, searchOptionsService, resultsPanel) {
+        searchHandler = new SearchHandler(historyController, databaseInfo, searchOptionsService, resultsPanel) {
             @Override
             void prepareSearch() {
                 searchButton.setEnabled(false);
