@@ -17,7 +17,9 @@
  */
 package nl.mpi.yaas.client;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
+import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures;
 import nl.mpi.yaas.common.data.SearchParameters;
 
@@ -27,11 +29,55 @@ import nl.mpi.yaas.common.data.SearchParameters;
  */
 public class ConciseSearchParser {
 
+    private static final String quoteChar = "\"";
+    private static final String splitChar = " ";
+    private static final String commandString = ":";
+
     private static final Logger logger = Logger.getLogger("");
 
     public HistoryData parseConciseSearch(String searchString) {
-        // todo: parse the actual search string
+        // while we would prefer to use StringTokenzier we cannot because this section will be used in javascript via GWT
         final HistoryData historyData = new HistoryData();
+        final MetadataFileType type = new MetadataFileType("", "", "");
+        final MetadataFileType path = new MetadataFileType("", "", "");
+        final QueryDataStructures.SearchNegator searchNegator = QueryDataStructures.SearchNegator.is;
+        final QueryDataStructures.SearchType searchType = QueryDataStructures.SearchType.equals;
+        final ArrayList<SearchParameters> searchParametersList = historyData.getSearchParametersList();
+        boolean withinQuote = false;
+//        boolean isCommand = false;
+        StringBuilder searchTerm = new StringBuilder();
+        for (String parameter : searchString.split(splitChar)) {
+            if (!withinQuote && parameter.startsWith(quoteChar)) {
+                withinQuote = true;
+                // remove the start quote char
+                parameter = parameter.substring(1);
+            }
+            if (withinQuote && parameter.endsWith(quoteChar)) {
+                withinQuote = false;
+                // remove the start quote char
+                parameter = parameter.substring(0, parameter.length() - 1);
+            }
+            if (searchTerm.length() > 0) {
+                // if we are within quotes then reassemple the string
+                searchTerm.append(splitChar);
+            }
+            if (!parameter.isEmpty()) {
+                if (!withinQuote && parameter.contains(commandString)) {
+//                    isCommand = true;
+                } else {
+                    searchTerm.append(parameter);
+                }
+            }
+            if (!withinQuote && searchTerm.length() > 0) {
+                // todo: process all the possible values on the search string like db: type: path: contains equals fuzzy + - etc...
+                searchParametersList.add(new SearchParameters(type, path, searchNegator, searchType, searchTerm.toString()));
+                searchTerm = new StringBuilder();
+            }
+        }
+        // add any remaining parts if the final quote is missing
+        if (searchTerm.length() > 0) {
+            searchParametersList.add(new SearchParameters(type, path, searchNegator, searchType, searchTerm.toString()));
+        }
         return historyData;
     }
 
