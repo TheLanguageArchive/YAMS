@@ -29,49 +29,69 @@ import nl.mpi.yaas.common.data.SearchParameters;
  */
 public class ConciseSearchParser {
 
-    private static final String quoteChar = "\"";
-    private static final String splitChar = " ";
-    private static final String commandString = ":";
+    private static final String QUOTE_CHAR = "\"";
+    private static final String SPLIT_CHAR = " ";
+    private static final String COMMAND_STRING = ":";
+    private static final String NEGATOR_CHAR = "-";
+    private static final QueryDataStructures.SearchNegator DEFAULT_NEGATOR = QueryDataStructures.SearchNegator.is;
 
     private static final Logger logger = Logger.getLogger("");
 
     public HistoryData parseConciseSearch(String searchString) {
         // while we would prefer to use StringTokenzier we cannot because this section will be used in javascript via GWT
         final HistoryData historyData = new HistoryData();
-        final MetadataFileType type = new MetadataFileType("", "", "");
-        final MetadataFileType path = new MetadataFileType("", "", "");
-        final QueryDataStructures.SearchNegator searchNegator = QueryDataStructures.SearchNegator.is;
-        final QueryDataStructures.SearchType searchType = QueryDataStructures.SearchType.equals;
+        final MetadataFileType type = new MetadataFileType(null, "", "");
+        final MetadataFileType path = new MetadataFileType("", null, "");
+        QueryDataStructures.SearchNegator searchNegator = DEFAULT_NEGATOR;
+        QueryDataStructures.SearchType searchType = QueryDataStructures.SearchType.equals;
         final ArrayList<SearchParameters> searchParametersList = historyData.getSearchParametersList();
         boolean withinQuote = false;
-//        boolean isCommand = false;
+        boolean isConsumedCommand = false;
         StringBuilder searchTerm = new StringBuilder();
-        for (String parameter : searchString.split(splitChar)) {
-            if (!withinQuote && parameter.startsWith(quoteChar)) {
+        for (String parameter : searchString.split(SPLIT_CHAR)) {
+            // handle the search negator
+            if (!withinQuote && parameter.startsWith(NEGATOR_CHAR)) {
+                searchNegator = QueryDataStructures.SearchNegator.not;
+                // remove the negator char
+                parameter = parameter.substring(1);
+            }
+            // handle parameter quotes
+            if (!withinQuote && parameter.startsWith(QUOTE_CHAR)) {
                 withinQuote = true;
                 // remove the start quote char
                 parameter = parameter.substring(1);
             }
-            if (withinQuote && parameter.endsWith(quoteChar)) {
+            if (withinQuote && parameter.endsWith(QUOTE_CHAR)) {
                 withinQuote = false;
                 // remove the start quote char
                 parameter = parameter.substring(0, parameter.length() - 1);
             }
             if (searchTerm.length() > 0) {
                 // if we are within quotes then reassemple the string
-                searchTerm.append(splitChar);
+                searchTerm.append(SPLIT_CHAR);
             }
             if (!parameter.isEmpty()) {
-                if (!withinQuote && parameter.contains(commandString)) {
-//                    isCommand = true;
-                } else {
+                if (!isConsumedCommand) {
+                    for (QueryDataStructures.SearchType currentType : QueryDataStructures.SearchType.values()) {
+                        if (currentType.name().equals(parameter)) {
+                            searchType = currentType;
+                            isConsumedCommand = true;
+                        }
+                    }
+                }
+                if (!withinQuote && parameter.contains(COMMAND_STRING)) {
+                    isConsumedCommand = true;
+                }
+                if (!isConsumedCommand) {
                     searchTerm.append(parameter);
                 }
+                isConsumedCommand = false;
             }
             if (!withinQuote && searchTerm.length() > 0) {
                 // todo: process all the possible values on the search string like db: type: path: contains equals fuzzy + - etc...
                 searchParametersList.add(new SearchParameters(type, path, searchNegator, searchType, searchTerm.toString()));
                 searchTerm = new StringBuilder();
+                searchNegator = DEFAULT_NEGATOR;
             }
         }
         // add any remaining parts if the final quote is missing
