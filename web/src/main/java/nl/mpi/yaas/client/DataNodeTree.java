@@ -23,6 +23,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Tree;
@@ -30,6 +31,7 @@ import com.google.gwt.user.client.ui.TreeItem;
 import java.util.List;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
+import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.IconTableBase64;
@@ -41,16 +43,16 @@ import nl.mpi.yaas.common.data.IconTableBase64;
  */
 public class DataNodeTree extends Tree {
 
-    private final DataNodeTable dataNodeTable;
     private final SearchOptionsServiceAsync searchOptionsService;
     private final IconTableBase64 iconTableBase64;
     final PopupPanel popupPanel = new PopupPanel(true);
+    private final TreeNodeCheckboxListener checkboxListener;
     private static final Logger logger = Logger.getLogger("");
 
-    public DataNodeTree(final DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64) {
-        this.dataNodeTable = dataNodeTable;
+    public DataNodeTree(TreeNodeCheckboxListener checkboxListener, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64) {
         this.searchOptionsService = searchOptionsService;
         this.iconTableBase64 = iconTableBase64;
+        this.checkboxListener = checkboxListener;
 //        // Create a tree with a few items in it.
 //        TreeItem root = new TreeItem();
 //        root.setText("root");
@@ -87,14 +89,14 @@ public class DataNodeTree extends Tree {
 //                    dataNodeTable.addDataNode(yaasTreeItem.getYaasDataNode());
 //                }
 //            }
-//        });
+//        });        
     }
 
     public void addResultsToTree(final String databaseName, final DataNodeId[] dataNodeIds) {
         final DataNodeLoader dataNodeLoader = new DataNodeLoader(searchOptionsService, iconTableBase64, databaseName);
         addPagingButton(new Pageable() {
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, dataNodeTable, null, popupPanel);
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }
 
@@ -112,7 +114,7 @@ public class DataNodeTree extends Tree {
         addPagingButton(new Pageable() {
 
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, dataNodeTable, treeTableHeader, popupPanel);
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, treeTableHeader, popupPanel, checkboxListener);
                 yaasTreeItem.setHighlights(dataNode);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }

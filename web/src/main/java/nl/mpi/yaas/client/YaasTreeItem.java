@@ -66,7 +66,6 @@ public class YaasTreeItem extends TreeItem {
     private SerialisableDataNode yaasDataNode = null;
     private DataNodeId dataNodeId = null;
     final private DataNodeLoader dataNodeLoader;
-    final private DataNodeTable dataNodeTable;
     private boolean loadAttempted = false;
     final HorizontalPanel outerPanel;
     final private CheckBox checkBox;
@@ -83,17 +82,18 @@ public class YaasTreeItem extends TreeItem {
     private final List<DataNodeHighlight> highlighedLinks = new ArrayList<DataNodeHighlight>();
     private final TreeTableHeader treeTableHeader;
     private final PopupPanel popupPanel;
+    private final TreeNodeCheckboxListener checkboxListener;
 
-    public YaasTreeItem(String databaseName, DataNodeId dataNodeId, DataNodeLoader dataNodeLoader, DataNodeTable dataNodeTable, TreeTableHeader treeTableHeader, PopupPanel popupPanel) {
+    public YaasTreeItem(String databaseName, DataNodeId dataNodeId, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener) {
         super(new HorizontalPanel());
         loadingTreeItem = getLoadingItem();
         errorTreeItem = new TreeItem();
-        this.dataNodeTable = dataNodeTable;
         this.dataNodeId = dataNodeId;
         this.databaseName = databaseName;
         this.dataNodeLoader = dataNodeLoader;
         this.treeTableHeader = treeTableHeader;
         this.popupPanel = popupPanel;
+        this.checkboxListener = checkboxListener;
         outerPanel = (HorizontalPanel) this.getWidget();
         checkBox = new CheckBox();
         nodeLabel = new Label();
@@ -105,16 +105,16 @@ public class YaasTreeItem extends TreeItem {
         loadDataNode();
     }
 
-    public YaasTreeItem(String databaseName, SerialisableDataNode yaasDataNode, DataNodeLoader dataNodeLoader, DataNodeTable dataNodeTable, TreeTableHeader treeTableHeader, PopupPanel popupPanel) {
+    public YaasTreeItem(String databaseName, SerialisableDataNode yaasDataNode, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener) {
         super(new HorizontalPanel());
         loadingTreeItem = getLoadingItem();
         errorTreeItem = new TreeItem();
         this.yaasDataNode = yaasDataNode;
         this.dataNodeLoader = dataNodeLoader;
-        this.dataNodeTable = dataNodeTable;
         this.treeTableHeader = treeTableHeader;
         this.databaseName = databaseName;
         this.popupPanel = popupPanel;
+        this.checkboxListener = checkboxListener;
         outerPanel = (HorizontalPanel) this.getWidget();
         checkBox = new CheckBox();
         nodeLabel = new Label();
@@ -290,11 +290,7 @@ public class YaasTreeItem extends TreeItem {
 //        outerPanel.add(expandButton);
         checkBox.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
-                if (checkBox.getValue()) {
-                    dataNodeTable.addDataNode(yaasDataNode);
-                } else {
-                    dataNodeTable.removeDataNode(yaasDataNode);
-                }
+                checkboxListener.stateChanged(checkBox.getValue(), yaasDataNode, checkBox);
             }
         });
 //        nodeDetailsAnchor.addMouseOutHandler(new MouseOutHandler() {
@@ -404,7 +400,7 @@ public class YaasTreeItem extends TreeItem {
                 if (yaasDataNode.getChildList().size() > loadedCount) // add the meta child nodes
                 {
                     for (SerialisableDataNode childDataNode : yaasDataNode.getChildList()) {
-                        YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, dataNodeLoader, dataNodeTable, treeTableHeader, popupPanel);
+                        YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener);
                         yaasTreeItem.setHighlights(highlighedLinks);
                         addItem(yaasTreeItem);
                         loadedCount++;
@@ -434,7 +430,7 @@ public class YaasTreeItem extends TreeItem {
                             removeItem(loadingTreeItem);
                             if (dataNodeList != null) {
                                 for (SerialisableDataNode childDataNode : dataNodeList) {
-                                    YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, dataNodeLoader, dataNodeTable, treeTableHeader, popupPanel);
+                                    YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener);
                                     yaasTreeItem.setHighlights(highlighedLinks);
                                     addItem(yaasTreeItem);
                                     loadedCount++;

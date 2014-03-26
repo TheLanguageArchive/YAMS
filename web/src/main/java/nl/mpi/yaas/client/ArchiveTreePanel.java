@@ -20,6 +20,7 @@ package nl.mpi.yaas.client;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -27,6 +28,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.SerialisableDataNode;
@@ -49,6 +51,8 @@ public class ArchiveTreePanel extends VerticalPanel implements HistoryListener {
     private final DatabaseInfo databaseInfo;
     private final PopupPanel popupPanel = new PopupPanel(true);
     private final VerticalPanel selectedBranchesPanel = new VerticalPanel();
+    HashMap<SerialisableDataNode, HorizontalPanel> nodePanels = new HashMap<SerialisableDataNode, HorizontalPanel>();
+    private final ArrayList<HorizontalPanel> rootNodePanels = new ArrayList<HorizontalPanel>();
 
     public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo) {
         this.dataNodeTable = dataNodeTable;
@@ -101,16 +105,7 @@ public class ArchiveTreePanel extends VerticalPanel implements HistoryListener {
 
                 public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
                     for (SerialisableDataNode dataNode : dataNodeList) {
-                        final HorizontalPanel horizontalPanel = new HorizontalPanel();
-                        horizontalPanel.add(new Button("x", new ClickHandler() {
-
-                            public void onClick(ClickEvent event) {
-                                selectedBranchesPanel.remove(horizontalPanel);
-                            }
-                        }));
-                        horizontalPanel.add(new Image(dataNodeLoader.getNodeIcon(dataNode)));
-                        horizontalPanel.add(new Label(dataNode.getLabel()));
-                        selectedBranchesPanel.add(horizontalPanel);
+                        rootNodePanels.add(addRootNode(dataNodeLoader, dataNode));
                     }
                 }
 
@@ -119,9 +114,67 @@ public class ArchiveTreePanel extends VerticalPanel implements HistoryListener {
                 }
             });
 
-            dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, databaseIcons);
+            dataNodeTree = new DataNodeTree(new TreeNodeCheckboxListener() {
+
+                public void stateChanged(boolean selected, SerialisableDataNode dataNode, CheckBox checkBox) {
+                    if (selected) {
+                        addSearchBranch(dataNodeLoader, dataNode, checkBox);
+                    } else {
+                        removeSearchBranch(dataNode);
+                    }
+                }
+            }, searchOptionsService, databaseIcons);
             dataNodeTree.addResultsToTree(databaseName, dataNodeIds);
             popupPanel.add(dataNodeTree);
         }
+    }
+
+    private void addRootNodePanels() {
+        for (HorizontalPanel panel : rootNodePanels) {
+            selectedBranchesPanel.add(panel);
+        }
+    }
+
+    private void removeRootNodePanels() {
+        for (HorizontalPanel panel : rootNodePanels) {
+            selectedBranchesPanel.remove(panel);
+        }
+
+    }
+
+    private void removeSearchBranch(SerialisableDataNode dataNode) {
+        final HorizontalPanel nodePanel = nodePanels.remove(dataNode);
+        if (nodePanel != null) {
+            selectedBranchesPanel.remove(nodePanel);
+        }
+        if (nodePanels.isEmpty()) {
+            addRootNodePanels();
+        }
+    }
+
+    private HorizontalPanel addRootNode(DataNodeLoader dataNodeLoader, SerialisableDataNode dataNode) {
+        final HorizontalPanel horizontalPanel = new HorizontalPanel();
+        horizontalPanel.add(new Image(dataNodeLoader.getNodeIcon(dataNode)));
+        horizontalPanel.add(new Label(dataNode.getLabel()));
+        selectedBranchesPanel.add(horizontalPanel);
+        return horizontalPanel;
+    }
+
+    private void addSearchBranch(DataNodeLoader dataNodeLoader, final SerialisableDataNode dataNode, final CheckBox checkBox) {
+        if (nodePanels.isEmpty()) {
+            removeRootNodePanels();
+        }
+        final HorizontalPanel horizontalPanel = new HorizontalPanel();
+        horizontalPanel.add(new Button("x", new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+                removeSearchBranch(dataNode);
+                checkBox.setValue(false);
+            }
+        }));
+        horizontalPanel.add(new Image(dataNodeLoader.getNodeIcon(dataNode)));
+        horizontalPanel.add(new Label(dataNode.getLabel()));
+        selectedBranchesPanel.add(horizontalPanel);
+        nodePanels.put(dataNode, horizontalPanel);
     }
 }

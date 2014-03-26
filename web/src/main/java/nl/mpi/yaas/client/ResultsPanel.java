@@ -20,6 +20,7 @@ package nl.mpi.yaas.client;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -31,8 +32,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
+import nl.mpi.flap.model.SerialisableDataNode;
 import static nl.mpi.yaas.client.YaasTreeItem.FAILURE;
-import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.IconTableBase64;
 
@@ -43,17 +44,26 @@ import nl.mpi.yaas.common.data.IconTableBase64;
 public class ResultsPanel extends TabPanel implements HistoryListener {
 
     private static final Logger logger = Logger.getLogger("");
-    private final DataNodeTable dataNodeTable;
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
+    private final TreeNodeCheckboxListener checkboxListener;
 //    final String lastDatabaseName;
     // todo: replace the variabls dataNodeTreeRootIds and dataNodeTreeDb by updating the web service provide all the required information (db, root nodes, icons, stats) in one connection
 
     public ResultsPanel(final DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController) {
-        this.dataNodeTable = dataNodeTable;
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.setVisible(false);
+        checkboxListener = new TreeNodeCheckboxListener() {
+
+            public void stateChanged(boolean selected, SerialisableDataNode dataNode, CheckBox checkBox) {
+                if (selected) {
+                    dataNodeTable.addDataNode(dataNode);
+                } else {
+                    dataNodeTable.removeDataNode(dataNode);
+                }
+            }
+        };
     }
 
     public void userSelectionChange() {
@@ -82,7 +92,7 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
             VerticalPanel verticalPanel = new VerticalPanel();
             final List<DataNodeLink> childIds = dataNode.getChildIds();
             if (childIds != null) {
-                final DataNodeTree dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, iconTableBase64);
+                final DataNodeTree dataNodeTree = new DataNodeTree(checkboxListener, searchOptionsService, iconTableBase64);
                 dataNodeTree.addResultsToTree(databaseName, childIds, dataNode);
                 // add a label showing the time taken by a search and the result count
                 final Label timeLabel = new Label("found " + childIds.size() + " in " + responseTimeMils + "ms");
