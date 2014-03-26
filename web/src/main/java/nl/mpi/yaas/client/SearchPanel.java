@@ -69,6 +69,9 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
         verticalPanel = new VerticalPanel();
         initSearchHandler();
         final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this, searchOptionsService);
+        final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo);
+        verticalPanel.add(archiveTreePanel);
+        historyController.addHistoryListener(archiveTreePanel);
         verticalPanel.add(searchCriterionPanel);
         criterionPanelList.add(searchCriterionPanel);
         Button addRowButton = new Button(ADD_SEARCH_TERM, new ClickHandler() {

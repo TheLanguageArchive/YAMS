@@ -17,54 +17,74 @@
  */
 package nl.mpi.yaas.client;
 
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.logging.Logger;
 import nl.mpi.yaas.common.data.DataNodeId;
+import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.IconTableBase64;
 
 /**
  * @since Mar 25, 2014 2:57:45 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class ArchiveTreePanel extends VerticalPanel {
+public class ArchiveTreePanel extends VerticalPanel implements HistoryListener {
 
-    private DataNodeId[] dataNodeTreeRootIds = null;
     private String dataNodeTreeDb = null;
-    private IconTableBase64 iconTableBase64;
-    private DataNodeTree dataNodeTree;
+    private DataNodeTree dataNodeTree = null;
     private static final Logger logger = Logger.getLogger("");
     private final DataNodeTable dataNodeTable;
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
+    private final DatabaseInfo databaseInfo;
+    private final PopupPanel popupPanel = new PopupPanel();
 
-    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController) {
+    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo) {
         this.dataNodeTable = dataNodeTable;
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
+        this.databaseInfo = databaseInfo;
     }
 
-    public void setIconTableBase64(IconTableBase64 iconTableBase64) {
-        this.iconTableBase64 = iconTableBase64;
-        if (dataNodeTreeRootIds != null) {
-            // todo: replace this overly complicated reload process by updating the web service provide all the required information (db, root nodes, icons, stats) in one connection
-            addDatabaseTree(dataNodeTreeDb, dataNodeTreeRootIds);
+    public void historyChange() {
+        userSelectionChange();
+    }
+
+    public void userSelectionChange() {
+        final String databaseName = historyController.getDatabaseName();
+        if (dataNodeTreeDb == null || !dataNodeTreeDb.equals(databaseName)) {
+            if (dataNodeTree != null) {
+                popupPanel.remove(dataNodeTree);
+                dataNodeTree = null;
+                this.clear();
+            }
+//            logger.info("ArchiveTreePanel");
+//            logger.info(dataNodeTreeDb);
+            final DatabaseStats databaseStats = databaseInfo.getDatabaseStats(databaseName);
+            final IconTableBase64 databaseIcons = databaseInfo.getDatabaseIcons(databaseName);
+            if (databaseStats != null && databaseIcons != null && databaseStats.getRootDocumentsIDs() != null) {
+                addDatabaseTree(databaseName, databaseStats.getRootDocumentsIDs(), databaseIcons);
+            }
         }
     }
 
-    public void addDatabaseTree(String databaseName, DataNodeId[] dataNodeIds) {
+    public void addDatabaseTree(String databaseName, DataNodeId[] dataNodeIds, IconTableBase64 databaseIcons) {
+        //logger.info("addDatabaseTree");
         // todo: move this db tree to a node select in the search criterior panel
         // todo: this could end up being a threading issue with iconTableBase64 being set from the wrong database
-        remove(dataNodeTree);
-        dataNodeTreeRootIds = dataNodeIds;
+        //logger.info(databaseName);
         dataNodeTreeDb = databaseName;
-        dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, iconTableBase64);
-        dataNodeTree.addResultsToTree(databaseName, dataNodeIds);
-        this.add(dataNodeTree);
-        this.setVisible(true);
+        if (databaseName != null) {
+            for (DataNodeId nodeId : dataNodeIds) {
+                addSearchBranch(databaseName, nodeId, databaseIcons);
+            }
+            dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, databaseIcons);
+            dataNodeTree.addResultsToTree(databaseName, dataNodeIds);
+            popupPanel.add(dataNodeTree);
+        }
     }
 
-    public void removeDatabaseTree() {
-        remove(dataNodeTree);
-//        this.setVisible(this.getTabBar().getTabCount() > 0);
+    private void addSearchBranch(String databaseName, DataNodeId nodeId, IconTableBase64 databaseIcons) {
+        add(new YaasTreeItem(databaseName, nodeId, searchOptionsService, dataNodeTable, databaseIcons, null, popupPanel).outerPanel);
     }
 }
