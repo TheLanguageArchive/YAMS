@@ -29,7 +29,6 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -53,8 +52,6 @@ import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeHighlight;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.HighlighableDataNode;
-import nl.mpi.yaas.common.data.IconTableBase64;
-import nl.mpi.yaas.common.data.NodeTypeImageBase64;
 
 /**
  * Created on : Feb 5, 2013, 1:24:35 PM
@@ -68,7 +65,7 @@ public class YaasTreeItem extends TreeItem {
     public static final String FAILURE = "Failure";
     private SerialisableDataNode yaasDataNode = null;
     private DataNodeId dataNodeId = null;
-    final private SearchOptionsServiceAsync searchOptionsService;
+    final private DataNodeLoader dataNodeLoader;
     final private DataNodeTable dataNodeTable;
     private boolean loadAttempted = false;
     final HorizontalPanel outerPanel;
@@ -76,7 +73,6 @@ public class YaasTreeItem extends TreeItem {
     final private Label nodeLabel;
     final private Anchor nodeDetailsAnchor;
     private final VerticalPanel verticalPanel = new VerticalPanel();
-    private final IconTableBase64 iconTableBase64;
     private final Image iconImage = new Image();
     private final TreeItem loadingTreeItem;
     private final TreeItem errorTreeItem;
@@ -88,15 +84,14 @@ public class YaasTreeItem extends TreeItem {
     private final TreeTableHeader treeTableHeader;
     private final PopupPanel popupPanel;
 
-    public YaasTreeItem(String databaseName, DataNodeId dataNodeId, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64, TreeTableHeader treeTableHeader, PopupPanel popupPanel) {
+    public YaasTreeItem(String databaseName, DataNodeId dataNodeId, DataNodeLoader dataNodeLoader, DataNodeTable dataNodeTable, TreeTableHeader treeTableHeader, PopupPanel popupPanel) {
         super(new HorizontalPanel());
         loadingTreeItem = getLoadingItem();
         errorTreeItem = new TreeItem();
         this.dataNodeTable = dataNodeTable;
         this.dataNodeId = dataNodeId;
         this.databaseName = databaseName;
-        this.searchOptionsService = searchOptionsService;
-        this.iconTableBase64 = iconTableBase64;
+        this.dataNodeLoader = dataNodeLoader;
         this.treeTableHeader = treeTableHeader;
         this.popupPanel = popupPanel;
         outerPanel = (HorizontalPanel) this.getWidget();
@@ -110,14 +105,13 @@ public class YaasTreeItem extends TreeItem {
         loadDataNode();
     }
 
-    public YaasTreeItem(String databaseName, SerialisableDataNode yaasDataNode, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, IconTableBase64 iconTableBase64, TreeTableHeader treeTableHeader, PopupPanel popupPanel) {
+    public YaasTreeItem(String databaseName, SerialisableDataNode yaasDataNode, DataNodeLoader dataNodeLoader, DataNodeTable dataNodeTable, TreeTableHeader treeTableHeader, PopupPanel popupPanel) {
         super(new HorizontalPanel());
         loadingTreeItem = getLoadingItem();
         errorTreeItem = new TreeItem();
         this.yaasDataNode = yaasDataNode;
-        this.searchOptionsService = searchOptionsService;
+        this.dataNodeLoader = dataNodeLoader;
         this.dataNodeTable = dataNodeTable;
-        this.iconTableBase64 = iconTableBase64;
         this.treeTableHeader = treeTableHeader;
         this.databaseName = databaseName;
         this.popupPanel = popupPanel;
@@ -272,10 +266,7 @@ public class YaasTreeItem extends TreeItem {
     }
 
     private void setNodeIcon() {
-        final NodeTypeImageBase64 typeIcon = iconTableBase64.getByType(yaasDataNode.getType());
-        if (typeIcon != null) {
-            iconImage.setUrl(typeIcon.getInlineImageDataString());
-        }
+        iconImage.setUrl(dataNodeLoader.getNodeIcon(yaasDataNode));
     }
 
     private void hideShowExpandButton() {
@@ -376,14 +367,9 @@ public class YaasTreeItem extends TreeItem {
             addItem(loadingTreeItem);
             final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
             dataNodeIdList.add(dataNodeId);
-            searchOptionsService.getDataNodes(databaseName, dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
-                public void onFailure(Throwable caught) {
-                    setText(FAILURE);
-                    removeItem(loadingTreeItem);
-                    logger.log(Level.SEVERE, FAILURE, caught);
-                }
+            dataNodeLoader.requestLoad(dataNodeIdList, new DataNodeLoaderListener() {
 
-                public void onSuccess(List<SerialisableDataNode> dataNodeList) {
+                public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
                     yaasDataNode = dataNodeList.get(0);
                     setLabel();
                     removeItem(loadingTreeItem);
@@ -399,6 +385,12 @@ public class YaasTreeItem extends TreeItem {
                     hideShowExpandButton();
                     addColumnsForHighlights();
                 }
+
+                public void dataNodeLoadFailed(Throwable caught) {
+                    setText(FAILURE);
+                    removeItem(loadingTreeItem);
+                    logger.log(Level.SEVERE, FAILURE, caught);
+                }
             });
         }
     }
@@ -412,7 +404,7 @@ public class YaasTreeItem extends TreeItem {
                 if (yaasDataNode.getChildList().size() > loadedCount) // add the meta child nodes
                 {
                     for (SerialisableDataNode childDataNode : yaasDataNode.getChildList()) {
-                        YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, searchOptionsService, dataNodeTable, iconTableBase64, treeTableHeader, popupPanel);
+                        YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, dataNodeLoader, dataNodeTable, treeTableHeader, popupPanel);
                         yaasTreeItem.setHighlights(highlighedLinks);
                         addItem(yaasTreeItem);
                         loadedCount++;
@@ -435,20 +427,14 @@ public class YaasTreeItem extends TreeItem {
                     for (DataNodeLink childId : yaasDataNode.getChildIds().subList(firstToGet, lastToGet)) {
                         dataNodeIdList.add(new DataNodeId(childId.getIdString()));
                     }
-                    searchOptionsService.getDataNodes(databaseName, dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
-                        public void onFailure(Throwable exception) {
-                            removeItem(loadingTreeItem);
-                            errorTreeItem.setText(LOADING_CHILD_NODES_FAILED);
-                            addItem(errorTreeItem);
-                            logger.log(Level.SEVERE, LOADING_CHILD_NODES_FAILED, exception);
-                        }
+                    dataNodeLoader.requestLoad(dataNodeIdList, new DataNodeLoaderListener() {
 
-                        public void onSuccess(List<SerialisableDataNode> dataNodeList) {
+                        public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
 //                        setText("Loaded " + dataNodeList.size() + " child nodes");
                             removeItem(loadingTreeItem);
                             if (dataNodeList != null) {
                                 for (SerialisableDataNode childDataNode : dataNodeList) {
-                                    YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, searchOptionsService, dataNodeTable, iconTableBase64, treeTableHeader, popupPanel);
+                                    YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, dataNodeLoader, dataNodeTable, treeTableHeader, popupPanel);
                                     yaasTreeItem.setHighlights(highlighedLinks);
                                     addItem(yaasTreeItem);
                                     loadedCount++;
@@ -462,6 +448,13 @@ public class YaasTreeItem extends TreeItem {
                             if (loadedCount < maxToGet) {
                                 addItem(loadNextTreeItem);
                             }
+                        }
+
+                        public void dataNodeLoadFailed(Throwable caught) {
+                            removeItem(loadingTreeItem);
+                            errorTreeItem.setText(LOADING_CHILD_NODES_FAILED);
+                            addItem(errorTreeItem);
+                            logger.log(Level.SEVERE, LOADING_CHILD_NODES_FAILED, caught);
                         }
                     });
                 } catch (ModelException exception) {

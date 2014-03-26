@@ -17,9 +17,19 @@
  */
 package nl.mpi.yaas.client;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
+import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.IconTableBase64;
@@ -37,13 +47,23 @@ public class ArchiveTreePanel extends VerticalPanel implements HistoryListener {
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
     private final DatabaseInfo databaseInfo;
-    private final PopupPanel popupPanel = new PopupPanel();
+    private final PopupPanel popupPanel = new PopupPanel(true);
+    private final VerticalPanel selectedBranchesPanel = new VerticalPanel();
 
     public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo) {
         this.dataNodeTable = dataNodeTable;
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
+        this.add(selectedBranchesPanel);
+        this.add(new Button("Browse", new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+                if (dataNodeTree != null) {
+                    popupPanel.showRelativeTo(selectedBranchesPanel);
+                }
+            }
+        }));
     }
 
     public void historyChange() {
@@ -56,7 +76,7 @@ public class ArchiveTreePanel extends VerticalPanel implements HistoryListener {
             if (dataNodeTree != null) {
                 popupPanel.remove(dataNodeTree);
                 dataNodeTree = null;
-                this.clear();
+                selectedBranchesPanel.clear();
             }
 //            logger.info("ArchiveTreePanel");
 //            logger.info(dataNodeTreeDb);
@@ -75,16 +95,33 @@ public class ArchiveTreePanel extends VerticalPanel implements HistoryListener {
         //logger.info(databaseName);
         dataNodeTreeDb = databaseName;
         if (databaseName != null) {
-            for (DataNodeId nodeId : dataNodeIds) {
-                addSearchBranch(databaseName, nodeId, databaseIcons);
-            }
+            final DataNodeLoader dataNodeLoader = new DataNodeLoader(searchOptionsService, databaseIcons, databaseName);
+            ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
+            dataNodeLoader.requestLoad(Arrays.asList(dataNodeIds), new DataNodeLoaderListener() {
+
+                public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
+                    for (SerialisableDataNode dataNode : dataNodeList) {
+                        final HorizontalPanel horizontalPanel = new HorizontalPanel();
+                        horizontalPanel.add(new Button("x", new ClickHandler() {
+
+                            public void onClick(ClickEvent event) {
+                                selectedBranchesPanel.remove(horizontalPanel);
+                            }
+                        }));
+                        horizontalPanel.add(new Image(dataNodeLoader.getNodeIcon(dataNode)));
+                        horizontalPanel.add(new Label(dataNode.getLabel()));
+                        selectedBranchesPanel.add(horizontalPanel);
+                    }
+                }
+
+                public void dataNodeLoadFailed(Throwable caught) {
+                    ArchiveTreePanel.this.add(new Label("Failed to load"));
+                }
+            });
+
             dataNodeTree = new DataNodeTree(dataNodeTable, searchOptionsService, databaseIcons);
             dataNodeTree.addResultsToTree(databaseName, dataNodeIds);
             popupPanel.add(dataNodeTree);
         }
-    }
-
-    private void addSearchBranch(String databaseName, DataNodeId nodeId, IconTableBase64 databaseIcons) {
-        add(new YaasTreeItem(databaseName, nodeId, searchOptionsService, dataNodeTable, databaseIcons, null, popupPanel).outerPanel);
     }
 }

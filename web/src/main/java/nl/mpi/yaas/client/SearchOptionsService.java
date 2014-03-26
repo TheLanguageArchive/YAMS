@@ -20,7 +20,6 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import java.util.ArrayList;
 import java.util.List;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
@@ -52,9 +51,9 @@ public interface SearchOptionsService extends RemoteService {
 
     MetadataFileType[] getTreeFacets(String databaseName, MetadataFileType[] metadataFileTypes) throws WebQueryException;
 
-    HighlighableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException;
+    HighlighableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList) throws WebQueryException;
 
-    List<SerialisableDataNode> getDataNodes(String databaseName, ArrayList<DataNodeId> dataNodeIds) throws WebQueryException;
+    List<SerialisableDataNode> getDataNodes(String databaseName, List<DataNodeId> dataNodeIds) throws WebQueryException;
 
     IconTableBase64 getImageDataForTypes(String databaseName) throws WebQueryException;
 }

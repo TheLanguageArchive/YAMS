@@ -21,7 +21,7 @@ package nl.mpi.yaas.common.db;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Date;
 import java.util.Set;
 import javax.xml.bind.JAXBContext;
@@ -589,7 +589,7 @@ public class DataBaseManager<D, F, M> {
      </TreeNode>
      * */
 
-    private String getTreeSubQuery(ArrayList<MetadataFileType> treeBranchTypeList, String whereClause, String selectClause, String trailingSelectClause, int levelCount) {
+    private String getTreeSubQuery(List<MetadataFileType> treeBranchTypeList, String whereClause, String selectClause, String trailingSelectClause, int levelCount) {
         final int maxMetadataFileCount = 100;
         if (!treeBranchTypeList.isEmpty()) {
             String separatorString = "";
@@ -625,7 +625,7 @@ public class DataBaseManager<D, F, M> {
         }
     }
 
-    private String getNodesByIdQuery(final ArrayList<DataNodeId> nodeIDs) {
+    private String getNodesByIdQuery(final List<DataNodeId> nodeIDs) {
         StringBuilder queryStringBuilder = new StringBuilder();
         queryStringBuilder.append("<DataNode>\n");
         queryStringBuilder.append("{for $dataNode in collection('");
@@ -808,7 +808,7 @@ public class DataBaseManager<D, F, M> {
      * information
      * @throws QueryException
      */
-    public D getSearchResult(CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws QueryException {
+    public D getSearchResult(CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList) throws QueryException {
         StringBuilder queryStringBuilder = new StringBuilder();
         queryStringBuilder.append("<DataNode ID=\"Search Results\" Label=\"Search Results: ");
         if (searchParametersList.size() > 1) {
@@ -995,7 +995,7 @@ public class DataBaseManager<D, F, M> {
 //        final String queryString = getTreeQuery(treeBranchTypeList);
 //        return getDbTreeNode(queryString);
 //    }
-    public D getNodeDatasByIDs(final ArrayList<DataNodeId> nodeIDs) throws QueryException {
+    public D getNodeDatasByIDs(final List<DataNodeId> nodeIDs) throws QueryException {
         final String queryString = getNodesByIdQuery(nodeIDs);
         return getDbTreeNode(queryString);
     }

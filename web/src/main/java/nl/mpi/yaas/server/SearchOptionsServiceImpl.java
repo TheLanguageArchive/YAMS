@@ -21,7 +21,6 @@ package nl.mpi.yaas.server;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
@@ -144,7 +143,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    public HighlighableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, ArrayList<SearchParameters> searchParametersList) throws WebQueryException {
+    public HighlighableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList) throws WebQueryException {
 //        return new YaasDataNode(criterionJoinType.name());
         try {
             DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
@@ -160,7 +159,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    public List<SerialisableDataNode> getDataNodes(String databaseName, ArrayList<DataNodeId> dataNodeIds) throws WebQueryException {
+    public List<SerialisableDataNode> getDataNodes(String databaseName, List<DataNodeId> dataNodeIds) throws WebQueryException {
         try {
             DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
             SerialisableDataNode yaasDataNode = yaasDatabase.getNodeDatasByIDs(dataNodeIds);

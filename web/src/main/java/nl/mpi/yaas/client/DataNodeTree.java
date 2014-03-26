@@ -91,9 +91,10 @@ public class DataNodeTree extends Tree {
     }
 
     public void addResultsToTree(final String databaseName, final DataNodeId[] dataNodeIds) {
+        final DataNodeLoader dataNodeLoader = new DataNodeLoader(searchOptionsService, iconTableBase64, databaseName);
         addPagingButton(new Pageable() {
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], searchOptionsService, dataNodeTable, iconTableBase64, null, popupPanel);
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, dataNodeTable, null, popupPanel);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }
 
@@ -104,13 +105,14 @@ public class DataNodeTree extends Tree {
     }
 
     public void addResultsToTree(final String databaseName, final List<DataNodeLink> rootIds, final HighlighableDataNode dataNode) {
+        final DataNodeLoader dataNodeLoader = new DataNodeLoader(searchOptionsService, iconTableBase64, databaseName);
         final TreeItem treeItem = new TreeItem(new HorizontalPanel());
         final TreeTableHeader treeTableHeader = new TreeTableHeader(treeItem);
         this.addItem(treeItem);
         addPagingButton(new Pageable() {
 
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), searchOptionsService, dataNodeTable, iconTableBase64, treeTableHeader, popupPanel);
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, dataNodeTable, treeTableHeader, popupPanel);
                 yaasTreeItem.setHighlights(dataNode);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }
