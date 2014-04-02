@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,6 +42,30 @@ public class DataNodeLoader {
 
     protected void requestLoad(List<DataNodeId> dataNodeIdList, final DataNodeLoaderListener dataNodeLoaderListener) {
         searchOptionsService.getDataNodes(databaseName, dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
+            public void onFailure(Throwable caught) {
+                dataNodeLoaderListener.dataNodeLoadFailed(caught);
+            }
+
+            public void onSuccess(List<SerialisableDataNode> dataNodeList) {
+                dataNodeLoaderListener.dataNodeLoaded(dataNodeList);
+            }
+        });
+    }
+
+    protected void requestLoadHdl(List<String> dataNodeHdlList, final DataNodeLoaderListener dataNodeLoaderListener) {
+        searchOptionsService.getDataNodesByHdl(databaseName, dataNodeHdlList, new AsyncCallback<List<SerialisableDataNode>>() {
+            public void onFailure(Throwable caught) {
+                dataNodeLoaderListener.dataNodeLoadFailed(caught);
+            }
+
+            public void onSuccess(List<SerialisableDataNode> dataNodeList) {
+                dataNodeLoaderListener.dataNodeLoaded(dataNodeList);
+            }
+        });
+    }
+
+    protected void requestLoadUri(List<String> dataNodeUriList, final DataNodeLoaderListener dataNodeLoaderListener) {
+        searchOptionsService.getDataNodesByUrl(databaseName, dataNodeUriList, new AsyncCallback<List<SerialisableDataNode>>() {
             public void onFailure(Throwable caught) {
                 dataNodeLoaderListener.dataNodeLoadFailed(caught);
             }

@@ -60,7 +60,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
     private final ArrayList<SearchCriterionPanel> criterionPanelList = new ArrayList<SearchCriterionPanel>();
     private final DatabaseInfo databaseInfo;
 
-    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInfo databaseInfo, ResultsPanel resultsPanel, DataNodeTable dataNodeTable) {
+    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInfo databaseInfo, ResultsPanel resultsPanel, DataNodeTable dataNodeTable, final ArchiveTreePanel archiveTreePanel) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
@@ -69,7 +69,6 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
         verticalPanel = new VerticalPanel();
         initSearchHandler();
         final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this, searchOptionsService);
-        final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo);
         verticalPanel.add(archiveTreePanel);
         historyController.addHistoryListener(archiveTreePanel);
         verticalPanel.add(searchCriterionPanel);

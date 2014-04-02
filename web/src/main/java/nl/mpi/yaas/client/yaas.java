@@ -33,6 +33,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.ArrayList;
+import java.util.List;
 //import com.googlecode.gwtphonegap.client.PhoneGap;
 //import com.googlecode.gwtphonegap.client.util.PhonegapUtil;
 import java.util.logging.Logger;
@@ -55,18 +57,28 @@ public class yaas implements EntryPoint, HistoryListener {
     final private Image loadingImage = new Image("./loader.gif");
     private String lastUsedDatabase = null;
     private Anchor statisticsPageAnchor;
+    private final List<String> windowParamHdls = new ArrayList<String>();
+    private final List<String> windowParamUrls = new ArrayList<String>();
 
     public void onModuleLoad() {
         searchOptionsService = GWT.create(SearchOptionsService.class);
-        String searchHandle = com.google.gwt.user.client.Window.Location.getParameter("hdl");
-        if (searchHandle != null) {
-            historyController.addSearchHandle(searchHandle);
-        }
+        setSearchBranchFromWindowParameter();
         setupPage(historyController);
         History.addValueChangeHandler(historyController);
         logger.addHandler(new HasWidgetsLogHandler(loggerPanel));
         RootPanel.get("loggerPanel").add(loggerPanel);
         History.fireCurrentHistoryState();
+    }
+
+    private void setSearchBranchFromWindowParameter() {
+        final String searchBranchHandle = com.google.gwt.user.client.Window.Location.getParameter("hdl");
+        if (searchBranchHandle != null) {
+            windowParamHdls.add(searchBranchHandle);
+        }
+        String searchBranchUrl = com.google.gwt.user.client.Window.Location.getParameter("url");
+        if (searchBranchUrl != null) {
+            windowParamUrls.add(searchBranchUrl);
+        }
     }
 
     private void setStatisticsLink(String databaseName) {
@@ -137,7 +149,8 @@ public class yaas implements EntryPoint, HistoryListener {
 //        });
 //        PhonegapUtil.prepareService(serviceDefTarget, moduleBaseURL, "searchoptions");
         iconInfoPanel = new IconInfoPanel();
-        searchOptionsPanel = new SearchPanel(searchOptionsService, historyController, databaseInfo, resultsPanel, dataNodeTable);
+        final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, windowParamHdls, windowParamUrls);
+        searchOptionsPanel = new SearchPanel(searchOptionsService, historyController, databaseInfo, resultsPanel, dataNodeTable, archiveTreePanel);
         historyController.addHistoryListener(searchOptionsPanel);
         searchOptionsPanel.setVisible(false);
         loadingImage.setVisible(false);

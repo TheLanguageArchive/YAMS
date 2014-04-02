@@ -53,6 +53,10 @@ public interface SearchOptionsService extends RemoteService {
 
     HighlighableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList) throws WebQueryException;
 
+    List<SerialisableDataNode> getDataNodesByHdl(String databaseName, List<String> hdlList) throws WebQueryException;
+
+    List<SerialisableDataNode> getDataNodesByUrl(String databaseName, List<String> urlList) throws WebQueryException;
+
     List<SerialisableDataNode> getDataNodes(String databaseName, List<DataNodeId> dataNodeIds) throws WebQueryException;
 
     IconTableBase64 getImageDataForTypes(String databaseName) throws WebQueryException;

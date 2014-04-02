@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,7 +40,7 @@ import nl.mpi.yaas.common.data.IconTableBase64;
  * @since Mar 25, 2014 2:57:45 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class ArchiveTreePanel extends VerticalPanel implements HistoryListener {
+public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener {
 
     private String dataNodeTreeDb = null;
     private DataNodeTree dataNodeTree = null;
@@ -53,21 +53,27 @@ public class ArchiveTreePanel extends VerticalPanel implements HistoryListener {
     private final VerticalPanel selectedBranchesPanel = new VerticalPanel();
     HashMap<SerialisableDataNode, HorizontalPanel> nodePanels = new HashMap<SerialisableDataNode, HorizontalPanel>();
     private final ArrayList<HorizontalPanel> rootNodePanels = new ArrayList<HorizontalPanel>();
+    private final List<String> windowParamHdls;
+    private final List<String> windowParamUrls;
 
-    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo) {
+    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, List<String> windowParamHdls, List<String> windowParamUrls) {
         this.dataNodeTable = dataNodeTable;
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
+        this.windowParamHdls = windowParamHdls;
+        this.windowParamUrls = windowParamUrls;
         this.add(selectedBranchesPanel);
-        this.add(new Button("Browse", new ClickHandler() {
+        final Button browseButton = new Button("Browse");
+        browseButton.addClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
                 if (dataNodeTree != null) {
-                    popupPanel.showRelativeTo(selectedBranchesPanel);
+                    popupPanel.showRelativeTo(browseButton);
                 }
             }
-        }));
+        });
+        this.add(browseButton);
     }
 
     public void historyChange() {
@@ -100,8 +106,7 @@ public class ArchiveTreePanel extends VerticalPanel implements HistoryListener {
         dataNodeTreeDb = databaseName;
         if (databaseName != null) {
             final DataNodeLoader dataNodeLoader = new DataNodeLoader(searchOptionsService, databaseIcons, databaseName);
-            ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
-            dataNodeLoader.requestLoad(Arrays.asList(dataNodeIds), new DataNodeLoaderListener() {
+            final DataNodeLoaderListener dataNodeLoaderListener = new DataNodeLoaderListener() {
 
                 public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
                     for (SerialisableDataNode dataNode : dataNodeList) {
@@ -112,7 +117,14 @@ public class ArchiveTreePanel extends VerticalPanel implements HistoryListener {
                 public void dataNodeLoadFailed(Throwable caught) {
                     ArchiveTreePanel.this.add(new Label("Failed to load"));
                 }
-            });
+            };
+            if (!windowParamHdls.isEmpty()) {
+                dataNodeLoader.requestLoadHdl(windowParamHdls, dataNodeLoaderListener);
+            } else if (!windowParamUrls.isEmpty()) {
+                dataNodeLoader.requestLoadUri(windowParamUrls, dataNodeLoaderListener);
+            } else {
+                dataNodeLoader.requestLoad(Arrays.asList(dataNodeIds), dataNodeLoaderListener);
+            }
 
             dataNodeTree = new DataNodeTree(new TreeNodeCheckboxListener() {
 

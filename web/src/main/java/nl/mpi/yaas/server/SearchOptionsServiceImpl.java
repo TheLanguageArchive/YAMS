@@ -159,6 +159,26 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
+    public List<SerialisableDataNode> getDataNodesByHdl(String databaseName, List<String> hdlList) throws WebQueryException {
+        try {
+            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
+            SerialisableDataNode yaasDataNode = yaasDatabase.getNodeDatasByHdls(hdlList);
+            return (List<SerialisableDataNode>) yaasDataNode.getChildList();
+        } catch (QueryException exception) {
+            throw new WebQueryException(exception.getMessage());
+        }
+    }
+
+    public List<SerialisableDataNode> getDataNodesByUrl(String databaseName, List<String> urlList) throws WebQueryException {
+        try {
+            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
+            SerialisableDataNode yaasDataNode = yaasDatabase.getNodeDatasByUrls(urlList);
+            return (List<SerialisableDataNode>) yaasDataNode.getChildList();
+        } catch (QueryException exception) {
+            throw new WebQueryException(exception.getMessage());
+        }
+    }
+
     public List<SerialisableDataNode> getDataNodes(String databaseName, List<DataNodeId> dataNodeIds) throws WebQueryException {
         try {
             DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
