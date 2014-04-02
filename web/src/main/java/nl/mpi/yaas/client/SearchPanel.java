@@ -50,7 +50,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
     private static final String DEMO_LIST_BOX_STYLE = "demo-ListBox";
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
-    private String lastUsedDatabase = null;
+    private String lastUsedDatabase = "";
     private final DataNodeTable dataNodeTable;
     private Button searchButton;
     private SearchHandler searchHandler;
@@ -89,7 +89,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
     }
 
     public void userSelectionChange() {
-        // nothing needs to be done in this class
+        historyChange();
     }
 
     public void historyChange() {
@@ -121,7 +121,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
             }
         }
         final String databaseName = historyController.getDatabaseName();
-        if (databaseName != null && !databaseName.equals(lastUsedDatabase)) {
+        if (databaseName != null && !databaseName.isEmpty() && !databaseName.equals(lastUsedDatabase)) {
             lastUsedDatabase = databaseName;
             for (SearchCriterionPanel eventCriterionPanel : criterionPanelList) {
                 eventCriterionPanel.setDatabase(databaseName);
@@ -132,7 +132,9 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
     protected void addSearchCriterionPanel(SearchCriterionPanel criterionPanel) {
         criterionPanelList.add(criterionPanel);
         verticalPanel.add(criterionPanel);
-        criterionPanel.setDatabase(lastUsedDatabase);
+        if (!lastUsedDatabase.isEmpty()) {
+            criterionPanel.setDatabase(lastUsedDatabase);
+        }
         joinTypeListBox.setVisible(criterionPanelList.size() > 1);
     }
 
