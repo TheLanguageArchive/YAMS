@@ -1,3 +1,7 @@
+2014-04-02
+Moved the database tree into the search parameters area with the selected nodes that are to be searched within.
+Provided a way of browsing the corpus tree and selecting the branches in which to search.
+Updated the embeddable search page and its parameters.
 2014-03-25
 Moved the array of dropdown boxes into an assisted search panel that is shown only by user action.
 Added the concise search box that supports all of the search parameters available via the assisted search.
