@@ -625,6 +625,37 @@ public class DataBaseManager<D, F, M> {
         }
     }
 
+    private String getNodesByUrlQuery(final List<String> nodeIDs) {
+        return getNodesByAttributeQuery("URI", nodeIDs);
+    }
+
+    private String getNodesByHdlQuery(final List<String> nodeIDs) {
+        return getNodesByAttributeQuery("ArchiveHandle", nodeIDs);
+    }
+
+    private String getNodesByAttributeQuery(final String attributeName, final List<String> attributeValues) {
+        StringBuilder queryStringBuilder = new StringBuilder();
+        queryStringBuilder.append("<DataNode>\n");
+        queryStringBuilder.append("{for $dataNode in collection('");
+        queryStringBuilder.append(databaseName);
+        queryStringBuilder.append("')/DataNode where $dataNode/@");
+        queryStringBuilder.append(attributeName);
+        queryStringBuilder.append(" = (\n");
+        boolean firstLoop = true;
+        for (String value : attributeValues) {
+            if (!firstLoop) {
+                queryStringBuilder.append(",");
+            }
+            firstLoop = false;
+            queryStringBuilder.append("'");
+            queryStringBuilder.append(value);
+            queryStringBuilder.append("'");
+        }
+        queryStringBuilder.append(") return $dataNode}");
+        queryStringBuilder.append("</DataNode>");
+        return queryStringBuilder.toString();
+    }
+
     private String getNodesByIdQuery(final List<DataNodeId> nodeIDs) {
         StringBuilder queryStringBuilder = new StringBuilder();
         queryStringBuilder.append("<DataNode>\n");
@@ -995,6 +1026,16 @@ public class DataBaseManager<D, F, M> {
 //        final String queryString = getTreeQuery(treeBranchTypeList);
 //        return getDbTreeNode(queryString);
 //    }
+    public D getNodeDatasByHdls(final List<String> nodeHdls) throws QueryException {
+        final String queryString = getNodesByHdlQuery(nodeHdls);
+        return getDbTreeNode(queryString);
+    }
+
+    public D getNodeDatasByUrls(final List<String> nodeUrls) throws QueryException {
+        final String queryString = getNodesByUrlQuery(nodeUrls);
+        return getDbTreeNode(queryString);
+    }
+
     public D getNodeDatasByIDs(final List<DataNodeId> nodeIDs) throws QueryException {
         final String queryString = getNodesByIdQuery(nodeIDs);
         return getDbTreeNode(queryString);
