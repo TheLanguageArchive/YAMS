@@ -134,6 +134,7 @@ public class YaasTreeItem extends TreeItem {
             logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
         }
         setNodeIcon();
+        // todo: add a click handler so that clicking anywhere will open the branch
     }
 
     private TreeItem getLoadNextTreeItem() {
@@ -272,7 +273,9 @@ public class YaasTreeItem extends TreeItem {
     private void hideShowExpandButton() {
         final boolean hasFields = yaasDataNode != null && yaasDataNode.getFieldGroups() != null;
         nodeLabel.setVisible(!hasFields);
-        checkBox.setVisible(hasFields);
+        if (checkboxListener != null) {
+            checkBox.setVisible(hasFields);
+        }
         nodeDetailsAnchor.setVisible(hasFields);
     }
 
@@ -282,17 +285,21 @@ public class YaasTreeItem extends TreeItem {
         style.setLeft(0, Style.Unit.PX);
         style.setPosition(Style.Position.RELATIVE);
         outerPanel.add(iconImage);
-        outerPanel.add(checkBox);
+        if (checkboxListener != null) {
+            outerPanel.add(checkBox);
+        }
         outerPanel.add(nodeLabel);
         outerPanel.add(nodeDetailsAnchor);
 //        expandButton = new Button(">");
         outerPanel.add(verticalPanel);
 //        outerPanel.add(expandButton);
-        checkBox.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                checkboxListener.stateChanged(checkBox.getValue(), yaasDataNode, checkBox);
-            }
-        });
+        if (checkboxListener != null) {
+            checkBox.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    checkboxListener.stateChanged(checkBox.getValue(), yaasDataNode, checkBox);
+                }
+            });
+        }
 //        nodeDetailsAnchor.addMouseOutHandler(new MouseOutHandler() {
 //
 //            public void onMouseOut(MouseOutEvent event) {

@@ -40,7 +40,7 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
     private final DatabaseInfo databaseInfo;
     HashMap<SerialisableDataNode, HorizontalPanel> nodePanels = new HashMap<SerialisableDataNode, HorizontalPanel>();
 
-    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, List<String> windowParamHdls, List<String> windowParamUrls) {
+    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
