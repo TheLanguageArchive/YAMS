@@ -166,8 +166,8 @@ public class yaas implements EntryPoint, HistoryListener {
 //        });
 //        PhonegapUtil.prepareService(serviceDefTarget, moduleBaseURL, "searchoptions");
         iconInfoPanel = new IconInfoPanel();
-        final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, windowParamHdls, windowParamUrls);
-        searchOptionsPanel = new SearchPanel(searchOptionsService, historyController, databaseInfo, resultsPanel, dataNodeTable, archiveTreePanel);
+        final ArchiveBranchSelectionPanel archiveBranchSelectionPanel = new ArchiveBranchSelectionPanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, windowParamHdls, windowParamUrls);
+        searchOptionsPanel = new SearchPanel(searchOptionsService, historyController, databaseInfo, resultsPanel, dataNodeTable, archiveBranchSelectionPanel);
         historyController.addHistoryListener(searchOptionsPanel);
         searchOptionsPanel.setVisible(false);
         loadingImage.setVisible(false);
@@ -200,6 +200,13 @@ public class yaas implements EntryPoint, HistoryListener {
             facetedTreeTag.add(new FacetedTree(searchOptionsService, databaseName));
         }
         databaseInfo.getDbInfo();
+
+        final RootPanel corpusTreePanelTag = RootPanel.get("corpusTreePanel");
+        if (corpusTreePanelTag != null) {
+            final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, windowParamHdls, windowParamUrls);
+            corpusTreePanelTag.add(archiveTreePanel);
+            historyController.addHistoryListener(archiveTreePanel);
+        }
     }
 
     private void setDebugMode(boolean debugMode) {

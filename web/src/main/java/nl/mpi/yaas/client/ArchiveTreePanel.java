@@ -17,17 +17,7 @@
  */
 package nl.mpi.yaas.client;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
@@ -45,35 +35,15 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
     private String dataNodeTreeDb = null;
     private DataNodeTree dataNodeTree = null;
     private static final Logger logger = Logger.getLogger("");
-    private final DataNodeTable dataNodeTable;
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
     private final DatabaseInfo databaseInfo;
-    private final PopupPanel popupPanel = new PopupPanel(true);
-    private final VerticalPanel selectedBranchesPanel = new VerticalPanel();
     HashMap<SerialisableDataNode, HorizontalPanel> nodePanels = new HashMap<SerialisableDataNode, HorizontalPanel>();
-    private final ArrayList<HorizontalPanel> rootNodePanels = new ArrayList<HorizontalPanel>();
-    private final List<String> windowParamHdls;
-    private final List<String> windowParamUrls;
 
     public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, List<String> windowParamHdls, List<String> windowParamUrls) {
-        this.dataNodeTable = dataNodeTable;
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
-        this.windowParamHdls = windowParamHdls;
-        this.windowParamUrls = windowParamUrls;
-        this.add(selectedBranchesPanel);
-        final Button browseButton = new Button("Browse");
-        browseButton.addClickHandler(new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
-                if (dataNodeTree != null) {
-                    popupPanel.showRelativeTo(browseButton);
-                }
-            }
-        });
-        this.add(browseButton);
     }
 
     public void historyChange() {
@@ -84,9 +54,8 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
         final String databaseName = historyController.getDatabaseName();
         if (dataNodeTreeDb == null || !dataNodeTreeDb.equals(databaseName)) {
             if (dataNodeTree != null) {
-                popupPanel.remove(dataNodeTree);
+                ArchiveTreePanel.this.remove(dataNodeTree);
                 dataNodeTree = null;
-                selectedBranchesPanel.clear();
             }
 //            logger.info("ArchiveTreePanel");
 //            logger.info(dataNodeTreeDb);
@@ -100,93 +69,12 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
 
     public void addDatabaseTree(String databaseName, DataNodeId[] dataNodeIds, IconTableBase64 databaseIcons) {
         //logger.info("addDatabaseTree");
-        // todo: move this db tree to a node select in the search criterior panel
-        // todo: this could end up being a threading issue with iconTableBase64 being set from the wrong database
         //logger.info(databaseName);
         dataNodeTreeDb = databaseName;
         if (databaseName != null) {
-            final DataNodeLoader dataNodeLoader = new DataNodeLoader(searchOptionsService, databaseIcons, databaseName);
-            final DataNodeLoaderListener dataNodeLoaderListener = new DataNodeLoaderListener() {
-
-                public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
-                    for (SerialisableDataNode dataNode : dataNodeList) {
-                        rootNodePanels.add(addRootNode(dataNodeLoader, dataNode));
-                    }
-                }
-
-                public void dataNodeLoadFailed(Throwable caught) {
-                    ArchiveTreePanel.this.add(new Label("Failed to load"));
-                }
-            };
-            if (!windowParamHdls.isEmpty()) {
-                dataNodeLoader.requestLoadHdl(windowParamHdls, dataNodeLoaderListener);
-            } else if (!windowParamUrls.isEmpty()) {
-                dataNodeLoader.requestLoadUri(windowParamUrls, dataNodeLoaderListener);
-            } else {
-                dataNodeLoader.requestLoad(Arrays.asList(dataNodeIds), dataNodeLoaderListener);
-            }
-
-            dataNodeTree = new DataNodeTree(new TreeNodeCheckboxListener() {
-
-                public void stateChanged(boolean selected, SerialisableDataNode dataNode, CheckBox checkBox) {
-                    if (selected) {
-                        addSearchBranch(dataNodeLoader, dataNode, checkBox);
-                    } else {
-                        removeSearchBranch(dataNode);
-                    }
-                }
-            }, searchOptionsService, databaseIcons);
+            dataNodeTree = new DataNodeTree(null, searchOptionsService, databaseIcons);
             dataNodeTree.addResultsToTree(databaseName, dataNodeIds);
-            popupPanel.add(dataNodeTree);
+            ArchiveTreePanel.this.add(dataNodeTree);
         }
-    }
-
-    private void addRootNodePanels() {
-        for (HorizontalPanel panel : rootNodePanels) {
-            selectedBranchesPanel.add(panel);
-        }
-    }
-
-    private void removeRootNodePanels() {
-        for (HorizontalPanel panel : rootNodePanels) {
-            selectedBranchesPanel.remove(panel);
-        }
-
-    }
-
-    private void removeSearchBranch(SerialisableDataNode dataNode) {
-        final HorizontalPanel nodePanel = nodePanels.remove(dataNode);
-        if (nodePanel != null) {
-            selectedBranchesPanel.remove(nodePanel);
-        }
-        if (nodePanels.isEmpty()) {
-            addRootNodePanels();
-        }
-    }
-
-    private HorizontalPanel addRootNode(DataNodeLoader dataNodeLoader, SerialisableDataNode dataNode) {
-        final HorizontalPanel horizontalPanel = new HorizontalPanel();
-        horizontalPanel.add(new Image(dataNodeLoader.getNodeIcon(dataNode)));
-        horizontalPanel.add(new Label(dataNode.getLabel()));
-        selectedBranchesPanel.add(horizontalPanel);
-        return horizontalPanel;
-    }
-
-    private void addSearchBranch(DataNodeLoader dataNodeLoader, final SerialisableDataNode dataNode, final CheckBox checkBox) {
-        if (nodePanels.isEmpty()) {
-            removeRootNodePanels();
-        }
-        final HorizontalPanel horizontalPanel = new HorizontalPanel();
-        horizontalPanel.add(new Button("x", new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
-                removeSearchBranch(dataNode);
-                checkBox.setValue(false);
-            }
-        }));
-        horizontalPanel.add(new Image(dataNodeLoader.getNodeIcon(dataNode)));
-        horizontalPanel.add(new Label(dataNode.getLabel()));
-        selectedBranchesPanel.add(horizontalPanel);
-        nodePanels.put(dataNode, horizontalPanel);
     }
 }

@@ -60,7 +60,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
     private final ArrayList<SearchCriterionPanel> criterionPanelList = new ArrayList<SearchCriterionPanel>();
     private final DatabaseInfo databaseInfo;
 
-    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInfo databaseInfo, ResultsPanel resultsPanel, DataNodeTable dataNodeTable, final ArchiveTreePanel archiveTreePanel) {
+    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInfo databaseInfo, ResultsPanel resultsPanel, DataNodeTable dataNodeTable, final ArchiveBranchSelectionPanel archiveTreePanel) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
@@ -89,7 +89,10 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
     }
 
     public void userSelectionChange() {
-        historyChange();
+        final String databaseName = historyController.getDatabaseName();
+        if (databaseName != null && !databaseName.isEmpty() && !databaseName.equals(lastUsedDatabase)) {
+            historyChange();
+        }
     }
 
     public void historyChange() {
@@ -155,6 +158,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
                 searchButton.setHTML(SEARCHING_LABEL);
                 ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
                 for (SearchCriterionPanel eventCriterionPanel : criterionPanelList) {
+                    //logger.info("eventCriterionPanel");
                     searchParametersList.add(new SearchParameters(eventCriterionPanel.getMetadataFileType(), eventCriterionPanel.getMetadataFieldType(), eventCriterionPanel.getSearchNegator(), eventCriterionPanel.getSearchType(), eventCriterionPanel.getSearchText()));
                 }
                 historyController.setSearchParameters(joinTypeListBox.getValue(), searchParametersList);
