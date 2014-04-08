@@ -56,7 +56,7 @@ public class yaas implements EntryPoint, HistoryListener {
     final Label noDatabaseLabel = new Label(NO__DATABASE__SELECTED);
     final private Image loadingImage = new Image("./loader.gif");
     private String lastUsedDatabase = null;
-    private Anchor statisticsPageAnchor;
+    private Anchor statisticsPageAnchor = null;
     private final List<String> windowParamHdls = new ArrayList<String>();
     private final List<String> windowParamUrls = new ArrayList<String>();
 
@@ -66,7 +66,10 @@ public class yaas implements EntryPoint, HistoryListener {
         setupPage(historyController);
         History.addValueChangeHandler(historyController);
         logger.addHandler(new HasWidgetsLogHandler(loggerPanel));
-        RootPanel.get("loggerPanel").add(loggerPanel);
+        final RootPanel loggerPanelTag = RootPanel.get("loggerPanel");
+        if (loggerPanelTag != null) {
+            loggerPanelTag.add(loggerPanel);
+        }
         History.fireCurrentHistoryState();
     }
 
@@ -82,41 +85,55 @@ public class yaas implements EntryPoint, HistoryListener {
     }
 
     private void setStatisticsLink(String databaseName) {
-        final String dbStatsHref = (databaseName == null || databaseName.isEmpty()) ? "DatabaseStats.jsp" : "DatabaseStats.jsp?databaseName=" + databaseName;
-        statisticsPageAnchor.setHref(dbStatsHref);
+        if (statisticsPageAnchor != null) {
+            final String dbStatsHref = (databaseName == null || databaseName.isEmpty()) ? "DatabaseStats.jsp" : "DatabaseStats.jsp?databaseName=" + databaseName;
+            statisticsPageAnchor.setHref(dbStatsHref);
+        }
     }
 
     private void setupPage(final HistoryController historyController) {
 //        final String moduleBaseURL = "http://tlatest03.mpi.nl:8080/yaas-gwt-1.0-SNAPSHOT/yaas/";
         final String databaseName = historyController.getDatabaseName();
         databaseInfo = new DatabaseInfo(searchOptionsService, historyController);
-        statisticsPageAnchor = new Anchor("View Database Statistics");
         setStatisticsLink(databaseName);
-        RootPanel.get("linksPanel").add(statisticsPageAnchor);
-        CheckBox debugCheckBox = new CheckBox("debug");
-        debugCheckBox.setValue(debugMode);
-        RootPanel.get("optionsPanel").add(debugCheckBox);
-        debugCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+        final RootPanel linksPanelTag = RootPanel.get("linksPanel");
+        if (linksPanelTag != null) {
+            statisticsPageAnchor = new Anchor("View Database Statistics");
+            linksPanelTag.add(statisticsPageAnchor);
+        }
+        final RootPanel optionsPanelTag = RootPanel.get("optionsPanel");
+        if (optionsPanelTag != null) {
+            CheckBox debugCheckBox = new CheckBox("debug");
+            debugCheckBox.setValue(debugMode);
+            optionsPanelTag.add(debugCheckBox);
+            debugCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
-            public void onValueChange(ValueChangeEvent<Boolean> event) {
-                setDebugMode(event.getValue());
-            }
-        });
+                public void onValueChange(ValueChangeEvent<Boolean> event) {
+                    setDebugMode(event.getValue());
+                }
+            });
+        }
         setDebugMode(debugMode);
-        RootPanel.get("databaseStats").add(new Label(GWT.getModuleBaseURL()));
+        final RootPanel databaseStatsTag = RootPanel.get("databaseStats");
+        if (databaseStatsTag != null) {
+            databaseStatsTag.add(new Label(GWT.getModuleBaseURL()));
+        }
         DisclosurePanel disclosurePanel = new DisclosurePanel("Search Options");
         final DatabaseSelect databaseSelectBox = new DatabaseSelect(historyController, databaseInfo);
         historyController.addHistoryListener(this);
         historyController.addHistoryListener(databaseSelectBox);
-        VerticalPanel verticalPanel = new VerticalPanel();
-        verticalPanel.add(databaseSelectBox);
         final DataNodeTable dataNodeTable = new DataNodeTable();
-        resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
-        final ConciseSearchBox conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel);
-        historyController.addHistoryListener(conciseSearchBox);
-        RootPanel.get("searchOptionsPanel").add(conciseSearchBox);
-        final ServiceDefTarget serviceDefTarget = (ServiceDefTarget) searchOptionsService;
-        RootPanel.get("databaseStats").add(new Label(serviceDefTarget.getServiceEntryPoint()));
+        final RootPanel searchOptionsPanelTag = RootPanel.get("searchOptionsPanel");
+        if (searchOptionsPanelTag != null) {
+            resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
+            final ConciseSearchBox conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel);
+            historyController.addHistoryListener(conciseSearchBox);
+            searchOptionsPanelTag.add(conciseSearchBox);
+        }
+        if (databaseStatsTag != null) {
+            final ServiceDefTarget serviceDefTarget = (ServiceDefTarget) searchOptionsService;
+            databaseStatsTag.add(new Label(serviceDefTarget.getServiceEntryPoint()));
+        }
 //        if (GWT.getHostPageBaseURL().startsWith("file://")) {
 //            RootPanel.get("databaseStats").add(new Label("Changing Service Target"));
 //            final String baseUrl = GWT.getModuleBaseURL().replace("file:///android_asset/www", "http://lux17.mpi.nl/ds/yaas2");
@@ -154,27 +171,51 @@ public class yaas implements EntryPoint, HistoryListener {
         historyController.addHistoryListener(searchOptionsPanel);
         searchOptionsPanel.setVisible(false);
         loadingImage.setVisible(false);
-        final DatabaseStatsPanel databaseStatsPanel = new DatabaseStatsPanel(databaseInfo, historyController);
-        historyController.addHistoryListener(databaseStatsPanel);
-        RootPanel.get("databaseStats").add(databaseStatsPanel);
-        RootPanel.get("databaseStats").add(iconInfoPanel);
+        if (databaseStatsTag != null) {
+            final DatabaseStatsPanel databaseStatsPanel = new DatabaseStatsPanel(databaseInfo, historyController);
+            historyController.addHistoryListener(databaseStatsPanel);
+            databaseStatsTag.add(databaseStatsPanel);
+            databaseStatsTag.add(iconInfoPanel);
+        }
+
 //                RootPanel.get("databaseStats").add(new QueryStatsPanel());
-        verticalPanel.add(noDatabaseLabel);
-        RootPanel.get("searchOptionsPanel").add(loadingImage);
-        verticalPanel.add(searchOptionsPanel);
-        disclosurePanel.setContent(verticalPanel);
-        RootPanel.get("searchOptionsPanel").add(disclosurePanel);
-        RootPanel.get("resultsPanel").add(resultsPanel);
+        if (searchOptionsPanelTag != null) {
+            searchOptionsPanelTag.add(loadingImage);
+        }
+        if (searchOptionsPanelTag != null) {
+            VerticalPanel verticalPanel = new VerticalPanel();
+            verticalPanel.add(databaseSelectBox);
+            verticalPanel.add(noDatabaseLabel);
+            verticalPanel.add(searchOptionsPanel);
+            disclosurePanel.setContent(verticalPanel);
+            searchOptionsPanelTag.add(disclosurePanel);
+        }
+        final RootPanel resultsPanelTag = RootPanel.get("resultsPanel");
+        if (resultsPanelTag != null) {
+            resultsPanelTag.add(resultsPanel);
+        }
+        final RootPanel facetedTreeTag = RootPanel.get("facetedTree");
 //        RootPanel.get("dataNodeTable").add(dataNodeTable);
-        RootPanel.get("facetedTree").add(new FacetedTree(searchOptionsService, databaseName));
+        if (facetedTreeTag != null) {
+            facetedTreeTag.add(new FacetedTree(searchOptionsService, databaseName));
+        }
         databaseInfo.getDbInfo();
     }
 
     private void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
-        RootPanel.get("databaseStats").setVisible(debugMode);
-        RootPanel.get("facetedTree").setVisible(debugMode);
-        RootPanel.get("loggerPanel").setVisible(debugMode);
+        final RootPanel databaseStatsTag = RootPanel.get("databaseStats");
+        if (databaseStatsTag != null) {
+            databaseStatsTag.setVisible(debugMode);
+        }
+        final RootPanel facetedTreeTag = RootPanel.get("facetedTree");
+        if (facetedTreeTag != null) {
+            facetedTreeTag.setVisible(debugMode);
+        }
+        final RootPanel loggerPanelTag = RootPanel.get("loggerPanel");
+        if (loggerPanelTag != null) {
+            loggerPanelTag.setVisible(debugMode);
+        }
     }
 
 //    public void setDataBaseName(String databaseName) {

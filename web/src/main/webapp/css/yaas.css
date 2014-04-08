@@ -121,7 +121,7 @@ h1 {
     /*margin: 15px 6px 6px;*/
 }
 #header {
-    background:  url(images/header2.png) top repeat-x;
+    background:  url(../images/header2.png) top repeat-x;
     width:100%;
     margin: 0px auto 0px;
     padding: 0px;
@@ -137,7 +137,7 @@ h1 {
     padding-right: 0px;
     padding-bottom: 0px;
     padding-left: 0px;
-    background: url(images/sidebarcolor.png) top repeat-x; 
+    background: url(../images/sidebarcolor.png) top repeat-x; 
 }
 #main2 {
     margin: 0px;
@@ -147,7 +147,7 @@ h1 {
     padding-right: 0px;
     padding-bottom: 0px;
     padding-left: 0px;
-    background:  url(images/wrapkleur.png);
+    background:  url(../images/wrapkleur.png);
     /*background-size: auto 100%;*/
 }
 .gwt-TabPanel {
@@ -184,7 +184,7 @@ html, body {
     height:100%;
     margin: 0px;
     /*background:#89B5B9;*/    
-    background:  url(images/wrapkleur.png);
+    background:  url(../images/wrapkleur.png);
 } 
 /*html {
     background-color:#FF0000;

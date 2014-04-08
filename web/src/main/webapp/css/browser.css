@@ -1,0 +1,142 @@
+html{
+    height: 100%;
+}
+body{
+    margin:0;
+    padding:0;
+    overflow-y: hidden;
+    height:100%;
+    font-family: Verdana, Arial, Helv, Helvetica, sans-serif;
+}
+
+div#headerPanel {
+    background: none repeat scroll 0 0 #1C3655;
+    height: 40px;
+    overflow: hidden;
+    width: 100%;
+    top: 0;
+    clear: right;
+}
+
+.header{
+    color: white;
+    float:left;
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-top: 2px;
+}
+
+
+#headerPanel span {
+    margin-top: 8px;
+}
+
+ul#headerInformationContainer {
+    float:right;
+    margin:0;
+    padding-right:20px;
+}
+
+ul#headerInformationContainer li{
+    display: inline-block;
+    margin-left: 20px;
+    list-style-type: none;
+}
+
+ul#headerInformationContainer li a{
+    float:left;
+    color:white;
+    text-decoration: none;
+}
+
+ul#headerInformationContainer li a:hover{
+    text-decoration: underline;
+}
+
+div#treePanel{
+    height: 100%;
+    overflow: auto;
+    float: left;
+    bottom:0;
+    width: 30%;
+    border-right: 3px solid #1b324f;
+}
+
+div#treePanel div.archiveTree{
+    margin-right: 0px;
+}
+
+div#nodePanel{
+    height: 100%;
+    width: 69%;
+    float: left;
+    overflow: hidden;
+    padding: 0px 10px;
+}
+
+
+div#feedbackPanel{
+    overflow: hidden;
+}
+
+.feedbackPanelERROR{
+    background: lightcoral;
+}
+
+.feedbackPanelINFO{
+    background: lightblue;
+}
+
+ul.feedbackPanel{
+    padding:0;
+    border: 1px #ccc;
+}
+
+ul.feedbackPanel li{
+    list-style: none;
+    font-weight: bold;
+    padding: 2px;
+}
+
+div#actionsPanelContainer{
+    overflow:hidden;
+}
+
+div#actionsPanel input {
+    font-size: medium;
+}
+
+div#nodePresentationContainer {
+    height: 100%;
+    font-size: 0.8em;
+}
+
+div#nodePresentationContainer h1 {
+    font-size: 1.2em;
+}
+
+div#nodePresentation{
+    height:100%;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+div#nodePresentation img {
+    vertical-align:text-top;
+}
+
+#iframe {
+    width: 100%;
+    height: 100%;
+}
+
+div#Welcome {
+    overflow: scroll;
+    padding: 5px;
+    font-size: 0.9em;
+    height: 100%;
+}
+
+div#Welcome img{
+    vertical-align:text-top;
+}
