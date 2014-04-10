@@ -135,7 +135,7 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
                         removeSearchBranch(dataNode);
                     }
                 }
-            }, searchOptionsService, databaseIcons);
+            }, null, searchOptionsService, databaseIcons);
             dataNodeTree.addResultsToTree(databaseName, dataNodeIds);
             popupPanel.add(dataNodeTree);
         }

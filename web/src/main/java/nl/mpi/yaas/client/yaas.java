@@ -203,9 +203,16 @@ public class yaas implements EntryPoint, HistoryListener {
 
         final RootPanel corpusTreePanelTag = RootPanel.get("corpusTreePanel");
         if (corpusTreePanelTag != null) {
-            final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo);
-            corpusTreePanelTag.add(archiveTreePanel);
-            historyController.addHistoryListener(archiveTreePanel);
+            final RootPanel detailsPanelTag = RootPanel.get("detailsPanel");
+            if (detailsPanelTag != null) {
+                final MetadataDetailsPanel metadataDetailsPanel = new MetadataDetailsPanel();
+                detailsPanelTag.add(metadataDetailsPanel);
+                final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, metadataDetailsPanel);
+                corpusTreePanelTag.add(archiveTreePanel);
+                historyController.addHistoryListener(archiveTreePanel);
+            } else {
+                logger.severe("Found corpusTreePanel but not detailsPanel, cannot not correclty show the tree.");
+            }
         }
     }
 

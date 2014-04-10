@@ -23,7 +23,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Tree;
@@ -31,7 +30,6 @@ import com.google.gwt.user.client.ui.TreeItem;
 import java.util.List;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
-import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.IconTableBase64;
@@ -45,14 +43,22 @@ public class DataNodeTree extends Tree {
 
     private final SearchOptionsServiceAsync searchOptionsService;
     private final IconTableBase64 iconTableBase64;
-    final PopupPanel popupPanel = new PopupPanel(true);
+    private final PopupPanel popupPanel;
     private final TreeNodeCheckboxListener checkboxListener;
+    private final TreeNodeClickListener clickListener;
     private static final Logger logger = Logger.getLogger("");
 
-    public DataNodeTree(TreeNodeCheckboxListener checkboxListener, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64) {
+    public DataNodeTree(TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64) {
         this.searchOptionsService = searchOptionsService;
         this.iconTableBase64 = iconTableBase64;
         this.checkboxListener = checkboxListener;
+        this.clickListener = clickListener;
+        if (clickListener == null) {
+            popupPanel = new PopupPanel(true);
+        } else {
+            // if the click listener is active then we should not show the popup
+            popupPanel = null;
+        }
 //        // Create a tree with a few items in it.
 //        TreeItem root = new TreeItem();
 //        root.setText("root");
@@ -96,7 +102,7 @@ public class DataNodeTree extends Tree {
         final DataNodeLoader dataNodeLoader = new DataNodeLoader(searchOptionsService, iconTableBase64, databaseName);
         addPagingButton(new Pageable() {
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener);
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }
 
@@ -114,7 +120,7 @@ public class DataNodeTree extends Tree {
         addPagingButton(new Pageable() {
 
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, treeTableHeader, popupPanel, checkboxListener);
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener);
                 yaasTreeItem.setHighlights(dataNode);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }

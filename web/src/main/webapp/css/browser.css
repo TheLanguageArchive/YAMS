@@ -106,22 +106,23 @@ div#actionsPanel input {
     font-size: medium;
 }
 
-div#nodePresentationContainer {
+/*.nodePresentationContainer {
     height: 100%;
     font-size: 0.8em;
-}
+}*/
 
-div#nodePresentationContainer h1 {
+.metadataDetailsPanel h1 {
     font-size: 1.2em;
 }
 
-div#nodePresentation{
+.metadataDetailsPanel{
     height:100%;
     overflow: scroll;
     overflow-x: hidden;
+    font-size: 0.8em;
 }
 
-div#nodePresentation img {
+.metadataDetailsPanel img {
     vertical-align:text-top;
 }
 
@@ -286,4 +287,178 @@ ul#navigation a {
 
 .btn-3b:before {
     border-right: 2px solid rgba(255,255,255,0.5);
+}
+/**
+ * imdi.css
+ *
+ * LANA style for imdi viewer
+ *
+ * Freddy Offenga, 2006-04-04
+ *
+ * #F7FBFB (light yellow) background
+ * #7795BB (other light yellow) header background
+ * #25466f (red) header names, links
+ * #B0B0B0 (grey) group borders
+ *
+ */
+.IMDI_name_value .IMDI_label {
+    font-weight: bold; 
+    float: left;
+    width: 180px;
+    /*  //width: 10%;*/
+    text-align: right; 
+    padding-right:4px;  
+    word-wrap:break-word;  
+}
+
+.IMDI_name_value .IMDI_value {
+    font-weight: normal;
+    float: left;
+    /*  //width: 335px;*/
+    width: 60%;
+    text-align: left;  
+}
+
+.IMDI_name_value {
+    font-family: Verdana, Arial, Helv, Helvetica, sans-serif;
+    font-size: 12px;
+    clear: left;
+}
+
+/** Added key_name_value because they are they have non fixed key lengths so it needs to be set wider without making the rest look crap*/
+.IMDI_key_name_value .IMDI_key_label {
+    font-weight: bold; 
+    float: left;
+    width: 350px;
+    text-align: right; 
+    padding-right:4px;  
+    word-wrap:break-word;  
+}
+
+.IMDI_key_name_value .IMDI_key_value {
+    font-weight: normal;
+    width: 60%;
+    text-align: left;  
+}
+
+.IMDI_key_name_value {
+    font-family: Verdana, Arial, Helv, Helvetica, sans-serif;
+    font-size: 12px;
+    clear: left;
+}
+
+/* info after clickable header name */
+.IMDI_header_info {
+    padding-left: 4px;
+}
+
+/* text block */
+pre {
+    width: 98%;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+    overflow: auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 4px;
+    margin-left: 4px;
+    padding-top: 5px;
+    font-size: 0.9em;
+    font-family: Lucida Console, Monaco, monospace;
+}
+
+.IMDI_large_text_block {
+    height: 128px;
+}
+
+.IMDI_small_text_block {
+
+}
+
+a {
+    color: #25466f;
+}
+
+.marker {
+    background-color:yellow;
+    color: red;
+}
+
+/* link to resource */
+.IMDI_link {
+    /*font-size: 12px; */
+    padding-left: 4px;
+}
+
+/* clickable image icon */
+.IMDI_click_image {
+    padding-right:4px;
+}
+
+.IMDI_group {
+    padding: 4px;
+}
+
+/* static content header */
+.IMDI_group_header_static {
+    background-color: #1C3655;
+    padding: 1px 4px;
+    border: solid 1px #1C3655;
+    color: white;
+    border-radius: 5px 5px 0px 0px;
+}
+
+/* dynamic content header */
+.IMDI_group_header_dynamic {
+    background-color: #BFCED9;
+    padding: 1px;  
+    border: solid 1px #B0B0B0;  
+}
+
+/* clickable header link */
+.IMDI_group_header_link {
+    color: #25466f;
+}
+
+/* dynamic content group */
+.IMDI_group_dynamic {  
+    display: none;    
+    border-collapse:collapse;
+    background-color: #F2F2F2; 
+    border-left: dashed 1px #B0B0B0;
+    border-right: dashed 1px #B0B0B0;
+    border-bottom: dashed 1px #B0B0B0;  
+}
+
+/* static content groups */
+.IMDI_group_static {
+    /*//  display: block;*/
+    border-collapse:collapse;
+    background-color: #F2F2F2;
+    border-left: solid 1px #B0B0B0;
+    border-right: solid 1px #B0B0B0;
+    border-bottom: solid 1px #B0B0B0;  
+}
+
+/* top of page header */
+.IMDI_header {
+    color: #000;
+    border: thin solid #B0B0B0;     
+    background-color: #F7FBFB;
+    text-align: center;
+    vertical-align: baseline;
+    line-height: 38px;  
+    margin-bottom: 10px;
+}
+
+.IMDI_logo {
+    background-image: url(imdi_120_wo.jpg);
+    background-repeat: no-repeat;
+    display:block;
+    float:left;
+    width:120px;
+    height: 38px;      
 }
