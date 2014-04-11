@@ -131,14 +131,14 @@ div#actionsPanel input {
     height: 100%;
 }
 
-div#Welcome {
+div#welcomePanel {
     overflow: scroll;
     padding: 5px;
     font-size: 0.9em;
     height: 100%;
 }
 
-div#Welcome img{
+div#welcomePanel img{
     vertical-align:text-top;
 }
 ul#navigation {

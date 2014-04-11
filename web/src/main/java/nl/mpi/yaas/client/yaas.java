@@ -200,6 +200,13 @@ public class yaas implements EntryPoint, HistoryListener {
             facetedTreeTag.add(new FacetedTree(searchOptionsService, databaseName));
         }
         databaseInfo.getDbInfo();
+        ActionsPanelController actionsPanelController = new ActionsPanelController(
+                RootPanel.get("welcomePanel"),
+                RootPanel.get("metadataSearchTag"),
+                RootPanel.get("annotationContentSearchTag"),
+                RootPanel.get("manageAccessRightsTag"),
+                RootPanel.get("resourceAccessTag"),
+                RootPanel.get("citationTag"));
 
         final RootPanel corpusTreePanelTag = RootPanel.get("corpusTreePanel");
         if (corpusTreePanelTag != null) {
@@ -207,7 +214,7 @@ public class yaas implements EntryPoint, HistoryListener {
             if (detailsPanelTag != null) {
                 final MetadataDetailsPanel metadataDetailsPanel = new MetadataDetailsPanel();
                 detailsPanelTag.add(metadataDetailsPanel);
-                final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, metadataDetailsPanel);
+                final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, metadataDetailsPanel, actionsPanelController);
                 corpusTreePanelTag.add(archiveTreePanel);
                 historyController.addHistoryListener(archiveTreePanel);
             } else {

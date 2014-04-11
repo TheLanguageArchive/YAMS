@@ -39,13 +39,15 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
     private final HistoryController historyController;
     private final DatabaseInfo databaseInfo;
     private final MetadataDetailsPanel detailsPanel;
+    private final ActionsPanelController actionsPanelController;
     HashMap<SerialisableDataNode, HorizontalPanel> nodePanels = new HashMap<SerialisableDataNode, HorizontalPanel>();
 
-    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, MetadataDetailsPanel detailsPanel) {
+    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, MetadataDetailsPanel detailsPanel, ActionsPanelController actionsPanelController) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
         this.detailsPanel = detailsPanel;
+        this.actionsPanelController = actionsPanelController;
     }
 
     public void historyChange() {
@@ -78,6 +80,7 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
 
                 public void clickEvent(SerialisableDataNode dataNode) {
                     //logger.info("TreeNodeClickListener");
+                    actionsPanelController.setDataNode(dataNode);
                     detailsPanel.setDataNode(dataNode);
                 }
             };

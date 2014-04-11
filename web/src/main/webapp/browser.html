@@ -66,35 +66,35 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
         </div>  
         <div id="nodePanel" style="width: 938px;">
-            <div id="detailsPanel"></div>
             <div id="actionsPanelContainer">
                 <div id="actionsPanel">
                     <ul id="navigation">
-                        <li class="MetadataSearch">
-                            <button class="btn btn-3 btn-3b icon-md-search" title="Search the metadata descriptions of the archived material below the selected branch"><span>Metadata Search</span>
+                        <li>
+                            <button id="metadataSearchTag" class="btn btn-3 btn-3b icon-md-search" title="Search the metadata descriptions of the archived material below the selected branch"><span>Metadata Search</span>
                                 <!--<a href="https://lux17.mpi.nl/ds/metadata_browser/?0-1.ILinkListener-nodesPanel-nodeActions-nodeActions-0-nodeActionLink" target="_blank"><span>Metadata Search</span></a>-->
                             </button>
-                        </li><li class="AnnotationContentSearch">
-                            <button class="btn btn-3 btn-3b icon-content-search" title="Search the content of the textual materials below the selected branch"><span>Content Search</span>
+                        </li><li>
+                            <button id="annotationContentSearchTag" class="btn btn-3 btn-3b icon-content-search" title="Search the content of the textual materials below the selected branch"><span>Content Search</span>
                                 <!--<a href="https://lux17.mpi.nl/ds/metadata_browser/?0-1.ILinkListener-nodesPanel-nodeActions-nodeActions-1-nodeActionLink" target="_blank"><span>Content Search</span></a>-->
                             </button>
-                        </li><li class="ManageAccessRights">
-                            <button class="btn btn-3 btn-3b icon-manage-access" title="Manage access permissions for the selected branch (requires management permissions)"><span>Manage Access</span>
+                        </li><li>
+                            <button id="manageAccessRightsTag" class="btn btn-3 btn-3b icon-manage-access" title="Manage access permissions for the selected branch (requires management permissions)"><span>Manage Access</span>
                                 <!--                                <a href="https://lux17.mpi.nl/ds/metadata_browser/?0-1.ILinkListener-nodesPanel-nodeActions-nodeActions-2-nodeActionLink" target="_blank"><span>Manage Access</span></a>-->
                             </button>
-                        </li><li class="ResourceAccess">
-                            <button class="btn btn-3 btn-3b icon-request-access" title="Request access to the selected branch or resource"><span>Request Access</span>
+                        </li><li>
+                            <button id="resourceAccessTag" class="btn btn-3 btn-3b icon-request-access" title="Request access to the selected branch or resource"><span>Request Access</span>
                                 <!--                                <a href="https://lux17.mpi.nl/ds/metadata_browser/?0-1.ILinkListener-nodesPanel-nodeActions-nodeActions-3-nodeActionLink" target="_blank"><span>Request Access</span></a>-->
                             </button>
-                        </li><li class="Citation" title="Get a persistent link to this branch or resource in order to cite it in a publication or link to it on a web site">
-                            <button class="btn btn-3 btn-3b icon-citation"><span>Citation</span>
+                        </li><li title="Get a persistent link to this branch or resource in order to cite it in a publication or link to it on a web site">
+                            <button id="citationTag" class="btn btn-3 btn-3b icon-citation"><span>Citation</span>
                                 <!--<a href="https://lux17.mpi.nl/ds/metadata_browser/?0-1.ILinkListener-nodesPanel-nodeActions-nodeActions-4-nodeActionLink"><span>Citation</span></a>-->
                             </button>
                         </li>
                     </ul>
                 </div>
             </div>
-            <div id="Welcome">
+            <div id="detailsPanel"></div>
+            <div id="welcomePanel">
                 <p align="center"><img src="./images/TLA.png" alt="" height="100" border="0"></p>
                 <p>Welcome to the archive browser of The Language Archive. Please see below for a brief explanation on how to use the archive browser or get the full manual <a href="http://tla.mpi.nl/tools/tla-tools/imdi_browser/" target="_blank">here</a>. For more information about The Language Archive including the various tools it develops (such as ELAN), please have a look at the <a href="http://tla.mpi.nl" target="_blank">TLA website.</a></p>
                 <table summary="Home" border="0" align="center" cellspacing="2" cellpadding="2">
