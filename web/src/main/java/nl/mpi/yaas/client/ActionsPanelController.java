@@ -26,6 +26,7 @@ import nl.mpi.flap.model.SerialisableDataNode;
  */
 public class ActionsPanelController {
 
+    private SerialisableDataNode dataNode = null;
     final private RootPanel metadataSearchTag;
     final private RootPanel annotationContentSearchTag;
     final private RootPanel manageAccessRightsTag;
@@ -62,6 +63,7 @@ public class ActionsPanelController {
     }
 
     public void setDataNode(SerialisableDataNode dataNode) {
+        this.dataNode = dataNode;
         if (welcomePanelTag != null) {
             welcomePanelTag.setVisible(false);
         }

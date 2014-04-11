@@ -136,7 +136,7 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
                     }
                 }
             }, null, searchOptionsService, databaseIcons);
-            dataNodeTree.addResultsToTree(databaseName, dataNodeIds);
+            dataNodeTree.addResultsToTree(databaseName, dataNodeIds, true);
             popupPanel.add(dataNodeTree);
         }
     }
