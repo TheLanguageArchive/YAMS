@@ -45,6 +45,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.DataNodeLink;
+import nl.mpi.flap.model.DataNodeType;
 import static nl.mpi.flap.model.DataNodeType.IMDI_RESOURCE;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
@@ -130,7 +131,7 @@ public class YaasTreeItem extends TreeItem {
         setLabel();
         try {
             if (yaasDataNode.getType() == null || !IMDI_RESOURCE.equals(yaasDataNode.getType().getID())) { // do not show child links of imdi resource nodes
-                if (yaasDataNode.getChildList() != null || yaasDataNode.getChildIds() != null) {
+                if (getFilteredChildNodes() != null || yaasDataNode.getChildIds() != null) {
                     addItem(loadingTreeItem);
                 }
             }
@@ -394,7 +395,7 @@ public class YaasTreeItem extends TreeItem {
                     setLabel();
                     removeItem(loadingTreeItem);
                     try {
-                        if (yaasDataNode.getChildList() != null || yaasDataNode.getChildIds() != null) {
+                        if (getFilteredChildNodes() != null || yaasDataNode.getChildIds() != null) {
                             addItem(loadingTreeItem);
                         }
                     } catch (ModelException exception) {
@@ -415,30 +416,16 @@ public class YaasTreeItem extends TreeItem {
         }
     }
 
-    private void addAllResourceNodes(SerialisableDataNode currentDataNode) {
-        for (SerialisableDataNode childDataNode : currentDataNode.getChildList()) {
-            if (childDataNode.getArchiveHandle() != null) // archive handle is not the best thing to detect resource nodes
-            {
-                YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
-                yaasTreeItem.setHighlights(highlighedLinks);
-                addItem(yaasTreeItem);
-                loadedCount++;
-            }
-            addAllResourceNodes(childDataNode);
-        }
-    }
-
     public void loadChildNodes() {
         removeItem(loadNextTreeItem);
         removeItem(errorTreeItem);
         if (yaasDataNode != null) {
-            if (yaasDataNode.getChildList() != null) {
+            final List<? extends SerialisableDataNode> childList = getFilteredChildNodes();
+            if (childList != null) {
                 removeItem(loadingTreeItem);
-                if (displayFlatNodes) {
-                    addAllResourceNodes(yaasDataNode);
-                } else if (yaasDataNode.getChildList().size() > loadedCount) // add the meta child nodes
+                if (childList.size() > loadedCount) // add the meta child nodes
                 {
-                    for (SerialisableDataNode childDataNode : yaasDataNode.getChildList()) {
+                    for (SerialisableDataNode childDataNode : childList) {
                         YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
                         yaasTreeItem.setHighlights(highlighedLinks);
                         addItem(yaasTreeItem);
@@ -511,7 +498,13 @@ public class YaasTreeItem extends TreeItem {
                 if (yaasDataNode.getChildIds() != null) {
                     childCountsize = yaasDataNode.getChildIds().size();
                 } else if (yaasDataNode.getChildList() != null) {
-                    childCountsize = yaasDataNode.getChildList().size();
+                    // get the reduced children here
+                    final List<? extends SerialisableDataNode> filteredChildNodes = getFilteredChildNodes();
+                    if (filteredChildNodes != null) {
+                        childCountsize = filteredChildNodes.size();
+                    } else {
+                        childCountsize = 0;
+                    }
                 }
                 setText(yaasDataNode.getLabel() + "[" + childCountsize + "]");
             } catch (ModelException exception) {
@@ -524,5 +517,41 @@ public class YaasTreeItem extends TreeItem {
 
     public SerialisableDataNode getYaasDataNode() {
         return yaasDataNode;
+    }
+
+    private List<? extends SerialisableDataNode> getFilteredChildNodes() {
+        final List<? extends SerialisableDataNode> childList = yaasDataNode.getChildList();
+        if (childList == null) {
+            return null;
+        }
+        if (displayFlatNodes) {
+            final ArrayList flatNodes = new ArrayList<SerialisableDataNode>();
+            getFlatNodes(yaasDataNode, flatNodes);
+            if (flatNodes.isEmpty()) {
+//                // if the list is empty then return null
+                return null;
+            } else {
+                return flatNodes;
+            }
+        } else {
+            return yaasDataNode.getChildList();
+        }
+    }
+
+    private List<? extends SerialisableDataNode> getFlatNodes(SerialisableDataNode currentDataNode, List<SerialisableDataNode> flatNodes) {
+        // this filtering should only be relevant to IMDI nodes because CMDI nodes will have all resouces as links
+        final List<? extends SerialisableDataNode> childList = currentDataNode.getChildList();
+        if (childList != null) // this filtering should only be relevant to IMDI nodes because CMDI nodes will have all resouces as links
+        {
+            for (SerialisableDataNode childDataNode : childList) {
+                final DataNodeType nodeType = childDataNode.getType();
+                if (nodeType != null && IMDI_RESOURCE.equals(nodeType.getID())) {
+//                if (childDataNode.getArchiveHandle() != null) // archive handle is not the best thing to detect resource nodes
+                    flatNodes.add(childDataNode);
+                }
+                getFlatNodes(childDataNode, flatNodes);
+            }
+        }
+        return flatNodes;
     }
 }
