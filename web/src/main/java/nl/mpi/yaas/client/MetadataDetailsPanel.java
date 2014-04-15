@@ -49,7 +49,7 @@ public class MetadataDetailsPanel extends VerticalPanel {
 
     public Panel addDataNodePanel(SerialisableDataNode dataNode) {
         final VerticalPanel simplePanel = new VerticalPanel();
-        logger.info("label");
+//        logger.info("label");
         final Label label = new Label(dataNode.getLabel());
         simplePanel.setStyleName("IMDI_group");
         simplePanel.add(label);
@@ -57,7 +57,7 @@ public class MetadataDetailsPanel extends VerticalPanel {
         VerticalPanel verticalPanel = new VerticalPanel();
         verticalPanel.setStyleName("IMDI_group_static");
         simplePanel.add(verticalPanel);
-        logger.info("groups");
+//        logger.info("groups");
         final List<FieldGroup> fieldGroups = dataNode.getFieldGroups();
         if (fieldGroups != null) {
             for (FieldGroup fieldGroup : fieldGroups) {
@@ -66,7 +66,7 @@ public class MetadataDetailsPanel extends VerticalPanel {
                 final Label groupLabel = new Label(fieldGroup.getFieldName());
                 groupLabel.setStyleName("IMDI_label");
                 horizontalPanel.add(groupLabel);
-                logger.info("fields");
+//                logger.info("fields");
                 for (DataField field : fieldGroup.getFields()) {
                     final Label valueLabel = new Label(field.getFieldValue());
                     valueLabel.setStyleName("IMDI_value");
@@ -75,7 +75,7 @@ public class MetadataDetailsPanel extends VerticalPanel {
                 verticalPanel.add(horizontalPanel);
             }
         }
-        logger.info("children");
+//        logger.info("children");
         final List<? extends SerialisableDataNode> childList = dataNode.getChildList();
         if (childList != null) {
             for (SerialisableDataNode dataNodeChild : childList) {

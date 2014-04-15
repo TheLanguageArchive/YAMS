@@ -115,6 +115,13 @@ div#actionsPanel input {
     font-size: 1.2em;
 }
 
+#actionsTargetPanel{
+    height:100%;
+    overflow: scroll;
+    overflow-x: hidden;
+    font-size: 0.8em;
+}
+
 #detailsPanel{
     height:100%;
     overflow: scroll;

@@ -202,6 +202,9 @@ public class yaas implements EntryPoint, HistoryListener {
         databaseInfo.getDbInfo();
         ActionsPanelController actionsPanelController = new ActionsPanelController(
                 RootPanel.get("welcomePanel"),
+                RootPanel.get("actionsTargetPanel"),
+                RootPanel.get("detailsPanel"),
+                RootPanel.get("homeLink"),
                 RootPanel.get("metadataSearchTag"),
                 RootPanel.get("annotationContentSearchTag"),
                 RootPanel.get("manageAccessRightsTag"),

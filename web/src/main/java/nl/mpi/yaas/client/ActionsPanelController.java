@@ -20,10 +20,14 @@ package nl.mpi.yaas.client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import nl.mpi.flap.model.SerialisableDataNode;
 
@@ -34,6 +38,9 @@ import nl.mpi.flap.model.SerialisableDataNode;
 public class ActionsPanelController {
 
     private SerialisableDataNode dataNode = null;
+    final private RootPanel actionsTargetPanel;
+    final private RootPanel detailsPanel;
+    final private RootPanel homeLinkTag;
     final private RootPanel metadataSearchTag;
     final private RootPanel annotationContentSearchTag;
     final private RootPanel manageAccessRightsTag;
@@ -41,9 +48,13 @@ public class ActionsPanelController {
     final private RootPanel citationTag;
     final private RootPanel welcomePanelTag;
     final private RootPanel aboutTag;
+    final ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
 
-    public ActionsPanelController(RootPanel welcomePanelTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag) {
+    public ActionsPanelController(RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag) {
         this.welcomePanelTag = welcomePanelTag;
+        this.actionsTargetPanel = actionsTargetPanel;
+        this.detailsPanel = detailsPanel;
+        this.homeLinkTag = homeLinkTag;
         this.metadataSearchTag = metadataSearchTag;
         this.annotationContentSearchTag = annotationContentSearchTag;
         this.manageAccessRightsTag = manageAccessRightsTag;
@@ -51,23 +62,19 @@ public class ActionsPanelController {
         this.citationTag = citationTag;
         this.aboutTag = aboutTag;
 
-        if (welcomePanelTag != null) {
-            welcomePanelTag.setVisible(true);
-        }
         if (metadataSearchTag != null) {
-            metadataSearchTag.setVisible(false);
+            addPanelAction(metadataSearchTag, serviceLocations.yamsUrl());
         }
         if (annotationContentSearchTag != null) {
-            annotationContentSearchTag.setVisible(false);
+            addPopupPanelAction(annotationContentSearchTag, serviceLocations.trovaUrl());
         }
         if (manageAccessRightsTag != null) {
-            manageAccessRightsTag.setVisible(false);
+            addPopupPanelAction(manageAccessRightsTag, serviceLocations.rrsUrl());
         }
         if (resourceAccessTag != null) {
-            resourceAccessTag.setVisible(false);
+            addPageAction(resourceAccessTag, serviceLocations.rrsUrl());
         }
         if (citationTag != null) {
-            citationTag.setVisible(false);
         }
         if (aboutTag != null) {
             final Anchor aboutAnchor = Anchor.wrap(aboutTag.getElement());
@@ -95,28 +102,96 @@ public class ActionsPanelController {
                 }
             });
         }
+        if (homeLinkTag != null) {
+            final Anchor homeAnchor = Anchor.wrap(homeLinkTag.getElement());
+            homeAnchor.addClickHandler(new ClickHandler() {
+
+                public void onClick(ClickEvent event) {
+                    setDataNode(null);
+                }
+            });
+        }
+        setDataNode(null);
+    }
+
+    private void addPopupPanelAction(RootPanel rootPanel, final String targetUrl) {
+        final Button accessRightsButton = Button.wrap(rootPanel.getElement());
+        accessRightsButton.addClickHandler(new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+                PopupPanel popupPanel = new PopupPanel(true, true);
+                popupPanel.setSize("100%", "100%");
+                popupPanel.setGlassEnabled(true);
+                popupPanel.setAnimationEnabled(true);
+                final Frame frame = new Frame(getFormattedHandleLink(targetUrl));
+                frame.setSize("100%", "100%");
+                popupPanel.setWidget(frame);
+                popupPanel.center();
+            }
+        });
+    }
+
+    private void addPanelAction(RootPanel rootPanel, final String targetUrl) {
+        final Button button = Button.wrap(rootPanel.getElement());
+        button.addClickHandler(new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+                if (detailsPanel != null) {
+                    detailsPanel.setVisible(false);
+                }
+                if (welcomePanelTag != null) {
+                    welcomePanelTag.setVisible(false);
+                }
+                actionsTargetPanel.clear();
+                actionsTargetPanel.setVisible(true);
+                final Frame frame = new Frame(getFormattedHandleLink(targetUrl));
+                frame.setSize("100%", "100%");
+                actionsTargetPanel.add(frame);
+            }
+        });
+    }
+
+    private void addPageAction(RootPanel rootPanel, final String targetUrl) {
+        final Button button = Button.wrap(rootPanel.getElement());
+        button.addClickHandler(new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+                Window.Location.assign(getFormattedHandleLink(targetUrl));
+            }
+        });
+    }
+
+    private String getFormattedHandleLink(final String targetUrl) {
+        return targetUrl.replace("{}", dataNode.getArchiveHandle());
     }
 
     public void setDataNode(SerialisableDataNode dataNode) {
         this.dataNode = dataNode;
+        if (detailsPanel != null) {
+            detailsPanel.setVisible(dataNode != null);
+        }
+        if (actionsTargetPanel != null) {
+            actionsTargetPanel.clear();
+            actionsTargetPanel.setVisible(false);
+        }
         if (welcomePanelTag != null) {
-            welcomePanelTag.setVisible(false);
+            welcomePanelTag.setVisible(dataNode == null);
         }
 
         if (metadataSearchTag != null) {
-            metadataSearchTag.setVisible(true);
+            metadataSearchTag.setVisible(dataNode != null);
         }
         if (annotationContentSearchTag != null) {
-            annotationContentSearchTag.setVisible(true);
+            annotationContentSearchTag.setVisible(dataNode != null);
         }
         if (manageAccessRightsTag != null) {
-            manageAccessRightsTag.setVisible(true);
+            manageAccessRightsTag.setVisible(dataNode != null);
         }
         if (resourceAccessTag != null) {
-            resourceAccessTag.setVisible(true);
+            resourceAccessTag.setVisible(dataNode != null);
         }
         if (citationTag != null) {
-            citationTag.setVisible(true);
+            citationTag.setVisible(dataNode != null);
         }
     }
 }
