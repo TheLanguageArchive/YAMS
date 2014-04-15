@@ -111,18 +111,18 @@ div#actionsPanel input {
     font-size: 0.8em;
 }*/
 
-.metadataDetailsPanel h1 {
+#detailsPanel h1 {
     font-size: 1.2em;
 }
 
-.metadataDetailsPanel{
+#detailsPanel{
     height:100%;
     overflow: scroll;
     overflow-x: hidden;
     font-size: 0.8em;
 }
 
-.metadataDetailsPanel img {
+#detailsPanel img {
     vertical-align:text-top;
 }
 

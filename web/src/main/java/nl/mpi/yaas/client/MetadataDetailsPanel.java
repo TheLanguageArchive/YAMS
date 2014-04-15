@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,14 +35,13 @@ public class MetadataDetailsPanel extends VerticalPanel {
 
     private static final Logger logger = Logger.getLogger("");
     private SerialisableDataNode dataNode;
-    
+
     public MetadataDetailsPanel() {
-        this.setStyleName("metadataDetailsPanel");
         this.setVisible(false);
     }
 
     public void setDataNode(SerialisableDataNode dataNode) {
-        logger.info("setDataNode");
+        this.clear();
         this.setVisible(true);
         this.dataNode = dataNode;
         this.add(addDataNodePanel(dataNode));

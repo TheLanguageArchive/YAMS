@@ -9,7 +9,7 @@
     <groupId>nl.mpi</groupId>
     <artifactId>yaas-gwt</artifactId>
     <packaging>war</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <name>YAAS GWT</name>
     <parent>
         <groupId>nl.mpi</groupId>
@@ -24,6 +24,7 @@
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.license>gpl20</netbeans.hint.license>
+        <plugin.build-date>${maven.build.timestamp}</plugin.build-date>
     </properties>
 
     <dependencies>
@@ -67,16 +68,69 @@
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>plugins-core</artifactId>
-            <version>1.2-pretesting-SNAPSHOT</version>
+            <version>1.2.39113-testing</version>
         </dependency>
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>yaas-common</artifactId>
             <version>0.1-pretesting-SNAPSHOT</version>
         </dependency>
+        <!--        <dependency>
+            <groupId>com.googlecode.gwtphonegap</groupId>
+            <artifactId>gwtphonegap</artifactId>
+            <version>2.4.0.0</version>
+        </dependency>-->
+<!--        <dependency>
+                    
+            http://stackoverflow.com/questions/10696117/gwt-maven-dependencies
+            Use Lib in compile scope and exclude gwt-dev:
+            
+      <groupId>Lib group</groupId>
+      <artifactId>Lib artifact id</artifactId>
+      <version>Lib version</version>
+      <scope>compile</scope>
+      
+    </dependency>
+        
+        <exclusions>
+                <exclusion>
+                    <artifactId>arbil-help</artifactId>
+                    <groupId>nl.mpi</groupId>
+                </exclusion>
+                                <exclusion>
+                    <artifactId>arbil-localisation</artifactId>
+                    <groupId>nl.mpi</groupId>
+                </exclusion>
+            </exclusions>
+-->
+<!--        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            po internationalisation support
+            <groupId>com.googlecode.gettext-commons</groupId>
+            <artifactId>gettext-maven-plugin</artifactId>
+            <version>1.2.4</version>
+        </dependency>-->
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>                
+                <includes>
+                    <include>**/version.properties</include>
+                </includes>
+            </resource>
+        </resources>
         <!-- Generate compiled stuff in the folder used for developing mode -->
         <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
 
@@ -198,6 +252,53 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <!--              chrome app plugins 
+             use the war plugin to stage the crx files 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>stage-crx</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exploded</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+             the crx is created in maven's package phase 
+            <plugin>
+                <groupId>com.google.code</groupId>
+                <artifactId>crx-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <pemKey>mykey.pem</pemKey>
+                    <pemCert>mycert.pem</pemCert>
+                </configuration>
+            </plugin>-->
+            <plugin>
+                <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
+                <artifactId>svn-revision-number-maven-plugin</artifactId>
+                <version>1.13</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <entries>
+                        <entry>
+                            <path>${basedir}/src</path>
+                            <!-- this will populate "plugin.version.revision" -->
+                            <prefix>plugin.version</prefix>
+                        </entry>
+                    </entries>
+                </configuration>
             </plugin>
         </plugins>
     </build>
