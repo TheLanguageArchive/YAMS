@@ -165,7 +165,7 @@ public class ActionsPanelController {
         return targetUrl.replace("{}", dataNode.getArchiveHandle());
     }
 
-    public void setDataNode(SerialisableDataNode dataNode) {
+    public final void setDataNode(SerialisableDataNode dataNode) {
         this.dataNode = dataNode;
         if (detailsPanel != null) {
             detailsPanel.setVisible(dataNode != null);
