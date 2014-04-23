@@ -29,6 +29,8 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import java.util.logging.Logger;
+import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 
 /**
@@ -37,6 +39,7 @@ import nl.mpi.flap.model.SerialisableDataNode;
  */
 public class ActionsPanelController {
 
+    private static final Logger logger = Logger.getLogger("");
     private SerialisableDataNode dataNode = null;
     final private RootPanel actionsTargetPanel;
     final private RootPanel detailsPanel;
@@ -66,13 +69,13 @@ public class ActionsPanelController {
             addPanelAction(metadataSearchTag, serviceLocations.yamsUrl());
         }
         if (annotationContentSearchTag != null) {
-            addPopupPanelAction(annotationContentSearchTag, serviceLocations.trovaUrl());
+            addPageAction(annotationContentSearchTag, serviceLocations.trovaUrl());
         }
         if (manageAccessRightsTag != null) {
-            addPopupPanelAction(manageAccessRightsTag, serviceLocations.rrsUrl());
+            addPanelAction(manageAccessRightsTag, serviceLocations.amsUrl());
         }
         if (resourceAccessTag != null) {
-            addPageAction(resourceAccessTag, serviceLocations.rrsUrl());
+            addPanelAction(resourceAccessTag, serviceLocations.rrsUrl());
         }
         if (citationTag != null) {
         }
@@ -123,10 +126,14 @@ public class ActionsPanelController {
                 popupPanel.setSize("100%", "100%");
                 popupPanel.setGlassEnabled(true);
                 popupPanel.setAnimationEnabled(true);
-                final Frame frame = new Frame(getFormattedHandleLink(targetUrl));
-                frame.setSize("100%", "100%");
-                popupPanel.setWidget(frame);
-                popupPanel.center();
+                try {
+                    final Frame frame = new Frame(getFormattedHandleLink(targetUrl));
+                    frame.setSize("100%", "100%");
+                    popupPanel.setWidget(frame);
+                    popupPanel.center();
+                } catch (ModelException exception) {
+                    logger.warning(exception.getMessage());
+                }
             }
         });
     }
@@ -144,9 +151,13 @@ public class ActionsPanelController {
                 }
                 actionsTargetPanel.clear();
                 actionsTargetPanel.setVisible(true);
-                final Frame frame = new Frame(getFormattedHandleLink(targetUrl));
-                frame.setSize("100%", "100%");
-                actionsTargetPanel.add(frame);
+                try {
+                    final Frame frame = new Frame(getFormattedHandleLink(targetUrl));
+                    frame.setSize("100%", "100%");
+                    actionsTargetPanel.add(frame);
+                } catch (ModelException exception) {
+                    logger.warning(exception.getMessage());
+                }
             }
         });
     }
@@ -156,13 +167,18 @@ public class ActionsPanelController {
         button.addClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
-                Window.Location.assign(getFormattedHandleLink(targetUrl));
+                try {
+                    Window.open(getFormattedHandleLink(targetUrl), "targetUrl", "");
+                } catch (ModelException exception) {
+                    logger.warning(exception.getMessage());
+                }
             }
-        });
+        }
+        );
     }
 
-    private String getFormattedHandleLink(final String targetUrl) {
-        return targetUrl.replace("{}", dataNode.getArchiveHandle());
+    private String getFormattedHandleLink(final String targetUrl) throws ModelException {
+        return targetUrl.replace("{}", dataNode.getURI());
     }
 
     public final void setDataNode(SerialisableDataNode dataNode) {
