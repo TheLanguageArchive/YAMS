@@ -5,17 +5,15 @@
  */
 package nl.mpi.yams.cs.connector;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import nl.mpi.archiving.corpusstructure.core.database.dao.ArchiveObjectDao;
-import nl.mpi.archiving.corpusstructure.core.database.dao.ArchivePropertyDao;
-import nl.mpi.archiving.corpusstructure.core.database.dao.CorpusStructureDao;
-import nl.mpi.archiving.corpusstructure.core.database.pojo.ArchiveObject;
+import nl.mpi.archiving.corpusstructure.core.CorpusNode;
+import nl.mpi.archiving.corpusstructure.provider.CorpusStructureProvider;
 import nl.mpi.flap.model.SerialisableDataNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -26,37 +24,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Path("yamscs")
 public class YamsCsResource {
 
-    private final static Logger logger = LoggerFactory.getLogger(YamsCsResource.class);
-    private final ArchiveObjectDao aoDao;
-    private final ArchivePropertyDao archiveDao;
-    private final CorpusStructureDao csDao;
+    final private CorpusStructureProvider corpusStructureProvider;
+//    private final static Logger logger = LoggerFactory.getLogger(YamsCsResource.class);
+//    private final ArchiveObjectDao aoDao;
+//    private final ArchivePropertyDao archiveDao;
+//    private final CorpusStructureDao csDao;
+//
 
     @Autowired
-    public YamsCsResource(ArchiveObjectDao aoDao, ArchivePropertyDao archiveDao, CorpusStructureDao csDao) {
-        logger.debug("Creating cs provider factory with {}, {}, {}", aoDao, archiveDao, csDao);
-        this.aoDao = aoDao;
-        this.archiveDao = archiveDao;
-        this.csDao = csDao;
+    public YamsCsResource(CorpusStructureProvider corpusStructureProvider) {
+        this.corpusStructureProvider = corpusStructureProvider;
+//        logger.debug("Creating cs provider factory with {}, {}, {}", aoDao, archiveDao, csDao);
+//        this.aoDao = aoDao;
+//        this.archiveDao = archiveDao;
+//        this.csDao = csDao;
     }
 
-    /**
-     * Retrieves a SerialisableDataNode wrapping the response from corpus
-     * structure 2
-     *
-     * @param hdl the archive handle for the desired node
-     * @return an instance of SerialisableDataNode
-     */
+//    public YamsCsResource() {
+//        aoDao = null;
+//    }
+//    /**
+//     * Retrieves a SerialisableDataNode wrapping the response from corpus
+//     * structure 2
+//     *
+//     * @param hdl the archive handle for the desired node
+//     * @return an instance of SerialisableDataNode
+//     */
     @GET
     @Produces("application/xml")
     @Path("hdl{hdl}")
-    public SerialisableDataNode getDataNode(@PathParam("hdl") String hdl) {
-        final ArchiveObject selectedNode = aoDao.select(hdl);
-        final SerialisableDataNode dataNode = new NodeWrapper(selectedNode);
+    public SerialisableDataNode getDataNode(@PathParam("hdl") String hdl) throws URISyntaxException {
+        CorpusNode corpusNode = this.corpusStructureProvider.getNode(new URI(hdl));
+//        final ArchiveObject selectedNode = aoDao.select(hdl);
+        final SerialisableDataNode dataNode = new NodeWrapper(corpusNode);
         return dataNode;
+//        return null;
     }
 
     @GET
-    @Produces("application/xml")
+    @Produces(value = "application/xml")
     public String getXml() {
         return "<a>b</a>";
     }

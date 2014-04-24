@@ -6,6 +6,7 @@
 package nl.mpi.yams.cs.connector;
 
 import java.util.List;
+import nl.mpi.archiving.corpusstructure.core.CorpusNode;
 import nl.mpi.archiving.corpusstructure.core.database.pojo.ArchiveObject;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.DataNodeType;
@@ -19,9 +20,9 @@ import nl.mpi.flap.model.SerialisableDataNode;
  */
 public class NodeWrapper extends SerialisableDataNode {
 
-    private final ArchiveObject archiveObject;
+    private final CorpusNode archiveObject;
 
-    public NodeWrapper(ArchiveObject archiveObject) {
+    public NodeWrapper(CorpusNode archiveObject) {
         this.archiveObject = archiveObject;
     }
 
@@ -32,11 +33,11 @@ public class NodeWrapper extends SerialisableDataNode {
 
     @Override
     public String getArchiveHandle() {
-        return archiveObject.getPid();
+        return archiveObject.getPID().toString();
     }
 
     @Override
     public String getURI() throws ModelException {
-        return archiveObject.getUri();
+        return archiveObject.getNodeURI().toString();
     }
 }

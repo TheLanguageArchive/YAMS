@@ -5,12 +5,13 @@
  */
 package nl.mpi.yams.cs.connector;
 
-import nl.mpi.archiving.corpusstructure.core.database.dao.ArchiveObjectDao;
-import nl.mpi.archiving.corpusstructure.core.database.dao.ArchivePropertyDao;
-import nl.mpi.archiving.corpusstructure.core.database.dao.CorpusStructureDao;
-import nl.mpi.archiving.corpusstructure.core.database.pojo.ArchiveObject;
-import nl.mpi.archiving.corpusstructure.provider.db.CorpusStructureProviderImpl;
-import nl.mpi.archiving.corpusstructure.provider.db.service.VPathService;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Date;
+import nl.mpi.archiving.corpusstructure.core.CorpusNode;
+import nl.mpi.archiving.corpusstructure.core.CorpusNodeType;
+import nl.mpi.archiving.corpusstructure.core.FileInfo;
+import nl.mpi.archiving.corpusstructure.provider.CorpusStructureProvider;
 import nl.mpi.flap.model.SerialisableDataNode;
 import org.jmock.Expectations;
 import static org.jmock.Expectations.returnValue;
@@ -28,20 +29,21 @@ import static org.junit.Assert.*;
 public class YamsCsResourceTest {
 
     private Mockery context = new JUnit4Mockery();
-    private ArchivePropertyDao archiveDao;
-    private ArchiveObjectDao aoDao;
-    private CorpusStructureDao csDao;
-    private VPathService vPathService;
-    private CorpusStructureProviderImpl corpusStructureProviderImpl;
+//    private ArchivePropertyDao archiveDao;
+//    private ArchiveObjectDao aoDao;
+//    private CorpusStructureDao csDao;
+//    private VPathService vPathService;
+    private CorpusStructureProvider corpusStructureProvider;
 
     @Before
     public void setUp() {
-        archiveDao = context.mock(ArchivePropertyDao.class);
-        aoDao = context.mock(ArchiveObjectDao.class);
-        csDao = context.mock(CorpusStructureDao.class);
-        vPathService = context.mock(VPathService.class);
-        corpusStructureProviderImpl = new CorpusStructureProviderImpl(archiveDao, aoDao, csDao);
-        corpusStructureProviderImpl.initializeWithVPathService(vPathService);
+//        archiveDao = context.mock(ArchivePropertyDao.class);
+//        aoDao = context.mock(ArchiveObjectDao.class);
+//        csDao = context.mock(CorpusStructureDao.class);
+//        vPathService = context.mock(VPathService.class);        
+        corpusStructureProvider = context.mock(CorpusStructureProvider.class);
+//        corpusStructureProviderImpl = new CorpusStructureProviderImpl(archiveDao, aoDao, csDao);
+//        corpusStructureProviderImpl.initializeWithVPathService(vPathService);
     }
 
     @After
@@ -52,22 +54,68 @@ public class YamsCsResourceTest {
      * Test of getXml method, of class YamsCsResource.
      */
     @Test
-    public void testGetXml() {
+    public void testGetXml() throws URISyntaxException {
         System.out.println("getXml");
-        YamsCsResource instance = new YamsCsResource(aoDao, archiveDao, csDao);
+        YamsCsResource instance = new YamsCsResource(corpusStructureProvider);
         final String expectedUrl = "http://test/node";
         final String expectedHdl = "hdl:1234/5678";
         final String expectedName = "test node";
+        final URI hdlUri = new URI(expectedHdl);
+        final URI nodeUri = new URI(expectedUrl);
 
         // Underlying archive object to be returned by DAO
-        final ArchiveObject archiveObject = new ArchiveObject();
-        archiveObject.setUri(expectedUrl);
-        archiveObject.setPid(expectedHdl);
-        archiveObject.setName(expectedName);
+        final CorpusNode archiveObject = new CorpusNode() {
+
+            @Override
+            public URI getNodeURI() {
+                return nodeUri;
+            }
+
+            @Override
+            public URI getProfile() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public FileInfo getFileInfo() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public CorpusNodeType getType() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public Date getLastUpdate() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public boolean isOnSite() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public String getFormat() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public String getName() {
+                return expectedName;
+            }
+
+            @Override
+            public URI getPID() {
+                return hdlUri;
+            }
+
+        };
 
         context.checking(new Expectations() {
             {
-                oneOf(aoDao).select(expectedHdl);
+                oneOf(corpusStructureProvider).getNode(hdlUri);
                 will(returnValue(archiveObject));
             }
         });
