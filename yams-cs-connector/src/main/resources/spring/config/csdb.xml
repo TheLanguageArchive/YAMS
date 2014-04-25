@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+          http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd"
+
+>
+    <!--profile="production, demoserver"-->
+
+    <context:annotation-config />
+    
+    <tx:annotation-driven/>
+    
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+    
+    <!--    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="java:comp/env/jdbc/CSDB2"/>   
+        <property name="resourceRef" value="true" />
+    </bean>-->
+    
+    <bean id="entityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="packagesToScan" value="nl.mpi.archiving.corpusstructure.core.database.pojo" />
+        <property name="dataSource" ref="corpusStructureDataSource" />
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="generateDdl" value="true" />
+            </bean>
+        </property>
+        <property name="persistenceUnitName" value="corpusstructure2-persistency" />
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+    </bean>
+    
+    
+    
+    <bean id="corpusStructureDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="java:comp/env/jdbc/CSDB2"/>   
+        <property name="resourceRef" value="true" />
+    </bean>
+    
+    
+    <bean id="archiveDao" class="nl.mpi.archiving.corpusstructure.core.database.dao.impl.ArchivePropertyDaoImpl" />
+    <bean id="aoDao" class="nl.mpi.archiving.corpusstructure.core.database.dao.impl.ArchiveObjectDaoImpl" />
+    <bean id="csDao" class="nl.mpi.archiving.corpusstructure.core.database.dao.impl.CorpusStructureDaoImpl" />
+    
+    <!--Factory for CorpusStructure/AccessInfo. This pattern is used to allow for transactional instantiation of the providers.--> 
+    <!--<bean id="providerFactory" class="nl.mpi.lamus.cmdi.providers.ProductionCorpusStructureProviderFactory" />-->
+    
+    <!-- CSDB created from factory -->
+    <bean id="corpusStructureProvider" class="nl.mpi.archiving.corpusstructure.provider.db.CorpusStructureProviderImpl" />
+    
+    <bean id="nodeResolver" class="nl.mpi.archiving.corpusstructure.provider.db.service.impl.CorpusStructureProviderNodeResolver" />
+    
+    <!--<bean id="createWorkspaceTreeProvider" class="nl.mpi.archiving.tree.corpusstructure.CorpusStructureTreeModelProvider">-->
+        <!--<constructor-arg ref="corpusStructureProvider" />-->
+    <!--</bean>-->
+    
+</beans>

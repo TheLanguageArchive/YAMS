@@ -1,2 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/yams-cs-connector"/>
+<Context antiJARLocking="true" path="/yams-cs-connector">
+    <!-- CorpusStructure2 (CMDI) 
+    TODO: Make this readonly once metadata browser is fit for that --> 
+    <Resource
+        name="jdbc/CSDB2"
+        auth="Container" 
+        type="javax.sql.DataSource" 
+        driverClassName="org.postgresql.Driver" 
+        url="jdbc:postgresql://lux16.mpi.nl:5432/corpusstructure2" 
+        username="webuser" 
+        password="start1a" 
+        maxActive="20" 
+        maxIdle="5" 
+        maxWait="4000" />
+</Context>

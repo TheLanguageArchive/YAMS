@@ -5,12 +5,7 @@
  */
 package nl.mpi.yams.cs.connector;
 
-import java.util.List;
 import nl.mpi.archiving.corpusstructure.core.CorpusNode;
-import nl.mpi.archiving.corpusstructure.core.database.pojo.ArchiveObject;
-import nl.mpi.flap.model.DataNodeLink;
-import nl.mpi.flap.model.DataNodeType;
-import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 
