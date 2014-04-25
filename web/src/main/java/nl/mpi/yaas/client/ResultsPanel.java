@@ -92,7 +92,7 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
             VerticalPanel verticalPanel = new VerticalPanel();
             final List<DataNodeLink> childIds = dataNode.getChildIds();
             if (childIds != null) {
-                final DataNodeTree dataNodeTree = new DataNodeTree(checkboxListener, null, searchOptionsService, iconTableBase64);
+                final DataNodeTree dataNodeTree = new DataNodeTree(checkboxListener, null, searchOptionsService, iconTableBase64, false);
                 dataNodeTree.addResultsToTree(databaseName, childIds, dataNode, false);
                 // add a label showing the time taken by a search and the result count
                 final Label timeLabel = new Label("found " + childIds.size() + " in " + responseTimeMils + "ms");

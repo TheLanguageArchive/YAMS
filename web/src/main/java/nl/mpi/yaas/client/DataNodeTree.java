@@ -47,8 +47,9 @@ public class DataNodeTree extends Tree {
     private final TreeNodeCheckboxListener checkboxListener;
     private final TreeNodeClickListener clickListener;
     private static final Logger logger = Logger.getLogger("");
+    final YaasTreeItemLoadedListener yaasTreeItemLoadedListener;
 
-    public DataNodeTree(TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64) {
+    public DataNodeTree(TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64, final boolean openWhenLoaded) {
         this.searchOptionsService = searchOptionsService;
         this.iconTableBase64 = iconTableBase64;
         this.checkboxListener = checkboxListener;
@@ -58,6 +59,19 @@ public class DataNodeTree extends Tree {
         } else {
             // if the click listener is active then we should not show the popup
             popupPanel = null;
+        }
+        if (openWhenLoaded) {
+            yaasTreeItemLoadedListener = new YaasTreeItemLoadedListener() {
+
+                public void yaasTreeItemLoaded(YaasTreeItem yaasTreeItem) {
+                    if (yaasTreeItem.getChildCount() > 0) {
+                        DataNodeTree.this.setSelectedItem(yaasTreeItem.getChild(0));
+                        ensureSelectedItemVisible();
+                    }
+                }
+            };
+        } else {
+            yaasTreeItemLoadedListener = null;
         }
 //        // Create a tree with a few items in it.
 //        TreeItem root = new TreeItem();
@@ -102,7 +116,7 @@ public class DataNodeTree extends Tree {
         final DataNodeLoader dataNodeLoader = new DataNodeLoader(searchOptionsService, iconTableBase64, databaseName);
         addPagingButton(new Pageable() {
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener, displayFlatNodes);
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }
 
@@ -120,7 +134,7 @@ public class DataNodeTree extends Tree {
         addPagingButton(new Pageable() {
 
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
+                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
                 yaasTreeItem.setHighlights(dataNode);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }

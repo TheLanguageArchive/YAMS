@@ -87,7 +87,7 @@ public class YaasTreeItem extends TreeItem {
     private final TreeNodeClickListener clickListener;
     private final boolean displayFlatNodes;
 
-    public YaasTreeItem(String databaseName, DataNodeId dataNodeId, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, boolean displayFlatNodes) {
+    public YaasTreeItem(String databaseName, DataNodeId dataNodeId, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, boolean displayFlatNodes, final YaasTreeItemLoadedListener itemLoadedListener) {
         super(new HorizontalPanel());
         loadingTreeItem = getLoadingItem();
         errorTreeItem = new TreeItem();
@@ -107,7 +107,7 @@ public class YaasTreeItem extends TreeItem {
         setupWidgets();
         // todo: continue working on the json version of the data loader
 //        loadDataNodeJson();
-        loadDataNode();
+        loadDataNode(itemLoadedListener);
     }
 
     public YaasTreeItem(String databaseName, SerialisableDataNode yaasDataNode, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, boolean displayFlatNodes) {
@@ -131,7 +131,7 @@ public class YaasTreeItem extends TreeItem {
         setLabel();
         try {
             if (yaasDataNode.getType() == null || !IMDI_RESOURCE.equals(yaasDataNode.getType().getID())) { // do not show child links of imdi resource nodes
-                if (getFilteredChildNodes() != null || yaasDataNode.getChildIds() != null) {
+                if (getFilteredChildNodes() != null || getFlatChildIds(yaasDataNode, new ArrayList<DataNodeLink>()) != null) {
                     addItem(loadingTreeItem);
                 }
             }
@@ -381,7 +381,7 @@ public class YaasTreeItem extends TreeItem {
         }
     }
 
-    private void loadDataNode() {
+    private void loadDataNode(final YaasTreeItemLoadedListener itemLoadedListener) {
         if (loadAttempted == false) {
             loadAttempted = true;
             setText("loading...");
@@ -395,7 +395,7 @@ public class YaasTreeItem extends TreeItem {
                     setLabel();
                     removeItem(loadingTreeItem);
                     try {
-                        if (getFilteredChildNodes() != null || yaasDataNode.getChildIds() != null) {
+                        if (getFilteredChildNodes() != null || !getFlatChildIds(yaasDataNode, new ArrayList<DataNodeLink>()).isEmpty()) {
                             addItem(loadingTreeItem);
                         }
                     } catch (ModelException exception) {
@@ -405,6 +405,9 @@ public class YaasTreeItem extends TreeItem {
                     setNodeIcon();
                     hideShowExpandButton();
                     addColumnsForHighlights();
+                    if (itemLoadedListener != null) {
+                        itemLoadedListener.yaasTreeItemLoaded(YaasTreeItem.this);
+                    }
                 }
 
                 public void dataNodeLoadFailed(Throwable caught) {
@@ -436,7 +439,8 @@ public class YaasTreeItem extends TreeItem {
                 addItem(loadingTreeItem);
                 try {
                     final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
-                    final int maxToGet = yaasDataNode.getChildIds().size();
+                    final List<DataNodeLink> flatChildIds = getFlatChildIds(yaasDataNode, new ArrayList<DataNodeLink>());
+                    final int maxToGet = flatChildIds.size();
                     if (maxToGet <= loadedCount) {
                         // all child nodes should be visible so we can just return
                         removeItem(loadingTreeItem);
@@ -446,7 +450,7 @@ public class YaasTreeItem extends TreeItem {
                     final int firstToGet = (loadedCount == 0) ? loadedCount : loadedCount + 1;
                     final int lastToGet = (maxToGet < firstToGet + numberToGet) ? maxToGet : firstToGet + numberToGet;
 //                    logger.log(Level.INFO, "loadedCount: " + loadedCount + ", numberToGet: " + numberToGet + ", firstToGet: " + firstToGet + ", lastToGet: " + lastToGet + ", maxToGet: " + maxToGet);
-                    for (DataNodeLink childId : yaasDataNode.getChildIds().subList(firstToGet, lastToGet)) {
+                    for (DataNodeLink childId : flatChildIds.subList(firstToGet, lastToGet)) {
                         dataNodeIdList.add(new DataNodeId(childId.getIdString()));
                     }
                     dataNodeLoader.requestLoad(dataNodeIdList, new DataNodeLoaderListener() {
@@ -495,8 +499,9 @@ public class YaasTreeItem extends TreeItem {
         if (yaasDataNode != null) {
             int childCountsize = -1;
             try {
-                if (yaasDataNode.getChildIds() != null) {
-                    childCountsize = yaasDataNode.getChildIds().size();
+                final List<DataNodeLink> flatChildIds = getFlatChildIds(yaasDataNode, new ArrayList<DataNodeLink>());
+                if (!flatChildIds.isEmpty()) {
+                    childCountsize = flatChildIds.size();
                 } else if (yaasDataNode.getChildList() != null) {
                     // get the reduced children here
                     final List<? extends SerialisableDataNode> filteredChildNodes = getFilteredChildNodes();
@@ -553,5 +558,22 @@ public class YaasTreeItem extends TreeItem {
             }
         }
         return flatNodes;
+    }
+
+    private List<DataNodeLink> getFlatChildIds(SerialisableDataNode currentDataNode, List<DataNodeLink> dataNodeLinks) throws ModelException {
+        final List<DataNodeLink> childIds = currentDataNode.getChildIds();
+        if (childIds != null) {
+            dataNodeLinks.addAll(childIds);
+        }
+        if (displayFlatNodes) {
+            final List<? extends SerialisableDataNode> childList = currentDataNode.getChildList();
+            if (childList != null) // this filtering should only be relevant to IMDI nodes because CMDI nodes will have all resouces as links
+            {
+                for (SerialisableDataNode childDataNode : childList) {
+                    getFlatChildIds(childDataNode, dataNodeLinks);
+                }
+            }
+        }
+        return dataNodeLinks;
     }
 }
