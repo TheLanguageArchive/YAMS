@@ -581,14 +581,9 @@ public class YaasTreeItem extends TreeItem {
         {
             for (SerialisableDataNode childDataNode : childList) {
                 final DataNodeType nodeType = childDataNode.getType();
-                try {
-                    // todo: this check for # might be reduntant and was added for the cmdi resources only
-                    if ((nodeType != null && IMDI_RESOURCE.equals(nodeType.getID())) || !childDataNode.getURI().contains("#")) {
+                if ((nodeType != null && IMDI_RESOURCE.equals(nodeType.getID()))) {
 //                if (childDataNode.getArchiveHandle() != null) // archive handle is not the best thing to detect resource nodes
-                        flatNodes.add(childDataNode);
-                    }
-                } catch (ModelException exception) {
-                    logger.warning(exception.getMessage());
+                    flatNodes.add(childDataNode);
                 }
                 getFlatNodes(childDataNode, flatNodes);
             }
