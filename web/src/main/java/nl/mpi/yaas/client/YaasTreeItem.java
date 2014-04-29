@@ -131,7 +131,7 @@ public class YaasTreeItem extends TreeItem {
         setLabel();
         try {
             if (yaasDataNode.getType() == null || !IMDI_RESOURCE.equals(yaasDataNode.getType().getID())) { // do not show child links of imdi resource nodes
-                if (getFilteredChildNodes() != null || getFlatChildIds(yaasDataNode, new ArrayList<DataNodeLink>()) != null) {
+                if (getFilteredChildNodes() != null || !getFlatChildIds(yaasDataNode, new ArrayList<DataNodeLink>()).isEmpty()) {
                     addItem(loadingTreeItem);
                 }
             }
@@ -151,6 +151,7 @@ public class YaasTreeItem extends TreeItem {
                 loadChildNodes();
             }
         });
+        loadNextButton.setStyleName("load-more-btn");
         return new TreeItem(loadNextButton);
     }
 
@@ -451,38 +452,64 @@ public class YaasTreeItem extends TreeItem {
                     final int lastToGet = (maxToGet < firstToGet + numberToGet) ? maxToGet : firstToGet + numberToGet;
 //                    logger.log(Level.INFO, "loadedCount: " + loadedCount + ", numberToGet: " + numberToGet + ", firstToGet: " + firstToGet + ", lastToGet: " + lastToGet + ", maxToGet: " + maxToGet);
                     for (DataNodeLink childId : flatChildIds.subList(firstToGet, lastToGet)) {
-                        dataNodeIdList.add(new DataNodeId(childId.getIdString()));
+                        final String nodeUriLowerCase = childId.getNodeUriString().toLowerCase();
+                        if (nodeUriLowerCase.endsWith(".cmdi") || nodeUriLowerCase.endsWith(".imdi")) {
+                            dataNodeIdList.add(new DataNodeId(childId.getIdString()));
+                        } else {
+                            // todo: this will be replaced with CS2 and or YAMS crawler including data files in the database.
+                            final SerialisableDataNode resourceDataNode = new SerialisableDataNode();
+                            resourceDataNode.setLabel(childId.getNodeUriString().substring(nodeUriLowerCase.lastIndexOf("/") + 1));
+                            resourceDataNode.setURI(childId.getNodeUriString());
+                            resourceDataNode.setType(new DataNodeType("resource", nodeUriLowerCase.substring(nodeUriLowerCase.lastIndexOf(".") + 1), null));
+                            final ArrayList<DataField> urlFields = new ArrayList<DataField>();
+                            final DataField urlField = new DataField();
+                            urlField.setFieldValue(childId.getNodeUriString());
+                            urlFields.add(urlField);
+                            final ArrayList<FieldGroup> fieldGroup = new ArrayList<FieldGroup>();
+                            fieldGroup.add(new FieldGroup("URL", urlFields));
+                            resourceDataNode.setFieldGroups(fieldGroup);
+                            YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, resourceDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
+                            addItem(yaasTreeItem);
+                            loadedCount++;
+                        }
                     }
-                    dataNodeLoader.requestLoad(dataNodeIdList, new DataNodeLoaderListener() {
+                    if (dataNodeIdList.isEmpty()) {
+                        removeItem(loadingTreeItem);
+                        if (loadedCount < maxToGet - 1) {
+                            addItem(loadNextTreeItem);
+                        }
+                    } else {
+                        dataNodeLoader.requestLoad(dataNodeIdList, new DataNodeLoaderListener() {
 
-                        public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
+                            public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
 //                        setText("Loaded " + dataNodeList.size() + " child nodes");
-                            removeItem(loadingTreeItem);
-                            if (dataNodeList != null) {
-                                for (SerialisableDataNode childDataNode : dataNodeList) {
-                                    YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
-                                    yaasTreeItem.setHighlights(highlighedLinks);
-                                    addItem(yaasTreeItem);
+                                removeItem(loadingTreeItem);
+                                if (dataNodeList != null) {
+                                    for (SerialisableDataNode childDataNode : dataNodeList) {
+                                        YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, childDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
+                                        yaasTreeItem.setHighlights(highlighedLinks);
+                                        addItem(yaasTreeItem);
+                                        loadedCount++;
+                                    }
+                                }
+                                while (lastToGet > loadedCount) {
+                                    // when nodes are missing these "not found" nodes are added to keep the paging of the child node array in sync
+                                    addItem(new Label("node not found"));
                                     loadedCount++;
                                 }
+                                if (loadedCount < maxToGet) {
+                                    addItem(loadNextTreeItem);
+                                }
                             }
-                            while (lastToGet > loadedCount) {
-                                // when nodes are missing these "not found" nodes are added to keep the paging of the child node array in sync
-                                addItem(new Label("node not found"));
-                                loadedCount++;
-                            }
-                            if (loadedCount < maxToGet) {
-                                addItem(loadNextTreeItem);
-                            }
-                        }
 
-                        public void dataNodeLoadFailed(Throwable caught) {
-                            removeItem(loadingTreeItem);
-                            errorTreeItem.setText(LOADING_CHILD_NODES_FAILED);
-                            addItem(errorTreeItem);
-                            logger.log(Level.SEVERE, LOADING_CHILD_NODES_FAILED, caught);
-                        }
-                    });
+                            public void dataNodeLoadFailed(Throwable caught) {
+                                removeItem(loadingTreeItem);
+                                errorTreeItem.setText(LOADING_CHILD_NODES_FAILED);
+                                addItem(errorTreeItem);
+                                logger.log(Level.SEVERE, LOADING_CHILD_NODES_FAILED, caught);
+                            }
+                        });
+                    }
                 } catch (ModelException exception) {
                     removeItem(loadingTreeItem);
                     errorTreeItem.setText(ERROR_GETTING_CHILD_NODES);
@@ -511,7 +538,11 @@ public class YaasTreeItem extends TreeItem {
                         childCountsize = 0;
                     }
                 }
-                setText(yaasDataNode.getLabel() + "[" + childCountsize + "]");
+                if (childCountsize > 0) {
+                    setText(yaasDataNode.getLabel() + "[" + childCountsize + "]");
+                } else {
+                    setText(yaasDataNode.getLabel());
+                }
             } catch (ModelException exception) {
                 setText(yaasDataNode.getLabel() + "[" + exception.getMessage() + "]");
             }
@@ -550,9 +581,14 @@ public class YaasTreeItem extends TreeItem {
         {
             for (SerialisableDataNode childDataNode : childList) {
                 final DataNodeType nodeType = childDataNode.getType();
-                if (nodeType != null && IMDI_RESOURCE.equals(nodeType.getID())) {
+                try {
+                    // todo: this check for # might be reduntant and was added for the cmdi resources only
+                    if ((nodeType != null && IMDI_RESOURCE.equals(nodeType.getID())) || !childDataNode.getURI().contains("#")) {
 //                if (childDataNode.getArchiveHandle() != null) // archive handle is not the best thing to detect resource nodes
-                    flatNodes.add(childDataNode);
+                        flatNodes.add(childDataNode);
+                    }
+                } catch (ModelException exception) {
+                    logger.warning(exception.getMessage());
                 }
                 getFlatNodes(childDataNode, flatNodes);
             }

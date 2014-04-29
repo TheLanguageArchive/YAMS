@@ -277,7 +277,21 @@ ul#navigation a {
     content: "\e60d";
 }
 
+.load-more-btn {
+    background: #25466f;
+    color: #fff;
+    /*padding: 10px 15px 10px 15px;*/
+    border-radius: 10px;
+}
 
+.load-more-btn:hover {
+    background: #4F6D92;
+}
+
+.load-more-btn:active {
+    background: #576A75;
+    top: 2px;
+}
 /* Button 3 */
 .btn-3 {
     background: #25466f;
