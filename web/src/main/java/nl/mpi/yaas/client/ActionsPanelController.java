@@ -51,9 +51,12 @@ public class ActionsPanelController {
     final private RootPanel citationTag;
     final private RootPanel welcomePanelTag;
     final private RootPanel aboutTag;
+    final private RootPanel viewTag;
+    final private RootPanel downloadTag;
+    final private RootPanel versionInfoTag;
     final ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
 
-    public ActionsPanelController(RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag) {
+    public ActionsPanelController(RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag) {
         this.welcomePanelTag = welcomePanelTag;
         this.actionsTargetPanel = actionsTargetPanel;
         this.detailsPanel = detailsPanel;
@@ -64,6 +67,9 @@ public class ActionsPanelController {
         this.resourceAccessTag = resourceAccessTag;
         this.citationTag = citationTag;
         this.aboutTag = aboutTag;
+        this.viewTag = viewTag;
+        this.downloadTag = downloadTag;
+        this.versionInfoTag = versionInfoTag;
 
         if (metadataSearchTag != null) {
             addPanelAction(metadataSearchTag, serviceLocations.yamsUrl());
@@ -208,6 +214,16 @@ public class ActionsPanelController {
         }
         if (citationTag != null) {
             citationTag.setVisible(dataNode != null);
+        }
+        boolean showResourceButtons = (dataNode != null && dataNode.getType() != null && dataNode.getType().getFormat() == null);
+        if (viewTag != null) {
+            viewTag.setVisible(showResourceButtons);
+        }
+        if (downloadTag != null) {
+            downloadTag.setVisible(showResourceButtons);
+        }
+        if (versionInfoTag != null) {
+            versionInfoTag.setVisible(showResourceButtons);
         }
     }
 }
