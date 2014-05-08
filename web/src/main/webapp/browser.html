@@ -61,11 +61,55 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
             </ul>
         </div>
         <div id="treePanel" class="ui-resizable" style="width: 479px;">
-            <div id="corpusTreePanel"></div>
+            <div class="marginPanel"><div id="corpusTreePanel"></div></div>
             <!--<div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div>-->
-
         </div>  
         <div id="nodePanel" style="width: 938px;">
+            <div id="welcomePanel"><div class="marginPanel">
+                    <p align="center"><img src="./images/TLA.png" alt="" height="100" border="0"></p>
+                    <p>Welcome to the archive browser of The Language Archive. Please see below for a brief explanation on how to use the archive browser or get the full manual <a href="http://tla.mpi.nl/tools/tla-tools/imdi_browser/" target="_blank">here</a>. For more information about The Language Archive including the various tools it develops (such as ELAN), please have a look at the <a href="http://tla.mpi.nl" target="_blank">TLA website.</a></p>
+                    <table summary="Home" border="0" align="center" cellspacing="2" cellpadding="2">
+                        <tbody><tr>
+                                <td style="padding: 10px 10px 10px 0px;vertical-align: top;width:50%;">
+                                    The Language Archive at the MPI has undergone the Data Seal of Approval assessment, which can be viewed by clicking on the following logo:<br> <a href="https://assessment.datasealofapproval.org/assessment_48/seal/html/" target="_blank"><img border="0" src="./images/DSA-logo_1_June2010.gif" alt="dsa_logo" width="110" style="display:block;margin-left:auto;margin-right:auto;"></a>
+                                </td>
+                                <td style="padding: 10px 0px 10px 10px;vertical-align: top;">
+                                    The Language Archive is a regular member of the ICSU World Data System.<br>
+                                    <a href="http://icsu-wds.org/" target="_blank"><img border="0" alt="WDS_logo" width="150" src="./images/WDS_logo.png" style="display:block;margin-left:auto;margin-right:auto;"></a>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    <p>The Language Archive complies with the <a href="http://www.geant.net/uri/dataprotection-code-of-conduct/v1" target="_blank">GÉANT Data Protection Code of Conduct for Service Providers</a>. Our Privacy Policy can be viewed <a href="https://corpus1.mpi.nl/IMDI/info/privacy_statement.html" target="_blank">here</a>.</p>
+                    <h4>Brief explanation:</h4>
+                    <p>On the left, you see a hierarchical organisation of the various corpora that are archived at TLA. You can browse through these corpora by opening up the various branches. When you select a certain node in the hierarchy, a number of buttons become available on the right side for various functions, depending on the type of node you have selected. These functions can be:</p>
+                    <ul>
+                        <li><b>View:</b> View an archived resource. *</li>
+                        <li><b>Download:</b> Download an archived resource to your own computer. *</li>
+                        <li><b>Download All:</b> Download all archived resources that belong to the selected resource bundle (session).</li>
+                        <li><b>Metadata Search:</b> Perform a search in all metadata descriptions underneath the selected branch.</li>
+                        <li><b>Content Search:</b> Perform a search in all textual archived resources below the selected branch. *</li>
+                        <li><b>Citation:</b> Get a persistent link for citing the resource or branch in a publication or for linking to it on a web site.</li>
+                        <li><b>Manage Access:</b> Define access permissions on the selected branch (requires management permissions).</li>
+                        <li><b>Request Access:</b> Request access to archived materials underneath the selected branch.</li>
+                        <li><b>Version Info:</b> View information about different versions of the selected resource.</li>
+                    </ul>
+                    * these functions work on resources to which you have access.
+                    <p>There are 4 access levels for archived materials, indicated by 4 coloured icons:</p>
+                    <ul>
+                        <li><img src="./images/al_circle_green.png"> <b>Open:</b> No login or registration is required</li>
+                        <li><img src="./images/al_circle_yellow.png"> <b>Available to registered users:</b> You can register as a user of the archive by clicking on the "register" link at the top.</li>
+                        <li><img src="./images/al_circle_orange.png"> <b>Access needs to be requested:</b> By using the "Request Access" function, you can apply for access to these materials as a registered user. The depositor will be asked whether or not access can be granted to you, which may take some time.</li>
+                        <li><img src="./images/al_circle_red.png"> <b>Closed:</b> These materials are currently not accessible, mostly due to the sensitivity of the material</li>
+                    </ul>
+                    <p>In addition to these access levels, it may be required to agree to a license agreement.</p>
+                    <p>In case you have any further questions or would like to deposit language materials with us, please contact us via the contact form or the user fora on the <a href="http://tla.mpi.nl" target="_blank">TLA website</a>.</p>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <p>&nbsp;</p>
+                </div> </div>
             <div id="actionsPanelContainer">
                 <div id="actionsPanel">
                     <ul id="navigation">
@@ -98,54 +142,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
                         </li>
                     </ul>
                 </div>
+            </div>            
+            <div class="scrollPanel">
+                <div class="marginPanel"><div class="marginPanel"><div class="marginPanel">
+                            <div id="detailsPanel"></div>            
+                            <div id="actionsTargetPanel"></div>
+                        </div>  </div>  </div>                    
             </div>
-            <div id="detailsPanel"></div>            
-            <div id="actionsTargetPanel"></div>
-            <div id="welcomePanel">
-                <p align="center"><img src="./images/TLA.png" alt="" height="100" border="0"></p>
-                <p>Welcome to the archive browser of The Language Archive. Please see below for a brief explanation on how to use the archive browser or get the full manual <a href="http://tla.mpi.nl/tools/tla-tools/imdi_browser/" target="_blank">here</a>. For more information about The Language Archive including the various tools it develops (such as ELAN), please have a look at the <a href="http://tla.mpi.nl" target="_blank">TLA website.</a></p>
-                <table summary="Home" border="0" align="center" cellspacing="2" cellpadding="2">
-                    <tbody><tr>
-                            <td style="padding: 10px 10px 10px 0px;vertical-align: top;width:50%;">
-                                The Language Archive at the MPI has undergone the Data Seal of Approval assessment, which can be viewed by clicking on the following logo:<br> <a href="https://assessment.datasealofapproval.org/assessment_48/seal/html/" target="_blank"><img border="0" src="./images/DSA-logo_1_June2010.gif" alt="dsa_logo" width="110" style="display:block;margin-left:auto;margin-right:auto;"></a>
-                            </td>
-                            <td style="padding: 10px 0px 10px 10px;vertical-align: top;">
-                                The Language Archive is a regular member of the ICSU World Data System.<br>
-                                <a href="http://icsu-wds.org/" target="_blank"><img border="0" alt="WDS_logo" width="150" src="./images/WDS_logo.png" style="display:block;margin-left:auto;margin-right:auto;"></a>
-                            </td>
-                        </tr>
-                    </tbody></table>
-                <p>The Language Archive complies with the <a href="http://www.geant.net/uri/dataprotection-code-of-conduct/v1" target="_blank">GÉANT Data Protection Code of Conduct for Service Providers</a>. Our Privacy Policy can be viewed <a href="https://corpus1.mpi.nl/IMDI/info/privacy_statement.html" target="_blank">here</a>.</p>
-                <h4>Brief explanation:</h4>
-                <p>On the left, you see a hierarchical organisation of the various corpora that are archived at TLA. You can browse through these corpora by opening up the various branches. When you select a certain node in the hierarchy, a number of buttons become available on the right side for various functions, depending on the type of node you have selected. These functions can be:</p>
-                <ul>
-                    <li><b>View:</b> View an archived resource. *</li>
-                    <li><b>Download:</b> Download an archived resource to your own computer. *</li>
-                    <li><b>Download All:</b> Download all archived resources that belong to the selected resource bundle (session).</li>
-                    <li><b>Metadata Search:</b> Perform a search in all metadata descriptions underneath the selected branch.</li>
-                    <li><b>Content Search:</b> Perform a search in all textual archived resources below the selected branch. *</li>
-                    <li><b>Citation:</b> Get a persistent link for citing the resource or branch in a publication or for linking to it on a web site.</li>
-                    <li><b>Manage Access:</b> Define access permissions on the selected branch (requires management permissions).</li>
-                    <li><b>Request Access:</b> Request access to archived materials underneath the selected branch.</li>
-                    <li><b>Version Info:</b> View information about different versions of the selected resource.</li>
-                </ul>
-                * these functions work on resources to which you have access.
-                <p>There are 4 access levels for archived materials, indicated by 4 coloured icons:</p>
-                <ul>
-                    <li><img src="./images/al_circle_green.png"> <b>Open:</b> No login or registration is required</li>
-                    <li><img src="./images/al_circle_yellow.png"> <b>Available to registered users:</b> You can register as a user of the archive by clicking on the "register" link at the top.</li>
-                    <li><img src="./images/al_circle_orange.png"> <b>Access needs to be requested:</b> By using the "Request Access" function, you can apply for access to these materials as a registered user. The depositor will be asked whether or not access can be granted to you, which may take some time.</li>
-                    <li><img src="./images/al_circle_red.png"> <b>Closed:</b> These materials are currently not accessible, mostly due to the sensitivity of the material</li>
-                </ul>
-                <p>In addition to these access levels, it may be required to agree to a license agreement.</p>
-                <p>In case you have any further questions or would like to deposit language materials with us, please contact us via the contact form or the user fora on the <a href="http://tla.mpi.nl" target="_blank">TLA website</a>.</p>
-                <br>
-                <br>
-                <br>
-                <br>
-                <br>
-                <p>&nbsp;</p>
-            </div> 
-        </div>        
+        </div>      
     </body>
 </html>

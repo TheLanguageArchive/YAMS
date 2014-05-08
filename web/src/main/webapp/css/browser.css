@@ -133,17 +133,17 @@ div#actionsPanel input {
 }
 
 #actionsTargetPanel{
-    height:100%;
-    overflow: scroll;
-    overflow-x: hidden;
-    font-size: 0.8em;
+    /*    height:100%;
+        overflow: scroll;
+        overflow-x: hidden;
+        font-size: 0.8em;*/
 }
 
 #detailsPanel{
-    height:100%;
-    overflow: scroll;
-    overflow-x: hidden;
-    font-size: 0.8em;
+    /*    height:100%;
+        overflow: scroll;
+        overflow-x: hidden;
+        font-size: 0.8em;*/
 }
 
 #detailsPanel img {
@@ -160,6 +160,16 @@ div#welcomePanel {
     padding: 5px;
     font-size: 0.9em;
     height: 100%;
+}
+.scrollPanel {
+    height:100%;
+    overflow: scroll;
+    overflow-x: hidden;
+    font-size: 0.8em;;
+}
+
+.marginPanel {
+    margin-bottom: 40px;
 }
 
 div#welcomePanel img{
@@ -277,11 +287,29 @@ ul#navigation a {
     content: "\e60d";
 }
 
+.yaas-treeNode-selected{
+    background: #25466f;
+    padding: 5px 20px;
+}
+
 .load-more-btn {
     background: #25466f;
     color: #fff;
     /*padding: 10px 15px 10px 15px;*/
     border-radius: 10px;
+    text-align: center;
+    border: none;
+    font-family: inherit;
+    font-size: 0.8em;
+    cursor: pointer;
+    padding: 5px 20px;
+    display: inline-block;
+    /*margin: 5px 0px;*/
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    outline: none;
+    position: relative;
+    transition: all 0.3s;
 }
 
 .load-more-btn:hover {

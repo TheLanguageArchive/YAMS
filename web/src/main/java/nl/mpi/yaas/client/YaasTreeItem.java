@@ -145,14 +145,18 @@ public class YaasTreeItem extends TreeItem {
     }
 
     private TreeItem getLoadNextTreeItem() {
-        final Button loadNextButton = new Button("Load More");
+        final Label loadNextButton = new Label("Load More");
         loadNextButton.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 loadChildNodes();
             }
         });
-        loadNextButton.setStyleName("load-more-btn");
-        return new TreeItem(loadNextButton);
+        loadNextButton.setStylePrimaryName("load-more-btn");
+        final TreeItem treeItem = new TreeItem(loadNextButton);
+//        treeItem.setStyleDependentName("selected", false);
+//        treeItem.getElement().addClassName("load-more");
+//        treeItem.set
+        return treeItem;
     }
 
     private TreeItem getLoadingItem() {
@@ -289,7 +293,7 @@ public class YaasTreeItem extends TreeItem {
     }
 
     private void setupWidgets() {
-        setStyleName("yaas-treeNode");
+        setStylePrimaryName("yaas-treeNode");
         final Style style = outerPanel.getElement().getStyle();
         style.setLeft(0, Style.Unit.PX);
         style.setPosition(Style.Position.RELATIVE);
