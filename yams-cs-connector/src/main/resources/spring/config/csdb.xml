@@ -14,7 +14,7 @@
     <!--profile="production, demoserver"-->
 
     <context:annotation-config />
-    
+    <context:component-scan base-package="nl.mpi.yams"/>
     <tx:annotation-driven/>
     
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
@@ -66,7 +66,7 @@
     <bean id="nodeResolver" class="nl.mpi.archiving.corpusstructure.provider.db.service.impl.CorpusStructureProviderNodeResolver" />
     
     <!--<bean id="createWorkspaceTreeProvider" class="nl.mpi.archiving.tree.corpusstructure.CorpusStructureTreeModelProvider">-->
-        <!--<constructor-arg ref="corpusStructureProvider" />-->
+    <!--<constructor-arg ref="corpusStructureProvider" />-->
     <!--</bean>-->
     
 </beans>

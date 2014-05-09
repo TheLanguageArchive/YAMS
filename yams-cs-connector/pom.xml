@@ -10,7 +10,7 @@
 
     <groupId>nl.mpi</groupId>
     <artifactId>yams-cs-connector</artifactId>
-    <version>1.0</version>
+    <version>1.0.40688-pretesting</version>
     <packaging>war</packaging>
 
     <name>yams-cs-connector</name>
@@ -18,8 +18,8 @@
     <properties>
         <!--        <jersey.version>1.18.1</jersey.version>
         <spring.version>3.2.4.RELEASE</spring.version>-->
-        <jersey.version>1.16</jersey.version>
-        <spring.version>3.2.4.RELEASE</spring.version>
+        <jersey.version>1.18.1</jersey.version>
+        <spring.version>3.2.7.RELEASE</spring.version>
         <glassfish.version>3.1.1</glassfish.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -54,41 +54,67 @@
             <version>${jersey.version}</version>
             <exclusions>
                 <exclusion>
-                    <!-- Excluding commons logging, replaced by jcl-over-slf4j -->
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-aop</artifactId>
-                </exclusion>
-                <exclusion>
-                    <!-- Excluding commons logging, replaced by jcl-over-slf4j -->
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-asm</artifactId>
-                </exclusion>
-                <exclusion>
-                    <!-- Excluding commons logging, replaced by jcl-over-slf4j -->
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-beans</artifactId>
-                </exclusion>
-                <exclusion>
-                    <!-- Excluding commons logging, replaced by jcl-over-slf4j -->
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-context</artifactId>
-                </exclusion>
-                <exclusion>
-                    <!-- Excluding commons logging, replaced by jcl-over-slf4j -->
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-core</artifactId>
                 </exclusion>
                 <exclusion>
-                    <!-- Excluding commons logging, replaced by jcl-over-slf4j -->
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>                
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aop</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-asm</artifactId>
+                </exclusion>
+            </exclusions>
+            <!--            <exclusions>
+                <exclusion>
+                     Excluding commons logging, replaced by jcl-over-slf4j 
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aop</artifactId>
+                </exclusion>
+                <exclusion>
+                     Excluding commons logging, replaced by jcl-over-slf4j 
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-asm</artifactId>
+                </exclusion>
+                <exclusion>
+                     Excluding commons logging, replaced by jcl-over-slf4j 
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                     Excluding commons logging, replaced by jcl-over-slf4j 
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+                <exclusion>
+                     Excluding commons logging, replaced by jcl-over-slf4j 
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                     Excluding commons logging, replaced by jcl-over-slf4j 
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-expression</artifactId>
                 </exclusion>
                 <exclusion>
-                    <!-- Excluding commons logging, replaced by jcl-over-slf4j -->
+                     Excluding commons logging, replaced by jcl-over-slf4j 
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-web</artifactId>
                 </exclusion>
-            </exclusions>
+            </exclusions>-->
         </dependency>
 
         <!--
@@ -96,17 +122,17 @@
                 dependency via jersey-spring
         -->
 
-        <dependency>
+<!--        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <version>${spring.version}</version>
-        </dependency>
+        </dependency>-->
 <!--        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-asm</artifactId>
             <version>${spring.version}</version>
         </dependency>-->
-        <dependency>
+<!--        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <version>${spring.version}</version>
@@ -122,18 +148,18 @@
             <version>${spring.version}</version>
             <exclusions>
                 <exclusion>
-                    <!-- Excluding commons logging, replaced by jcl-over-slf4j -->
+                     Excluding commons logging, replaced by jcl-over-slf4j 
                     <artifactId>commons-logging</artifactId>
                     <groupId>commons-logging</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
+        </dependency>-->
+<!--        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
             <version>${spring.version}</version>
         </dependency>
-        <dependency>
+-->        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
             <version>${spring.version}</version>
@@ -153,16 +179,17 @@
             <version>${jersey.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock-junit4</artifactId>
             <version>2.6.0</version>
+            <scope>test</scope>
         </dependency><!--
         <dependency>
             <groupId>junit</groupId>
@@ -181,11 +208,11 @@
       <artifactId>jersey-servlet</artifactId>
       <version>${jersey.version}</version>
     </dependency>
-    <dependency>
+-->    <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-json</artifactId>
       <version>${jersey.version}</version>
-    </dependency>
+    </dependency><!--
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-client</artifactId>
@@ -209,11 +236,11 @@
                     <version>${spring.version}</version>
                 </dependency>
         -->        
-        <dependency>
+<!--        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <version>${spring.version}</version>
-        </dependency><!--
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
@@ -225,7 +252,19 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>${spring.version}</version>
-        </dependency><!--
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+<!--
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-core</artifactId>
@@ -465,7 +504,12 @@
             <artifactId>corpus-structure-2-provider</artifactId>
             <version>1.0-beta-3.2</version>
         </dependency>
-<!--        <dependency>
+        <dependency>
+            <groupId>nl.mpi.corpusstructure</groupId>
+            <artifactId>corpus-structure-2-persistence</artifactId>
+            <version>1.0-beta-4-SNAPSHOT</version>
+        </dependency>
+        <!--        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate</artifactId>
             <version>3.2.4.sp1</version>
@@ -473,8 +517,13 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>4.2.4.Final</version>
+            <version>3.4.0.GA</version>
         </dependency>
+        <!--        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>7.0</version>
+        </dependency>-->
     </dependencies>
     <build>
         <finalName>mavenproject2</finalName>
@@ -515,8 +564,13 @@
     <repositories>
         <repository>
             <id>MPI</id>
-            <name>MPI LAT Repository</name>
-            <url>https://lux15.mpi.nl/nexus/content/groups/public/</url>
+            <name>MPI LAT Repository/</name>
+            <url>http://lux15.mpi.nl/nexus/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>MPI-Snapshot</id>
+            <name>MPI LAT Repository/</name>
+            <url>http://lux15.mpi.nl/nexus/content/repositories/MPI-Snapshots</url>
         </repository>
     </repositories>
 </project>

@@ -20,13 +20,17 @@
             </param-name>
             <param-value>nl.mpi.yams.cs.connector</param-value>
         </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+            <param-value>true</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <servlet>
+    <!--    <servlet>
         <servlet-name>ServletAdaptor</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <load-on-startup>1</load-on-startup>
-    </servlet>
+    </servlet>-->
     <servlet-mapping>
         <servlet-name>YAMS CS2 CMDI</servlet-name>
         <url-pattern>/yams-cs-connector/*</url-pattern>
@@ -35,8 +39,8 @@
         <servlet-name>ServletAdaptor</servlet-name>
         <url-pattern>/webresources/*</url-pattern>
     </servlet-mapping>-->
-    <servlet-mapping>
+    <!--    <servlet-mapping>
         <servlet-name>ServletAdaptor</servlet-name>
         <url-pattern>/webresources/*</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping>-->
 </web-app>

@@ -15,25 +15,35 @@ import nl.mpi.archiving.corpusstructure.core.CorpusNode;
 import nl.mpi.archiving.corpusstructure.provider.CorpusStructureProvider;
 import nl.mpi.flap.model.SerialisableDataNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * REST Web Service
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
+@Component
 @Path("yamscs")
 public class YamsCsResource {
 
-    final private CorpusStructureProvider corpusStructureProvider;
-//    private final static Logger logger = LoggerFactory.getLogger(YamsCsResource.class);
+    @Autowired
+    private CorpusStructureProvider corpusStructureProvider;
+
+//    public YamsCsResource() {
+//
+//    }
+    //    private final static Logger logger = LoggerFactory.getLogger(YamsCsResource.class);
 //    private final ArchiveObjectDao aoDao;
 //    private final ArchivePropertyDao archiveDao;
 //    private final CorpusStructureDao csDao;
 //
-
-    @Autowired
-    public YamsCsResource(CorpusStructureProvider corpusStructureProvider) {
+//
+//    }
+    public void setCorpusStructureProvider(CorpusStructureProvider corpusStructureProvider) {
         this.corpusStructureProvider = corpusStructureProvider;
+    }
+
+    public YamsCsResource() {
 //        logger.debug("Creating cs provider factory with {}, {}, {}", aoDao, archiveDao, csDao);
 //        this.aoDao = aoDao;
 //        this.archiveDao = archiveDao;
@@ -51,9 +61,10 @@ public class YamsCsResource {
 //     * @return an instance of SerialisableDataNode
 //     */
     @GET
-    @Produces("application/xml")
+    @Produces("application/json")
     @Path("hdl{hdl}")
     public SerialisableDataNode getDataNode(@PathParam("hdl") String hdl) throws URISyntaxException {
+        System.out.println("hdl");
         CorpusNode corpusNode = this.corpusStructureProvider.getNode(new URI(hdl));
 //        final ArchiveObject selectedNode = aoDao.select(hdl);
         final SerialisableDataNode dataNode = new NodeWrapper(corpusNode);
@@ -62,7 +73,7 @@ public class YamsCsResource {
     }
 
     @GET
-    @Produces(value = "application/xml")
+    @Produces(value = "application/json")
     public String getXml() {
         return "<a>b</a>";
     }
