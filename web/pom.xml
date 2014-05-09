@@ -9,7 +9,7 @@
     <groupId>nl.mpi</groupId>
     <artifactId>yaas-gwt</artifactId>
     <packaging>war</packaging>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0.40685-pretesting</version>
     <name>YAAS GWT</name>
     <parent>
         <groupId>nl.mpi</groupId>
@@ -74,6 +74,11 @@
             <groupId>nl.mpi</groupId>
             <artifactId>yaas-common</artifactId>
             <version>0.1-pretesting-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>de.mpg.mpgaai</groupId>
+            <artifactId>mpgaai-shhaa</artifactId>
+            <version>1.0.3</version>
         </dependency>
         <!--        <dependency>
             <groupId>com.googlecode.gwtphonegap</groupId>

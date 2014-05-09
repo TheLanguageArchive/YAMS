@@ -18,8 +18,8 @@
 
 --%>
 <%-- 
-    Document   : logout
-    Created on : May 8, 2014, 10:43:00 AM
+    Document   : login
+    Created on : May 9, 2014, 1:26:43 PM
     Author     : Peter Withers <peter.withers@mpi.nl>
 --%>
 
@@ -28,10 +28,9 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Logout Page</title>
+        <title>Shibboleth Login</title>
     </head>
     <body>
-        <!--        this page will most likely not be seen by the user because the login state and related messages will be handled in javascript/GWT-->
-        <h1>The only way to log out of Shibboleth is to close your browser. If you wish to logout, please close your browser.</h1>
+        <h1>You are logged in.</h1>
     </body>
 </html>

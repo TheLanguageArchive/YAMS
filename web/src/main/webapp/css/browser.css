@@ -133,10 +133,10 @@ div#actionsPanel input {
 }
 
 #actionsTargetPanel{
-    /*    height:100%;
-        overflow: scroll;
-        overflow-x: hidden;
-        font-size: 0.8em;*/
+    height:100%;
+    /*        overflow: scroll;
+            overflow-x: hidden;
+            font-size: 0.8em;*/
 }
 
 #detailsPanel{
