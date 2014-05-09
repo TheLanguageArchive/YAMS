@@ -11,6 +11,9 @@
         <module>web</module>
         <module>common</module>
         <module>crawler</module>
+        <module>annotator</module>
+        <module>rest</module>
+        <module>yams-cs-connector</module>
     </modules>
     <parent>
         <groupId>nl.mpi</groupId>
@@ -58,6 +61,31 @@
                         <exclude>installer/**</exclude>
                         <exclude>**/nbactions.xml</exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>nl.mpi</groupId>
+                <artifactId>version-control-check</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <verbose>true</verbose>
+                    <vcsType>svn</vcsType>
+                    <allowSnapshots>true</allowSnapshots>
+                    <projectDirectory>${project.basedir}</projectDirectory>
+                    <majorVersion>1</majorVersion>
+                    <minorVersion>0</minorVersion>
+                    <buildType>pretesting</buildType>
+                    <propertiesPrefix>application</propertiesPrefix>
+                    <shortVersionModules>
+                        <param>yaas-parent</param>
+                    </shortVersionModules>
                 </configuration>
             </plugin>
         </plugins>
