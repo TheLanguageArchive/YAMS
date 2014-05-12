@@ -44,8 +44,8 @@
     </authorization>
     <handler>
         <pages>
-            <info action="dI">getState.jsp</info>
-            <denied action="dD">shibboleth/getState.jsp</denied>
+            <info action="dI">/shibboleth/login.jsp</info>
+            <denied action="dD">/shibboleth/login.jsp</denied>
         </pages>
     </handler>
 </shhaa>
