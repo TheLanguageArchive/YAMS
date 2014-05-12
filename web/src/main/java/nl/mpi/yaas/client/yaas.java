@@ -213,7 +213,9 @@ public class yaas implements EntryPoint, HistoryListener {
                 RootPanel.get("aboutTag"),
                 RootPanel.get("viewTag"),
                 RootPanel.get("downloadTag"),
-                RootPanel.get("versionInfoTag"));
+                RootPanel.get("versionInfoTag"),
+                RootPanel.get("loginTag"),
+                RootPanel.get("userSpan"));
 
         final RootPanel corpusTreePanelTag = RootPanel.get("corpusTreePanel");
         if (corpusTreePanelTag != null) {

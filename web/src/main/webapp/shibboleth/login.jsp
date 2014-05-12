@@ -29,8 +29,13 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Shibboleth Login</title>
+        <script type="text/javascript">
+            //<![CDATA[
+            parent.checkLoginState();
+            //]]>
+        </script>
     </head>
     <body>
-        <h1>You are logged in.</h1>
+        <h1>You are logged in as "<%= request.getRemoteUser()%>".</h1>
     </body>
 </html>

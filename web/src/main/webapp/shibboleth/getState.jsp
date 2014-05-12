@@ -27,8 +27,8 @@
     response.setContentType("application/json");
     response.setHeader("Content-Disposition", "inline");
 %>
-{
+[{
 "contextPath": "<%= request.getContextPath()%>",
-"getRemoteUser": "<%= request.getRemoteUser()%>",
-"getAttribute": "<%= session.getAttribute("userid")%>"
-}
+"remoteUser": "<%= request.getRemoteUser()%>",
+"attribute": "<%= session.getAttribute("userid")%>"
+}]

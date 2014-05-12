@@ -24,6 +24,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
@@ -54,9 +55,12 @@ public class ActionsPanelController {
     final private RootPanel viewTag;
     final private RootPanel downloadTag;
     final private RootPanel versionInfoTag;
+    final private Label userLabel = new Label("User: unkown");
+    final LoginController loginController = new LoginController(userLabel);
+    final private RootPanel loginTag;
     final ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
 
-    public ActionsPanelController(RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag) {
+    public ActionsPanelController(RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag, RootPanel loginTag, RootPanel userSpan) {
         this.welcomePanelTag = welcomePanelTag;
         this.actionsTargetPanel = actionsTargetPanel;
         this.detailsPanel = detailsPanel;
@@ -70,7 +74,18 @@ public class ActionsPanelController {
         this.viewTag = viewTag;
         this.downloadTag = downloadTag;
         this.versionInfoTag = versionInfoTag;
-
+        this.loginTag = loginTag;
+        userLabel.setStyleName("header");
+        if (userSpan != null) {
+            userSpan.add(userLabel);
+        }
+        if (loginTag != null) {
+            loginController.exportCheckLoginState(loginController);
+            loginController.checkLoginState();
+            loginController.startStatusTimer();
+            final Anchor loginAnchor = Anchor.wrap(loginTag.getElement());
+            addPopupPanelAction(loginAnchor, serviceLocations.loginUrl());
+        }
         if (metadataSearchTag != null) {
             addPanelAction(metadataSearchTag, serviceLocations.yamsUrl());
         }
@@ -123,18 +138,16 @@ public class ActionsPanelController {
         setDataNode(null);
     }
 
-    private void addPopupPanelAction(RootPanel rootPanel, final String targetUrl) {
-        final Button accessRightsButton = Button.wrap(rootPanel.getElement());
-        accessRightsButton.addClickHandler(new ClickHandler() {
+    private void addPopupPanelAction(final FocusWidget focusWidget, final String targetUrl) {
+        focusWidget.addClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
                 PopupPanel popupPanel = new PopupPanel(true, true);
-                popupPanel.setSize("100%", "100%");
+                popupPanel.setPixelSize(800, 600);
                 popupPanel.setGlassEnabled(true);
                 popupPanel.setAnimationEnabled(true);
                 try {
                     final Frame frame = new Frame(getFormattedHandleLink(targetUrl));
-                    frame.setSize("100%", "100%");
                     popupPanel.setWidget(frame);
                     popupPanel.center();
                 } catch (ModelException exception) {
@@ -184,7 +197,11 @@ public class ActionsPanelController {
     }
 
     private String getFormattedHandleLink(final String targetUrl) throws ModelException {
-        return targetUrl.replace("{}", dataNode.getURI());
+        if (dataNode != null) {
+            return targetUrl.replace("{}", dataNode.getURI());
+        } else {
+            return targetUrl;
+        }
     }
 
     public final void setDataNode(SerialisableDataNode dataNode) {
