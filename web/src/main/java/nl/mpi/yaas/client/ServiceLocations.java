@@ -45,4 +45,14 @@ public interface ServiceLocations extends Constants {
 
     @Key("nl.mpi.yamsUrl")
     String yamsUrl();
+
+    @Key("nl.mpi.loginUrl")
+    String loginUrl();
+
+    @Key("nl.mpi.logoutUrl")
+    String logoutUrl();
+
+    @Key("nl.mpi.statusUrl")
+    String statusUrl();
+
 }

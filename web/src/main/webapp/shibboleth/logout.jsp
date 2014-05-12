@@ -29,9 +29,18 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Logout Page</title>
+        <script type="text/javascript">
+            //<![CDATA[
+            parent.checkLoginState();
+            //]]>
+        </script>
     </head>
     <body>
         <!--        this page will most likely not be seen by the user because the login state and related messages will be handled in javascript/GWT-->
-        <h1>The only way to log out of Shibboleth is to close your browser. If you wish to logout, please close your browser.</h1>
+        <% if ("anonymous".equals(request.getRemoteUser())) { %>
+        <h1>You have been logged out.</h1>
+        <% } else { %>
+        <h1>Log out of Shibboleth failed. To log out manually, please close your browser which will terminate your session.</h1>
+        <% } %>
     </body>
 </html>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,4 +34,6 @@ public class LoginStatus extends JavaScriptObject {
     public final native String getRemoteUser() /*-{ return this.remoteUser; }-*/;
 
     public final native String getAttribute() /*-{ return this.attribute; }-*/;
+
+    public final native boolean isAnonymous() /*-{ return this.anonymous; }-*/;
 }

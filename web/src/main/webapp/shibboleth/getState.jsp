@@ -30,5 +30,6 @@
 [{
 "contextPath": "<%= request.getContextPath()%>",
 "remoteUser": "<%= request.getRemoteUser()%>",
-"attribute": "<%= session.getAttribute("userid")%>"
+"attribute": "<%= session.getAttribute("userid")%>",
+"anonymous": <%= "anonymous".equals(request.getRemoteUser())%>
 }]

@@ -56,11 +56,12 @@ public class ActionsPanelController {
     final private RootPanel downloadTag;
     final private RootPanel versionInfoTag;
     final private Label userLabel = new Label("User: unkown");
-    final LoginController loginController = new LoginController(userLabel);
+    final private LoginController loginController;
     final private RootPanel loginTag;
+    final private RootPanel logoutTag;
     final ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
 
-    public ActionsPanelController(RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag, RootPanel loginTag, RootPanel userSpan) {
+    public ActionsPanelController(RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag, RootPanel loginTag, RootPanel logoutTag, RootPanel userSpan) {
         this.welcomePanelTag = welcomePanelTag;
         this.actionsTargetPanel = actionsTargetPanel;
         this.detailsPanel = detailsPanel;
@@ -75,16 +76,22 @@ public class ActionsPanelController {
         this.downloadTag = downloadTag;
         this.versionInfoTag = versionInfoTag;
         this.loginTag = loginTag;
+        this.logoutTag = logoutTag;
+        loginController = new LoginController(this);
         userLabel.setStyleName("header");
+        loginController.exportCheckLoginState(loginController);
+        loginController.checkLoginState();
+        loginController.startStatusTimer();
         if (userSpan != null) {
             userSpan.add(userLabel);
         }
         if (loginTag != null) {
-            loginController.exportCheckLoginState(loginController);
-            loginController.checkLoginState();
-            loginController.startStatusTimer();
             final Anchor loginAnchor = Anchor.wrap(loginTag.getElement());
             addPopupPanelAction(loginAnchor, serviceLocations.loginUrl());
+        }
+        if (logoutTag != null) {
+            final Anchor loginAnchor = Anchor.wrap(logoutTag.getElement());
+            addPopupPanelAction(loginAnchor, serviceLocations.logoutUrl());
         }
         if (metadataSearchTag != null) {
             addPanelAction(metadataSearchTag, serviceLocations.yamsUrl());
@@ -142,10 +149,21 @@ public class ActionsPanelController {
         focusWidget.addClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
+//                final DialogBox.CaptionImpl caption = new DialogBox.CaptionImpl();
+//                final DialogBox popupPanel = new DialogBox(true, true);
                 PopupPanel popupPanel = new PopupPanel(true, true);
                 popupPanel.setPixelSize(800, 600);
                 popupPanel.setGlassEnabled(true);
                 popupPanel.setAnimationEnabled(true);
+//                final DialogBox.Caption caption = popupPanel.getCaption();
+//                caption.addClickHandler(new ClickHandler() {
+//                    public void onClick(ClickEvent event) {
+//                        popupPanel.hide();
+//                        loginController.checkLoginState();
+//                    }
+//                });
+//                caption.setStylePrimaryName("load-more-btn");
+//                caption.setText("close");
                 try {
                     final Frame frame = new Frame(getFormattedHandleLink(targetUrl));
                     popupPanel.setWidget(frame);
@@ -241,6 +259,16 @@ public class ActionsPanelController {
         }
         if (versionInfoTag != null) {
             versionInfoTag.setVisible(showResourceButtons);
+        }
+    }
+
+    public void setLoginState(String userName, boolean anonymous) {
+        userLabel.setText("User: " + userName);
+        if (loginTag != null) {
+            loginTag.setVisible(anonymous);
+        }
+        if (logoutTag != null) {
+            logoutTag.setVisible(!anonymous);
         }
     }
 }

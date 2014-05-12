@@ -26,7 +26,6 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Label;
 import java.util.logging.Logger;
 import nl.mpi.yaas.shared.LoginStatus;
 
@@ -38,12 +37,12 @@ public class LoginController {
 
     private static final Logger logger = Logger.getLogger("");
     final private ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
-    final private Label userLabel;
     final private int timeTillNextCheck = 10 * 60 * 1000; // the timer will be set for 10 minutes
     final private Timer timer;
+    private final ActionsPanelController actionsPanelController;
 
-    public LoginController(Label userLabel) {
-        this.userLabel = userLabel;
+    public LoginController(ActionsPanelController actionsPanelController) {
+        this.actionsPanelController = actionsPanelController;
         timer = new Timer() {
             public void run() {
                 checkLoginState();
@@ -79,7 +78,7 @@ public class LoginController {
                         final JsArray<LoginStatus> jsonData = JsonUtils.safeEval(text);
                         logger.info(Integer.toString(jsonData.length()));
                         logger.info(jsonData.get(0).getRemoteUser());
-                        userLabel.setText("User: " + jsonData.get(0).getRemoteUser());
+                        actionsPanelController.setLoginState(jsonData.get(0).getRemoteUser(), jsonData.get(0).isAnonymous());
                     } else {
                         logger.warning("Couldn't retrieve JSON");
                         logger.warning(response.getStatusText());
