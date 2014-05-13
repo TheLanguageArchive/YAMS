@@ -56,7 +56,7 @@ public class YamsCsResourceTest {
     @Test
     public void testGetXml() throws URISyntaxException {
         System.out.println("getXml");
-        YamsCsResource instance = new YamsCsResource();
+        YamsCsResource instance = new YamsCsResource(null, null, null);
         instance.setCorpusStructureProvider(corpusStructureProvider);
         final String expectedUrl = "http://test/node";
         final String expectedHdl = "hdl:1234/5678";
