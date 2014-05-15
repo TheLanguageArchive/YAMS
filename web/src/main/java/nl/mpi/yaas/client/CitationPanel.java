@@ -77,7 +77,8 @@ public class CitationPanel extends VerticalPanel {
 //        logger.info(dataNode.getLabel());
         simplePanel.add(new Label(citationStrings.panelTitle()));
         try {
-            simplePanel.add(getLabelPanel(citationStrings.citationLabel(dataNode.getLabel()), dataNode.getArchiveHandle(), dataNode.getURI()));
+            final String archiveHandle = dataNode.getArchiveHandle();
+            simplePanel.add(getLabelPanel(citationStrings.citationLabel(dataNode.getLabel()), archiveHandle, dataNode.getURI()));
 
             final Label label = new Label(citationStrings.citationDescription());
             simplePanel.setStyleName("IMDI_group");
@@ -95,8 +96,11 @@ public class CitationPanel extends VerticalPanel {
                 }
             }
             verticalPanel.add(getLabelPanel(citationStrings.published(), "", null));
-            verticalPanel.add(getLabelPanel(citationStrings.handle(), dataNode.getArchiveHandle(), null));
-            verticalPanel.add(getLabelPanel(citationStrings.link(), new HandleFormatter().getUrlFromHandle(dataNode.getArchiveHandle()), null));
+            verticalPanel.add(getLabelPanel(citationStrings.handle(), archiveHandle, null));
+            if (archiveHandle != null) {
+                final String urlFromHandle = new HandleFormatter().getUrlFromHandle(archiveHandle);
+                verticalPanel.add(getLabelPanel(citationStrings.link(), urlFromHandle, urlFromHandle));
+            }
             verticalPanel.add(getLabelPanel(citationStrings.url(), dataNode.getURI(), null));
             disclosurePanel.add(verticalPanel);
             simplePanel.add(disclosurePanel);
