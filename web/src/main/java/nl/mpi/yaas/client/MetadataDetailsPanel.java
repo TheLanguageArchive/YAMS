@@ -17,6 +17,9 @@
  */
 package nl.mpi.yaas.client;
 
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -41,15 +44,20 @@ public class MetadataDetailsPanel extends VerticalPanel {
     }
 
     public void setDataNode(SerialisableDataNode dataNode) {
+//        logger.info("MetadataDetailsPanel");
         this.clear();
+//        logger.info("a-MetadataDetailsPanel");
         this.setVisible(true);
+//        logger.info("b-MetadataDetailsPanel");
         this.dataNode = dataNode;
+//        logger.info("c-MetadataDetailsPanel");
         this.add(addDataNodePanel(dataNode));
+//        logger.info("end-MetadataDetailsPanel");
     }
 
     public Panel addDataNodePanel(SerialisableDataNode dataNode) {
         final VerticalPanel simplePanel = new VerticalPanel();
-//        logger.info("label");
+       // logger.info(dataNode.getLabel());
         final Label label = new Label(dataNode.getLabel());
         simplePanel.setStyleName("IMDI_group");
         simplePanel.add(label);
@@ -78,8 +86,26 @@ public class MetadataDetailsPanel extends VerticalPanel {
 //        logger.info("children");
         final List<? extends SerialisableDataNode> childList = dataNode.getChildList();
         if (childList != null) {
-            for (SerialisableDataNode dataNodeChild : childList) {
-                verticalPanel.add(addDataNodePanel(dataNodeChild));
+//            int childIndex = 0;
+//            int maxToLoad = 10;
+//            for (final SerialisableDataNode dataNodeChild : childList.subList(childIndex, childIndex + maxToLoad)) {
+//                verticalPanel.add(addDataNodePanel(dataNodeChild));
+//                childIndex++;
+            for (final SerialisableDataNode dataNodeChild : childList) {
+                boolean lazyLoad = dataNodeChild.getChildList() != null && dataNodeChild.getChildList().size() > 5;
+                if (lazyLoad) {
+                    final DisclosurePanel disclosurePanel = new DisclosurePanel(dataNodeChild.getLabel());
+//                disclosurePanel.getHeader().setStyleName("IMDI_group_header_static");
+                    verticalPanel.add(disclosurePanel);
+                    disclosurePanel.addOpenHandler(new OpenHandler<DisclosurePanel>() {
+
+                        public void onOpen(OpenEvent<DisclosurePanel> event) {
+                            disclosurePanel.setContent(addDataNodePanel(dataNodeChild));
+                        }
+                    });
+                } else {
+                    verticalPanel.add(addDataNodePanel(dataNodeChild));
+                }
             }
         }
         return simplePanel;

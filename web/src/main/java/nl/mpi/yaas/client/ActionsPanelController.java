@@ -61,6 +61,11 @@ public class ActionsPanelController {
     final private RootPanel logoutTag;
     final ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
 
+    private enum NodeActionType {
+
+        citation, details, search
+    }
+
     public ActionsPanelController(RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag, RootPanel loginTag, RootPanel logoutTag, RootPanel userSpan) {
         this.welcomePanelTag = welcomePanelTag;
         this.actionsTargetPanel = actionsTargetPanel;
@@ -106,6 +111,7 @@ public class ActionsPanelController {
             addPanelAction(resourceAccessTag, serviceLocations.rrsUrl());
         }
         if (citationTag != null) {
+            addNodeAction(citationTag, NodeActionType.citation);
         }
         if (aboutTag != null) {
             final Anchor aboutAnchor = Anchor.wrap(aboutTag.getElement());
@@ -171,6 +177,39 @@ public class ActionsPanelController {
                 } catch (ModelException exception) {
                     logger.warning(exception.getMessage());
                 }
+            }
+        });
+    }
+
+    private void addNodeAction(RootPanel rootPanel, final NodeActionType actionType) {
+        final Button button = Button.wrap(rootPanel.getElement());
+        button.addClickHandler(new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+                if (detailsPanel != null) {
+                    detailsPanel.setVisible(false);
+                }
+                if (welcomePanelTag != null) {
+                    welcomePanelTag.setVisible(false);
+                }
+                actionsTargetPanel.clear();
+                actionsTargetPanel.setVisible(true);
+//                try {
+                    switch (actionType) {
+                        case citation:
+                            final CitationPanel citationPanel = new CitationPanel();
+                            citationPanel.setDataNode(dataNode);
+                            actionsTargetPanel.add(citationPanel);
+                            break;
+                        case details:
+                            actionsTargetPanel.add(new MetadataDetailsPanel());
+                            break;
+//                        case search:actionsTargetPanel.add(new SearchPanel());
+//                            break;
+                    }
+//                } catch (ModelException exception) {
+//                    logger.warning(exception.getMessage());
+//                }
             }
         });
     }
