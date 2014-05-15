@@ -96,7 +96,8 @@ public class CitationPanel extends VerticalPanel {
             }
             verticalPanel.add(getLabelPanel(citationStrings.published(), "", null));
             verticalPanel.add(getLabelPanel(citationStrings.handle(), dataNode.getArchiveHandle(), null));
-            verticalPanel.add(getLabelPanel(citationStrings.link(), dataNode.getArchiveHandle(), null));
+            verticalPanel.add(getLabelPanel(citationStrings.link(), new HandleFormatter().getUrlFromHandle(dataNode.getArchiveHandle()), null));
+            verticalPanel.add(getLabelPanel(citationStrings.url(), dataNode.getURI(), null));
             disclosurePanel.add(verticalPanel);
             simplePanel.add(disclosurePanel);
         } catch (ModelException exception) {
