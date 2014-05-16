@@ -39,7 +39,7 @@ import nl.mpi.yaas.common.data.SearchParameters;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class SearchPanel extends VerticalPanel implements HistoryListener {
+public class SearchWidgetsPanel extends VerticalPanel implements HistoryListener {
 
     private static final Logger logger = Logger.getLogger("");
     private static final String SEARCH_LABEL = "Search";
@@ -60,7 +60,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
     private final ArrayList<SearchCriterionPanel> criterionPanelList = new ArrayList<SearchCriterionPanel>();
     private final DatabaseInfo databaseInfo;
 
-    public SearchPanel(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInfo databaseInfo, ResultsPanel resultsPanel, DataNodeTable dataNodeTable, final ArchiveBranchSelectionPanel archiveTreePanel) {
+    public SearchWidgetsPanel(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInfo databaseInfo, ResultsPanel resultsPanel, DataNodeTable dataNodeTable, final ArchiveBranchSelectionPanel archiveTreePanel) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
@@ -68,14 +68,14 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
         this.resultsPanel = resultsPanel;
         verticalPanel = new VerticalPanel();
         initSearchHandler();
-        final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this, searchOptionsService);
+        final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchWidgetsPanel.this, searchOptionsService);
         verticalPanel.add(archiveTreePanel);
         historyController.addHistoryListener(archiveTreePanel);
         verticalPanel.add(searchCriterionPanel);
         criterionPanelList.add(searchCriterionPanel);
         Button addRowButton = new Button(ADD_SEARCH_TERM, new ClickHandler() {
             public void onClick(ClickEvent event) {
-                addSearchCriterionPanel(new SearchCriterionPanel(SearchPanel.this, SearchPanel.this.searchOptionsService));
+                addSearchCriterionPanel(new SearchCriterionPanel(SearchWidgetsPanel.this, SearchWidgetsPanel.this.searchOptionsService));
             }
         });
         this.add(verticalPanel);
@@ -108,7 +108,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
                 removeSearchCriterionPanel(criterionPanelList.get(criterionPanelList.size() - 1));
             }
             while (searchParametersList.size() > criterionPanelList.size()) {
-                addSearchCriterionPanel(new SearchCriterionPanel(SearchPanel.this, SearchPanel.this.searchOptionsService));
+                addSearchCriterionPanel(new SearchCriterionPanel(SearchWidgetsPanel.this, SearchWidgetsPanel.this.searchOptionsService));
             }
             for (int panelIndex = 0; panelIndex < criterionPanelList.size(); panelIndex++) {
                 final SearchParameters historyValues = searchParametersList.get(panelIndex);
@@ -119,7 +119,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
                 removeSearchCriterionPanel(criterionPanelList.get(0));
             }
             if (historyController.getDatabaseName() != null) {
-                final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchPanel.this, SearchPanel.this.searchOptionsService);
+                final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchWidgetsPanel.this, SearchWidgetsPanel.this.searchOptionsService);
                 addSearchCriterionPanel(searchCriterionPanel);
             }
         }

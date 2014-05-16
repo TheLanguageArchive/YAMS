@@ -50,7 +50,7 @@ public class yaas implements EntryPoint, HistoryListener {
 //    final PhoneGap phoneGap = GWT.create(PhoneGap.class);
     private boolean debugMode = false;
     private final FlowPanel loggerPanel = new FlowPanel();
-    private SearchPanel searchOptionsPanel;
+    private SearchWidgetsPanel searchOptionsPanel;
     private IconInfoPanel iconInfoPanel;
     private ResultsPanel resultsPanel;
     final Label noDatabaseLabel = new Label(NO__DATABASE__SELECTED);
@@ -167,7 +167,7 @@ public class yaas implements EntryPoint, HistoryListener {
 //        PhonegapUtil.prepareService(serviceDefTarget, moduleBaseURL, "searchoptions");
         iconInfoPanel = new IconInfoPanel();
         final ArchiveBranchSelectionPanel archiveBranchSelectionPanel = new ArchiveBranchSelectionPanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, windowParamHdls, windowParamUrls);
-        searchOptionsPanel = new SearchPanel(searchOptionsService, historyController, databaseInfo, resultsPanel, dataNodeTable, archiveBranchSelectionPanel);
+        searchOptionsPanel = new SearchWidgetsPanel(searchOptionsService, historyController, databaseInfo, resultsPanel, dataNodeTable, archiveBranchSelectionPanel);
         historyController.addHistoryListener(searchOptionsPanel);
         searchOptionsPanel.setVisible(false);
         loadingImage.setVisible(false);

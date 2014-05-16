@@ -68,7 +68,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
     private MetadataFileType defaultPathType = null;
     private final SearchSuggestionsStorage searchSuggestionsStorage;
 
-    public SearchCriterionPanel(final SearchPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
+    public SearchCriterionPanel(final SearchWidgetsPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
         this.setStyleName("yams-SearchCriterionPanel");
         this.searchOptionsService = searchOptionsService;
         searchSuggestionsStorage = new SearchSuggestionsStorage();
