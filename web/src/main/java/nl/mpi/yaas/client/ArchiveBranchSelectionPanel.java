@@ -45,7 +45,6 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
     private String dataNodeTreeDb = null;
     private DataNodeTree dataNodeTree = null;
     private static final Logger logger = Logger.getLogger("");
-    private final DataNodeTable dataNodeTable;
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
     private final DatabaseInfo databaseInfo;
@@ -56,8 +55,7 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
     private final List<String> windowParamHdls;
     private final List<String> windowParamUrls;
 
-    public ArchiveBranchSelectionPanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, List<String> windowParamHdls, List<String> windowParamUrls) {
-        this.dataNodeTable = dataNodeTable;
+    public ArchiveBranchSelectionPanel(SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, List<String> windowParamHdls, List<String> windowParamUrls) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;

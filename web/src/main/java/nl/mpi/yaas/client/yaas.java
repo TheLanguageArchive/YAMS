@@ -25,38 +25,25 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.logging.client.HasWidgetsLogHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.List;
 //import com.googlecode.gwtphonegap.client.PhoneGap;
 //import com.googlecode.gwtphonegap.client.util.PhonegapUtil;
 import java.util.logging.Logger;
 
-public class yaas implements EntryPoint, HistoryListener {
+public class yaas implements EntryPoint {
 
     private static final Logger logger = Logger.getLogger("");
-    private static final String FAILED_TO_CONNECT_TO_THE_SERVER = "Failed to connect to the server.";
-    private static final String NO__DATABASE__SELECTED = "No Database Selected";
     private SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController = new HistoryController();
     private DatabaseInfo databaseInfo;
 //    final PhoneGap phoneGap = GWT.create(PhoneGap.class);
     private boolean debugMode = false;
     private final FlowPanel loggerPanel = new FlowPanel();
-    private SearchWidgetsPanel searchOptionsPanel;
-    private IconInfoPanel iconInfoPanel;
-    private ResultsPanel resultsPanel;
-    final Label noDatabaseLabel = new Label(NO__DATABASE__SELECTED);
-    final private Image loadingImage = new Image("./loader.gif");
-    private String lastUsedDatabase = null;
-    private Anchor statisticsPageAnchor = null;
     private final List<String> windowParamHdls = new ArrayList<String>();
     private final List<String> windowParamUrls = new ArrayList<String>();
 
@@ -84,22 +71,15 @@ public class yaas implements EntryPoint, HistoryListener {
         }
     }
 
-    private void setStatisticsLink(String databaseName) {
-        if (statisticsPageAnchor != null) {
-            final String dbStatsHref = (databaseName == null || databaseName.isEmpty()) ? "DatabaseStats.jsp" : "DatabaseStats.jsp?databaseName=" + databaseName;
-            statisticsPageAnchor.setHref(dbStatsHref);
-        }
-    }
-
     private void setupPage(final HistoryController historyController) {
 //        final String moduleBaseURL = "http://tlatest03.mpi.nl:8080/yaas-gwt-1.0-SNAPSHOT/yaas/";
         final String databaseName = historyController.getDatabaseName();
         databaseInfo = new DatabaseInfo(searchOptionsService, historyController);
-        setStatisticsLink(databaseName);
         final RootPanel linksPanelTag = RootPanel.get("linksPanel");
         if (linksPanelTag != null) {
-            statisticsPageAnchor = new Anchor("View Database Statistics");
-            linksPanelTag.add(statisticsPageAnchor);
+            final StatisticsLink statisticsLink = new StatisticsLink(historyController);
+            linksPanelTag.add(statisticsLink);
+            historyController.addHistoryListener(statisticsLink);
         }
         final RootPanel optionsPanelTag = RootPanel.get("optionsPanel");
         if (optionsPanelTag != null) {
@@ -118,17 +98,19 @@ public class yaas implements EntryPoint, HistoryListener {
         if (databaseStatsTag != null) {
             databaseStatsTag.add(new Label(GWT.getModuleBaseURL()));
         }
-        DisclosurePanel disclosurePanel = new DisclosurePanel("Search Options");
-        final DatabaseSelect databaseSelectBox = new DatabaseSelect(historyController, databaseInfo);
-        historyController.addHistoryListener(this);
-        historyController.addHistoryListener(databaseSelectBox);
         final DataNodeTable dataNodeTable = new DataNodeTable();
         final RootPanel searchOptionsPanelTag = RootPanel.get("searchOptionsPanel");
         if (searchOptionsPanelTag != null) {
-            resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
+            ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
+            final RootPanel resultsPanelTag = RootPanel.get("resultsPanel");
+            if (resultsPanelTag != null) {
+                resultsPanelTag.add(resultsPanel);
+            }
             final ConciseSearchBox conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel);
             historyController.addHistoryListener(conciseSearchBox);
             searchOptionsPanelTag.add(conciseSearchBox);
+            final ArchiveBranchSelectionPanel archiveBranchSelectionPanel = new ArchiveBranchSelectionPanel(searchOptionsService, historyController, databaseInfo, windowParamHdls, windowParamUrls);
+            searchOptionsPanelTag.add(new SearchPanel(historyController, databaseInfo, resultsPanel, searchOptionsService, dataNodeTable, archiveBranchSelectionPanel));
         }
         if (databaseStatsTag != null) {
             final ServiceDefTarget serviceDefTarget = (ServiceDefTarget) searchOptionsService;
@@ -165,35 +147,19 @@ public class yaas implements EntryPoint, HistoryListener {
 //            }
 //        });
 //        PhonegapUtil.prepareService(serviceDefTarget, moduleBaseURL, "searchoptions");
-        iconInfoPanel = new IconInfoPanel();
-        final ArchiveBranchSelectionPanel archiveBranchSelectionPanel = new ArchiveBranchSelectionPanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, windowParamHdls, windowParamUrls);
-        searchOptionsPanel = new SearchWidgetsPanel(searchOptionsService, historyController, databaseInfo, resultsPanel, dataNodeTable, archiveBranchSelectionPanel);
-        historyController.addHistoryListener(searchOptionsPanel);
-        searchOptionsPanel.setVisible(false);
-        loadingImage.setVisible(false);
         if (databaseStatsTag != null) {
+            IconInfoPanel iconInfoPanel = new IconInfoPanel(historyController, databaseInfo);
             final DatabaseStatsPanel databaseStatsPanel = new DatabaseStatsPanel(databaseInfo, historyController);
             historyController.addHistoryListener(databaseStatsPanel);
             databaseStatsTag.add(databaseStatsPanel);
             databaseStatsTag.add(iconInfoPanel);
+            historyController.addHistoryListener(iconInfoPanel);
         }
 
 //                RootPanel.get("databaseStats").add(new QueryStatsPanel());
-        if (searchOptionsPanelTag != null) {
-            searchOptionsPanelTag.add(loadingImage);
-        }
-        if (searchOptionsPanelTag != null) {
-            VerticalPanel verticalPanel = new VerticalPanel();
-            verticalPanel.add(databaseSelectBox);
-            verticalPanel.add(noDatabaseLabel);
-            verticalPanel.add(searchOptionsPanel);
-            disclosurePanel.setContent(verticalPanel);
-            searchOptionsPanelTag.add(disclosurePanel);
-        }
-        final RootPanel resultsPanelTag = RootPanel.get("resultsPanel");
-        if (resultsPanelTag != null) {
-            resultsPanelTag.add(resultsPanel);
-        }
+//        if (searchOptionsPanelTag != null) {
+//            searchOptionsPanelTag.add(loadingImage);
+//        }
         final RootPanel facetedTreeTag = RootPanel.get("facetedTree");
 //        RootPanel.get("dataNodeTable").add(dataNodeTable);
         if (facetedTreeTag != null) {
@@ -258,27 +224,4 @@ public class yaas implements EntryPoint, HistoryListener {
 //        RootPanel.get("optionsPanel").clear();
 //        setupPage(databaseName);
 //    }
-    public void historyChange() {
-        final String databaseName = historyController.getDatabaseName();
-        setStatisticsLink(databaseName);
-        if (databaseName != null && !databaseName.equals(lastUsedDatabase)) {
-            lastUsedDatabase = databaseName;
-            loadingImage.setVisible(true);
-            searchOptionsPanel.setVisible(false);
-            noDatabaseLabel.setVisible(true);
-        }
-    }
-
-    public void userSelectionChange() {
-        if (databaseInfo.hasDatabaseError()) {
-            noDatabaseLabel.setVisible(true);
-            loadingImage.setVisible(false);
-        }
-        if (databaseInfo.ready()) {
-            noDatabaseLabel.setVisible(false);
-            loadingImage.setVisible(false);
-            searchOptionsPanel.setVisible(true);
-        }
-        iconInfoPanel.setIconInfo(databaseInfo.getDatabaseIcons(historyController.getDatabaseName()));
-    }
 }

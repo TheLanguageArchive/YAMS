@@ -30,7 +30,23 @@ import nl.mpi.yaas.common.data.NodeTypeImageBase64;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class IconInfoPanel extends VerticalPanel {
+public class IconInfoPanel extends VerticalPanel implements HistoryListener {
+
+    private final HistoryController historyController;
+    private final DatabaseInfo databaseInfo;
+
+    public IconInfoPanel(HistoryController historyController, DatabaseInfo databaseInfo) {
+        this.historyController = historyController;
+        this.databaseInfo = databaseInfo;
+    }
+
+    public void historyChange() {
+        this.setIconInfo(databaseInfo.getDatabaseIcons(historyController.getDatabaseName()));
+    }
+
+    public void userSelectionChange() {
+        historyChange();
+    }
 
     public void setIconInfo(IconTableBase64 imageDataForTypes) {
         this.clear();
