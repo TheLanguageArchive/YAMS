@@ -19,8 +19,8 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Logger;
+import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
@@ -38,15 +38,13 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
     private final DatabaseInfo databaseInfo;
-    private final MetadataDetailsPanel detailsPanel;
     private final ActionsPanelController actionsPanelController;
     HashMap<SerialisableDataNode, HorizontalPanel> nodePanels = new HashMap<SerialisableDataNode, HorizontalPanel>();
 
-    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, MetadataDetailsPanel detailsPanel, ActionsPanelController actionsPanelController) {
+    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, ActionsPanelController actionsPanelController) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
-        this.detailsPanel = detailsPanel;
         this.actionsPanelController = actionsPanelController;
     }
 
@@ -80,8 +78,13 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
 
                 public void clickEvent(SerialisableDataNode dataNode) {
                     //logger.info("TreeNodeClickListener");
-                    actionsPanelController.setDataNode(dataNode);
-                    detailsPanel.setDataNode(dataNode);
+//                    actionsPanelController.setDataNode(dataNode);
+//                    detailsPanel.setDataNode(dataNode);
+                    try {
+                        historyController.setBranchSelection(new DataNodeId(dataNode.getID()), HistoryData.NodeActionType.details);
+                    } catch (ModelException exception) {
+                        logger.warning(exception.getMessage());
+                    }
                 }
             };
             dataNodeTree = new DataNodeTree(null, treeNodeClickListener, searchOptionsService, databaseIcons, true);

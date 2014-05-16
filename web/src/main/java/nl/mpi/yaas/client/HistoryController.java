@@ -22,6 +22,9 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import nl.mpi.flap.model.ModelException;
+import nl.mpi.yaas.client.HistoryData.NodeActionType;
+import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.QueryDataStructures;
 import nl.mpi.yaas.common.data.SearchParameters;
 
@@ -72,10 +75,12 @@ public class HistoryController implements ValueChangeHandler<String> {
     }
 
     private void notifyUiListeners() {
-        //logger.info("notifyUiListeners");
+//        logger.info("notifyUiListeners");
         for (HistoryListener historyListener : historyListeners) {
+           // logger.info(historyListener.getClass().getName());
             historyListener.userSelectionChange();
         }
+//        logger.info("notifyUiListenersDone");
     }
 
     public String getDatabaseName() {
@@ -87,8 +92,28 @@ public class HistoryController implements ValueChangeHandler<String> {
         notifyUiListeners();
     }
 
-    public void addSearchHandle(String handleString) {
-        historyData.addSearchHandle(handleString);
+    public void clearBranchSelection() throws ModelException {
+        historyData.clearBranchSelection();
+        notifyUiListeners();
+    }
+
+    public void setBranchSelection(DataNodeId dataNodeLink, NodeActionType nodeActionType) throws ModelException {
+        historyData.clearBranchSelection();
+        addBranchSelection(dataNodeLink, nodeActionType);
+    }
+
+    public void addBranchSelection(DataNodeId dataNodeLink, NodeActionType nodeActionType) throws ModelException {
+        // todo: update the DataNodeLink to support URLs 
+        historyData.addBranchSelection(dataNodeLink);
+        historyData.setNodeActionType(nodeActionType);
+        notifyUiListeners();
+        updateHistory(false);
+    }
+
+    public void setAction(NodeActionType nodeActionType) {
+        historyData.setNodeActionType(nodeActionType);
+        notifyUiListeners();
+        updateHistory(false);
     }
 
     public QueryDataStructures.CriterionJoinType getCriterionJoinType() {

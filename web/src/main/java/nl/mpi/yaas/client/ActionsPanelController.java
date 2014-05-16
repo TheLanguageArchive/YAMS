@@ -30,18 +30,27 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import java.util.List;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.yaas.client.HistoryData.NodeActionType;
+import static nl.mpi.yaas.client.HistoryData.NodeActionType.citation;
+import static nl.mpi.yaas.client.HistoryData.NodeActionType.details;
+import nl.mpi.yaas.common.data.DataNodeId;
+import nl.mpi.yaas.common.data.IconTableBase64;
 
 /**
  * @since Apr 11, 2014 1:39:33 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class ActionsPanelController {
+public class ActionsPanelController implements HistoryListener {
 
     private static final Logger logger = Logger.getLogger("");
+    private final DatabaseInfo databaseInfo;
+    private final SearchOptionsServiceAsync searchOptionsService;
     private SerialisableDataNode dataNode = null;
+    private final HistoryController historyController;
     final private RootPanel actionsTargetPanel;
     final private RootPanel detailsPanel;
     final private RootPanel homeLinkTag;
@@ -61,12 +70,58 @@ public class ActionsPanelController {
     final private RootPanel logoutTag;
     final ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
 
-    private enum NodeActionType {
+    public void historyChange() {
+        final List<DataNodeId> branchSelectionList = historyController.getHistoryData().getBranchSelection();
+        String nodeId = null;
+        if (dataNode != null) {
+            try {
+                nodeId = dataNode.getID();
+            } catch (ModelException exception) {
+                logger.info(exception.getMessage());
+            }
+        }
+        if (dataNode != null && nodeId != null && !branchSelectionList.isEmpty() && branchSelectionList.get(0).getIdString().equals(nodeId)) {
+            // todo: if we start supporting multiple selections then this will need to change
+            // the current data node is already selected so no change needed.
+        } else {
+            final String databaseName = historyController.getDatabaseName();
+            if (databaseName != null) {
+                final IconTableBase64 databaseIcons = databaseInfo.getDatabaseIcons(databaseName);
+                final DataNodeLoader dataNodeLoader = new DataNodeLoader(searchOptionsService, databaseIcons, databaseName);
+//                logger.info("branchSelectionList.size():" + branchSelectionList.size());
+                if (branchSelectionList.isEmpty()) {
+                    dataNode = null;
+                    doNodeAction(historyController.getHistoryData().getNodeActionType());
+                } else {
+//                    logger.info("branchSelectionList.get(0).getIdString():" + branchSelectionList.get(0).getIdString());
+                    dataNodeLoader.requestLoad(branchSelectionList, new DataNodeLoaderListener() {
+                        public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
+                            if (dataNodeList != null && !dataNodeList.isEmpty()) {
+                                dataNode = dataNodeList.get(0);
+                                logger.info(dataNode.getLabel());
+                            } else {
+                                logger.warning("dataNodeLoaded but the resulting list was empty");
+                            }
+                            doNodeAction(historyController.getHistoryData().getNodeActionType());
+                        }
 
-        citation, details, search
+                        public void dataNodeLoadFailed(Throwable caught) {
+                            logger.warning(caught.getMessage());
+                        }
+                    });
+                }
+            }
+        }
     }
 
-    public ActionsPanelController(RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag, RootPanel loginTag, RootPanel logoutTag, RootPanel userSpan) {
+    public void userSelectionChange() {
+        historyChange();
+    }
+
+    public ActionsPanelController(DatabaseInfo databaseInfo, SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag, RootPanel loginTag, RootPanel logoutTag, RootPanel userSpan) {
+        this.databaseInfo = databaseInfo;
+        this.searchOptionsService = searchOptionsService;
+        this.historyController = historyController;
         this.welcomePanelTag = welcomePanelTag;
         this.actionsTargetPanel = actionsTargetPanel;
         this.detailsPanel = detailsPanel;
@@ -144,7 +199,7 @@ public class ActionsPanelController {
             homeAnchor.addClickHandler(new ClickHandler() {
 
                 public void onClick(ClickEvent event) {
-                    setDataNode(null);
+                    historyController.setAction(NodeActionType.home);
                 }
             });
         }
@@ -181,35 +236,47 @@ public class ActionsPanelController {
         });
     }
 
+    private void doNodeAction(final NodeActionType actionType) {
+        if (detailsPanel != null) {
+            detailsPanel.setVisible(false);
+        }
+        if (welcomePanelTag != null) {
+            welcomePanelTag.setVisible(false);
+        }
+        actionsTargetPanel.clear();
+        actionsTargetPanel.setVisible(true);
+//                try {
+        logger.info(actionType.name());
+        switch (actionType) {
+            case citation:
+                final CitationPanel citationPanel = new CitationPanel();
+                citationPanel.setDataNode(dataNode);
+                actionsTargetPanel.add(citationPanel);
+                break;
+            case details:
+                final MetadataDetailsPanel metadataDetailsPanel = new MetadataDetailsPanel();
+//                actionsTargetPanel.add(metadataDetailsPanel);
+                detailsPanel.add(metadataDetailsPanel);
+                metadataDetailsPanel.setDataNode(dataNode);
+                setDataNode(dataNode);
+                break;
+//                        case search:actionsTargetPanel.add(new SearchPanel());
+//                            break;
+            case home:
+                setDataNode(null);
+                break;
+        }
+//                } catch (ModelException exception) {
+//                    logger.warning(exception.getMessage());
+//                } 
+    }
+
     private void addNodeAction(RootPanel rootPanel, final NodeActionType actionType) {
         final Button button = Button.wrap(rootPanel.getElement());
         button.addClickHandler(new ClickHandler() {
 
             public void onClick(ClickEvent event) {
-                if (detailsPanel != null) {
-                    detailsPanel.setVisible(false);
-                }
-                if (welcomePanelTag != null) {
-                    welcomePanelTag.setVisible(false);
-                }
-                actionsTargetPanel.clear();
-                actionsTargetPanel.setVisible(true);
-//                try {
-                    switch (actionType) {
-                        case citation:
-                            final CitationPanel citationPanel = new CitationPanel();
-                            citationPanel.setDataNode(dataNode);
-                            actionsTargetPanel.add(citationPanel);
-                            break;
-                        case details:
-                            actionsTargetPanel.add(new MetadataDetailsPanel());
-                            break;
-//                        case search:actionsTargetPanel.add(new SearchPanel());
-//                            break;
-                    }
-//                } catch (ModelException exception) {
-//                    logger.warning(exception.getMessage());
-//                }
+                doNodeAction(actionType);
             }
         });
     }

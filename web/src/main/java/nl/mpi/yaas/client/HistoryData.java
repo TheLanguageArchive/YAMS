@@ -18,9 +18,10 @@
 package nl.mpi.yaas.client;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.MetadataFileType;
 import nl.mpi.yaas.common.data.QueryDataStructures;
 import nl.mpi.yaas.common.data.SearchParameters;
@@ -31,12 +32,17 @@ import nl.mpi.yaas.common.data.SearchParameters;
  */
 public class HistoryData {
 
+    public enum NodeActionType {
+
+        citation, details, search, view, download, home
+    }
     private static final Logger logger = Logger.getLogger("");
     private String databaseName = "";
-    private final HashSet<String> searchHandles = new HashSet<String>();
     private QueryDataStructures.CriterionJoinType criterionJoinType = QueryDataStructures.CriterionJoinType.union;
     private ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
     public final QueryDataStructures.CriterionJoinType defaultCriterionJoinType = QueryDataStructures.CriterionJoinType.union;
+    private final ArrayList<DataNodeId> branchIdList = new ArrayList<DataNodeId>();
+    private NodeActionType nodeActionType = NodeActionType.home;
 
     public String getDatabaseName() {
         return databaseName;
@@ -50,6 +56,13 @@ public class HistoryData {
         StringBuilder historyToken = new StringBuilder();
         if (databaseName != null) {
             historyToken.append(/*"db:" +*/databaseName);
+            for (DataNodeId nodeLink : branchIdList) {
+                historyToken.append(":");
+                historyToken.append(nodeLink.getIdString());
+            }
+            historyToken.append(",");
+            historyToken.append(nodeActionType.name());
+            // todo: encode the branch selection
             if (criterionJoinType != null) {
                 historyToken.append(",");
                 historyToken.append(criterionJoinType.name());
@@ -91,15 +104,27 @@ public class HistoryData {
         ArrayList<SearchParameters> searchParametersListTemp = new ArrayList<SearchParameters>();
         final String[] historyParts = historyToken.split(",");
         if (historyParts != null && historyParts.length > 0) {
-            databaseName = historyParts[0];
+            final String[] dbNodesParts = historyParts[0].split(":");
+            // decode the database and branch selection
+            boolean firstPart = true;
+            branchIdList.clear();
+            for (String part : dbNodesParts) {
+                if (firstPart) {
+                    databaseName = part;
+                } else {
+                    branchIdList.add(new DataNodeId(part));
+                }
+                firstPart = false;
+            }
         } else {
             databaseName = null;
         }
         if (historyParts != null && historyParts.length > 1) {
-            criterionJoinType = QueryDataStructures.CriterionJoinType.valueOf(historyParts[1]);
+            nodeActionType = NodeActionType.valueOf(historyParts[1]);
+            criterionJoinType = QueryDataStructures.CriterionJoinType.valueOf(historyParts[2]);
             // continue reading the token to get the remaining search parameters
             int searchParametersIndex = 0;
-            final int paramStartIndex = 2;
+            final int paramStartIndex = 3;
             final int paramCount = 5;
             while (historyParts.length > paramStartIndex + (searchParametersIndex * paramCount)) {
                 final int currentParamIndex = paramStartIndex + searchParametersIndex * paramCount;
@@ -134,7 +159,25 @@ public class HistoryData {
         this.searchParametersList = searchParametersList;
     }
 
-    public void addSearchHandle(String handleString) {
-        searchHandles.add(handleString);
+    public void clearBranchSelection() {
+        branchIdList.clear();
     }
+
+    public void addBranchSelection(DataNodeId dataNodeLink) {
+        branchIdList.add(dataNodeLink);
+    }
+
+    public List<DataNodeId> getBranchSelection() {
+        // Collections.unmodifiableList is not available in GWT although there is com.google.common.collect.ImmutableList
+        return branchIdList;
+    }
+
+    public NodeActionType getNodeActionType() {
+        return nodeActionType;
+    }
+
+    public void setNodeActionType(NodeActionType nodeActionType) {
+        this.nodeActionType = nodeActionType;
+    }
+
 }
