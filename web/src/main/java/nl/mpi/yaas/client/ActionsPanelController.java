@@ -154,16 +154,16 @@ public class ActionsPanelController implements HistoryListener {
             addPopupPanelAction(loginAnchor, serviceLocations.logoutUrl());
         }
         if (metadataSearchTag != null) {
-            addPanelAction(metadataSearchTag, serviceLocations.yamsUrl());
+            addNodeAction(metadataSearchTag, NodeActionType.search);
         }
         if (annotationContentSearchTag != null) {
             addPageAction(annotationContentSearchTag, serviceLocations.trovaUrl());
         }
         if (manageAccessRightsTag != null) {
-            addPanelAction(manageAccessRightsTag, serviceLocations.amsUrl());
+            addNodeAction(manageAccessRightsTag, NodeActionType.ams);
         }
         if (resourceAccessTag != null) {
-            addPanelAction(resourceAccessTag, serviceLocations.rrsUrl());
+            addNodeAction(resourceAccessTag, NodeActionType.rrs);
         }
         if (citationTag != null) {
             addNodeAction(citationTag, NodeActionType.citation);
@@ -199,6 +199,7 @@ public class ActionsPanelController implements HistoryListener {
             homeAnchor.addClickHandler(new ClickHandler() {
 
                 public void onClick(ClickEvent event) {
+                    historyController.getHistoryData().clearBranchSelection();
                     historyController.setAction(NodeActionType.home);
                 }
             });
@@ -256,12 +257,21 @@ public class ActionsPanelController implements HistoryListener {
             case details:
                 final MetadataDetailsPanel metadataDetailsPanel = new MetadataDetailsPanel();
 //                actionsTargetPanel.add(metadataDetailsPanel);
+                detailsPanel.clear();
                 detailsPanel.add(metadataDetailsPanel);
                 metadataDetailsPanel.setDataNode(dataNode);
                 setDataNode(dataNode);
                 break;
-//                        case search:actionsTargetPanel.add(new SearchPanel());
-//                            break;
+            case search:
+                doPanelAction(serviceLocations.yamsUrl());
+//                actionsTargetPanel.add(new SearchPanel());
+                break;
+            case ams:
+                doPanelAction(serviceLocations.amsUrl());
+                break;
+            case rrs:
+                doPanelAction(serviceLocations.rrsUrl());
+                break;
             case home:
                 setDataNode(null);
                 break;
@@ -281,28 +291,22 @@ public class ActionsPanelController implements HistoryListener {
         });
     }
 
-    private void addPanelAction(RootPanel rootPanel, final String targetUrl) {
-        final Button button = Button.wrap(rootPanel.getElement());
-        button.addClickHandler(new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
-                if (detailsPanel != null) {
-                    detailsPanel.setVisible(false);
-                }
-                if (welcomePanelTag != null) {
-                    welcomePanelTag.setVisible(false);
-                }
-                actionsTargetPanel.clear();
-                actionsTargetPanel.setVisible(true);
-                try {
-                    final Frame frame = new Frame(getFormattedHandleLink(targetUrl));
-                    frame.setSize("100%", "100%");
-                    actionsTargetPanel.add(frame);
-                } catch (ModelException exception) {
-                    logger.warning(exception.getMessage());
-                }
-            }
-        });
+    private void doPanelAction(final String targetUrl) {
+        if (detailsPanel != null) {
+            detailsPanel.setVisible(false);
+        }
+        if (welcomePanelTag != null) {
+            welcomePanelTag.setVisible(false);
+        }
+        actionsTargetPanel.clear();
+        actionsTargetPanel.setVisible(true);
+        try {
+            final Frame frame = new Frame(getFormattedHandleLink(targetUrl));
+            frame.setSize("100%", "100%");
+            actionsTargetPanel.add(frame);
+        } catch (ModelException exception) {
+            logger.warning(exception.getMessage());
+        }
     }
 
     private void addPageAction(RootPanel rootPanel, final String targetUrl) {
@@ -322,7 +326,8 @@ public class ActionsPanelController implements HistoryListener {
 
     private String getFormattedHandleLink(final String targetUrl) throws ModelException {
         if (dataNode != null) {
-            return targetUrl.replace("{}", dataNode.getURI());
+            // this should be replaced with the use of gwt messages to add the parameter
+            return targetUrl.replace("{0}", dataNode.getURI());
         } else {
             return targetUrl;
         }

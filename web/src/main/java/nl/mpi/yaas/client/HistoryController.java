@@ -68,16 +68,17 @@ public class HistoryController implements ValueChangeHandler<String> {
     }
 
     private void notifyHistoryListeners() {
-        //logger.info("notifyHistoryListeners");
+        logger.info("notifyHistoryListeners");
         for (HistoryListener historyListener : historyListeners) {
+            logger.info(historyListener.getClass().getName());
             historyListener.historyChange();
         }
     }
 
     private void notifyUiListeners() {
-//        logger.info("notifyUiListeners");
+        logger.info("notifyUiListeners");
         for (HistoryListener historyListener : historyListeners) {
-           // logger.info(historyListener.getClass().getName());
+            logger.info(historyListener.getClass().getName());
             historyListener.userSelectionChange();
         }
 //        logger.info("notifyUiListenersDone");
@@ -113,7 +114,7 @@ public class HistoryController implements ValueChangeHandler<String> {
     public void setAction(NodeActionType nodeActionType) {
         historyData.setNodeActionType(nodeActionType);
         notifyUiListeners();
-        updateHistory(false);
+        updateHistory(true);
     }
 
     public QueryDataStructures.CriterionJoinType getCriterionJoinType() {
