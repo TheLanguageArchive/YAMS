@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='annotator'>
+    <!-- Inherit the core Web Toolkit stuff.                        -->
+    <inherits name='com.google.gwt.user.User' />
+
+    <!-- We need the JUnit module in the main module,               -->
+    <!-- otherwise eclipse complains (Google plugin bug?)           -->
+    <inherits name='com.google.gwt.junit.JUnit' />
+
+    <!-- Inherit the default GWT style sheet.  You can change       -->
+    <!-- the theme of your GWT application by uncommenting          -->
+    <!-- any one of the following lines.                            -->
+    <inherits name='com.google.gwt.user.theme.standard.Standard' />
+    <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
+    <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
+
+    <!-- Other module inherits                                      -->
+
+    <!-- Specify the app entry point class.                         -->
+    <entry-point class='nl.mpi.yaas.annotator.client.annotator' />
+
+    <!-- Specify the paths for translatable code                    -->
+    <source path='client' />
+    <source path='shared' />
+
+    <!--The following is required for Chrome Apps and causes the GWT compiler not place any script elements inline in its generated Javascript-->
+    <!--    <define-linker name="dil" class="com.google.gwt.core.linker.DirectInstallLinker"/>
+    <add-linker name="dil" />-->
+    <define-linker name="sso" class="com.google.gwt.core.linker.SingleScriptLinker"/>
+    <set-property name="user.agent" value="safari"/>
+    <add-linker name="sso"/>
+    <!--    <define-linker name="ChromeCrossSiteIframeLinker" class="pkg.path.ChromeCrossSiteIframeLinker" />
+    <add-linker name="ChromeCrossSiteIframeLinker" />-->
+    <!--End Chrome App requirements-->
+
+</module>

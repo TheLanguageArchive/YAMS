@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+  <!-- Inherit our applications main module.                      -->
+  <inherits name='nl.mpi.yaas.annotator.annotator' />
+
+  <!-- Specify the path to any remote services.                   -->
+  <servlet path="/annotator/greet" class="nl.mpi.yaas.annotator.server.GreetingServiceImpl" />
+
+</module>

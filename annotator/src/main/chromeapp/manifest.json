@@ -1,0 +1,12 @@
+{
+    "name": "Quick Test Mobile Annotator",
+    "description": "A simple archive resource annotator.",
+    "version": "0.1",
+    "app": {
+        "background": {
+            "scripts": ["background.js"]
+        }
+    },
+    "icons": {"16": "images/sidebarl.png", "128": "images/sidebarl.png"},
+    "sandbox": ["annotator/annotator.nocache.js"]
+}
