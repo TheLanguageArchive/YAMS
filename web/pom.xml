@@ -9,7 +9,7 @@
     <groupId>nl.mpi</groupId>
     <artifactId>yaas-gwt</artifactId>
     <packaging>war</packaging>
-    <version>1.0.40685-pretesting</version>
+    <version>1.0.172-pretesting</version>
     <name>YAAS GWT</name>
     <parent>
         <groupId>nl.mpi</groupId>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>yaas-common</artifactId>
-            <version>0.1-pretesting-SNAPSHOT</version>
+            <version>1.0-pretesting-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.mpg.mpgaai</groupId>
@@ -284,27 +284,6 @@
                     <pemCert>mycert.pem</pemCert>
                 </configuration>
             </plugin>-->
-            <plugin>
-                <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-                <artifactId>svn-revision-number-maven-plugin</artifactId>
-                <version>1.13</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>revision</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <entries>
-                        <entry>
-                            <path>${basedir}/src</path>
-                            <!-- this will populate "plugin.version.revision" -->
-                            <prefix>plugin.version</prefix>
-                        </entry>
-                    </entries>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
     <!--    <profiles>

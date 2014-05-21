@@ -9,7 +9,7 @@
 
     <groupId>nl.mpi</groupId>
     <artifactId>yams-rest</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-pretesting-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>YAMS REST Service</name>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>yaas-common</artifactId>
-            <version>0.1-pretesting-SNAPSHOT</version>
+            <version>1.0-pretesting-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

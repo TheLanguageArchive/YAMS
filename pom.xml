@@ -30,9 +30,6 @@
     </organization>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <plugin.majorVersion>1</plugin.majorVersion>
-        <plugin.minorVersion>1</plugin.minorVersion>
-        <plugin.branch>pretesting</plugin.branch>
         <!--        <netbeans.hint.license>gpl20</netbeans.hint.license> this hint fails when it is in the parent pom -->
         <plugin.license.copyrightYear>2013</plugin.license.copyrightYear>
     </properties>
@@ -66,7 +63,7 @@
             <plugin>
                 <groupId>nl.mpi</groupId>
                 <artifactId>version-control-check</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0.21-testing</version>
                 <executions>
                     <execution>
                         <goals>
@@ -78,14 +75,11 @@
                     <verbose>true</verbose>
                     <vcsType>svn</vcsType>
                     <allowSnapshots>true</allowSnapshots>
-                    <projectDirectory>${project.basedir}</projectDirectory>
                     <majorVersion>1</majorVersion>
                     <minorVersion>0</minorVersion>
                     <buildType>pretesting</buildType>
                     <propertiesPrefix>application</propertiesPrefix>
-                    <shortVersionModules>
-                        <param>yaas-parent</param>
-                    </shortVersionModules>
+                    <shortVersionModule>yaas-parent</shortVersionModule>
                 </configuration>
             </plugin>
         </plugins>

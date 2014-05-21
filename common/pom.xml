@@ -6,7 +6,7 @@
     <artifactId>yaas-common</artifactId>
     <!--    Either use the snapshot version of manually enter the current build number. 
     The build number is only required when depending on the output in other projects or building to the server.-->
-    <version>${plugin.majorVersion}.${plugin.minorVersion}-${plugin.branch}-SNAPSHOT</version>
+    <version>1.0-pretesting-SNAPSHOT</version>
 <!--    <version>${plugin.majorVersion}.${plugin.minorVersion}.34200-${plugin.branch}</version>-->
     <parent>
         <groupId>nl.mpi</groupId>
@@ -15,12 +15,9 @@
     </parent>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <plugin.majorVersion>0</plugin.majorVersion>
-        <plugin.minorVersion>1</plugin.minorVersion>
-        <plugin.branch>pretesting</plugin.branch>
         <netbeans.hint.license>gpl20</netbeans.hint.license>
         <maven.build.timestamp.format>EEE MMM dd HH:mm:ss z yyyy</maven.build.timestamp.format><!--"Mon Dec 10 14:37:33 CET 2012"-->
-        <plugin.build-date>${maven.build.timestamp}</plugin.build-date>
+<!--        <plugin.build-date>${maven.build.timestamp}</plugin.build-date>-->
     </properties>    
     <build>
         <resources>
@@ -82,27 +79,6 @@
                     </execution>
                 </executions>
             </plugin>        
-            <plugin>
-                <groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-                <artifactId>svn-revision-number-maven-plugin</artifactId>
-                <version>1.13</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>revision</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <entries>
-                        <entry>
-                            <path>${basedir}/src</path>
-                            <!-- this will populate "plugin.version.revision" -->
-                            <prefix>plugin.version</prefix>
-                        </entry>
-                    </entries>
-                </configuration>
-            </plugin>
             <!--            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -181,12 +157,12 @@
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>plugins-core</artifactId>
-            <version>1.2-pretesting-SNAPSHOT</version>
+            <version>1.2.39113-testing</version>
         </dependency>
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>pluginloader</artifactId>
-            <version>1.2-pretesting-SNAPSHOT</version>
+            <version>1.2.35804-testing</version>
             <scope>test</scope>
         </dependency>
         <dependency>
