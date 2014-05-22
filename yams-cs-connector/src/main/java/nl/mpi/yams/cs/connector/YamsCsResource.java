@@ -106,7 +106,7 @@ public class YamsCsResource {
 //    @Path("hdl{hdl}")
     public List<SerialisableDataNode> getChildDataNodes(@Context HttpServletRequest request, @QueryParam("url") final String nodeUri, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws URISyntaxException {
         final List<SerialisableDataNode> serialisableDataNodes = new ArrayList<SerialisableDataNode>();
-        for (CorpusNode corpusNode : this.corpusStructureProvider.getChildNodes(new URI(nodeUri))) {
+        for (CorpusNode corpusNode : this.corpusStructureProvider.getChildNodes(new URI(nodeUri)).subList(start, end)) {
             serialisableDataNodes.add(new CorpusNodeWrapper(accessInfoProvider, corpusNode, request.getRemoteUser()));
         }
         return serialisableDataNodes;
