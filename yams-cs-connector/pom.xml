@@ -501,6 +501,11 @@
         </dependency>-->
         <dependency>
             <groupId>nl.mpi.corpusstructure</groupId>
+            <artifactId>corpus-structure-2-tree-model</artifactId>
+            <version>1.0-beta-3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>nl.mpi.corpusstructure</groupId>
             <artifactId>corpus-structure-2-provider</artifactId>
             <version>1.0-beta-3.2</version>
         </dependency>

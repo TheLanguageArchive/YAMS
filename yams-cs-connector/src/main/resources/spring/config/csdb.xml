@@ -61,8 +61,8 @@
     <!--<bean id="providerFactory" class="nl.mpi.lamus.cmdi.providers.ProductionCorpusStructureProviderFactory" />-->
     
     <!-- CSDB created from factory -->
-    <bean id="corpusStructureProvider" class="nl.mpi.archiving.corpusstructure.provider.db.CorpusStructureProviderImpl" />
-    
+    <bean id="corpusStructureProvider" class="nl.mpi.archiving.corpusstructure.provider.db.CorpusStructureProviderImpl" init-method="initialize"/>
+    <bean id="accessInfoProvider" class="nl.mpi.archiving.corpusstructure.provider.db.AccessInfoProviderImpl" init-method="initialize"/>
     <bean id="nodeResolver" class="nl.mpi.archiving.corpusstructure.provider.db.service.impl.CorpusStructureProviderNodeResolver" />
     
     <!--<bean id="createWorkspaceTreeProvider" class="nl.mpi.archiving.tree.corpusstructure.CorpusStructureTreeModelProvider">-->
