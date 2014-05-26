@@ -17,70 +17,25 @@
  */
 package nl.mpi.yaas.client;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.List;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
-import nl.mpi.yaas.common.data.IconTableBase64;
-import nl.mpi.yaas.common.data.NodeTypeImageBase64;
 
 /**
  * @since Mar 26, 2014 1:28:03 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class DataNodeLoader {
+public interface DataNodeLoader {
 
-    final private SearchOptionsServiceAsync searchOptionsService;
-    private final IconTableBase64 iconTableBase64;
-    private final String databaseName;
+    void requestLoadRoot(final DataNodeLoaderListener dataNodeLoaderListener);
 
-    public DataNodeLoader(SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64, String databaseName) {
-        this.searchOptionsService = searchOptionsService;
-        this.iconTableBase64 = iconTableBase64;
-        this.databaseName = databaseName;
-    }
+    void requestLoadChildrenOf(DataNodeId dataNodeId, final DataNodeLoaderListener dataNodeLoaderListener);
 
-    protected void requestLoad(List<DataNodeId> dataNodeIdList, final DataNodeLoaderListener dataNodeLoaderListener) {
-        searchOptionsService.getDataNodes(databaseName, dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
-            public void onFailure(Throwable caught) {
-                dataNodeLoaderListener.dataNodeLoadFailed(caught);
-            }
+    void requestLoad(List<DataNodeId> dataNodeIdList, final DataNodeLoaderListener dataNodeLoaderListener);
 
-            public void onSuccess(List<SerialisableDataNode> dataNodeList) {
-                dataNodeLoaderListener.dataNodeLoaded(dataNodeList);
-            }
-        });
-    }
+    void requestLoadHdl(List<String> dataNodeHdlList, final DataNodeLoaderListener dataNodeLoaderListener);
 
-    protected void requestLoadHdl(List<String> dataNodeHdlList, final DataNodeLoaderListener dataNodeLoaderListener) {
-        searchOptionsService.getDataNodesByHdl(databaseName, dataNodeHdlList, new AsyncCallback<List<SerialisableDataNode>>() {
-            public void onFailure(Throwable caught) {
-                dataNodeLoaderListener.dataNodeLoadFailed(caught);
-            }
+    void requestLoadUri(List<String> dataNodeUriList, final DataNodeLoaderListener dataNodeLoaderListener);
 
-            public void onSuccess(List<SerialisableDataNode> dataNodeList) {
-                dataNodeLoaderListener.dataNodeLoaded(dataNodeList);
-            }
-        });
-    }
-
-    protected void requestLoadUri(List<String> dataNodeUriList, final DataNodeLoaderListener dataNodeLoaderListener) {
-        searchOptionsService.getDataNodesByUrl(databaseName, dataNodeUriList, new AsyncCallback<List<SerialisableDataNode>>() {
-            public void onFailure(Throwable caught) {
-                dataNodeLoaderListener.dataNodeLoadFailed(caught);
-            }
-
-            public void onSuccess(List<SerialisableDataNode> dataNodeList) {
-                dataNodeLoaderListener.dataNodeLoaded(dataNodeList);
-            }
-        });
-    }
-
-    protected String getNodeIcon(SerialisableDataNode yaasDataNode) {
-        final NodeTypeImageBase64 typeIcon = iconTableBase64.getByType(yaasDataNode.getType());
-        if (typeIcon != null) {
-            return typeIcon.getInlineImageDataString();
-        }
-        return ""; // todo: we could return an error or loading icon here
-    }
+    String getNodeIcon(SerialisableDataNode yaasDataNode);
 }

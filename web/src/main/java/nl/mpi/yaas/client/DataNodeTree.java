@@ -112,11 +112,19 @@ public class DataNodeTree extends Tree {
 //        });        
     }
 
+    public void addCsRootToTree() {
+        final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson();
+        final YaasJsonTreeItem yaasTreeItem = new YaasJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
+        DataNodeTree.this.addItem(yaasTreeItem);
+//            }
+//});
+    }
+
     public void addResultsToTree(final String databaseName, final DataNodeId[] dataNodeIds, final boolean displayFlatNodes) {
-        final DataNodeLoader dataNodeLoader = new DataNodeLoader(searchOptionsService, iconTableBase64, databaseName);
+        final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, iconTableBase64, databaseName);
         addPagingButton(new Pageable() {
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
+                final YaasTreeItem yaasTreeItem = new YaasRpcTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }
 
@@ -127,14 +135,14 @@ public class DataNodeTree extends Tree {
     }
 
     public void addResultsToTree(final String databaseName, final List<DataNodeLink> rootIds, final HighlighableDataNode dataNode, final boolean displayFlatNodes) {
-        final DataNodeLoader dataNodeLoader = new DataNodeLoader(searchOptionsService, iconTableBase64, databaseName);
+        final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, iconTableBase64, databaseName);
         final TreeItem treeItem = new TreeItem(new HorizontalPanel());
         final TreeTableHeader treeTableHeader = new TreeTableHeader(treeItem);
         this.addItem(treeItem);
         addPagingButton(new Pageable() {
 
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
+                final YaasRpcTreeItem yaasTreeItem = new YaasRpcTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
                 yaasTreeItem.setHighlights(dataNode);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }

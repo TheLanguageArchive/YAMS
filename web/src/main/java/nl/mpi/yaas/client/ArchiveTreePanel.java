@@ -88,7 +88,7 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
                 }
             };
             dataNodeTree = new DataNodeTree(null, treeNodeClickListener, searchOptionsService, databaseIcons, true);
-            dataNodeTree.addResultsToTree(databaseName, dataNodeIds, true);
+            dataNodeTree.addCsRootToTree();//addResultsToTree(databaseName, dataNodeIds, true);
             ArchiveTreePanel.this.add(dataNodeTree);
         }
     }
