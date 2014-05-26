@@ -62,7 +62,12 @@
     
     <!-- CSDB created from factory -->
     <bean id="corpusStructureProvider" class="nl.mpi.archiving.corpusstructure.provider.db.CorpusStructureProviderImpl" init-method="initialize"/>
-    <bean id="accessInfoProvider" class="nl.mpi.archiving.corpusstructure.provider.db.AccessInfoProviderImpl" init-method="initialize"/>
+    <bean id="accessInfoProvider" class="nl.mpi.archiving.corpusstructure.provider.db.AccessInfoProviderImpl" init-method="initialize" >
+        <constructor-arg>
+            <!--<bean class="nl.mpi.archiving.corpusstructure.core.database.dao.impl.ArchiveObjectDaoImpl"/>-->
+            <ref bean="aoDao"/>
+        </constructor-arg>
+    </bean>
     <bean id="nodeResolver" class="nl.mpi.archiving.corpusstructure.provider.db.service.impl.CorpusStructureProviderNodeResolver" />
     
     <!--<bean id="createWorkspaceTreeProvider" class="nl.mpi.archiving.tree.corpusstructure.CorpusStructureTreeModelProvider">-->

@@ -16,6 +16,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import nl.mpi.archiving.corpusstructure.core.CorpusNode;
 import nl.mpi.archiving.corpusstructure.provider.AccessInfoProvider;
 import nl.mpi.archiving.corpusstructure.provider.CorpusStructureProvider;
@@ -40,13 +41,15 @@ public class YamsCsResource {
 //    private CorpusStructureTreeModelProvider corpusStructureTreeModelProvider;
     @Autowired
     private AccessInfoProvider accessInfoProvider;
+//    @Autowired
+//    private ArchiveObjectDao aoDao;
 
-    public YamsCsResource() {
-    }
+//    public YamsCsResource() {
+////        ((AccessInfoProviderImpl) accessInfoProvider).setAoDao(aoDao);
+//    }
 
     private final static Logger logger = LoggerFactory.getLogger(YamsCsResource.class);
 
-//    private final ArchiveObjectDao aoDao;
 //    private final ArchivePropertyDao archiveDao;
 //    private final CorpusStructureDao csDao;
 //
@@ -90,25 +93,32 @@ public class YamsCsResource {
 //     */
     @GET
     @Produces("application/json")
-    @Path("root")
-    public SerialisableDataNode getRootNode(@Context HttpServletRequest request) throws URISyntaxException {
+//    @Path("root")
+    public Response getRootNode(@Context HttpServletRequest request) throws URISyntaxException {
 //        LinkedTreeNode linkedTreeNode = this.corpusStructureTreeModelProvider.getRoot();
+        final List<SerialisableDataNode> nodeWrappers = new ArrayList<SerialisableDataNode>();
         final URI rootNodeURI = this.corpusStructureProvider.getRootNodeURI();
         CorpusNode corpusNode = this.corpusStructureProvider.getNode(rootNodeURI);
         if (corpusNode == null) {
             throw new URISyntaxException(rootNodeURI.toString(), "Could not retrieve the corpus root node.");
         }
-        return new CorpusNodeWrapper(accessInfoProvider, corpusNode, request.getRemoteUser());
+        final CorpusNodeWrapper corpusNodeWrapper = new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, corpusNode, request.getRemoteUser());
+        nodeWrappers.add(corpusNodeWrapper);
+        return Response.ok(nodeWrappers).header("Access-Control-Allow-Origin", "*").build();
+
     }
 
     @GET
     @Produces("application/json")
+    @Path("linksof")
 //    @Path("hdl{hdl}")
     public List<SerialisableDataNode> getChildDataNodes(@Context HttpServletRequest request, @QueryParam("url") final String nodeUri, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws URISyntaxException {
-        final List<SerialisableDataNode> serialisableDataNodes = new ArrayList<SerialisableDataNode>();
-        for (CorpusNode corpusNode : this.corpusStructureProvider.getChildNodes(new URI(nodeUri)).subList(start, end)) {
-            serialisableDataNodes.add(new CorpusNodeWrapper(accessInfoProvider, corpusNode, request.getRemoteUser()));
+        final List<SerialisableDataNode> nodeWrappers = new ArrayList<SerialisableDataNode>();
+        final List<CorpusNode> childNodes = this.corpusStructureProvider.getChildNodes(new URI(nodeUri));
+        final int lastToGet = (childNodes.size() > end) ? end : childNodes.size();
+        for (CorpusNode corpusNode : childNodes.subList(start, lastToGet)) {
+            nodeWrappers.add(new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, corpusNode, request.getRemoteUser()));
         }
-        return serialisableDataNodes;
+        return nodeWrappers;
     }
 }
