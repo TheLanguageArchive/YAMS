@@ -47,7 +47,6 @@ public class YamsCsResource {
 //    public YamsCsResource() {
 ////        ((AccessInfoProviderImpl) accessInfoProvider).setAoDao(aoDao);
 //    }
-
     private final static Logger logger = LoggerFactory.getLogger(YamsCsResource.class);
 
 //    private final ArchivePropertyDao archiveDao;
@@ -112,13 +111,13 @@ public class YamsCsResource {
     @Produces("application/json")
     @Path("linksof")
 //    @Path("hdl{hdl}")
-    public List<SerialisableDataNode> getChildDataNodes(@Context HttpServletRequest request, @QueryParam("url") final String nodeUri, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws URISyntaxException {
+    public Response getChildDataNodes(@Context HttpServletRequest request, @QueryParam("url") final String nodeUri, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws URISyntaxException {
         final List<SerialisableDataNode> nodeWrappers = new ArrayList<SerialisableDataNode>();
         final List<CorpusNode> childNodes = this.corpusStructureProvider.getChildNodes(new URI(nodeUri));
         final int lastToGet = (childNodes.size() > end) ? end : childNodes.size();
         for (CorpusNode corpusNode : childNodes.subList(start, lastToGet)) {
             nodeWrappers.add(new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, corpusNode, request.getRemoteUser()));
         }
-        return nodeWrappers;
+        return Response.ok(nodeWrappers).header("Access-Control-Allow-Origin", "*").build();
     }
 }
