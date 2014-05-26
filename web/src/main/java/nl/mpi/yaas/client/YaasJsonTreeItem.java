@@ -21,9 +21,11 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import java.util.logging.Level;
+import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import static nl.mpi.yaas.client.YaasTreeItem.FAILURE;
 import static nl.mpi.yaas.client.YaasTreeItem.logger;
+import nl.mpi.yaas.common.data.DataNodeId;
 
 /**
  * @since May 23, 2014 10:22:42 AM (creation date)
@@ -32,6 +34,22 @@ import static nl.mpi.yaas.client.YaasTreeItem.logger;
 public class YaasJsonTreeItem extends YaasTreeItem {
 
     final private YaasTreeItemLoadedListener itemLoadedListener;
+
+    public YaasJsonTreeItem(SerialisableDataNode childDataNode, DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, final YaasTreeItemLoadedListener itemLoadedListener) {
+        super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
+        this.itemLoadedListener = itemLoadedListener;
+        this.yaasDataNode = childDataNode;
+        setLabel();
+        removeItem(loadingTreeItem);
+        setNodeIcon();
+        hideShowExpandButton();
+        if (itemLoadedListener != null) {
+            itemLoadedListener.yaasTreeItemLoaded(YaasJsonTreeItem.this);
+        }
+        if (yaasDataNode.getLinkCount() > 0) {
+            addItem(loadingTreeItem);
+        }
+    }
 
     public YaasJsonTreeItem(DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, final YaasTreeItemLoadedListener itemLoadedListener) {
         super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
@@ -83,12 +101,65 @@ public class YaasJsonTreeItem extends YaasTreeItem {
 
     @Override
     public void loadChildNodes() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        removeItem(loadNextTreeItem);
+        removeItem(errorTreeItem);
+        if (yaasDataNode != null) {
+            addItem(loadingTreeItem);
+            final int maxToGet = yaasDataNode.getLinkCount();
+            if (maxToGet <= loadedCount) {
+                // all child nodes should be visible so we can just return
+                removeItem(loadingTreeItem);
+                return;
+            }
+            try {
+                final int numberToGet = 20;
+                final int firstToGet = (loadedCount == 0) ? loadedCount : loadedCount + 1;
+                final int lastToGet = (maxToGet < firstToGet + numberToGet) ? maxToGet : firstToGet + numberToGet;
+//                    logger.log(Level.INFO, "loadedCount: " + loadedCount + ", numberToGet: " + numberToGet + ", firstToGet: " + firstToGet + ", lastToGet: " + lastToGet + ", maxToGet: " + maxToGet);                    
+                dataNodeLoader.requestLoadChildrenOf(new DataNodeId(yaasDataNode.getURI()), firstToGet, lastToGet, new DataNodeLoaderListener() {
+
+                    public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
+//                        setText("Loaded " + dataNodeList.size() + " child nodes");
+                        removeItem(loadingTreeItem);
+                        if (dataNodeList != null) {
+                            for (SerialisableDataNode childDataNode : dataNodeList) {
+                                insertLoadedChildNode(childDataNode);
+                                loadedCount++;
+                            }
+                        }
+//                        while (lastToGet > loadedCount) {
+//                            // when nodes are missing these "not found" nodes are added to keep the paging of the child node array in sync
+//                            addItem(new Label("node not found"));
+//                            loadedCount++;
+//                        }
+                        if (loadedCount < maxToGet) {
+                            addItem(loadNextTreeItem);
+                        }
+                    }
+
+                    public void dataNodeLoadFailed(Throwable caught) {
+                        removeItem(loadingTreeItem);
+                        errorTreeItem.setText(LOADING_CHILD_NODES_FAILED);
+                        addItem(errorTreeItem);
+                        logger.log(Level.SEVERE, LOADING_CHILD_NODES_FAILED, caught);
+                    }
+                });
+            } catch (ModelException exception) {
+                removeItem(loadingTreeItem);
+                errorTreeItem.setText(ERROR_GETTING_CHILD_NODES);
+                addItem(errorTreeItem);
+                logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
+            }
+        } else {
+            errorTreeItem.setText("Data nod loaded");
+            addItem(errorTreeItem);
+        }
     }
 
     @Override
     void insertLoadedChildNode(SerialisableDataNode childDataNode) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        YaasJsonTreeItem yaasTreeItem = new YaasJsonTreeItem(childDataNode, dataNodeLoader, popupPanel, checkboxListener, clickListener, itemLoadedListener);
+        addItem(yaasTreeItem);
     }
 
     @Override

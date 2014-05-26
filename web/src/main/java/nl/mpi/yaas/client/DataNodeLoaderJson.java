@@ -50,69 +50,22 @@ public class DataNodeLoaderJson implements DataNodeLoader {
         // Send request to server and catch any errors.
         final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, serviceLocations.jsonUrl());
         try {
-            final Request request = builder.sendRequest(null, new RequestCallback() {
-                public void onError(Request request, Throwable exception) {
-                    logger.warning("Couldn't retrieve JSON from: ");
-                    logger.warning(builder.getUrl());
-                }
-
-                public void onResponseReceived(Request request, Response response) {
-                    if (200 == response.getStatusCode()) {
-                        final String text = response.getText();
-                        logger.info(text);
-                        final JsArray<JsonDataNode> jsonArray = JsonUtils.safeEval(text);
-                        List<SerialisableDataNode> dataNodes = new ArrayList<SerialisableDataNode>();
-                        for (int index = 0; index < jsonArray.length(); index++) {
-                            final JsonDataNode jsonDataNode = (JsonDataNode) jsonArray.get(index);
-                            dataNodes.add(new SerialisableDataNode() {
-
-                                @Override
-                                public DataNodeType getType() {
-                                    return new DataNodeType(jsonDataNode.getTypeName(), jsonDataNode.getID(), DataNodeType.FormatType.valueOf(jsonDataNode.getTypeFormat()));
-                                }
-
-                                @Override
-                                public String getLabel() {
-                                    return jsonDataNode.getLabel();
-                                }
-
-                                @Override
-                                public String getArchiveHandle() {
-                                    return jsonDataNode.getArchiveHandle();
-                                }
-
-                                @Override
-                                public String getURI() throws ModelException {
-                                    return jsonDataNode.getURI();
-                                }
-
-                                @Override
-                                public String getID() throws ModelException {
-                                    return jsonDataNode.getID();
-                                }
-
-                                @Override
-                                public Integer getLinkCount() {
-                                    return jsonDataNode.getLinkCount();
-                                }
-
-                            });
-                        }
-                        dataNodeLoaderListener.dataNodeLoaded(dataNodes);
-                    } else {
-                        logger.warning("Couldn't retrieve JSON");
-                        logger.warning(response.getStatusText());
-                    }
-                }
-            });
+            final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener));
         } catch (RequestException e) {
             logger.warning("Couldn't retrieve JSON");
             logger.warning(e.getMessage());
         }
     }
 
-    public void requestLoadChildrenOf(DataNodeId dataNodeId, DataNodeLoaderListener dataNodeLoaderListener) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void requestLoadChildrenOf(DataNodeId dataNodeId, int first, int last, DataNodeLoaderListener dataNodeLoaderListener) {
+        // Send request to server and catch any errors.
+        final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, serviceLocations.jsonLinksOfUrl() + dataNodeId.getIdString());
+        try {
+            final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener));
+        } catch (RequestException e) {
+            logger.warning("Couldn't retrieve JSON");
+            logger.warning(e.getMessage());
+        }
     }
 
     public void requestLoad(List<DataNodeId> dataNodeIdList, final DataNodeLoaderListener dataNodeLoaderListener) {
@@ -156,5 +109,63 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 
     public String getNodeIcon(SerialisableDataNode yaasDataNode) {
         return yaasDataNode.getType().getName();
+    }
+
+    private RequestCallback geRequestBuilder(final RequestBuilder builder, final DataNodeLoaderListener dataNodeLoaderListener) {
+        return new RequestCallback() {
+            public void onError(Request request, Throwable exception) {
+                logger.warning("Couldn't retrieve JSON from: ");
+                logger.warning(builder.getUrl());
+            }
+
+            public void onResponseReceived(Request request, Response response) {
+                if (200 == response.getStatusCode()) {
+                    final String text = response.getText();
+                    logger.info(text);
+                    final JsArray<JsonDataNode> jsonArray = JsonUtils.safeEval(text);
+                    List<SerialisableDataNode> dataNodes = new ArrayList<SerialisableDataNode>();
+                    for (int index = 0; index < jsonArray.length(); index++) {
+                        final JsonDataNode jsonDataNode = (JsonDataNode) jsonArray.get(index);
+                        dataNodes.add(new SerialisableDataNode() {
+
+                            @Override
+                            public DataNodeType getType() {
+                                return new DataNodeType(jsonDataNode.getTypeName(), jsonDataNode.getID(), DataNodeType.FormatType.valueOf(jsonDataNode.getTypeFormat()));
+                            }
+
+                            @Override
+                            public String getLabel() {
+                                return jsonDataNode.getLabel();
+                            }
+
+                            @Override
+                            public String getArchiveHandle() {
+                                return jsonDataNode.getArchiveHandle();
+                            }
+
+                            @Override
+                            public String getURI() throws ModelException {
+                                return jsonDataNode.getURI();
+                            }
+
+                            @Override
+                            public String getID() throws ModelException {
+                                return jsonDataNode.getID();
+                            }
+
+                            @Override
+                            public Integer getLinkCount() {
+                                return jsonDataNode.getLinkCount();
+                            }
+
+                        });
+                    }
+                    dataNodeLoaderListener.dataNodeLoaded(dataNodes);
+                } else {
+                    logger.warning("Couldn't retrieve JSON");
+                    logger.warning(response.getStatusText());
+                }
+            }
+        };
     }
 }

@@ -44,7 +44,7 @@ public class DataNodeLoaderRpc implements DataNodeLoader {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void requestLoadChildrenOf(DataNodeId dataNodeId, DataNodeLoaderListener dataNodeLoaderListener) {
+    public void requestLoadChildrenOf(DataNodeId dataNodeId, int first, int last, DataNodeLoaderListener dataNodeLoaderListener) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

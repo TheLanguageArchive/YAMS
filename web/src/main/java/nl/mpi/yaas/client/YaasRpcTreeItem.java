@@ -271,11 +271,11 @@ public class YaasRpcTreeItem extends YaasTreeItem {
                                         loadedCount++;
                                     }
                                 }
-                                while (lastToGet > loadedCount) {
-                                    // when nodes are missing these "not found" nodes are added to keep the paging of the child node array in sync
-                                    addItem(new Label("node not found"));
-                                    loadedCount++;
-                                }
+//                                while (lastToGet > loadedCount) {
+//                                    // when nodes are missing these "not found" nodes are added to keep the paging of the child node array in sync
+//                                    addItem(new Label("node not found"));
+//                                    loadedCount++;
+//                                }
                                 if (loadedCount < maxToGet) {
                                     addItem(loadNextTreeItem);
                                 }

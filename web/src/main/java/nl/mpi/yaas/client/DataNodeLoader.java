@@ -29,7 +29,7 @@ public interface DataNodeLoader {
 
     void requestLoadRoot(final DataNodeLoaderListener dataNodeLoaderListener);
 
-    void requestLoadChildrenOf(DataNodeId dataNodeId, final DataNodeLoaderListener dataNodeLoaderListener);
+    void requestLoadChildrenOf(DataNodeId dataNodeId, int first, int last, final DataNodeLoaderListener dataNodeLoaderListener);
 
     void requestLoad(List<DataNodeId> dataNodeIdList, final DataNodeLoaderListener dataNodeLoaderListener);
 
