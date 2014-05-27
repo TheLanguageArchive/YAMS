@@ -97,6 +97,7 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
                 dataNodeType.setFormat(DataNodeType.FormatType.resource_video);
                 break;
         }
+        dataNodeType.setMimeType(archiveObject.getFormat());
         return dataNodeType;
     }
 

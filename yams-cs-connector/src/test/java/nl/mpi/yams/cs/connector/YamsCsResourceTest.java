@@ -7,10 +7,14 @@ package nl.mpi.yams.cs.connector;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import nl.mpi.archiving.corpusstructure.core.CorpusNode;
 import nl.mpi.archiving.corpusstructure.core.CorpusNodeType;
 import nl.mpi.archiving.corpusstructure.core.FileInfo;
+import nl.mpi.archiving.corpusstructure.provider.AccessInfoProvider;
 import nl.mpi.archiving.corpusstructure.provider.CorpusStructureProvider;
 import nl.mpi.flap.model.SerialisableDataNode;
 import org.jmock.Expectations;
@@ -34,6 +38,8 @@ public class YamsCsResourceTest {
 //    private CorpusStructureDao csDao;
 //    private VPathService vPathService;
     private CorpusStructureProvider corpusStructureProvider;
+    private AccessInfoProvider accessInfoProvider;
+    private HttpServletRequest request;
 
     @Before
     public void setUp() {
@@ -42,6 +48,8 @@ public class YamsCsResourceTest {
 //        csDao = context.mock(CorpusStructureDao.class);
 //        vPathService = context.mock(VPathService.class);        
         corpusStructureProvider = context.mock(CorpusStructureProvider.class);
+        accessInfoProvider = context.mock(AccessInfoProvider.class);
+        request = context.mock(HttpServletRequest.class);
 //        corpusStructureProviderImpl = new CorpusStructureProviderImpl(archiveDao, aoDao, csDao);
 //        corpusStructureProviderImpl.initializeWithVPathService(vPathService);
     }
@@ -56,16 +64,18 @@ public class YamsCsResourceTest {
     @Test
     public void testGetXml() throws URISyntaxException {
         System.out.println("getXml");
-        YamsCsResource instance = new YamsCsResource(null, null, null);
+        YamsCsResource instance = new YamsCsResource();
         instance.setCorpusStructureProvider(corpusStructureProvider);
+        instance.setAccessInfoProvider(accessInfoProvider);
         final String expectedUrl = "http://test/node";
         final String expectedHdl = "hdl:1234/5678";
         final String expectedName = "test node";
+        final String userName = "someone";
         final URI hdlUri = new URI(expectedHdl);
         final URI nodeUri = new URI(expectedUrl);
 
         // Underlying archive object to be returned by DAO
-        final CorpusNode archiveObject = new CorpusNode() {
+        final CorpusNode corpusNode = new CorpusNode() {
 
             @Override
             public URI getNodeURI() {
@@ -113,16 +123,20 @@ public class YamsCsResourceTest {
             }
 
         };
-
+        final List<CorpusNode> corpusNodes = new ArrayList<CorpusNode>();
+        corpusNodes.add(corpusNode);
         context.checking(new Expectations() {
             {
-                oneOf(corpusStructureProvider).getNode(hdlUri);
-                will(returnValue(archiveObject));
+                oneOf(corpusStructureProvider).getChildNodes(hdlUri);
+                will(returnValue(corpusNodes));
+                oneOf(request).getRemoteUser();
+                will(returnValue(userName));
             }
         });
-        SerialisableDataNode result = instance.getDataNode(expectedHdl);
-        assertEquals(expectedName, result.getLabel());
-        assertEquals(expectedName, result.getLabel());
-        assertEquals(expectedHdl, result.getArchiveHandle());
+
+        List<SerialisableDataNode> result = (List<SerialisableDataNode>) instance.getChildDataNodes(request, expectedHdl, 0, 1).getEntity();
+        assertEquals(expectedName, result.get(0).getLabel());
+        assertEquals(expectedName, result.get(0).getLabel());
+        assertEquals(expectedHdl, result.get(0).getArchiveHandle());
     }
 }
