@@ -22,6 +22,7 @@
         <spring.version>3.2.7.RELEASE</spring.version>
         <glassfish.version>3.1.1</glassfish.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <netbeans.hint.license>gpl20</netbeans.hint.license>
     </properties>
     <dependencies>	
         <dependency>
@@ -263,6 +264,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.mpg.mpgaai</groupId>
+            <artifactId>mpgaai-shhaa</artifactId>
+            <version>1.0.3</version>
         </dependency>
 <!--
         <dependency>
@@ -563,6 +569,70 @@
                     <autoDelete>true</autoDelete>
                     <port>8080</port>
                 </configuration>
+            </plugin>
+            <plugin>
+                <!--                                		 
+		    License plugin checks for presence of license header in all source files (with some exceptions, see excludes below).
+		    You can use this plugin to actually insert or fix the license headers by running maven with the following goal:
+
+		    mvn license:format
+
+                    For more info, see <http://mathieu.carbou.free.fr/p/maven-license-plugin/>.
+                -->
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.9.0</version> 
+                <configuration>
+                    <header>${project.basedir}/src/license-header.txt</header>
+                    <strictCheck>false</strictCheck>
+                    <properties>
+                        <year>${plugin.license.copyrightYear}</year>
+                        <organization>${project.organization.name}</organization>
+                    </properties>
+                    <mapping>
+                        <svg>XML_STYLE</svg>
+                        <imdi>XML_STYLE</imdi>
+                        <cmdi>XML_STYLE</cmdi>
+                    </mapping>
+                    <excludes>
+                        <exclude>nbactions.xml</exclude>
+                        <exclude>nb-configuration.xml</exclude>
+                        <exclude>**/*.txt</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.3</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>nl.mpi</groupId>
+                        <artifactId>mpi-deploy</artifactId>
+                        <version>1.0</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.artifactId}-${project.version}-r${buildNumber}</finalName>
+                            <descriptorRefs>
+                                <descriptorRef>mpi-deploy</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
