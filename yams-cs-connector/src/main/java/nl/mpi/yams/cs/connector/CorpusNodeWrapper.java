@@ -47,69 +47,57 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
 
     @Override
     public DataNodeType getType() {
-        String iconsString = "";
+        final DataNodeType dataNodeType = new DataNodeType();
         switch (accessInfoProvider.getAccessLevel(archiveObject.getNodeURI())) {
             case ACCESS_LEVEL_CLOSED:
-                iconsString += "C";
+                dataNodeType.setAccessLevel(DataNodeType.AccessLevel.closed);
                 break;
             case ACCESS_LEVEL_EXTERNAL:
-                iconsString += "E";
+                dataNodeType.setAccessLevel(DataNodeType.AccessLevel.external);
                 break;
             case ACCESS_LEVEL_OPEN_EVERYBODY:
-                iconsString += "O";
+                dataNodeType.setAccessLevel(DataNodeType.AccessLevel.open_everybody);
                 break;
             case ACCESS_LEVEL_OPEN_REGISTERED_USERS:
-                iconsString += "R";
+                dataNodeType.setAccessLevel(DataNodeType.AccessLevel.open_registered_users);
                 break;
             case ACCESS_LEVEL_PERMISSION_NEEDED:
-                iconsString += "P";
+                dataNodeType.setAccessLevel(DataNodeType.AccessLevel.permission_needed);
                 break;
             case ACCESS_LEVEL_UNKNOWN:
-                iconsString += "U";
-                break;
-            default:
-                iconsString += "X";
+                dataNodeType.setAccessLevel(DataNodeType.AccessLevel.unknown);
                 break;
         }
-//        if (accessInfoProvider.hasReadAccess(archiveObject.getNodeURI(), userId)) {
-//            iconsString += "R";
-//        }
-//        if (accessInfoProvider.hasWriteAccess(archiveObject.getNodeURI(), userId)) {
-//            iconsString += "W";
-//        }
         switch (archiveObject.getType()) {
             case COLLECTION:
-                iconsString += "T";
+                dataNodeType.setFormat(DataNodeType.FormatType.cmdi);
                 break;
             case IMDICATALOGUE:
-                iconsString += "C";
+                dataNodeType.setFormat(DataNodeType.FormatType.imdi_catalogue);
                 break;
             case IMDIINFO:
-                iconsString += "I";
+                dataNodeType.setFormat(DataNodeType.FormatType.imdi_info);
                 break;
             case METADATA:
-                iconsString += "M";
+                dataNodeType.setFormat(DataNodeType.FormatType.cmdi);
                 break;
             case RESOURCE_ANNOTATION:
-                iconsString += "N";
+                dataNodeType.setFormat(DataNodeType.FormatType.resource_annotation);
                 break;
             case RESOURCE_AUDIO:
-                iconsString += "A";
+                dataNodeType.setFormat(DataNodeType.FormatType.resource_audio);
                 break;
             case RESOURCE_LEXICAL:
-                iconsString += "L";
+                dataNodeType.setFormat(DataNodeType.FormatType.resource_lexical);
                 break;
             case RESOURCE_OTHER:
-                iconsString += "O";
+                dataNodeType.setFormat(DataNodeType.FormatType.resource_other);
                 break;
             case RESOURCE_VIDEO:
-                iconsString += "V";
-                break;
-            default:
-                iconsString += "X";
+                dataNodeType.setFormat(DataNodeType.FormatType.resource_video);
                 break;
         }
-        return new DataNodeType(archiveObject.getFormat(), iconsString, DataNodeType.FormatType.xml);
+        return dataNodeType;
     }
 
     @Override
