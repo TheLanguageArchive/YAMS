@@ -1,0 +1,1 @@
+Install the war file into tomcat and edit the shhaa.xml and context.xml as required.

@@ -1,0 +1,1 @@
+Updating the application requires that you redeploy the war file.
