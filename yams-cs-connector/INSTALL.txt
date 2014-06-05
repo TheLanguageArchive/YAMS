@@ -1,1 +1,12 @@
 Install the war file into tomcat and edit the shhaa.xml and context.xml as required.
+
+If you are installing onto lux16 you will need to perform the following procedure:
+sudo su latuser
+cd /lat/webapps/yams-cs-connector; tar -xzvf /lat/webapps/dists/${project.artifactId}-${project.version}-r${buildNumber}-mpi-deploy.tar.gz
+cd /lat/webapps/yams-cs-connector/${project.artifactId}-${project.version}-r${buildNumber}/war; jar -xfv ${project.artifactId}-${project.version}.war
+rm /lat/webapps/yams-cs-connector/current
+ln -s /lat/webapps/yams-cs-connector/${project.artifactId}-${project.version}-r${buildNumber}/war /lat/webapps/yams-cs-connector/current
+echo "<?xml version='1.0' encoding='utf-8'?>
+<Context path="/ds/yams" docBase="/lat/webapps/yams/current" debug="0" reloadable="true" crossContext="true">
+</Context>" > /lat/tomcat-webuser/conf/Catalina/localhost/ds#yams-cs-connector.xml
+rm -r /lat/tomcat-webuser/work/Catalina/localhost/ds_yams-cs-connector/*
