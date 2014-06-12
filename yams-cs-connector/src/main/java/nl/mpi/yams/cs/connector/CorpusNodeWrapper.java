@@ -1,25 +1,27 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yams.cs.connector;
 
 import nl.mpi.archiving.corpusstructure.core.CorpusNode;
 import nl.mpi.archiving.corpusstructure.provider.AccessInfoProvider;
 import nl.mpi.archiving.corpusstructure.provider.CorpusStructureProvider;
+import nl.mpi.flap.model.DataNodePermissions;
 import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
@@ -60,26 +62,6 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
     @Override
     public DataNodeType getType() {
         final DataNodeType dataNodeType = new DataNodeType();
-        switch (accessInfoProvider.getAccessLevel(archiveObject.getNodeURI())) {
-            case ACCESS_LEVEL_CLOSED:
-                dataNodeType.setAccessLevel(DataNodeType.AccessLevel.closed);
-                break;
-            case ACCESS_LEVEL_EXTERNAL:
-                dataNodeType.setAccessLevel(DataNodeType.AccessLevel.external);
-                break;
-            case ACCESS_LEVEL_OPEN_EVERYBODY:
-                dataNodeType.setAccessLevel(DataNodeType.AccessLevel.open_everybody);
-                break;
-            case ACCESS_LEVEL_OPEN_REGISTERED_USERS:
-                dataNodeType.setAccessLevel(DataNodeType.AccessLevel.open_registered_users);
-                break;
-            case ACCESS_LEVEL_PERMISSION_NEEDED:
-                dataNodeType.setAccessLevel(DataNodeType.AccessLevel.permission_needed);
-                break;
-            case ACCESS_LEVEL_UNKNOWN:
-                dataNodeType.setAccessLevel(DataNodeType.AccessLevel.unknown);
-                break;
-        }
         switch (archiveObject.getType()) {
             case COLLECTION:
                 dataNodeType.setFormat(DataNodeType.FormatType.cmdi);
@@ -114,8 +96,41 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
     }
 
     @Override
+    public DataNodePermissions getPermissions() {
+        final DataNodePermissions permissions = new DataNodePermissions();
+
+        switch (accessInfoProvider.getAccessLevel(archiveObject.getNodeURI())) {
+            case ACCESS_LEVEL_CLOSED:
+                permissions.setAccessLevel(DataNodePermissions.AccessLevel.closed);
+                break;
+            case ACCESS_LEVEL_EXTERNAL:
+                permissions.setAccessLevel(DataNodePermissions.AccessLevel.external);
+                break;
+            case ACCESS_LEVEL_OPEN_EVERYBODY:
+                permissions.setAccessLevel(DataNodePermissions.AccessLevel.open_everybody);
+                break;
+            case ACCESS_LEVEL_OPEN_REGISTERED_USERS:
+                permissions.setAccessLevel(DataNodePermissions.AccessLevel.open_registered_users);
+                break;
+            case ACCESS_LEVEL_PERMISSION_NEEDED:
+                permissions.setAccessLevel(DataNodePermissions.AccessLevel.permission_needed);
+                break;
+            case ACCESS_LEVEL_UNKNOWN:
+                permissions.setAccessLevel(DataNodePermissions.AccessLevel.unknown);
+                break;
+        }
+        return permissions;
+    }
+
+    @Override
     public Integer getLinkCount() {
         // todo: it would be nice if corpus structure provides us with a child link count but instead we get a list
+//        corpusStructureProvider.
+//        archiveObject.getFileInfo().
+//        archiveObject.getLastUpdate()
+//        archiveObject.getProfile()
+//        CorpusStructDB.
+//                archiveObject.isOnSite()
         return corpusStructureProvider.getChildNodeURIs(archiveObject.getNodeURI()).size();
     }
 }
