@@ -87,7 +87,7 @@ public abstract class DataBaseManagerTest {
                 databaseLinks.insertLinks(dataNodeLink, dataNode);
             }
         }
-        dataBaseManager.getHandlesOfMissing(databaseLinks, 0);
+        dataBaseManager.getHandlesOfMissing(databaseLinks, 0, null);
         dataBaseManager.createIndexes();
         return dataBaseManager;
     }
@@ -396,16 +396,16 @@ public abstract class DataBaseManagerTest {
         System.out.println("insertNodeIconsIntoDatabase");
         BufferedImage bufferedImage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
         IconTable iconTable = new IconTable();
-        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("a", "b", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
-        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
-        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage).getImage()));
-        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage).getImage()));
+        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("a", "b", "x", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
+        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", "x", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
+        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", "x", DataNodeType.FormatType.imdi_session), new ImageIcon(bufferedImage).getImage()));
+        iconTable.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", "x", DataNodeType.FormatType.imdi_session), new ImageIcon(bufferedImage).getImage()));
 
         IconTable iconTable2 = new IconTable();
-        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("a", "b", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
-        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", DataNodeType.FormatType.xml), new ImageIcon(bufferedImage).getImage()));
-        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("s", "c", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
-        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "s", DataNodeType.FormatType.imdi), new ImageIcon(bufferedImage).getImage()));
+        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("a", "b", "x", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
+        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "c", "x", DataNodeType.FormatType.xml), new ImageIcon(bufferedImage).getImage()));
+        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("s", "c", "x", DataNodeType.FormatType.cmdi), new ImageIcon(bufferedImage).getImage()));
+        iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "s", "x", DataNodeType.FormatType.imdi_session), new ImageIcon(bufferedImage).getImage()));
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         final IconTable nodeIcons1 = dbManager.insertNodeIconsIntoDatabase(iconTable);
         // test that all three node dype icons have been added
@@ -458,8 +458,8 @@ public abstract class DataBaseManagerTest {
     /**
      * Test of getDatabaseList method, of class DataBaseManager.
      */
-    @Test
     @Ignore
+    @Test
     public void testGetDatabaseStatsList() throws Exception {
         System.out.println("getDatabaseList");
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
@@ -489,7 +489,7 @@ public abstract class DataBaseManagerTest {
         DatabaseLinks databaseLinks1 = new DatabaseLinks();
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
 
-        Set<DataNodeLink> result0 = dbManager.getHandlesOfMissing(databaseLinks1, 10);
+        Set<DataNodeLink> result0 = dbManager.getHandlesOfMissing(databaseLinks1, 10, null);
         assertEquals(10, result0.size());
 
         databaseLinks1.insertRootLink(new DataNodeLink("one", null));
@@ -503,7 +503,7 @@ public abstract class DataBaseManagerTest {
         databaseLinks1.insertChildLink(new DataNodeLink("f", null));
         databaseLinks1.insertChildLink(new DataNodeLink("f", null));// duplicate
 
-        Set<DataNodeLink> result1 = dbManager.getHandlesOfMissing(databaseLinks1, 10);
+        Set<DataNodeLink> result1 = dbManager.getHandlesOfMissing(databaseLinks1, 10, null);
         assertEquals(10, result1.size());
 
         DatabaseLinks databaseLinks2 = new DatabaseLinks();
@@ -522,9 +522,11 @@ public abstract class DataBaseManagerTest {
         databaseLinks2.insertChildLink(dataNodeLink); // this link is to a document that already exists in the database, so it must be removed making the end count 12
         databaseLinks2.insertRecentLink(dataNodeLink);
         int numberToGet = 3;
-        Set<DataNodeLink> result2 = dbManager.getHandlesOfMissing(databaseLinks2, numberToGet);
+        Set<DataNodeLink> result2 = dbManager.getHandlesOfMissing(databaseLinks2, numberToGet, null);
         assertEquals("31", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/RootDocumentLinks)"));
         assertEquals("46", dbManager.dbAdaptor.executeQuery(testDatabaseName, "count(collection(\"unit-test-database\")/DatabaseLinks/MissingDocumentLinks)"));
         assertEquals(numberToGet, result2.size());
+        Set<DataNodeLink> result3 = dbManager.getHandlesOfMissing(new DatabaseLinks(), 100, "corpus1.mpi.nl");
+        assertEquals(34, result3.size());
     }
 }

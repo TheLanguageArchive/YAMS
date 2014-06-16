@@ -286,13 +286,16 @@ public class DataBaseManager<D, F, M> {
      * Uses the DatabaseLinks document to get the next batch of missing child
      * nodes for use when crawling missing documents
      *
-     * @param DatabaseLinks from the crawler with will be merged and updated
+     * @param databaseLinks from the crawler with will be merged and updated
      * with the DatabaseLinks document in the database
+     * @param numberToGet maximum number of links to retrieve
+     * @param selectionFilter if not null this string will be used to filter the
+     * links so that only matching links will be returned
      * @return the DataNodeLinks of the first N missing documents
      * @throws PluginException
      * @throws QueryException
      */
-    public Set<DataNodeLink> getHandlesOfMissing(DatabaseLinks databaseLinks, int numberToGet) throws PluginException, QueryException {
+    public Set<DataNodeLink> getHandlesOfMissing(DatabaseLinks databaseLinks, int numberToGet, String selectionFilter) throws PluginException, QueryException {
         long startTime = System.currentTimeMillis();
         DatabaseLinks updatedDatabaseLinks;
         try {
@@ -327,8 +330,16 @@ public class DataBaseManager<D, F, M> {
             } else {
                 throw new QueryException("unexpected state for DatabaseLinks document");
             }
-            String queryResult = dbAdaptor.executeQuery(databaseName, "<DatabaseLinks>{collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks[position() le " + numberToGet + "]}</DatabaseLinks>");
-//            logger.debug("updatedDatabaseLinks: " + queryResult);
+            final String filterQuery;
+            if (selectionFilter != null) {
+                filterQuery = "[@URI contains text '" + selectionFilter + "']";
+            } else {
+                filterQuery = "";
+            }
+            final String queryString = "<DatabaseLinks>{collection(\"" + databaseName + "\")/" + linksDocument + "/MissingDocumentLinks" + filterQuery + "[position() le " + numberToGet + "]}</DatabaseLinks>";
+            System.out.println(queryString);
+            String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
+            logger.debug("updatedDatabaseLinks: " + queryResult);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             updatedDatabaseLinks = (DatabaseLinks) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), DatabaseLinks.class).getValue();
         } catch (JAXBException exception) {
