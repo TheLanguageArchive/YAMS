@@ -1,19 +1,20 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.common.data;
 
@@ -29,7 +30,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "DatabaseStats")
 public class DatabaseStats implements Serializable {
 
+//    @XmlElement(name = "QueryTimeMS")
     private long queryTimeMS = -1;
+//    @XmlElement(name = "DatabaseName")
+//    private String databaseName = null;
     @XmlElement(name = "KnownDocuments")
     protected int knownDocumentsCount = -1;
     @XmlElement(name = "MissingDocuments")
@@ -53,7 +57,13 @@ public class DatabaseStats implements Serializable {
 //    public void setIsCachedResults(boolean isCachedResults) {
 //        this.isCachedResults = isCachedResults;
 //    }
-
+//    public String getDatabaseName() {
+//        return databaseName;
+//    }
+//
+//    public void setDatabaseName(String databaseName) {
+//        this.databaseName = databaseName;
+//    }
     public void setQueryTimeMS(long queryTimeMS) {
         this.queryTimeMS = queryTimeMS;
     }
