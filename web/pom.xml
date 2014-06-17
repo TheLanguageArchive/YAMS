@@ -9,7 +9,7 @@
     <groupId>nl.mpi</groupId>
     <artifactId>yaas-gwt</artifactId>
     <packaging>war</packaging>
-    <version>1.0.172-pretesting</version>
+    <version>1.0.184-pretesting</version>
     <name>YAAS GWT</name>
     <parent>
         <groupId>nl.mpi</groupId>
