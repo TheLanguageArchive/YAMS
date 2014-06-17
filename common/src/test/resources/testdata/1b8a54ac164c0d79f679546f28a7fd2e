@@ -1428,5 +1428,5 @@
   <FieldGroup Label="Keys.Key.CGN.locName">
     <FieldData FieldValue="Unspecified" KeyName="CGN.locName" Path=".METATRANSCRIPT.Session.MDGroup.Keys.Key(6)"/>
   </FieldGroup>
-  <Type Format="imdi" ID="imdi.session" Name="Session"/>
+  <Type Format="imdi" ID="imdi.session" Label="Session"/>
 </DataNode>

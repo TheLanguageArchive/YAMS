@@ -10,5 +10,5 @@
   <FieldGroup Label="Title">
     <FieldData FieldValue="Sessions containing subjects of less than 17 years" Path=".METATRANSCRIPT.Corpus.Title"/>
   </FieldGroup>
-  <Type Format="imdi" ID="imdi.corpus" Name="Corpus"/>
+  <Type Format="imdi" ID="imdi.corpus" Label="Corpus"/>
 </DataNode>

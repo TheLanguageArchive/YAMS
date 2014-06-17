@@ -1,19 +1,20 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.common.db;
 
@@ -27,6 +28,7 @@ import org.basex.core.cmd.CreateDB;
 import org.basex.core.cmd.CreateIndex;
 import org.basex.core.cmd.Delete;
 import org.basex.core.cmd.DropDB;
+import org.basex.core.cmd.Get;
 import org.basex.core.cmd.InfoDB;
 import org.basex.core.cmd.Open;
 import org.basex.core.cmd.OptimizeAll;
@@ -44,16 +46,11 @@ public class LocalDbAdaptor implements DbAdaptor {
     static final private Context context = new Context();
     static final private Object databaseLock = new Object();
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
-    final private File dbPathDir;
 
-    public LocalDbAdaptor(File dbPath) throws QueryException {
-        dbPathDir = new File(dbPath, "BaseXData");
-        logger.debug("dbPathDir: " + dbPathDir.toString());
-        dbPathDir.mkdir();
+    public LocalDbAdaptor() throws QueryException {
         try {
-            logger.debug("dbpath exists: " + dbPathDir.exists());
             synchronized (databaseLock) {
-                new Set("DBPATH", dbPathDir).execute(context);
+                logger.info(new Get("dbpath").execute(context));
             }
         } catch (BaseXException baseXException2) {
             logger.error(baseXException2.getMessage());

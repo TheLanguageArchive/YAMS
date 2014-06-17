@@ -491,7 +491,7 @@ public class DataBaseManager<D, F, M> {
         String typeClause = "";
         if (metadataFileType != null) {
             if (metadataFileType.getType() != null) {
-                typeClause += "[/DataNode/Type/@Name = '" + metadataFileType.getType() + "']";
+                typeClause += "[/DataNode/Type/@Label = '" + metadataFileType.getType() + "']";
             }
             if (metadataFileType.getPath() != null) {
                 typeClause += "//DataNode/FieldGroup[@Label = '" + metadataFileType.getPath() + "']";
@@ -698,7 +698,7 @@ public class DataBaseManager<D, F, M> {
         String pathClause = "";
         if (searchParameters.getFileType() != null) {
             if (searchParameters.getFileType().getType() != null) {
-                typeClause += "[Type/@Name = '" + searchParameters.getFileType().getType() + "']";
+                typeClause += "[Type/@Label = '" + searchParameters.getFileType().getType() + "']";
             }
             if (searchParameters.getFieldType().getPath() != null) {
                 pathClause += "[@Label = '" + searchParameters.getFieldType().getPath() + "']";
@@ -810,7 +810,7 @@ public class DataBaseManager<D, F, M> {
                 //                //                + "<ValueCount>{count($profileInfo/entry)}</ValueCount>\n"
                 //                + "</MetadataFileType>\n"
 
-                + "let $allNodeTypes := collection('" + databaseName + "/" + crawledDataCollection + "')/DataNode/Type/@Name/string()\n"
+                + "let $allNodeTypes := collection('" + databaseName + "/" + crawledDataCollection + "')/DataNode/Type/@Label/string()\n"
                 + "for $nodeType in distinct-values($allNodeTypes)\n"
                 + "order by $nodeType\n"
                 + "return\n"

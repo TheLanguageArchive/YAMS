@@ -40,5 +40,5 @@
   <FieldGroup Label="Title">
     <FieldData FieldValue="Sessions per DVD" Path=".METATRANSCRIPT.Corpus.Title"/>
   </FieldGroup>
-  <Type Format="imdi" ID="imdi.corpus" Name="Corpus"/>
+  <Type Format="imdi" ID="imdi.corpus" Label="Corpus"/>
 </DataNode>
