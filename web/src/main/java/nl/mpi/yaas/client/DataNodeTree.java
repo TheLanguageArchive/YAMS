@@ -50,6 +50,7 @@ public class DataNodeTree extends Tree {
     final YaasTreeItemLoadedListener yaasTreeItemLoadedListener;
 
     public DataNodeTree(TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64, final boolean openWhenLoaded) {
+        //logger.info("DataNodeTree");
         this.searchOptionsService = searchOptionsService;
         this.iconTableBase64 = iconTableBase64;
         this.checkboxListener = checkboxListener;
@@ -113,6 +114,7 @@ public class DataNodeTree extends Tree {
     }
 
     public void addCsRootToTree() {
+        //logger.info("addCsRootToTree");
         final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson();
         final YaasJsonTreeItem yaasTreeItem = new YaasJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
         DataNodeTree.this.addItem(yaasTreeItem);

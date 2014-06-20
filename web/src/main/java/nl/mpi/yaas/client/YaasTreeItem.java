@@ -33,6 +33,8 @@ import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.logging.Logger;
+import nl.mpi.flap.model.DataNodePermissions;
+import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.SerialisableDataNode;
 
 /**
@@ -53,7 +55,8 @@ public abstract class YaasTreeItem extends TreeItem {
     final protected Label nodeLabel;
     final protected Anchor nodeDetailsAnchor;
     protected final VerticalPanel verticalPanel = new VerticalPanel();
-    private final Image iconImage = new Image();
+    private final Image iconImage1 = new Image();
+    private final Image iconImage2 = new Image();
     protected final TreeItem loadingTreeItem;
     protected final TreeItem errorTreeItem;
     protected final TreeItem loadNextTreeItem;
@@ -102,9 +105,13 @@ public abstract class YaasTreeItem extends TreeItem {
 
     }
 
-    protected void setNodeIcon() {
-        // todo: replace this with CSS and modify the crawler to make space separated strings that select multiply CSS classes for each icon
-        iconImage.setUrl(dataNodeLoader.getNodeIcon(yaasDataNode));
+    protected void setNodeIconStye(DataNodeType dataNodeType, DataNodePermissions dataNodePermissions) {
+        iconImage1.setStyleName("access_level_" + dataNodePermissions.getAccessLevel().name());
+        iconImage2.setStyleName("format_" + dataNodeType.getFormat().name());
+    }
+
+    protected void setNodeIconData(String iconData) {
+        iconImage1.setUrl(iconData);
     }
 
     protected void hideShowExpandButton() {
@@ -121,7 +128,8 @@ public abstract class YaasTreeItem extends TreeItem {
         final Style style = outerPanel.getElement().getStyle();
         style.setLeft(0, Style.Unit.PX);
         style.setPosition(Style.Position.RELATIVE);
-        outerPanel.add(iconImage);
+        outerPanel.add(iconImage1);
+        outerPanel.add(iconImage2);
         if (checkboxListener != null) {
             outerPanel.add(checkBox);
         }
@@ -148,10 +156,13 @@ public abstract class YaasTreeItem extends TreeItem {
 //                }
 //            }
 //        });
+        //logger.info("clickListener");
         if (clickListener != null) {
+            //logger.info(clickListener.toString());
             nodeDetailsAnchor.addClickHandler(new ClickHandler() {
 
                 public void onClick(ClickEvent event) {
+                    //logger.info(yaasDataNode.getLabel());
                     clickListener.clickEvent(yaasDataNode);
                 }
             });

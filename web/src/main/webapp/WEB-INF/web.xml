@@ -56,4 +56,12 @@
         <listener-class>de.mpg.aai.shhaa.config.ConfigContextListener</listener-class>
     </listener>
     <!-- end SHHAA config -->
+    <servlet> 
+        <servlet-name>jUnitHostImpl</servlet-name> 
+        <servlet-class>com.google.gwt.junit.server.JUnitHostImpl</servlet-class> 
+    </servlet> 
+    <servlet-mapping> 
+        <servlet-name>jUnitHostImpl</servlet-name> 
+        <url-pattern>/yaas/junithost/*</url-pattern> 
+    </servlet-mapping>
 </web-app>

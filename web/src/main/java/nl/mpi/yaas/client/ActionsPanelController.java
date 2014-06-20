@@ -80,19 +80,20 @@ public class ActionsPanelController implements HistoryListener {
                 logger.info(exception.getMessage());
             }
         }
-        if (dataNode != null && nodeId != null && !branchSelectionList.isEmpty() && branchSelectionList.get(0).getIdString().equals(nodeId)) {
+        if (dataNode != null && nodeId != null && !branchSelectionList.isEmpty() && nodeId.equals(branchSelectionList.get(0).getIdString())) {
             // todo: if we start supporting multiple selections then this will need to change
             // the current data node is already selected so no change needed.
         } else {
             final String databaseName = historyController.getDatabaseName();
             if (databaseName != null) {
                 final IconTableBase64 databaseIcons = databaseInfo.getDatabaseIcons(databaseName);
-                final DataNodeLoader dataNodeLoader = new DataNodeLoader(searchOptionsService, databaseIcons, databaseName);
+                final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, databaseIcons, databaseName);
 //                logger.info("branchSelectionList.size():" + branchSelectionList.size());
                 if (branchSelectionList.isEmpty()) {
                     dataNode = null;
                     doNodeAction(historyController.getHistoryData().getNodeActionType());
                 } else {
+//                    logger.info("branchSelectionList.size():" + branchSelectionList.size());
 //                    logger.info("branchSelectionList.get(0).getIdString():" + branchSelectionList.get(0).getIdString());
                     dataNodeLoader.requestLoad(branchSelectionList, new DataNodeLoaderListener() {
                         public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {

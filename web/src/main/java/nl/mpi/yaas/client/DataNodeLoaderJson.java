@@ -29,10 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeType;
+import nl.mpi.flap.model.DataNodePermissions;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.shared.JsonDataNode;
+import nl.mpi.yaas.shared.WebQueryException;
 
 /**
  * @since Mar 26, 2014 1:28:03 PM (creation date)
@@ -52,6 +54,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
         try {
             final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener));
         } catch (RequestException e) {
+            dataNodeLoaderListener.dataNodeLoadFailed(e);
             logger.warning("Couldn't retrieve JSON");
             logger.warning(e.getMessage());
         }
@@ -63,6 +66,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
         try {
             final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener));
         } catch (RequestException e) {
+            dataNodeLoaderListener.dataNodeLoadFailed(e);
             logger.warning("Couldn't retrieve JSON");
             logger.warning(e.getMessage());
         }
@@ -108,12 +112,13 @@ public class DataNodeLoaderJson implements DataNodeLoader {
     }
 
     public String getNodeIcon(SerialisableDataNode yaasDataNode) {
-        return yaasDataNode.getType().getName();
+        return yaasDataNode.getType().getID();
     }
 
     private RequestCallback geRequestBuilder(final RequestBuilder builder, final DataNodeLoaderListener dataNodeLoaderListener) {
         return new RequestCallback() {
             public void onError(Request request, Throwable exception) {
+                dataNodeLoaderListener.dataNodeLoadFailed(exception);
                 logger.warning("Couldn't retrieve JSON from: ");
                 logger.warning(builder.getUrl());
             }
@@ -130,7 +135,15 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 
                             @Override
                             public DataNodeType getType() {
-                                return new DataNodeType(jsonDataNode.getTypeName(), jsonDataNode.getID(), DataNodeType.FormatType.valueOf(jsonDataNode.getTypeFormat()));
+                                final DataNodeType dataNodeType = new DataNodeType(jsonDataNode.getLabel(), jsonDataNode.getTypeName(), jsonDataNode.getTypeID(), DataNodeType.FormatType.valueOf(jsonDataNode.getTypeFormat()));
+                                return dataNodeType;
+                            }
+
+                            @Override
+                            public DataNodePermissions getPermissions() {
+                                final DataNodePermissions dataNodePermissions = new DataNodePermissions();
+                                dataNodePermissions.setAccessLevel(DataNodePermissions.AccessLevel.valueOf(jsonDataNode.getTypeAccessLevel()));
+                                return dataNodePermissions;
                             }
 
                             @Override
@@ -162,6 +175,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
                     }
                     dataNodeLoaderListener.dataNodeLoaded(dataNodes);
                 } else {
+                    dataNodeLoaderListener.dataNodeLoadFailed(new WebQueryException("Couldn't retrieve JSON: " + response.getStatusCode()));
                     logger.warning("Couldn't retrieve JSON");
                     logger.warning(response.getStatusText());
                 }

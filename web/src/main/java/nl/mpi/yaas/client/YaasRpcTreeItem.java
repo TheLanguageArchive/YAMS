@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,13 +18,9 @@
 package nl.mpi.yaas.client;
 
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +80,7 @@ public class YaasRpcTreeItem extends YaasTreeItem {
             addItem(errorTreeItem);
             logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
         }
-        setNodeIcon();
+        setNodeIconData(dataNodeLoader.getNodeIcon(yaasDataNode));
         // todo: add a click handler so that clicking anywhere will open the branch
     }
 
@@ -241,7 +237,7 @@ public class YaasRpcTreeItem extends YaasTreeItem {
                             final SerialisableDataNode resourceDataNode = new SerialisableDataNode();
                             resourceDataNode.setLabel(childId.getNodeUriString().substring(nodeUriLowerCase.lastIndexOf("/") + 1));
                             resourceDataNode.setURI(childId.getNodeUriString());
-                            resourceDataNode.setType(new DataNodeType("resource", nodeUriLowerCase.substring(nodeUriLowerCase.lastIndexOf(".") + 1), null));
+                            resourceDataNode.setType(new DataNodeType("resource", nodeUriLowerCase.substring(nodeUriLowerCase.lastIndexOf(".") + 1), null, null));
                             final ArrayList<DataField> urlFields = new ArrayList<DataField>();
                             final DataField urlField = new DataField();
                             urlField.setFieldValue(childId.getNodeUriString());
@@ -322,7 +318,7 @@ public class YaasRpcTreeItem extends YaasTreeItem {
                         setText(FAILURE);
                         logger.log(Level.SEVERE, FAILURE, exception);
                     }
-                    setNodeIcon();
+                    setNodeIconData(dataNodeLoader.getNodeIcon(yaasDataNode));
                     hideShowExpandButton();
                     addColumnsForHighlights();
                     if (itemLoadedListener != null) {

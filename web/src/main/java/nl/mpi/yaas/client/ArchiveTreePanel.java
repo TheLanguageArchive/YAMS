@@ -33,6 +33,7 @@ import nl.mpi.yaas.common.data.IconTableBase64;
 public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener {
 
     private String dataNodeTreeDb = null;
+    private final boolean useCorpusStructureDb;
     private DataNodeTree dataNodeTree = null;
     private static final Logger logger = Logger.getLogger("");
     private final SearchOptionsServiceAsync searchOptionsService;
@@ -41,11 +42,12 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
     private final ActionsPanelController actionsPanelController;
     HashMap<SerialisableDataNode, HorizontalPanel> nodePanels = new HashMap<SerialisableDataNode, HorizontalPanel>();
 
-    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, ActionsPanelController actionsPanelController) {
+    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, ActionsPanelController actionsPanelController, boolean useCorpusStructureDb) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
         this.actionsPanelController = actionsPanelController;
+        this.useCorpusStructureDb = useCorpusStructureDb;
     }
 
     public void historyChange() {
@@ -53,19 +55,24 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
     }
 
     public void userSelectionChange() {
-        final String databaseName = historyController.getDatabaseName();
-        if (dataNodeTreeDb == null || !dataNodeTreeDb.equals(databaseName)) {
-            if (dataNodeTree != null) {
-                ArchiveTreePanel.this.remove(dataNodeTree);
-                dataNodeTree = null;
-            }
+        if (!useCorpusStructureDb) {
+            final String databaseName = historyController.getDatabaseName();
+//        logger.info(databaseName);
+            if (dataNodeTreeDb == null || !dataNodeTreeDb.equals(databaseName)) {
+                if (dataNodeTree != null) {
+                    ArchiveTreePanel.this.remove(dataNodeTree);
+                    dataNodeTree = null;
+                }
 //            logger.info("ArchiveTreePanel");
 //            logger.info(dataNodeTreeDb);
-            final DatabaseStats databaseStats = databaseInfo.getDatabaseStats(databaseName);
-            final IconTableBase64 databaseIcons = databaseInfo.getDatabaseIcons(databaseName);
-            if (databaseStats != null && databaseIcons != null && databaseStats.getRootDocumentsIDs() != null) {
-                addDatabaseTree(databaseName, databaseStats.getRootDocumentsIDs(), databaseIcons);
+                final DatabaseStats databaseStats = databaseInfo.getDatabaseStats(databaseName);
+                final IconTableBase64 databaseIcons = databaseInfo.getDatabaseIcons(databaseName);
+                if (databaseStats != null && databaseIcons != null && databaseStats.getRootDocumentsIDs() != null) {
+                    addDatabaseTree(databaseName, databaseStats.getRootDocumentsIDs(), databaseIcons);
+                }
             }
+        } else {
+            addCsDatabaseTree();
         }
     }
 
@@ -89,6 +96,26 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
             };
             dataNodeTree = new DataNodeTree(null, treeNodeClickListener, searchOptionsService, databaseIcons, true);
             dataNodeTree.addCsRootToTree();//addResultsToTree(databaseName, dataNodeIds, true);
+            ArchiveTreePanel.this.add(dataNodeTree);
+        }
+    }
+
+    public void addCsDatabaseTree() {
+        if (dataNodeTree == null) {
+            //logger.info("addCsDatabaseTree");
+            final TreeNodeClickListener treeNodeClickListener = new TreeNodeClickListener() {
+
+                public void clickEvent(SerialisableDataNode dataNode) {
+                    //logger.info("TreeNodeClickListener");
+                    try {
+                        historyController.setBranchSelection(new DataNodeId(dataNode.getID()), HistoryData.NodeActionType.details);
+                    } catch (ModelException exception) {
+                        logger.warning(exception.getMessage());
+                    }
+                }
+            };
+            dataNodeTree = new DataNodeTree(null, treeNodeClickListener, searchOptionsService, null, true);
+            dataNodeTree.addCsRootToTree();
             ArchiveTreePanel.this.add(dataNodeTree);
         }
     }

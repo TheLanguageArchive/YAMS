@@ -185,12 +185,20 @@ public class yaas implements EntryPoint {
                 RootPanel.get("logoutTag"),
                 RootPanel.get("userSpan"));
         final RootPanel corpusTreePanelTag = RootPanel.get("corpusTreePanel");
-        if (corpusTreePanelTag != null) {
+        final RootPanel corpusTreeCsDbPanelTag = RootPanel.get("corpusTreeCsDbPanel");
+        if (corpusTreePanelTag != null || corpusTreeCsDbPanelTag != null) {
             final RootPanel detailsPanelTag = RootPanel.get("detailsPanel");
             if (detailsPanelTag != null) {
-                final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, actionsPanelController);
-                corpusTreePanelTag.add(archiveTreePanel);
-                historyController.addHistoryListener(archiveTreePanel);
+                if (corpusTreePanelTag != null) {
+                    final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, actionsPanelController, false);
+                    corpusTreePanelTag.add(archiveTreePanel);
+                    historyController.addHistoryListener(archiveTreePanel);
+                }
+                if (corpusTreeCsDbPanelTag != null) {
+                    final ArchiveTreePanel archiveTreeCsDbPanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, actionsPanelController, true);
+                    corpusTreeCsDbPanelTag.add(archiveTreeCsDbPanel);
+                    historyController.addHistoryListener(archiveTreeCsDbPanel);
+                }
                 historyController.addHistoryListener(actionsPanelController);
             } else {
                 logger.severe("Found corpusTreePanel but not detailsPanel, cannot not correclty show the tree.");

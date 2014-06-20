@@ -56,18 +56,22 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         return initParameterRestUrl;
 //        return (initParameterRestUrl != null && !initParameterRestUrl.isEmpty()) ? initParameterRestUrl : "http://localhost:8984/rest/";
 //        return "http://tlatest06:8984/rest/";
+//        return "http://localhost:8984/rest/";
+//        return "http://lux16.mpi.nl:8984/rest/";
     }
 
     private String getBasexUser() {
         final String initParameterUser = getServletContext().getInitParameter("basexUser");
         return initParameterUser;
-//        return (initParameterUser != null && !initParameterUser.isEmpty()) ? initParameterUser : DataBaseManager.guestUser;
+//        return DataBaseManager.guestUser;
+//        return "admin";
     }
 
     private String getBasexPass() {
         final String initParameterPass = getServletContext().getInitParameter("basexPass");
         return initParameterPass;
-//        return (initParameterPass != null && !initParameterPass.isEmpty()) ? initParameterPass : DataBaseManager.guestUser;
+//        return DataBaseManager.guestUser;
+//        return "admin";
     }
 
     public String[] getDatabaseList() throws WebQueryException {
@@ -76,7 +80,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
             DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(DataBaseManager.defaultDataBase);
             return yaasDatabase.getDatabaseList();
         } catch (QueryException exception) {
-            throw new WebQueryException(exception);
+            throw new WebQueryException("getDatabaseList", exception);
         }
     }
 
@@ -86,7 +90,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
             DatabaseStats databaseStats = yaasDatabase.getDatabaseStats();
             return databaseStats;
         } catch (QueryException exception) {
-            throw new WebQueryException(exception);
+            throw new WebQueryException("getDatabaseStats", exception);
         }
     }
 
@@ -99,7 +103,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
             final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), getBasexUser(), getBasexPass());
             return new DataBaseManager<HighlighableDataNode, DataField, MetadataFileType>(HighlighableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
         } catch (MalformedURLException exception) {
-            throw new QueryException("Failed to open the database connection at: " + basexRestUrl + " " + exception.getMessage());
+            throw new QueryException("Failed to open the database connection at: " + basexRestUrl, exception);
         }
     }
 
@@ -109,7 +113,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
             MetadataFileType[] metadataPathTypes = yaasDatabase.getMetadataTypes(metadataFileType);
             return metadataPathTypes;
         } catch (QueryException exception) {
-            throw new WebQueryException(exception.getMessage());
+            throw new WebQueryException("getTypeOptions", exception);
         }
     }
 
@@ -119,7 +123,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
             MetadataFileType[] metadataFieldTypes = yaasDatabase.getMetadataPaths(metadataFileType);
             return metadataFieldTypes;
         } catch (QueryException exception) {
-            throw new WebQueryException(exception.getMessage());
+            throw new WebQueryException("getPathOptions", exception);
         }
     }
 
@@ -129,7 +133,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
             MetadataFileType[] metadataFieldTypes = yaasDatabase.getMetadataFieldValues(metadataFileType, 5);
             return metadataFieldTypes;
         } catch (QueryException exception) {
-            throw new WebQueryException(exception.getMessage());
+            throw new WebQueryException("getValueOptions", exception);
         }
     }
 
@@ -139,7 +143,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
             MetadataFileType[] metadataFieldTypes = yaasDatabase.getTreeFacetTypes(metadataFileTypes);
             return metadataFieldTypes;
         } catch (QueryException exception) {
-            throw new WebQueryException(exception.getMessage());
+            throw new WebQueryException("getTreeFacets", exception);
         }
     }
 
@@ -155,7 +159,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 //            };
 //            return returnList.toArray(new String[0]);
         } catch (QueryException exception) {
-            throw new WebQueryException(exception.getMessage());
+            throw new WebQueryException("performSearch", exception);
         }
     }
 
@@ -165,7 +169,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
             SerialisableDataNode yaasDataNode = yaasDatabase.getNodeDatasByHdls(hdlList);
             return (List<SerialisableDataNode>) yaasDataNode.getChildList();
         } catch (QueryException exception) {
-            throw new WebQueryException(exception.getMessage());
+            throw new WebQueryException("getDataNodesByHdl", exception);
         }
     }
 
@@ -175,7 +179,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
             SerialisableDataNode yaasDataNode = yaasDatabase.getNodeDatasByUrls(urlList);
             return (List<SerialisableDataNode>) yaasDataNode.getChildList();
         } catch (QueryException exception) {
-            throw new WebQueryException(exception.getMessage());
+            throw new WebQueryException("getDataNodesByUrl", exception);
         }
     }
 
@@ -185,7 +189,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
             SerialisableDataNode yaasDataNode = yaasDatabase.getNodeDatasByIDs(dataNodeIds);
             return (List<SerialisableDataNode>) yaasDataNode.getChildList();
         } catch (QueryException exception) {
-            throw new WebQueryException(exception.getMessage());
+            throw new WebQueryException("getDataNodes", exception);
         }
     }
 
@@ -195,9 +199,9 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
             final IconTableBase64 nodeIcons = yaasDatabase.getNodeIconsBase64();
             return nodeIcons;
         } catch (PluginException exception) {
-            throw new WebQueryException(exception.getMessage());
+            throw new WebQueryException("getImageDataForTypes", exception);
         } catch (QueryException exception) {
-            throw new WebQueryException(exception.getMessage());
+            throw new WebQueryException("getImageDataForTypes", exception);
         }
     }
 }

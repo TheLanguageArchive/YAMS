@@ -255,6 +255,87 @@ ul#navigation a {
     -webkit-font-smoothing: antialiased;
 }
 
+/*.node_icon_PM:before {
+    content:url('../images/al_circle_green.png');
+    position: relative; or absolute
+    z-index:100000; a number that's more than the modal box
+    left:-50px;
+    top:10px;
+        content: "bla";
+        width: 40px;
+        height: 100px;
+}*/
+
+.access_level_closed {
+    content:url('../images/al_circle_red.png');
+    position: relative;
+}
+.access_level_external {
+    /*    content:url('../images/al_circle_.png');
+        position: relative;*/
+}
+.access_level_open_everybody {
+    content:url('../images/al_circle_green.png');
+    position: relative;
+}
+.access_level_open_registered_users {
+    content:url('../images/al_circle_yellow.png');
+    position: relative;
+}
+.access_level_permission_needed {
+    content:url('../images/al_circle_orange.png');
+    position: relative;
+}
+.access_level_unknown {
+    content:url('../images/al_circle_green.png');
+    position: relative;
+}
+
+.format_xml {
+    content:url('../images/metadata.png');
+    position: relative;
+}
+.format_imdi_corpus {
+    content:url('../images/corpus.png');
+    position: relative;
+}
+.format_imdi_session {
+    content:url('../images/session.png');
+    position: relative;
+}
+.format_imdi_catalogue {
+    content:url('../images/catalogue.png');
+    position: relative;
+}
+.format_imdi_info {
+    content:url('../images/infofile.png');
+    position: relative;
+}
+.format_cmdi {
+    content:url('../images/metadata.png');
+    position: relative;
+}
+.format_resource_annotation {
+    content:url('../images/annotation.png');
+    position: relative;
+}
+.format_resource_audio {
+    content:url('../images/audio.png');
+    position: relative;
+}
+.format_resource_lexical {
+    content:url('../images/lexicon.png');
+    position: relative;
+}
+.format_resource_other {
+    content:url('../images/file.png');
+    position: relative;
+}
+.format_resource_video {
+    content:url('../images/video.png');
+    position: relative;
+}
+
 .icon-view:before {
     content: "\e60e";
 }
@@ -290,6 +371,8 @@ ul#navigation a {
 .yaas-treeNode-selected{
     background: #25466f;
     padding: 5px 20px;
+    background-color: #D8E0E5;
+    font-weight: bold;
 }
 
 .load-more-btn {

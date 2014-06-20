@@ -57,7 +57,7 @@ public class IconInfoPanel extends VerticalPanel implements HistoryListener {
                 image.setUrl(typeImageBase64.getInlineImageDataString());
 //                    Label testDataLabel = new Label(typeImageBase64.getInlineImageDataString());
                 Label idLabel = new Label(typeImageBase64.getID());
-                Label nameLabel = new Label(typeImageBase64.getName());
+                Label nameLabel = new Label(typeImageBase64.getLabel());
                 final HorizontalPanel horizontalPanel = new HorizontalPanel();
                 horizontalPanel.add(nameLabel);
                 horizontalPanel.add(image);

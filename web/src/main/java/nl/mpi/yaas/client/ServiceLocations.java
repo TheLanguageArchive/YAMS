@@ -58,4 +58,7 @@ public interface ServiceLocations extends Constants {
     @Key("nl.mpi.jsonUrl")
     String jsonUrl();
 
+    @Key("nl.mpi.jsonLinksOfUrl")
+    String jsonLinksOfUrl();
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,7 +41,7 @@ public class YaasJsonTreeItem extends YaasTreeItem {
         this.yaasDataNode = childDataNode;
         setLabel();
         removeItem(loadingTreeItem);
-        setNodeIcon();
+        setNodeIconStye(this.yaasDataNode.getType(), this.yaasDataNode.getPermissions());
         hideShowExpandButton();
         if (itemLoadedListener != null) {
             itemLoadedListener.yaasTreeItemLoaded(YaasJsonTreeItem.this);
@@ -77,8 +77,8 @@ public class YaasJsonTreeItem extends YaasTreeItem {
 //                    } catch (ModelException exception) {
 //                        setText(FAILURE);
 //                        logger.log(Level.SEVERE, FAILURE, exception);
-//                    }
-                    setNodeIcon();
+//                    }                   
+                    setNodeIconStye(yaasDataNode.getType(), yaasDataNode.getPermissions());
                     hideShowExpandButton();
                     if (itemLoadedListener != null) {
                         itemLoadedListener.yaasTreeItemLoaded(YaasJsonTreeItem.this);
