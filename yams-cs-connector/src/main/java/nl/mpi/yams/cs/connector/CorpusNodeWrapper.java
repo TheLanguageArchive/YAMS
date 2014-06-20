@@ -18,6 +18,7 @@
  */
 package nl.mpi.yams.cs.connector;
 
+import java.net.URI;
 import nl.mpi.archiving.corpusstructure.core.CorpusNode;
 import nl.mpi.archiving.corpusstructure.provider.AccessInfoProvider;
 import nl.mpi.archiving.corpusstructure.provider.CorpusStructureProvider;
@@ -51,7 +52,12 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
 
     @Override
     public String getArchiveHandle() {
-        return archiveObject.getPID().toString();
+        final URI pid = archiveObject.getPID();
+        if (pid == null) {
+            // for some reason archive objects do not always have persistent identifiers, even foreign archive nodes should have some sort of PID so this is possibly an issue in Corpus Structure
+            return null;
+        }
+        return pid.toString();
     }
 
     @Override
