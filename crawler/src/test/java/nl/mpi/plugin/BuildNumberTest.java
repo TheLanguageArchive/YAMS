@@ -38,7 +38,7 @@ public class BuildNumberTest extends TestCase {
             assertTrue(abstractBasePlugin.isMavenVersionCorrect());
         } catch (PluginException exception) {
             fail(exception.getMessage());
-        }
+    }
     }
 
     public class AbstractBaseModuleImpl extends AbstractBaseModule {

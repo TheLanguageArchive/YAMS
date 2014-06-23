@@ -1,19 +1,20 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.crawler;
 
@@ -49,14 +50,25 @@ public class Main {
 //                System.exit(-1);
 //            }
 //        }
-        int defaultNumberToCrawl = 900;
+        int defaultNumberToCrawl = 90;
+
+//        http://lux16.mpi.nl/cmdi_test/new_leslla/Discourse/Moroccan.cmdi
+//        http://childes.talkbank.org/data-cmdi/childes.cmdi
+//        http://talkbank.org/data-cmdi/talkbank.cmdi
 //        String databaseUrl = "http://lux16.mpi.nl:8984/rest/";
 //        String databaseUrl = "http://192.168.56.101:8080/BaseX76/rest/";
-        String databaseUrl = "http://localhost:8984/rest/";
+//        String databaseUrl = "http://localhost:8984/rest/";
+        String databaseUrl = "";
+        String databaseName = "YAMS-DB";
         String databaseUser = "admin";
         String databasePassword = "admin";
+        // the crawlFilter limits to the domain (string prefix)that can be crawled 
+        String crawlFilter = "http://lux16.mpi.nl/";
 //        String defaultStartUrl = "http://corpus1.mpi.nl/ds/TranslationService/translate?in=1839/00-0000-0000-0001-53A5-2&outFormat=cmdi";
-        String defaultStartUrl = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi";
+//        String defaultStartUrl = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi";
+//        String defaultStartUrl = "http://lux16.mpi.nl/cmdi_test/leslla/Discourse/Turkish/Ozlem/Cycle1/d_t_o_1.cmdi";
+//            startUrl = "http://lux16.mpi.nl/cmdi_test/leslla/Discourse/Turkish/Ozlem/Cycle1/d_t_o_1.cmdi";
+        String defaultStartUrl = "http://hdl.handle.net/11142/00-74BB450B-4E5E-4EC7-B043-F444C62DB5C0";
         // create the command line parser
         CommandLineParser parser = new BasicParser(); //DefaultParser();
         // create the Options
@@ -65,11 +77,13 @@ public class Main {
         options.addOption("f", "facets", false, "Preload the facets from the existing crawled data.");
         options.addOption("c", "crawl", false, "Crawl the provided url or the default url if not otherwise specified.");
         options.addOption("a", "append", false, "Restart crawling adding missing documents.");
-        options.addOption("n", "number", true, "Number of documents to insert (default is " + defaultNumberToCrawl + ").");
-        options.addOption("t", "target", true, "Target URL of the start documents to crawl (default is " + defaultStartUrl + "). This option implies the c option.");
-        options.addOption("s", "server", true, "Data base server URL or file path (when a file path is provided the basex java bindings are used rather than the REST interface), default is " + databaseUrl);
-        options.addOption("u", "user", true, "Data base user name, default is " + databaseUser);
-        options.addOption("p", "password", true, "Data base password, default is " + databasePassword);
+        options.addOption("n", "number", true, "Number of documents to insert (default: " + defaultNumberToCrawl + ").");
+        options.addOption("t", "target", true, "Target URL of the start documents to crawl (default: " + defaultStartUrl + "). This option implies the c option.");
+        options.addOption("s", "server", true, "Data base server URL or file path (when a file path is provided it is used as the local basex directory via the java bindings rather than the REST interface), default is to use the un mondified local basex directory");
+        options.addOption("d", "dbname", true, "Name of the database to use (default: " + databaseName + ").");
+        options.addOption("u", "user", true, "Data base user name, (default: " + databaseUser + ").");
+        options.addOption("p", "password", true, "Data base password, (default: " + databasePassword + ").");
+        options.addOption("l", "limit", true, "Limit crawling to URLs which contain the provided string (default: " + crawlFilter + ").");
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
@@ -90,9 +104,11 @@ public class Main {
             if (line.hasOption("n")) {
                 numberToCrawl = Integer.parseInt(line.getOptionValue("n"));
             }
-
             if (line.hasOption("s")) {
                 databaseUrl = line.getOptionValue("s");
+            }
+            if (line.hasOption("d")) {
+                databaseName = line.getOptionValue("d");
             }
             if (line.hasOption("u")) {
                 databaseUser = line.getOptionValue("u");
@@ -100,10 +116,13 @@ public class Main {
             if (line.hasOption("p")) {
                 databasePassword = line.getOptionValue("p");
             }
+            if (line.hasOption("l")) {
+                crawlFilter = line.getOptionValue("l");
+            }
             try {
-                RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(RemoteArchiveCrawler.DbType.StandardDB, numberToCrawl, databaseUrl, databaseUser, databasePassword);
+                RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(numberToCrawl, crawlFilter, databaseUrl, databaseName, databaseUser, databasePassword);
                 URI startURI = new URI(startUrl);
-//            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");
+//            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");                
                 if (line.hasOption("d")) {
                     System.out.println("Dropping and crawing from scratch");
                     archiveCrawler.dropAllRecords();

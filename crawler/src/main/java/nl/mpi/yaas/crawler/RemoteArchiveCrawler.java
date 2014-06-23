@@ -21,11 +21,13 @@ package nl.mpi.yaas.crawler;
 import nl.mpi.yaas.common.data.DatabaseLinks;
 import nl.mpi.yaas.common.data.IconTable;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import nl.mpi.arbil.ArbilDesktopInjector;
@@ -33,6 +35,7 @@ import nl.mpi.arbil.ArbilVersion;
 import nl.mpi.arbil.data.ArbilDataNode;
 import nl.mpi.arbil.data.ArbilDataNodeContainer;
 import nl.mpi.arbil.data.ArbilDataNodeLoader;
+import nl.mpi.arbil.data.ArbilNode;
 import nl.mpi.arbil.data.ArbilTreeHelper;
 import nl.mpi.arbil.ui.ArbilWindowManager;
 import nl.mpi.arbil.userstorage.ArbilSessionStorage;
@@ -63,19 +66,21 @@ public class RemoteArchiveCrawler {
     final PluginArbilDataNodeLoader dataNodeLoader;
     final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase;
     final IconTable iconTable;
-    private int numberToInsert;
+    final private int numberToInsert;
     private int numberInserted = 0;
     private int totalLoaded = 0;
     public static final String HANDLE_SERVER_URI = "http://hdl.handle.net/";
+    private String crawlFilter;
 
-    public enum DbType {
-
-        TestDB,
-        StandardDB
-    }
-
-    public RemoteArchiveCrawler(DbType dbType, int numberToInsert, String databaseUrl, String databaseUser, String databasePassword) throws QueryException {
+    public RemoteArchiveCrawler(int numberToInsert, String crawlFilter, String databaseUrl, String databaseName, String databaseUser, String databasePassword) throws QueryException {
+        System.out.println("numberToInsert:" + numberToInsert);
+        System.out.println("numberToInsert:" + databaseUrl);
+        System.out.println("numberToInsert:" + databaseName);
+        System.out.println("crawlFilter:" + crawlFilter);
         this.numberToInsert = numberToInsert;
+        if (databaseName == null || databaseName.length() < 5) {
+            throw new QueryException("Database name must be more than 5 letters long.");
+        }
         iconTable = new IconTable();
         final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
         final ArbilDesktopInjector injector = new ArbilDesktopInjector();
@@ -84,6 +89,12 @@ public class RemoteArchiveCrawler {
 
         final ArbilWindowManager arbilWindowManager = injector.getWindowManager();
         final MimeHashQueue mockMimeHashQueue = new MimeHashQueue() {
+
+            @Override
+            public ArbilNode getActiveNode() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
             public void addToQueue(ArbilDataNode dataNode) {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
@@ -117,26 +128,25 @@ public class RemoteArchiveCrawler {
             }
         };
         dataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, mockMimeHashQueue, new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
-        String dataBaseName;
-        switch (dbType) {
-            case StandardDB:
-                dataBaseName = DataBaseManager.defaultDataBase;
-                break;
-            default:
-                dataBaseName = DataBaseManager.testDataBase;
-                break;
-        }
         try {
             DbAdaptor dbAdaptor;
             if (databaseUrl.startsWith("http://")) {
                 dbAdaptor = new RestDbAdaptor(new URL(databaseUrl), databaseUser, databasePassword);
             } else {
-                dbAdaptor = new LocalDbAdaptor(new File(databaseUrl));
+                if (!databaseUrl.isEmpty()) {
+                    final File databaseDirectory = new File(databaseUrl);
+                    new File(databaseDirectory, ".basexhome").createNewFile();
+                    Properties props = System.getProperties();
+                    props.setProperty("org.basex.path", databaseDirectory.getAbsolutePath());
+                }
+                dbAdaptor = new LocalDbAdaptor();
             }
 //        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File());
-            yaasDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dataBaseName);
+            yaasDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
 //            yaasDatabase.clearDatabaseStats();
         } catch (MalformedURLException exception) {
+            throw new QueryException(exception);
+        } catch (IOException exception) {
             throw new QueryException(exception);
         }
     }
@@ -204,7 +214,7 @@ public class RemoteArchiveCrawler {
             while (continueGetting) {
                 System.out.println("Links read: " + databaseLinks.getRecentLinks().size());
                 System.out.println("Links found: " + databaseLinks.getChildLinks().size());
-                final Set<DataNodeLink> handlesOfMissing = yaasDatabase.getHandlesOfMissing(databaseLinks, 1000);
+                final Set<DataNodeLink> handlesOfMissing = yaasDatabase.getHandlesOfMissing(databaseLinks, 1000, crawlFilter);
                 if (handlesOfMissing.isEmpty()) {
                     continueGetting = false;
                 }
@@ -223,7 +233,7 @@ public class RemoteArchiveCrawler {
                 }
             }
             // store the current state
-            yaasDatabase.getHandlesOfMissing(databaseLinks, 0);
+            yaasDatabase.getHandlesOfMissing(databaseLinks, 0, crawlFilter);
             System.out.println("Update complete");
         } catch (URISyntaxException exception) {
             System.out.println(exception.getMessage());
@@ -333,7 +343,7 @@ public class RemoteArchiveCrawler {
             databaseLinks.insertRootLink(new DataNodeLink(dataNode.getUrlString(), dataNode.archiveHandle));
             loadAndInsert(yaasDatabase, dataNode, databaseLinks);
             // store the current state
-            yaasDatabase.getHandlesOfMissing(databaseLinks, 0);
+            yaasDatabase.getHandlesOfMissing(databaseLinks, 0, crawlFilter);
             System.out.println("Crawl complete");
         } catch (InterruptedException exception) {
             System.out.println(exception.getMessage());
@@ -365,7 +375,7 @@ public class RemoteArchiveCrawler {
 
     private void loadAndInsert(DataBaseManager arbilDatabase, ArbilDataNode dataNode, DatabaseLinks databaseLinks) throws InterruptedException, PluginException, QueryException, CrawlerException, ModelException {
         System.out.print("Loading: " + numberInserted + " URL: " + dataNode.getUrlString() + "                                                           \r");
-        while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED) {
+        while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED && dataNode.isMetaDataNode()) {
             dataNode.reloadNode();
             dataNode.waitTillLoaded();
 //            Thread.sleep(100); // the issue in arbil seems to now be resolved that required this sleep to be here without which there were regular concurrent modification exceptions in the get fields of arbil data node
