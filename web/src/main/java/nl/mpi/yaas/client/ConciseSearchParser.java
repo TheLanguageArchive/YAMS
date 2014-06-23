@@ -43,9 +43,10 @@ public class ConciseSearchParser {
 
     private static final Logger logger = Logger.getLogger("");
 
-    public HistoryData parseConciseSearch(String searchString) {
+    public HistoryData parseConciseSearch(HistoryController historyController, String searchString) {
         // while we would prefer to use StringTokenzier we cannot because this section will be used in javascript via GWT
         final HistoryData historyData = new HistoryData();
+        historyData.setDatabaseName(historyController.getDefaultDatabase());
         MetadataFileType type = new MetadataFileType(null, "", "");
         MetadataFileType path = new MetadataFileType("", null, "");
         QueryDataStructures.SearchNegator searchNegator = DEFAULT_NEGATOR;

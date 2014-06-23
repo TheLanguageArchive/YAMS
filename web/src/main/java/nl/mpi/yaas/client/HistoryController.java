@@ -44,6 +44,7 @@ public class HistoryController implements ValueChangeHandler<String> {
     }
 
     public void setDefaultDatabase(String defaultDatabase) {
+        //logger.info("defaultDatabase:" + defaultDatabase);
         this.defaultDatabase = defaultDatabase;
         if (historyData.getDatabaseName().isEmpty()) {
             historyData.setDatabaseName(defaultDatabase);
@@ -73,15 +74,16 @@ public class HistoryController implements ValueChangeHandler<String> {
             logger.info(historyListener.getClass().getName());
             historyListener.historyChange();
         }
+        logger.info("notifyHistoryListenersDone");
     }
 
     private void notifyUiListeners() {
         logger.info("notifyUiListeners");
         for (HistoryListener historyListener : historyListeners) {
-            logger.info(historyListener.getClass().getName());
+//            logger.info(historyListener.getClass().getName());
             historyListener.userSelectionChange();
         }
-//        logger.info("notifyUiListenersDone");
+        logger.info("notifyUiListenersDone");
     }
 
     public String getDatabaseName() {

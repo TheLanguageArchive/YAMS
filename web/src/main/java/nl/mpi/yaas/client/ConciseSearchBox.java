@@ -42,7 +42,7 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
             @Override
             void prepareSearch() {
                 searchButton.setEnabled(false);
-                final HistoryData searchParameters = new ConciseSearchParser().parseConciseSearch(searchBox.getText());
+                final HistoryData searchParameters = new ConciseSearchParser().parseConciseSearch(historyController, searchBox.getText());
                 historyController.setHistoryData(searchParameters);
 //                searchButton.setHTML(SEARCHING_LABEL);
             }
