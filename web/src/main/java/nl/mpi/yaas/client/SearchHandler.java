@@ -61,10 +61,13 @@ public abstract class SearchHandler implements ClickHandler, KeyUpHandler {
     }
 
     private void initiateSearch() {
+//        logger.info("initiateSearch");
         synchronized (searchLockObject) {
             if (!searchInProgress) {
                 searchInProgress = true;
+//                logger.info("prepareSearch");
                 prepareSearch();
+//                logger.info("performSearch");
                 performSearch();
             }
         }
