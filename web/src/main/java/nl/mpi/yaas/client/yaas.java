@@ -163,7 +163,9 @@ public class yaas implements EntryPoint {
         final RootPanel facetedTreeTag = RootPanel.get("facetedTree");
 //        RootPanel.get("dataNodeTable").add(dataNodeTable);
         if (facetedTreeTag != null) {
-            facetedTreeTag.add(new FacetedTree(searchOptionsService, databaseName));
+            final FacetedTree facetedTree = new FacetedTree(searchOptionsService, historyController);
+            facetedTreeTag.add(facetedTree);
+            historyController.addHistoryListener(facetedTree);
         }
         databaseInfo.getDbInfo();
         ActionsPanelController actionsPanelController = new ActionsPanelController(databaseInfo, searchOptionsService,
@@ -211,10 +213,6 @@ public class yaas implements EntryPoint {
         final RootPanel databaseStatsTag = RootPanel.get("databaseStats");
         if (databaseStatsTag != null) {
             databaseStatsTag.setVisible(debugMode);
-        }
-        final RootPanel facetedTreeTag = RootPanel.get("facetedTree");
-        if (facetedTreeTag != null) {
-            facetedTreeTag.setVisible(debugMode);
         }
         final RootPanel loggerPanelTag = RootPanel.get("loggerPanel");
         if (loggerPanelTag != null) {

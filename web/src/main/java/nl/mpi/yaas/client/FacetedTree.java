@@ -1,19 +1,20 @@
 /**
- * Copyright (C) 2013 The Language Archive, Max Planck Institute for Psycholinguistics
+ * Copyright (C) 2013 The Language Archive, Max Planck Institute for
+ * Psycholinguistics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 package nl.mpi.yaas.client;
 
@@ -36,23 +37,24 @@ import nl.mpi.yaas.common.data.MetadataFileType;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class FacetedTree extends VerticalPanel {
+public class FacetedTree extends VerticalPanel implements HistoryListener {
 
     private static final Logger logger = Logger.getLogger("");
     final private SearchOptionsServiceAsync searchOptionsService;
+    private final HistoryController historyController;
     final private ArrayList<MetadataFileType[]> selectedFacets = new ArrayList<MetadataFileType[]>();
     final private MenuBar menuBar;
     final private Tree facetTree;
-    private final String databaseName;
+    private String lastDatabaseName;
 
-    public FacetedTree(SearchOptionsServiceAsync searchOptionsService, String databaseName) {
+    public FacetedTree(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController) {
         this.searchOptionsService = searchOptionsService;
-        this.databaseName = databaseName;
+        this.historyController = historyController;
         menuBar = new MenuBar();
         facetTree = new Tree();
         add(menuBar);
         add(facetTree);
-        updateRootMenus(menuBar);
+
         facetTree.addOpenHandler(new OpenHandler<TreeItem>() {
             public void onOpen(OpenEvent<TreeItem> event) {
                 final TreeItem selectedItem = event.getTarget();
@@ -67,7 +69,21 @@ public class FacetedTree extends VerticalPanel {
         });
     }
 
-    private void updateRootMenus(MenuBar menuBar) {
+    public void historyChange() {
+        logger.info("FacetedTree");
+        String databaseName = historyController.getDatabaseName();
+        logger.info(databaseName);
+        if (databaseName != null && !databaseName.isEmpty() && !databaseName.equals(lastDatabaseName)) {
+            updateRootMenus(menuBar, databaseName);
+        }
+    }
+
+    public void userSelectionChange() {
+        historyChange();
+    }
+
+    private void updateRootMenus(MenuBar menuBar, String databaseName) {
+        logger.info("updateRootMenus");
         menuBar.clearItems();
         facetTree.clear();
         int menuIndex = 0;
@@ -78,7 +94,7 @@ public class FacetedTree extends VerticalPanel {
             } else {
                 labelString += type[1].toString();
             }
-            menuBar.addItem(labelString, getMenuItems(menuIndex++));
+            menuBar.addItem(labelString, getMenuItems(databaseName, menuIndex++));
         }
         if (!selectedFacets.isEmpty()) {
             final YaasTreeFacet yaasTreeFacet = new YaasTreeFacet(databaseName, null, searchOptionsService, null, -1);
@@ -86,15 +102,15 @@ public class FacetedTree extends VerticalPanel {
             yaasTreeFacet.loadChildFacets(selectedFacets);
         }
         if (selectedFacets.isEmpty()) {
-            menuBar.addItem("<please select a facet>", getMenuItems(menuIndex++));
+            menuBar.addItem("<please select a facet>", getMenuItems(databaseName, menuIndex++));
         } else {
-            menuBar.addItem("<add another facet>", getMenuItems(menuIndex++));
+            menuBar.addItem("<add another facet>", getMenuItems(databaseName, menuIndex++));
         }
     }
 
-    private MenuBar getMenuItems(int menuIndex) {
+    private MenuBar getMenuItems(String databaseName, int menuIndex) {
         MenuBar facetMenu = new MenuBar(true);
-        loadTypeOptions(facetMenu, null, menuIndex);
+        loadTypeOptions(databaseName, facetMenu, null, menuIndex);
         return facetMenu;
     }
 
@@ -102,7 +118,7 @@ public class FacetedTree extends VerticalPanel {
         Window.alert("You selected a menu item!");
     }
 
-    private void loadTypeOptions(final MenuBar typeMenu, final MetadataFileType type, final int menuIndex) {
+    private void loadTypeOptions(final String databaseName, final MenuBar typeMenu, final MetadataFileType type, final int menuIndex) {
         searchOptionsService.getTypeOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 logger.log(Level.SEVERE, caught.getMessage());
@@ -113,14 +129,14 @@ public class FacetedTree extends VerticalPanel {
                     for (MetadataFileType facetType : result) {
                         MenuBar menu = new MenuBar(true);
                         typeMenu.addItem(facetType.toString(), menu);
-                        loadFacetOptions(menu, facetType, menuIndex);
+                        loadFacetOptions(databaseName, menu, facetType, menuIndex);
                     }
                 }
                 if (selectedFacets.size() > menuIndex) {
                     typeMenu.addItem("<Remove>", new ScheduledCommand() {
                         public void execute() {
                             selectedFacets.remove(menuIndex);
-                            updateRootMenus(menuBar);
+                            updateRootMenus(menuBar, databaseName);
                         }
                     });
                 }
@@ -128,7 +144,7 @@ public class FacetedTree extends VerticalPanel {
         });
     }
 
-    private void loadFacetOptions(final MenuBar facetMenu, final MetadataFileType type, final int menuIndex) {
+    private void loadFacetOptions(final String databaseName, final MenuBar facetMenu, final MetadataFileType type, final int menuIndex) {
         searchOptionsService.getPathOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
                 logger.log(Level.SEVERE, caught.getMessage());
@@ -144,7 +160,7 @@ public class FacetedTree extends VerticalPanel {
                                 } else {
                                     selectedFacets.set(menuIndex, new MetadataFileType[]{type, facetType});
                                 }
-                                updateRootMenus(menuBar);
+                                updateRootMenus(menuBar, databaseName);
                             }
                         });
                     }
