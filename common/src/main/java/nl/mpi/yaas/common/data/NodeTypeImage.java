@@ -31,7 +31,7 @@ import nl.mpi.flap.model.DataNodeType;
  */
 public class NodeTypeImage {
 
-    private DataNodeType dataNodeType;
+    final private DataNodeType dataNodeType;
     private Image imageData;
     final static protected String imageFormatString = "image/png";
 
