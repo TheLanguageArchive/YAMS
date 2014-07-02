@@ -25,7 +25,7 @@ import javax.ws.rs.core.Application;
  * @since Feb 17, 2014 2:07:45 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-@javax.ws.rs.ApplicationPath("webresources")
+@javax.ws.rs.ApplicationPath("/")
 public class ApplicationConfig extends Application {
 
     @Override

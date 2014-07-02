@@ -32,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
+import nl.mpi.yaas.common.data.DatabaseList;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.MetadataFileType;
@@ -46,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @since Feb 17, 2014 3:41 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-@Path("yams")
+@Path("rest")
 public class service {
 
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
@@ -70,14 +71,24 @@ public class service {
         DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(DataBaseManager.defaultDataBase);
         for (String dbName : yaasDatabase.getDatabaseList()) {
             stringBuilder.append(dbName);
-            stringBuilder.append("&nbsp;<a href=\"dbinfo/");
+            stringBuilder.append("&nbsp;<a href=\"./dbinfo/");
             stringBuilder.append(dbName);
             stringBuilder.append("\">dbinfo</a>&nbsp;");
-            stringBuilder.append("<a href=\"hints/");
+            stringBuilder.append("<a href=\"./hints/");
             stringBuilder.append(dbName);
+            stringBuilder.append("/Dutch");
             stringBuilder.append("\">hints</a><br>");
         }
         return stringBuilder.toString();
+    }
+
+    @GET
+    @Path("/list")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getDatabaseList(@PathParam("dbname") String dbName) throws QueryException {
+        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(dbName);
+        DatabaseList databaseList = yaasDatabase.getDatabaseStatsList();
+        return Response.ok(databaseList).build();
     }
 
     @GET
@@ -90,12 +101,12 @@ public class service {
     }
 
     @GET
-    @Path("/hints/{dbname}")
+    @Path("/hints/{dbname}/{text}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getHints(@PathParam("dbname") String dbName) throws QueryException {
-        final MetadataFileType options = new MetadataFileType(null, null, "Dutch");
+    public Response getHints(@PathParam("dbname") String dbName, @PathParam("text") String userText) throws QueryException {
+        final MetadataFileType options = new MetadataFileType(null, null, userText);
         DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(dbName);
-        MetadataFileType[] metadataFieldTypes = yaasDatabase.getMetadataFieldValues(options);
+        MetadataFileType[] metadataFieldTypes = yaasDatabase.getMetadataFieldValues(options, 100);
         return Response.ok(metadataFieldTypes).build();
     }
 

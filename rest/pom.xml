@@ -12,7 +12,7 @@
     <version>1.0-pretesting-SNAPSHOT</version>
     <packaging>war</packaging>
 
-    <name>YAMS REST Service</name>
+    <name>yams-rest-service</name>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -25,6 +25,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>yaas-common</artifactId>
             <version>1.0-pretesting-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-spring</artifactId>
+            <version>1.18.1</version>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
