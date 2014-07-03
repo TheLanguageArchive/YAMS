@@ -22,12 +22,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
@@ -124,14 +126,16 @@ public class service {
         return Response.ok(rootNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
     }
 
-//    @GET
-//    @Produces("application/json")
-//    @Path("/data/{dbname}/linksof")
-////    @Path("hdl{hdl}")
-//    public Response getChildDataNodes(@PathParam("dbname") String dbName, @QueryParam("url") final String nodeUri, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws URISyntaxException {
-//        return Response.ok(nodeWrappers).header("Access-Control-Allow-Origin", "*").build();
-//    }
-    
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/data/{dbname}/linksof")
+//    @Path("hdl{hdl}")
+    public Response getChildDataNodes(@PathParam("dbname") String dbName, @QueryParam("url") final String identifier, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws QueryException {
+        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(dbName);
+        final SerialisableDataNode childNodes = yaasDatabase.getChildNodesOfHdl(identifier, start, end);
+        return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
+    }
+
     private String getBasexRestUrl() {
         final String initParameterRestUrl = servletContext.getInitParameter("basexRestUrl");
         return initParameterRestUrl;

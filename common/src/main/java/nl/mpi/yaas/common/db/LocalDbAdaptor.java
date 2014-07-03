@@ -58,6 +58,7 @@ public class LocalDbAdaptor implements DbAdaptor {
         }
     }
 
+    @Override
     public void checkDbExists(String databaseName) throws QueryException {
         logger.debug("databaseName: " + databaseName);
         try {

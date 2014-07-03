@@ -407,7 +407,7 @@ public class DataBaseManager<D, F, M> {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
             queryResult = dbAdaptor.executeQuery(databaseName, iconTableQuery);
-//            logger.debug("queryResult: " + queryResult);
+            //logger.debug("queryResult: " + queryResult);
             return (IconTable) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), IconTable.class).getValue();
         } catch (JAXBException exception) {
             throw new PluginException(exception);
@@ -444,6 +444,7 @@ public class DataBaseManager<D, F, M> {
             marshaller.marshal(iconTable, stringWriter);
             //logger.debug("NodeIcons to be inserted:\n" + stringWriter.toString());
             dbAdaptor.addDocument(databaseName, iconTableDocument, stringWriter.toString());
+            getNodeIcons(); // do we really need to be calling getNodeIcons at this point?
         } catch (JAXBException exception) {
             System.err.println("jaxb error:" + exception.getMessage());
             throw new PluginException(exception);
@@ -636,6 +637,18 @@ public class DataBaseManager<D, F, M> {
         }
     }
 
+    private String getRootNodesQuery() {
+        return "<DataNode>\n"
+                + "{for $dataNodeId in string(collection('" + databaseName + "')/DatabaseLinks/RootDocumentLinks/@ID)\n"
+                + " return \n"
+                + " collection('" + databaseName + "')/DataNode[@ID eq $dataNodeId]}</DataNode>";
+    }
+
+    private String getChildNodesOfHdlQuery(String hdl, int start, int end) {
+        return "<DataNode>{for $childNodeId in collection('" + databaseName + "')/DataNode[@ArchiveHandle eq '" + escapeBadChars(hdl) + "']/ChildLink[position() gt " + start + " and position() le " + end + "]/@ID\n"
+                + "return collection('" + databaseName + "')/DataNode[@ID eq $childNodeId]}</DataNode>";
+    }
+
     private String getNodesByUrlQuery(final List<String> nodeIDs) {
         return getNodesByAttributeQuery("URI", nodeIDs);
     }
@@ -659,6 +672,7 @@ public class DataBaseManager<D, F, M> {
             }
             firstLoop = false;
             queryStringBuilder.append("'");
+            // todo: add use of escapeBadChars()
             queryStringBuilder.append(value);
             queryStringBuilder.append("'");
         }
@@ -965,7 +979,7 @@ public class DataBaseManager<D, F, M> {
                 + "($highlightSet[not (@ID = $exclusionSet/@ID)], $nodeIdSet)"
                 + "}</DataNode>\n");
         // todo: this would be better getting the nodes and doing an instersect on the nodes and only then extracting the fields to highlight
-        // logger.debug("Query: " + queryStringBuilder);
+//         logger.debug("Query: " + queryStringBuilder);
         final D metadataTypesString = getDbTreeNode(queryStringBuilder.toString());
         return metadataTypesString;
     }
@@ -1016,18 +1030,19 @@ public class DataBaseManager<D, F, M> {
 
     public M[] getMetadataFieldValues(MetadataFileType metadataFileType, int maxResults) throws QueryException {
         final String queryString = getMetadataFieldValuesQuery(metadataFileType, maxResults);
-        //logger.debug("getMetadata100FieldValuesQuery: " + queryString);
+        //logger.debug("getMetadataFieldValues: " + queryString);
         return getMetadataTypes(queryString, getDocumentName(metadataFileType, "values"), false);
     }
 
     public M[] getMetadataTypes(MetadataFileType metadataFileType) throws QueryException {
         final String queryString = getMetadataTypes();
+        //logger.debug("getMetadataTypes: " + queryString);
         return getMetadataTypes(queryString, getDocumentName(metadataFileType, "types"), true);
     }
 
     public M[] getTreeFacetTypes(MetadataFileType[] metadataFileTypes) throws QueryException {
         for (MetadataFileType type : metadataFileTypes) {
-            logger.debug("Type: " + type);
+            //logger.debug("Type: " + type); // todo: comment this out when done
         }
         final String queryString = getTreeFacetsQuery(metadataFileTypes);
         return getMetadataTypes(queryString, getDocumentName(metadataFileTypes, "tree"), true);
@@ -1037,8 +1052,21 @@ public class DataBaseManager<D, F, M> {
 //        final String queryString = getTreeQuery(treeBranchTypeList);
 //        return getDbTreeNode(queryString);
 //    }
+    public D getRootNodes() throws QueryException {
+        final String queryString = getRootNodesQuery();
+        //logger.debug("getRootNodes: " + queryString);
+        return getDbTreeNode(queryString);
+    }
+
+    public D getChildNodesOfHdl(final String nodeIdentifier, int start, int end) throws QueryException {
+        final String queryString = getChildNodesOfHdlQuery(nodeIdentifier, start, end);
+        //logger.debug("getMetadataTypes: " + queryString);
+        return getDbTreeNode(queryString);
+    }
+
     public D getNodeDatasByHdls(final List<String> nodeHdls) throws QueryException {
         final String queryString = getNodesByHdlQuery(nodeHdls);
+        //logger.debug("getMetadataTypes: " + queryString);
         return getDbTreeNode(queryString);
     }
 
@@ -1049,6 +1077,7 @@ public class DataBaseManager<D, F, M> {
 
     public D getNodeDatasByIDs(final List<DataNodeId> nodeIDs) throws QueryException {
         final String queryString = getNodesByIdQuery(nodeIDs);
+        //logger.info(queryString);
         return getDbTreeNode(queryString);
     }
 
@@ -1058,9 +1087,9 @@ public class DataBaseManager<D, F, M> {
             JAXBContext jaxbContext = JAXBContext.newInstance(dClass);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             String queryResult;
-//                logger.debug("queryString: " + queryString);
+            //logger.debug("queryString: " + queryString);
             queryResult = dbAdaptor.executeQuery(databaseName, queryString);
-//            logger.debug("queryResult: " + queryResult);
+            //logger.debug("queryResult: " + queryResult);
             D rootTreeNode = (D) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), dClass).getValue();
 //            long queryMils = System.currentTimeMillis() - startTime;
 //            int resultCount = 0;
@@ -1069,9 +1098,10 @@ public class DataBaseManager<D, F, M> {
 //            }
 //            String queryTimeString = "Query time: " + queryMils + "ms for " + resultCount + " entities";
 //            logger.debug(queryTimeString);
+            //logger.debug("rootTreeNode");
             return rootTreeNode;
         } catch (JAXBException exception) {
-            logger.debug(exception.getMessage());
+            //logger.debug(exception.getMessage());
             throw new QueryException("Error getting search options");
         }
     }
