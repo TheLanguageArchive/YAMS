@@ -47,6 +47,6 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>YAMS REST</servlet-name>
-        <url-pattern>/yams-rest/*</url-pattern>
+        <url-pattern>/yams-data/*</url-pattern>
     </servlet-mapping>
 </web-app>

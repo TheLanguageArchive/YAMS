@@ -25,7 +25,7 @@ import javax.ws.rs.core.Application;
  * @since Feb 17, 2014 2:07:45 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-@javax.ws.rs.ApplicationPath("/")
+@javax.ws.rs.ApplicationPath("rest")
 public class ApplicationConfig extends Application {
 
     @Override
@@ -42,6 +42,10 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(nl.mpi.yams.rest.service.class);
+        resources.add(org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider.class);
+        resources.add(org.codehaus.jackson.jaxrs.JacksonJsonProvider.class);
+        resources.add(org.codehaus.jackson.jaxrs.JsonMappingExceptionMapper.class);
+        resources.add(org.codehaus.jackson.jaxrs.JsonParseExceptionMapper.class);
     }
 
 }

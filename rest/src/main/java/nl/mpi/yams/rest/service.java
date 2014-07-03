@@ -32,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
+import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DatabaseList;
 import nl.mpi.yaas.common.data.DatabaseStats;
 import nl.mpi.yaas.common.data.HighlighableDataNode;
@@ -47,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @since Feb 17, 2014 3:41 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-@Path("rest")
+@Path("")
 public class service {
 
     final private org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
@@ -70,14 +71,18 @@ public class service {
         StringBuilder stringBuilder = new StringBuilder();
         DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(DataBaseManager.defaultDataBase);
         for (String dbName : yaasDatabase.getDatabaseList()) {
+            stringBuilder.append("<h3>");
             stringBuilder.append(dbName);
-            stringBuilder.append("&nbsp;<a href=\"./dbinfo/");
+            stringBuilder.append("</h3><a href=\"./dbinfo/");
             stringBuilder.append(dbName);
-            stringBuilder.append("\">dbinfo</a>&nbsp;");
+            stringBuilder.append("\">dbinfo</a><br>");
             stringBuilder.append("<a href=\"./hints/");
             stringBuilder.append(dbName);
             stringBuilder.append("/Dutch");
             stringBuilder.append("\">hints</a><br>");
+            stringBuilder.append("<a href=\"./data/");
+            stringBuilder.append(dbName);
+            stringBuilder.append("\">root nodes</a><br>");
         }
         return stringBuilder.toString();
     }
@@ -110,6 +115,23 @@ public class service {
         return Response.ok(metadataFieldTypes).build();
     }
 
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/data/{dbname}")
+    public Response getRootNode(@PathParam("dbname") String dbName) throws QueryException {
+        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(dbName);
+        final SerialisableDataNode rootNodes = yaasDatabase.getRootNodes();
+        return Response.ok(rootNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
+    }
+
+//    @GET
+//    @Produces("application/json")
+//    @Path("/data/{dbname}/linksof")
+////    @Path("hdl{hdl}")
+//    public Response getChildDataNodes(@PathParam("dbname") String dbName, @QueryParam("url") final String nodeUri, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws URISyntaxException {
+//        return Response.ok(nodeWrappers).header("Access-Control-Allow-Origin", "*").build();
+//    }
+    
     private String getBasexRestUrl() {
         final String initParameterRestUrl = servletContext.getInitParameter("basexRestUrl");
         return initParameterRestUrl;
