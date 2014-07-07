@@ -46,7 +46,7 @@
     
     <!-- Default page to serve -->
     <welcome-file-list>
-        <welcome-file>yaas.html</welcome-file>
+        <welcome-file>yams.html</welcome-file>
     </welcome-file-list>
     <!-- SHHAA config -->
     <context-param>
