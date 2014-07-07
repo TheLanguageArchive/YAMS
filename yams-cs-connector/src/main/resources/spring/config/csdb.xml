@@ -51,7 +51,7 @@
         <property name="dataSource" ref="corpusStructureDataSource" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-                <property name="generateDdl" value="true" />
+                <property name="generateDdl" value="false" />
             </bean>
         </property>
         <property name="persistenceUnitName" value="corpusstructure2-persistency" />
@@ -67,7 +67,7 @@
     
     
     <bean id="corpusStructureDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-        <property name="jndiName" value="java:comp/env/jdbc/CSDB2"/>   
+        <property name="jndiName" value="java:comp/env/jdbc/CSDB2-readonly"/>   
         <property name="resourceRef" value="true" />
     </bean>
     

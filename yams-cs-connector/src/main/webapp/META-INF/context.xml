@@ -19,6 +19,8 @@
 
 -->
 <Context antiJARLocking="true" path="/yams-cs-connector">
+    <!-- CorpusStructure2 (CMDI) 
+    This datasource is only needed when developing on a machine that is not lux16. On lux16 this context.xml will be ignored and on lux17 it will be ignored/replaced --> 
     <Resource
         name="jdbc/CSDB2"
         auth="Container" 
