@@ -52,14 +52,15 @@ public class DataNodeLoaderJson implements DataNodeLoader {
     }
 
     public DataNodeLoaderJson(String databaseName) {
-        jsonUrl = serviceLocations.jsonYamsDataUrl(databaseName);
+        jsonUrl = serviceLocations.jsonYamsRestUrl(databaseName);
     }
 
     public void requestLoadRoot(final DataNodeLoaderListener dataNodeLoaderListener) {
+        final String jsonRootUrl = serviceLocations.jsonRootNode(jsonUrl);
         // Send request to server and catch any errors.
-        final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, jsonUrl);
+        final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, jsonRootUrl);
         try {
-            final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener, jsonUrl));
+            final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener, jsonRootUrl));
         } catch (RequestException e) {
             dataNodeLoaderListener.dataNodeLoadFailed(e);
             logger.warning("Couldn't retrieve JSON");
@@ -86,7 +87,8 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 //        logger.info("requestLoad");
 // Send request to server and catch any errors.
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(jsonUrl);
+        final String jsonNodesOfUrl = serviceLocations.jsonNodeOfUrl(jsonUrl);
+        stringBuilder.append(jsonNodesOfUrl);
         stringBuilder.append("?");
         for (DataNodeId dataNodeId : dataNodeIdList) {
             stringBuilder.append(serviceLocations.jsonNodeGetVar());
@@ -110,7 +112,8 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 //        logger.info("requestLoadHdl");
         // Send request to server and catch any errors.
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(jsonUrl);
+        final String jsonNodesOfUrl = serviceLocations.jsonNodeOfUrl(jsonUrl);
+        stringBuilder.append(jsonNodesOfUrl);
         stringBuilder.append("?");
         for (String dataNodeHdl : dataNodeHdlList) {
             stringBuilder.append(serviceLocations.jsonNodeGetVar());
@@ -177,7 +180,10 @@ public class DataNodeLoaderJson implements DataNodeLoader {
                             @Override
                             public DataNodePermissions getPermissions() {
                                 final DataNodePermissions dataNodePermissions = new DataNodePermissions();
-                                dataNodePermissions.setAccessLevel(DataNodePermissions.AccessLevel.valueOf(jsonDataNode.getTypeAccessLevel()));
+                                final String typeAccessLevel = jsonDataNode.getTypeAccessLevel();
+                                if (typeAccessLevel != null) {
+                                    dataNodePermissions.setAccessLevel(DataNodePermissions.AccessLevel.valueOf(typeAccessLevel));
+                                }
                                 return dataNodePermissions;
                             }
 
