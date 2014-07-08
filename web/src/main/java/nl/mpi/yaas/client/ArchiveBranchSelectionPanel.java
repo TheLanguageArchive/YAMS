@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.flap.model.DataNodePermissions;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.DatabaseStats;
@@ -97,28 +99,33 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
     }
 
     public void addDatabaseTree(String databaseName, DataNodeId[] dataNodeIds, IconTableBase64 databaseIcons) {
-        //logger.info("addDatabaseTree");
+//        logger.info("addDatabaseTree");
         // todo: move this db tree to a node select in the search criterior panel
         // todo: this could end up being a threading issue with iconTableBase64 being set from the wrong database
         //logger.info(databaseName);
         dataNodeTreeDb = databaseName;
         if (databaseName != null) {
             final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, databaseIcons, databaseName);
+//            final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
             final DataNodeLoaderListener dataNodeLoaderListener = new DataNodeLoaderListener() {
 
                 public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
+//                    logger.info("addDatabaseTree:dataNodeLoaded");
                     for (SerialisableDataNode dataNode : dataNodeList) {
                         rootNodePanels.add(addRootNode(dataNodeLoader, dataNode));
                     }
                 }
 
                 public void dataNodeLoadFailed(Throwable caught) {
+                    logger.log(Level.WARNING, "addDatabaseTree:dataNodeLoadFailed", caught);
                     ArchiveBranchSelectionPanel.this.add(new Label("Failed to load"));
                 }
             };
             if (!windowParamHdls.isEmpty()) {
+//                logger.info("windowParamHdls");
                 dataNodeLoader.requestLoadHdl(windowParamHdls, dataNodeLoaderListener);
             } else if (!windowParamUrls.isEmpty()) {
+//                logger.info("windowParamUrls");
                 dataNodeLoader.requestLoadUri(windowParamUrls, dataNodeLoaderListener);
             } else {
                 dataNodeLoader.requestLoad(Arrays.asList(dataNodeIds), dataNodeLoaderListener);
@@ -164,7 +171,16 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
 
     private HorizontalPanel addRootNode(DataNodeLoader dataNodeLoader, SerialisableDataNode dataNode) {
         final HorizontalPanel horizontalPanel = new HorizontalPanel();
+        Image iconImage1 = new Image();
+        Image iconImage2 = new Image();
+        final DataNodePermissions.AccessLevel accessLevel = dataNode.getPermissions().getAccessLevel();
+        if (accessLevel != null) {
+            iconImage1.setStyleName("access_level_" + accessLevel.name());
+        }
+        iconImage2.setStyleName("format_" + dataNode.getType().getFormat().name());
         horizontalPanel.add(new Image(dataNodeLoader.getNodeIcon(dataNode)));
+        horizontalPanel.add(iconImage1);
+        horizontalPanel.add(iconImage2);
         horizontalPanel.add(new Label(dataNode.getLabel()));
         selectedBranchesPanel.add(horizontalPanel);
         return horizontalPanel;

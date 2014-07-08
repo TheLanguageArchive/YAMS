@@ -39,6 +39,51 @@ yams-SearchCriterionPanel{
     zoom: 1; // i wonder if this might make the buttons bigger 
 }*/
 
+.format_xml {
+    content:url('../images/metadata.png');
+    position: relative;
+}
+.format_imdi_corpus {
+    content:url('../images/corpus.png');
+    position: relative;
+}
+.format_imdi_session {
+    content:url('../images/session.png');
+    position: relative;
+}
+.format_imdi_catalogue {
+    content:url('../images/catalogue.png');
+    position: relative;
+}
+.format_imdi_info {
+    content:url('../images/infofile.png');
+    position: relative;
+}
+.format_cmdi {
+    content:url('../images/clarinE.png');
+    position: relative;
+}
+.format_resource_annotation {
+    content:url('../images/annotation.png');
+    position: relative;
+}
+.format_resource_audio {
+    content:url('../images/audio.png');
+    position: relative;
+}
+.format_resource_lexical {
+    content:url('../images/lexicon.png');
+    position: relative;
+}
+.format_resource_other {
+    content:url('../images/file.png');
+    position: relative;
+}
+.format_resource_video {
+    content:url('../images/video.png');
+    position: relative;
+}
+
 .yaas-treeNode {
     font-weight: normal;
     /*color: gray;*/
