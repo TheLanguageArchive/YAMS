@@ -85,9 +85,11 @@ div#treePanel div.archiveTree{
 
 div#nodePanel{
     height: 100%;
-    width: 69%;
-    float: left;
-    overflow: hidden;
+    width: 100%;
+    /*float: left;*/
+    /*overflow: hidden;*/
+    /*    overflow-x: scroll;*/
+    /*overflow-x: hidden;*/
     padding: 0px 10px;
 }
 
