@@ -17,22 +17,20 @@
  */
 package nl.mpi.yaas.client;
 
-import com.google.gwt.i18n.client.Constants;
-
 /**
  * @since Apr 15, 2014 3:31:49 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public interface ServiceLocations extends Constants {
+public interface ServiceLocations extends Messages {
 
     @Key("nl.mpi.rrsUrl")
     String rrsUrl();
 
     @Key("nl.mpi.amsUrl")
-    String amsUrl();
+    String amsUrl(String nodeIdentifier);
 
     @Key("nl.mpi.annexUrl")
-    String annexUrl();
+    String annexUrl(String nodeIdentifier);
 
     @Key("nl.mpi.imdiSearchUrl")
     String imdiSearchUrl();
@@ -44,7 +42,7 @@ public interface ServiceLocations extends Constants {
     String imdiBrowserManualUrl();
 
     @Key("nl.mpi.yamsUrl")
-    String yamsUrl();
+    String yamsUrl(String nodeId);
 
     @Key("nl.mpi.loginUrl")
     String loginUrl();
@@ -55,10 +53,21 @@ public interface ServiceLocations extends Constants {
     @Key("nl.mpi.statusUrl")
     String statusUrl();
 
-    @Key("nl.mpi.jsonUrl")
-    String jsonUrl();
+    @Key("nl.mpi.jsonCsAdaptorUrl")
+    String jsonCsAdaptorUrl();
+
+    @Key("nl.mpi.jsonYamsRestUrl")
+    String jsonYamsRestUrl(String databaseName);
+
+    @Key("nl.mpi.jsonRootNode")
+    String jsonRootNode(String serviceUrl);
+
+    @Key("nl.mpi.jsonNodeOfUrl")
+    String jsonNodeOfUrl(String serviceUrl);
 
     @Key("nl.mpi.jsonLinksOfUrl")
-    String jsonLinksOfUrl();
+    String jsonLinksOfUrl(String serviceUrl, String nodeIdentifier);
 
+    @Key("nl.mpi.jsonNodeGetVar")
+    String jsonNodeGetVar();
 }
