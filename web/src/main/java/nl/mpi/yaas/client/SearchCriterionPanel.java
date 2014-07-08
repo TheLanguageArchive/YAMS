@@ -152,6 +152,8 @@ public class SearchCriterionPanel extends HorizontalPanel {
         loadingTypesImage.setVisible(true);
         searchOptionsService.getTypeOptions(databaseName, null, new AsyncCallback<MetadataFileType[]>() {
             public void onFailure(Throwable caught) {
+                logger.info("loadTypesOptions");
+                logger.info(databaseName);
                 logger.log(Level.SEVERE, caught.getMessage());
                 loadingTypesImage.setVisible(false);
             }
