@@ -113,7 +113,7 @@ public class SingleDataNodeTable extends VerticalPanel {
                     if (resourceHandle != null && resourceHandle.length() > 0) {
                         linksPanel.add(new ResourceViewer(resourceHandle));
                         // get the resource permissions
-//                        String url = "http://127.0.0.1:8888/yaas.html";//http://lux17.mpi.nl/ds/accessinfo/rest/info/" + resourceHandle.replace(":", "%3A");
+//                        String url = "http://127.0.0.1:8888/yams.html";//http://lux17.mpi.nl/ds/accessinfo/rest/info/" + resourceHandle.replace(":", "%3A");
 //                        JsonpRequestBuilder jsonp = new JsonpRequestBuilder();
 //                        jsonp.requestString(url,
 //                                new AsyncCallback<String>() {
