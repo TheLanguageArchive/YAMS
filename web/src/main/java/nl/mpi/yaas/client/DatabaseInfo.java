@@ -34,7 +34,7 @@ public class DatabaseInfo {
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
     private String[] databaseNames = new String[0];
-    private boolean databaseError = false;
+    private boolean databaseError = false; // todo: do we actually want an error state to be stored like this!
     private final HashMap<String, DatabaseStats> databaseStatsMap = new HashMap<String, DatabaseStats>();
     private final HashMap<String, IconTableBase64> iconTableBase64Map = new HashMap<String, IconTableBase64>();
 
@@ -49,7 +49,7 @@ public class DatabaseInfo {
         requestCounter++;
         searchOptionsService.getDatabaseList(new AsyncCallback<String[]>() {
             public void onFailure(Throwable caught) {
-                //logger.warning(caught.getMessage());
+                logger.log(Level.SEVERE, "DatabaseInfo:getDbInfo", caught);
                 ready();
                 requestCounter--;
                 logger.log(Level.SEVERE, caught.getMessage());
@@ -58,7 +58,7 @@ public class DatabaseInfo {
             }
 
             public void onSuccess(String[] result) {
-                //logger.info("getDbInfo");
+//                logger.info("getDbInfo");
                 ready();
                 requestCounter--;
                 databaseNames = result;
@@ -76,7 +76,7 @@ public class DatabaseInfo {
             requestCounter++;
             searchOptionsService.getDatabaseStats(databaseName, new AsyncCallback<DatabaseStats>() {
                 public void onFailure(Throwable caught) {
-                    //logger.warning(caught.getMessage());
+                    logger.log(Level.SEVERE, "DatabaseInfo:getDatabaseStats", caught);
                     ready();
                     requestCounter--;
                     databaseError = true;
@@ -95,7 +95,7 @@ public class DatabaseInfo {
             requestCounter++;
             searchOptionsService.getImageDataForTypes(databaseName, new AsyncCallback<IconTableBase64>() {
                 public void onFailure(Throwable caught) {
-                    //logger.warning(caught.getMessage());
+                    logger.log(Level.SEVERE, "DatabaseInfo:getImageDataForTypes", caught);
                     ready();
                     requestCounter--;
                     databaseError = true;
