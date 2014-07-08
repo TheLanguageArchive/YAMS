@@ -58,7 +58,7 @@ public class HistoryData {
             historyToken.append(/*"db:" +*/databaseName);
             for (DataNodeId nodeLink : branchIdList) {
                 historyToken.append(":");
-                historyToken.append(nodeLink.getIdString());
+                historyToken.append(nodeLink.getIdString().replace(":", "%3A"));
             }
             historyToken.append(",");
             historyToken.append(nodeActionType.name());
@@ -112,7 +112,7 @@ public class HistoryData {
                 if (firstPart) {
                     databaseName = part;
                 } else {
-                    branchIdList.add(new DataNodeId(part));
+                    branchIdList.add(new DataNodeId(part.replace("%3A", ":")));
                 }
                 firstPart = false;
             }

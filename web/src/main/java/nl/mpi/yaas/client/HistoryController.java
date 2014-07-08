@@ -101,6 +101,7 @@ public class HistoryController implements ValueChangeHandler<String> {
     }
 
     public void setBranchSelection(DataNodeId dataNodeLink, NodeActionType nodeActionType) throws ModelException {
+//        logger.info("setBranchSelection:" + dataNodeLink.getIdString());
         historyData.clearBranchSelection();
         addBranchSelection(dataNodeLink, nodeActionType);
     }
