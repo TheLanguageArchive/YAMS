@@ -20,6 +20,7 @@ package nl.mpi.yaas.client;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
@@ -57,14 +58,14 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
     public void userSelectionChange() {
         if (!useCorpusStructureDb) {
             final String databaseName = historyController.getDatabaseName();
-//        logger.info(databaseName);
+//            logger.info(databaseName);
             if (dataNodeTreeDb == null || !dataNodeTreeDb.equals(databaseName)) {
                 if (dataNodeTree != null) {
                     ArchiveTreePanel.this.remove(dataNodeTree);
                     dataNodeTree = null;
                 }
-//            logger.info("ArchiveTreePanel");
-//            logger.info(dataNodeTreeDb);
+//                logger.info("ArchiveTreePanel");
+//                logger.info(dataNodeTreeDb);
                 final DatabaseStats databaseStats = databaseInfo.getDatabaseStats(databaseName);
                 final IconTableBase64 databaseIcons = databaseInfo.getDatabaseIcons(databaseName);
                 if (databaseStats != null && databaseIcons != null && databaseStats.getRootDocumentsIDs() != null) {
@@ -77,14 +78,16 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
     }
 
     public void addDatabaseTree(String databaseName, DataNodeId[] dataNodeIds, IconTableBase64 databaseIcons) {
-        //logger.info("addDatabaseTree");
-        //logger.info(databaseName);
+//        logger.info("addDatabaseTree");
+//        logger.info(databaseName);
+//        logger.info("dataNodeIds:" + dataNodeIds.length);
+//        logger.info(dataNodeIds[0].getIdString());
         dataNodeTreeDb = databaseName;
         if (databaseName != null) {
             final TreeNodeClickListener treeNodeClickListener = new TreeNodeClickListener() {
 
                 public void clickEvent(SerialisableDataNode dataNode) {
-                    //logger.info("TreeNodeClickListener");
+//                    logger.info("TreeNodeClickListener");
 //                    actionsPanelController.setDataNode(dataNode);
 //                    detailsPanel.setDataNode(dataNode);
                     try {
@@ -95,20 +98,25 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
                 }
             };
             dataNodeTree = new DataNodeTree(null, treeNodeClickListener, searchOptionsService, databaseIcons, true);
-            dataNodeTree.addCsRootToTree();//addResultsToTree(databaseName, dataNodeIds, true);
+            dataNodeTree.addResultsToTree(databaseName, dataNodeIds, true);
             ArchiveTreePanel.this.add(dataNodeTree);
         }
     }
 
     public void addCsDatabaseTree() {
         if (dataNodeTree == null) {
-            //logger.info("addCsDatabaseTree");
+//            logger.info("addCsDatabaseTree");
             final TreeNodeClickListener treeNodeClickListener = new TreeNodeClickListener() {
 
                 public void clickEvent(SerialisableDataNode dataNode) {
-                    //logger.info("TreeNodeClickListener");
+//                    logger.info("TreeNodeClickListener");
                     try {
-                        historyController.setBranchSelection(new DataNodeId(dataNode.getID()), HistoryData.NodeActionType.details);
+                        String id = dataNode.getArchiveHandle();
+                        if (id == null) {
+                            id = new DataNodeLink(dataNode.getURI(), dataNode.getArchiveHandle()).getIdString();
+                        }
+//                        logger.info(id);
+                        historyController.setBranchSelection(new DataNodeId(id), HistoryData.NodeActionType.details);
                     } catch (ModelException exception) {
                         logger.warning(exception.getMessage());
                     }
