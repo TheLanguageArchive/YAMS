@@ -114,7 +114,7 @@ public class DataNodeTree extends Tree {
     }
 
     public void addCsRootToTree() {
-        //logger.info("addCsRootToTree");
+//        logger.info("addCsRootToTree");
         final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson();
         final YaasJsonTreeItem yaasTreeItem = new YaasJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
         DataNodeTree.this.addItem(yaasTreeItem);

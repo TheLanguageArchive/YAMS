@@ -19,6 +19,7 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.List;
+import java.util.logging.Logger;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.IconTableBase64;
@@ -30,6 +31,7 @@ import nl.mpi.yaas.common.data.NodeTypeImageBase64;
  */
 public class DataNodeLoaderRpc implements DataNodeLoader {
 
+    private static final Logger logger = Logger.getLogger("");
     final private SearchOptionsServiceAsync searchOptionsService;
     private final IconTableBase64 iconTableBase64;
     private final String databaseName;
