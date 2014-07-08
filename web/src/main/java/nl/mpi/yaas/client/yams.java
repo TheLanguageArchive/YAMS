@@ -35,7 +35,7 @@ import java.util.List;
 //import com.googlecode.gwtphonegap.client.util.PhonegapUtil;
 import java.util.logging.Logger;
 
-public class yaas implements EntryPoint {
+public class yams implements EntryPoint {
 
     private static final Logger logger = Logger.getLogger("");
     private SearchOptionsServiceAsync searchOptionsService;
