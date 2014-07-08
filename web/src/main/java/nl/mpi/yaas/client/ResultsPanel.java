@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
-import static nl.mpi.yaas.client.YaasTreeItem.FAILURE;
 import nl.mpi.yaas.common.data.HighlighableDataNode;
 import nl.mpi.yaas.common.data.IconTableBase64;
 
@@ -107,7 +106,7 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
             this.addClosableTab(verticalPanel, dataNode.getLabel());
             this.selectTab(this.getWidgetIndex(verticalPanel));
         } catch (ModelException exception) {
-            logger.log(Level.SEVERE, FAILURE, exception);
+            logger.log(Level.SEVERE, "Failed to get child IDs", exception);
         }
         this.setVisible(true);
     }
