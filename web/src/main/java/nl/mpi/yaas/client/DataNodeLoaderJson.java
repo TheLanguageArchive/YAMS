@@ -27,6 +27,7 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.DataNodePermissions;
@@ -44,58 +45,89 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 
     private static final Logger logger = Logger.getLogger("");
     final private ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
+    final String jsonUrl;
 
     public DataNodeLoaderJson() {
+        jsonUrl = serviceLocations.jsonCsAdaptorUrl();
+    }
+
+    public DataNodeLoaderJson(String databaseName) {
+        jsonUrl = serviceLocations.jsonYamsDataUrl(databaseName);
     }
 
     public void requestLoadRoot(final DataNodeLoaderListener dataNodeLoaderListener) {
         // Send request to server and catch any errors.
-        final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, serviceLocations.jsonUrl());
+        final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, jsonUrl);
         try {
-            final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener));
+            final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener, jsonUrl));
         } catch (RequestException e) {
             dataNodeLoaderListener.dataNodeLoadFailed(e);
             logger.warning("Couldn't retrieve JSON");
-            logger.warning(e.getMessage());
+            logger.log(Level.SEVERE, "requestLoadRoot", e);
         }
     }
 
     public void requestLoadChildrenOf(DataNodeId dataNodeId, int first, int last, DataNodeLoaderListener dataNodeLoaderListener) {
+//        logger.info("requestLoadChildrenOf");
+        final String jsonLinksOfUrl = serviceLocations.jsonLinksOfUrl(jsonUrl, dataNodeId.getIdString());
+//        logger.info(jsonLinksOfUrl);
         // Send request to server and catch any errors.
-        final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, serviceLocations.jsonLinksOfUrl() + dataNodeId.getIdString());
+        final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, jsonLinksOfUrl);
         try {
-            final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener));
+            final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener, jsonLinksOfUrl));
         } catch (RequestException e) {
             dataNodeLoaderListener.dataNodeLoadFailed(e);
             logger.warning("Couldn't retrieve JSON");
-            logger.warning(e.getMessage());
+            logger.log(Level.SEVERE, "requestLoadChildrenOf", e);
         }
     }
 
     public void requestLoad(List<DataNodeId> dataNodeIdList, final DataNodeLoaderListener dataNodeLoaderListener) {
-        throw new UnsupportedOperationException("Not supported yet.");
-//        searchOptionsService.getDataNodes(databaseName, dataNodeIdList, new AsyncCallback<List<SerialisableDataNode>>() {
-//            public void onFailure(Throwable caught) {
-//                dataNodeLoaderListener.dataNodeLoadFailed(caught);
-//            }
-//
-//            public void onSuccess(List<SerialisableDataNode> dataNodeList) {
-//                dataNodeLoaderListener.dataNodeLoaded(dataNodeList);
-//            }
-//        });
+//        logger.info("requestLoad");
+// Send request to server and catch any errors.
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(jsonUrl);
+        stringBuilder.append("?");
+        for (DataNodeId dataNodeId : dataNodeIdList) {
+            stringBuilder.append(serviceLocations.jsonNodeGetVar());
+            stringBuilder.append(dataNodeId.getIdString());
+            stringBuilder.append("&");
+        }
+//        final String jsonLinksOfUrl = serviceLocations.jsonYamsDataUrl(jsonUrl, stringBuilder.toString());
+        final String restNodeUrl = stringBuilder.toString();
+//        logger.warning(restNodeUrl);
+        final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, restNodeUrl);
+        try {
+            final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener, restNodeUrl));
+        } catch (RequestException e) {
+            dataNodeLoaderListener.dataNodeLoadFailed(e);
+            logger.warning("Couldn't retrieve JSON");
+            logger.log(Level.SEVERE, "requestLoad", e);
+        }
     }
 
     public void requestLoadHdl(List<String> dataNodeHdlList, final DataNodeLoaderListener dataNodeLoaderListener) {
-        throw new UnsupportedOperationException("Not supported yet.");
-//        searchOptionsService.getDataNodesByHdl(databaseName, dataNodeHdlList, new AsyncCallback<List<SerialisableDataNode>>() {
-//            public void onFailure(Throwable caught) {
-//                dataNodeLoaderListener.dataNodeLoadFailed(caught);
-//            }
-//
-//            public void onSuccess(List<SerialisableDataNode> dataNodeList) {
-//                dataNodeLoaderListener.dataNodeLoaded(dataNodeList);
-//            }
-//        });
+//        logger.info("requestLoadHdl");
+        // Send request to server and catch any errors.
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(jsonUrl);
+        stringBuilder.append("?");
+        for (String dataNodeHdl : dataNodeHdlList) {
+            stringBuilder.append(serviceLocations.jsonNodeGetVar());
+            stringBuilder.append(dataNodeHdl);
+            stringBuilder.append("&");
+        }
+        final String restNodeUrl = stringBuilder.toString();
+//        logger.warning(restNodeUrl);
+//        final String jsonLinksOfUrl = serviceLocations.jsonLinksOfUrl(jsonUrl, stringBuilder.toString());
+        final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, restNodeUrl);
+        try {
+            final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener, restNodeUrl));
+        } catch (RequestException e) {
+            dataNodeLoaderListener.dataNodeLoadFailed(e);
+            logger.warning("Couldn't retrieve JSON");
+            logger.log(Level.SEVERE, "requestLoadHdl", e);
+        }
     }
 
     public void requestLoadUri(List<String> dataNodeUriList, final DataNodeLoaderListener dataNodeLoaderListener) {
@@ -115,7 +147,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
         return yaasDataNode.getType().getID();
     }
 
-    private RequestCallback geRequestBuilder(final RequestBuilder builder, final DataNodeLoaderListener dataNodeLoaderListener) {
+    private RequestCallback geRequestBuilder(final RequestBuilder builder, final DataNodeLoaderListener dataNodeLoaderListener, final String targetUri) {
         return new RequestCallback() {
             public void onError(Request request, Throwable exception) {
                 dataNodeLoaderListener.dataNodeLoadFailed(exception);
@@ -126,7 +158,10 @@ public class DataNodeLoaderJson implements DataNodeLoader {
             public void onResponseReceived(Request request, Response response) {
                 if (200 == response.getStatusCode()) {
                     final String text = response.getText();
-                    logger.info(text);
+//                    logger.info("onResponseReceived");
+//                    logger.info(targetUri);
+//                    logger.info(text);
+//                    logger.info("onResponseReceivedEnd");
                     final JsArray<JsonDataNode> jsonArray = JsonUtils.safeEval(text);
                     List<SerialisableDataNode> dataNodes = new ArrayList<SerialisableDataNode>();
                     for (int index = 0; index < jsonArray.length(); index++) {
@@ -177,6 +212,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
                 } else {
                     dataNodeLoaderListener.dataNodeLoadFailed(new WebQueryException("Couldn't retrieve JSON: " + response.getStatusCode()));
                     logger.warning("Couldn't retrieve JSON");
+                    logger.warning(targetUri);
                     logger.warning(response.getStatusText());
                 }
             }
