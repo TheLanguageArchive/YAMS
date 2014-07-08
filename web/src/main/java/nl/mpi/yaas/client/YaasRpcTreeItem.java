@@ -32,9 +32,7 @@ import static nl.mpi.flap.model.DataNodeType.IMDI_RESOURCE;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
-import static nl.mpi.yaas.client.YaasTreeItem.ERROR_GETTING_CHILD_NODES;
-import static nl.mpi.yaas.client.YaasTreeItem.FAILURE;
-import static nl.mpi.yaas.client.YaasTreeItem.LOADING_CHILD_NODES_FAILED;
+import static nl.mpi.yaas.client.YaasTreeItem.logger;
 import nl.mpi.yaas.common.data.DataNodeHighlight;
 import nl.mpi.yaas.common.data.DataNodeId;
 import nl.mpi.yaas.common.data.HighlighableDataNode;
@@ -315,8 +313,8 @@ public class YaasRpcTreeItem extends YaasTreeItem {
                             addItem(loadingTreeItem);
                         }
                     } catch (ModelException exception) {
-                        setText(FAILURE);
-                        logger.log(Level.SEVERE, FAILURE, exception);
+                        setText("failed to show node loaded via RPC");
+                        logger.log(Level.SEVERE, "failed to show node loaded via RPC", exception);
                     }
                     setNodeIconData(dataNodeLoader.getNodeIcon(yaasDataNode));
                     hideShowExpandButton();
@@ -327,9 +325,10 @@ public class YaasRpcTreeItem extends YaasTreeItem {
                 }
 
                 public void dataNodeLoadFailed(Throwable caught) {
-                    setText(FAILURE);
+                    setText(FAILED_TO_LOAD + " via RPC");
                     removeItem(loadingTreeItem);
-                    logger.log(Level.SEVERE, FAILURE, caught);
+                    logger.log(Level.SEVERE, FAILED_TO_LOAD + " via RPC", caught);
+                    logger.log(Level.SEVERE, caught.getMessage(), caught);
                 }
             });
         }

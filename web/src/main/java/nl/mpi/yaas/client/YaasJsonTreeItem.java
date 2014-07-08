@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.logging.Level;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
-import static nl.mpi.yaas.client.YaasTreeItem.FAILURE;
-import static nl.mpi.yaas.client.YaasTreeItem.logger;
 import nl.mpi.yaas.common.data.DataNodeId;
 
 /**
@@ -86,9 +84,9 @@ public class YaasJsonTreeItem extends YaasTreeItem {
                 }
 
                 public void dataNodeLoadFailed(Throwable caught) {
-                    setText(FAILURE);
+                    setText(FAILED_TO_LOAD + " via JSON");
                     removeItem(loadingTreeItem);
-                    logger.log(Level.SEVERE, FAILURE, caught);
+                    logger.log(Level.SEVERE, FAILED_TO_LOAD + " via JSON", caught);
                 }
             });
         }

@@ -46,7 +46,7 @@ public abstract class YaasTreeItem extends TreeItem {
 
     public static final String ERROR_GETTING_CHILD_NODES = "Error getting child nodes";
     public static final String LOADING_CHILD_NODES_FAILED = "Loading child nodes failed";
-    public static final String FAILURE = "Failure";
+    public static final String FAILED_TO_LOAD = "Failed to load";
     protected SerialisableDataNode yaasDataNode = null;
     final protected DataNodeLoader dataNodeLoader;
     protected boolean loadAttempted = false;
@@ -115,7 +115,8 @@ public abstract class YaasTreeItem extends TreeItem {
     }
 
     protected void hideShowExpandButton() {
-        final boolean hasFields = yaasDataNode != null && yaasDataNode.getFieldGroups() != null;
+        // this check will determine if the expand button is visible, but also if the click action is available. The click action was suppressed for empty data nodes like "Actors" but this behaivour is undefined at this point for CS2CMDI.
+        final boolean hasFields = (this instanceof YaasJsonTreeItem || yaasDataNode != null && yaasDataNode.getFieldGroups() != null);
         nodeLabel.setVisible(!hasFields);
         if (checkboxListener != null) {
             checkBox.setVisible(hasFields);
@@ -158,11 +159,11 @@ public abstract class YaasTreeItem extends TreeItem {
 //        });
         //logger.info("clickListener");
         if (clickListener != null) {
-            //logger.info(clickListener.toString());
+//            logger.info("clickListener");
             nodeDetailsAnchor.addClickHandler(new ClickHandler() {
 
                 public void onClick(ClickEvent event) {
-                    //logger.info(yaasDataNode.getLabel());
+//                    logger.info(yaasDataNode.getLabel());
                     clickListener.clickEvent(yaasDataNode);
                 }
             });
