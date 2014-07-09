@@ -29,8 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.DataNodePermissions;
+import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.common.data.DataNodeId;
@@ -212,6 +214,16 @@ public class DataNodeLoaderJson implements DataNodeLoader {
                                 return jsonDataNode.getLinkCount();
                             }
 
+                            @Override
+                            public List<FieldGroup> getFieldGroups() {
+                                final ArrayList<FieldGroup> fieldGroups = new ArrayList<FieldGroup>();
+//                                final ArrayList<DataField> dataFieldList = new ArrayList<DataField>();
+//                                final DataField dataField = new DataField(); 
+//                                dataField.setFieldValue("");
+//                                dataFieldList.add(dataField);
+//                                fieldGroups.add(new FieldGroup("text", dataFieldList));
+                                return fieldGroups;
+                            }
                         });
                     }
                     dataNodeLoaderListener.dataNodeLoaded(dataNodes);
