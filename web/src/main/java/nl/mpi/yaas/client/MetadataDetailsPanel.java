@@ -19,7 +19,9 @@ package nl.mpi.yaas.client;
 
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -44,20 +46,22 @@ public class MetadataDetailsPanel extends VerticalPanel {
     }
 
     public void setDataNode(SerialisableDataNode dataNode) {
-//        logger.info("MetadataDetailsPanel");
+        //logger.info("MetadataDetailsPanel:setDataNode");
         this.clear();
 //        logger.info("a-MetadataDetailsPanel");
         this.setVisible(true);
 //        logger.info("b-MetadataDetailsPanel");
         this.dataNode = dataNode;
 //        logger.info("c-MetadataDetailsPanel");
-        this.add(addDataNodePanel(dataNode));
+        if (dataNode != null) {
+            this.add(addDataNodePanel(dataNode));
+        }
 //        logger.info("end-MetadataDetailsPanel");
     }
 
     public Panel addDataNodePanel(SerialisableDataNode dataNode) {
         final VerticalPanel simplePanel = new VerticalPanel();
-       // logger.info(dataNode.getLabel());
+        // logger.info(dataNode.getLabel());
         final Label label = new Label(dataNode.getLabel());
         simplePanel.setStyleName("IMDI_group");
         simplePanel.add(label);
@@ -76,9 +80,12 @@ public class MetadataDetailsPanel extends VerticalPanel {
                 horizontalPanel.add(groupLabel);
 //                logger.info("fields");
                 for (DataField field : fieldGroup.getFields()) {
-                    final Label valueLabel = new Label(field.getFieldValue());
-                    valueLabel.setStyleName("IMDI_value");
-                    horizontalPanel.add(valueLabel);
+                    final String fieldValue = field.getFieldValue();
+                    if (fieldValue != null) {
+                        HTML valueLabel = new HTML(new SafeHtmlBuilder().appendEscapedLines(fieldValue).toSafeHtml());
+                        valueLabel.setStyleName("IMDI_value");
+                        horizontalPanel.add(valueLabel);
+                    }
                 }
                 verticalPanel.add(horizontalPanel);
             }
