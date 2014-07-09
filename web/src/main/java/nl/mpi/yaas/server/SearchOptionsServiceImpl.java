@@ -80,6 +80,8 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
             DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(DataBaseManager.defaultDataBase);
             return yaasDatabase.getDatabaseList();
         } catch (QueryException exception) {
+            //exception.printStackTrace();
+            //logger.error(exception.getMessage());
             throw new WebQueryException("getDatabaseList", exception);
         }
     }
@@ -99,6 +101,8 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 //        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File(System.getProperty("user.dir"), "yaas-data"));
         String basexRestUrl = getBasexRestUrl();
 //        System.out.println("basexRestUrl: " + basexRestUrl);
+        //logger.info("getDatabase:" + databaseName);
+        //System.out.println("getDatabase: " + databaseName);
         try {
             final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), getBasexUser(), getBasexPass());
             return new DataBaseManager<HighlighableDataNode, DataField, MetadataFileType>(HighlighableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
@@ -108,6 +112,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
     }
 
     public MetadataFileType[] getTypeOptions(String databaseName, MetadataFileType metadataFileType) throws WebQueryException {
+        //logger.info("getTypeOptions:" + databaseName);
         try {
             DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
             MetadataFileType[] metadataPathTypes = yaasDatabase.getMetadataTypes(metadataFileType);
@@ -151,6 +156,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 //        return new YaasDataNode(criterionJoinType.name());
         try {
             DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
+            //logger.info("databaseName:" + databaseName);
             HighlighableDataNode yaasDataNode = yaasDatabase.getSearchResult(criterionJoinType, searchParametersList);
             return yaasDataNode;
 //            ArrayList<String> returnList = new ArrayList<String>();
@@ -159,7 +165,8 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 //            };
 //            return returnList.toArray(new String[0]);
         } catch (QueryException exception) {
-            throw new WebQueryException("performSearch", exception);
+            //exception.printStackTrace();
+            throw new WebQueryException("performSearch:" + databaseName + ":" + criterionJoinType.name() + ":" + searchParametersList.size(), exception);
         }
     }
 
@@ -167,7 +174,9 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         try {
             DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
             SerialisableDataNode yaasDataNode = yaasDatabase.getNodeDatasByHdls(hdlList);
-            return (List<SerialisableDataNode>) yaasDataNode.getChildList();
+            final List<SerialisableDataNode> name = (List<SerialisableDataNode>) yaasDataNode.getChildList();
+            //logger.info("getDataNodesByHdl:done:" + yaasDataNode.getChildList().size());
+            return name;
         } catch (QueryException exception) {
             throw new WebQueryException("getDataNodesByHdl", exception);
         }
@@ -185,6 +194,9 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public List<SerialisableDataNode> getDataNodes(String databaseName, List<DataNodeId> dataNodeIds) throws WebQueryException {
         try {
+            //logger.info("getDataNodes");
+            //logger.info(databaseName);
+            //logger.info(Integer.toString(dataNodeIds.size()));
             DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(databaseName);
             SerialisableDataNode yaasDataNode = yaasDatabase.getNodeDatasByIDs(dataNodeIds);
             return (List<SerialisableDataNode>) yaasDataNode.getChildList();
