@@ -124,9 +124,11 @@ public class DataNodeTree extends Tree {
 
     public void addResultsToTree(final String databaseName, final DataNodeId[] dataNodeIds, final boolean displayFlatNodes) {
         final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, iconTableBase64, databaseName);
+//        final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
         addPagingButton(new Pageable() {
             public void addYaasTreeItem(int index) {
                 final YaasTreeItem yaasTreeItem = new YaasRpcTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
+//                final YaasJsonTreeItem yaasTreeItem = new YaasJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }
 
@@ -138,6 +140,7 @@ public class DataNodeTree extends Tree {
 
     public void addResultsToTree(final String databaseName, final List<DataNodeLink> rootIds, final HighlighableDataNode dataNode, final boolean displayFlatNodes) {
         final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, iconTableBase64, databaseName);
+//        final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
         final TreeItem treeItem = new TreeItem(new HorizontalPanel());
         final TreeTableHeader treeTableHeader = new TreeTableHeader(treeItem);
         this.addItem(treeItem);
@@ -145,6 +148,7 @@ public class DataNodeTree extends Tree {
 
             public void addYaasTreeItem(int index) {
                 final YaasRpcTreeItem yaasTreeItem = new YaasRpcTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
+//                final YaasJsonTreeItem yaasTreeItem = new YaasJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
                 yaasTreeItem.setHighlights(dataNode);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }
