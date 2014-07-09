@@ -20,6 +20,8 @@ package nl.mpi.yams.rest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.ws.rs.DefaultValue;
@@ -133,6 +135,18 @@ public class service {
     public Response getChildDataNodes(@PathParam("dbname") String dbName, @QueryParam("url") final String identifier, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws QueryException {
         DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(dbName);
         final SerialisableDataNode childNodes = yaasDatabase.getChildNodesOfHdl(identifier, start, end);
+        return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
+    }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/data/{dbname}/node")
+//    @Path("hdl{hdl}")
+    public Response getDataNode(@PathParam("dbname") String dbName, @QueryParam("url") final String identifier) throws QueryException {
+        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(dbName);
+        List<String> identifierList = new ArrayList<String>();
+        identifierList.add(identifier);
+        final SerialisableDataNode childNodes = yaasDatabase.getNodeDatasByHdls(identifierList);
         return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
     }
 
