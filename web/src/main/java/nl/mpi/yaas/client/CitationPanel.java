@@ -90,7 +90,7 @@ public class CitationPanel extends VerticalPanel {
 //            verticalPanel.add(getLabelPanel("Archive Name:", "", null));
             if (dataNode.getType() != null) {
                 verticalPanel.add(getLabelPanel(citationStrings.formatId(), dataNode.getType().getID(), null));
-                verticalPanel.add(getLabelPanel(citationStrings.formatName(), dataNode.getType().getName(), null));
+                verticalPanel.add(getLabelPanel(citationStrings.formatName(), dataNode.getType().getMimeType(), null));
                 if (dataNode.getType().getFormat() != null) {
                     verticalPanel.add(getLabelPanel(citationStrings.format(), dataNode.getType().getFormat().name(), null));
                 }
