@@ -408,7 +408,7 @@ public abstract class DataBaseManagerTest {
         iconTable2.addTypeIcon(new NodeTypeImage(new DataNodeType("b", "s", "x", DataNodeType.FormatType.imdi_session), new ImageIcon(bufferedImage).getImage()));
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         final IconTable nodeIcons1 = dbManager.insertNodeIconsIntoDatabase(iconTable);
-        // test that all three node dype icons have been added
+        // test that all three node type icons have been added
         assertEquals(3, nodeIcons1.getNodeTypeImageSet().size());
         final IconTable nodeIcons2 = dbManager.insertNodeIconsIntoDatabase(iconTable2);
         // test that two additional node type icons have been added and the duplicates have not
