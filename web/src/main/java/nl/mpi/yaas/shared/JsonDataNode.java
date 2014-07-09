@@ -44,5 +44,5 @@ public class JsonDataNode extends JavaScriptObject {
 
     public final native String getTypeFormat() /*-{ return this.Type.Format; }-*/;
 
-    public final native String getTypeAccessLevel() /*-{ return this.Permissions.AccessLevel; }-*/;
+    public final native String getTypeAccessLevel() /*-{ if (this.Permissions != null) return this.Permissions.AccessLevel; else return null;}-*/;
 }
