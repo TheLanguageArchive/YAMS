@@ -89,37 +89,37 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
             final ArbilTemplate template = arbilDataNode.getNodeTemplate();
             if (template instanceof CmdiTemplate) {
                 final CmdiTemplate cmdiTemplate = (CmdiTemplate) template;
-                dataNodeType.setName(cmdiTemplate.getTemplateName());
+                dataNodeType.setLabel(cmdiTemplate.getTemplateName());
                 dataNodeType.setID(cmdiTemplate.getTemplateName()); // todo: modify Arbil so that the ID and Name are available
             }
         } else {
-            dataNodeType.setFormat(DataNodeType.FormatType.imdi);
+            dataNodeType.setFormat(DataNodeType.FormatType.imdi_session);
             if (arbilDataNode.isCatalogue()) {
-                dataNodeType.setName("Catalogue");
+                dataNodeType.setLabel("Catalogue");
                 dataNodeType.setID("imdi.catalogue");
             } else if (arbilDataNode.isCorpus()) {
-                dataNodeType.setName("Corpus");
+                dataNodeType.setLabel("Corpus");
                 dataNodeType.setID("imdi.corpus");
             } else if (arbilDataNode.isSession()) {
-                dataNodeType.setName("Session");
+                dataNodeType.setLabel("Session");
                 dataNodeType.setID("imdi.session");
             } else if (arbilDataNode.isContainerNode()) {
-                dataNodeType.setName("Container");
+                dataNodeType.setLabel("Container");
                 dataNodeType.setID("container");
             } else if (arbilDataNode.hasResource()) { // a resource node will always be a child node so this would do nothing and is not required
                 String mimeTypeForNode = arbilDataNode.getAnyMimeType();
                 if (mimeTypeForNode != null) {
-                    dataNodeType.setName(mimeTypeForNode);
+                    dataNodeType.setLabel(mimeTypeForNode);
                     dataNodeType.setID(IMDI_RESOURCE);
                 } else {
-                    dataNodeType.setName("Resource");
+                    dataNodeType.setLabel("Resource");
                     dataNodeType.setID(IMDI_RESOURCE);
                 }
             } else if (arbilDataNode.isChildNode()) {
-                dataNodeType.setName("Subnode");
+                dataNodeType.setLabel("Subnode");
                 dataNodeType.setID("subnode");
             } else if (arbilDataNode.isDirectory()) {
-                dataNodeType.setName("Directory");
+                dataNodeType.setLabel("Directory");
                 dataNodeType.setID("directory");
             }
         }
@@ -134,8 +134,8 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     @Override
     public List<DataNodeLink> getChildIds() throws ModelException {
         List<DataNodeLink> childIds = new ArrayList<DataNodeLink>();
-        for (ArbilDataNode childNode : arbilDataNode.getChildArray()) {
-            if (!childNode.isChildNode() && childNode.isMetaDataNode()) {
+        for (ArbilDataNode childNode : arbilDataNode.getAllChildren()) {
+            if (!childNode.getUrlString().contains("#")) { //!childNode.isChildNode()/* && childNode.isMetaDataNode()*/) {
                 // not all documents have an archive handle, however if it does exist then it will be used otherwise the URI is used, as the ID via a hash
                 childIds.add(new DataNodeLink(childNode.getUrlString(), childNode.archiveHandle));
             }
