@@ -15,11 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yaas.common.data;
+package nl.mpi.yams.common.data;
 
 import java.io.Serializable;
-import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
-import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
+import nl.mpi.yams.common.data.QueryDataStructures.SearchNegator;
+import nl.mpi.yams.common.data.QueryDataStructures.SearchType;
 
 /**
  * Document : SearchParameters <br> Created on Sep 11, 2012, 4:55:09 PM <br>

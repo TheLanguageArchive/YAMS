@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yaas.common.data;
+package nl.mpi.yams.common.data;
 
 /**
  * Created on : Feb 4, 2013, 10:22:27 AM

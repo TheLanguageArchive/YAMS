@@ -16,36 +16,29 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package nl.mpi.yaas.common.data;
+package nl.mpi.yams.common.data;
 
 import java.io.Serializable;
-import javax.xml.bind.annotation.XmlAttribute;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
+import nl.mpi.flap.model.SerialisableDataNode;
 
 /**
- * Created on : Aug 28, 2013, 5:24:13 PM
+ * Created on : Aug 28, 2013, 5:38:42 PM
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class DataNodeHighlight implements Serializable {
+public class HighlighableDataNode extends SerialisableDataNode implements Serializable {
 
-    private String dataNodeId = null;
-    private String highlightPath = null;
+    private List<DataNodeHighlight> highlights = new ArrayList<DataNodeHighlight>();
 
-    public String getDataNodeId() {
-        return dataNodeId;
+    public List<DataNodeHighlight> getHighlights() {
+        return highlights;
     }
 
-    @XmlAttribute(name = "ID")
-    public void setDataNodeId(String dataNodeId) {
-        this.dataNodeId = dataNodeId;
-    }
-
-    public String getHighlightPath() {
-        return highlightPath;
-    }
-
-    @XmlAttribute(name = "Path")
-    public void setHighlightPath(String highlightPath) {
-        this.highlightPath = highlightPath;
+    @XmlElement(name = "Highlight")
+    public void setHighlights(List<DataNodeHighlight> highlighedLinks) {
+        this.highlights = highlighedLinks;
     }
 }

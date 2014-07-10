@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package nl.mpi.yaas.common.db;
+package nl.mpi.yams.common.db;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -34,19 +34,19 @@ import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
-import nl.mpi.yaas.common.data.DataNodeId;
-import nl.mpi.yaas.common.data.DatabaseLinks;
-import nl.mpi.yaas.common.data.DatabaseList;
-import nl.mpi.yaas.common.data.DatabaseStats;
-import nl.mpi.yaas.common.data.IconTable;
-import nl.mpi.yaas.common.data.IconTableBase64;
-import nl.mpi.yaas.common.data.MetadataFileType;
-import nl.mpi.yaas.common.data.NodeTypeImage;
-import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
-import nl.mpi.yaas.common.data.QueryDataStructures.SearchNegator;
-import nl.mpi.yaas.common.data.QueryDataStructures.SearchOption;
-import nl.mpi.yaas.common.data.QueryDataStructures.SearchType;
-import nl.mpi.yaas.common.data.SearchParameters;
+import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.DatabaseLinks;
+import nl.mpi.yams.common.data.DatabaseList;
+import nl.mpi.yams.common.data.DatabaseStats;
+import nl.mpi.yams.common.data.IconTable;
+import nl.mpi.yams.common.data.IconTableBase64;
+import nl.mpi.yams.common.data.MetadataFileType;
+import nl.mpi.yams.common.data.NodeTypeImage;
+import nl.mpi.yams.common.data.QueryDataStructures.CriterionJoinType;
+import nl.mpi.yams.common.data.QueryDataStructures.SearchNegator;
+import nl.mpi.yams.common.data.QueryDataStructures.SearchOption;
+import nl.mpi.yams.common.data.QueryDataStructures.SearchType;
+import nl.mpi.yams.common.data.SearchParameters;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -72,8 +72,8 @@ public class DataBaseManager<D, F, M> {
      * these are two recommended database names, one for testing and the other
      * for production
      */
-    final static public String defaultDataBase = "yaas-data";
-    final static public String testDataBase = "yaas-test-data";
+    final static public String defaultDataBase = "yams-data";
+    final static public String testDataBase = "yams-test-data";
     final static public String facetsCollection = "Facets";
     final static public String dbStatsDocument = "DbStats";
     final static private String linksDocument = "DatabaseLinks";

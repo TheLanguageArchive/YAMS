@@ -1,16 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <name>YAAS Common</name>
+    <name>YAMS Common</name>
     <groupId>nl.mpi</groupId>
-    <artifactId>yaas-common</artifactId>
+    <artifactId>yams-common</artifactId>
     <!--    Either use the snapshot version of manually enter the current build number. 
     The build number is only required when depending on the output in other projects or building to the server.-->
     <version>1.0-pretesting-SNAPSHOT</version>
 <!--    <version>${plugin.majorVersion}.${plugin.minorVersion}.34200-${plugin.branch}</version>-->
     <parent>
         <groupId>nl.mpi</groupId>
-        <artifactId>yaas-parent</artifactId>
+        <artifactId>yams-parent</artifactId>
         <version>1.0</version>
     </parent>
     <properties>
@@ -35,7 +35,7 @@
             <resource>
                 <directory>src/main/java</directory>
                 <includes>
-                    <include>nl/mpi/yaas/common/data/*.java</include>
+                    <include>nl/mpi/yams/common/data/*.java</include>
                     <include>**/*.gwt.xml</include>
                 </includes>
             </resource>

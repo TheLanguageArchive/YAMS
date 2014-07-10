@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yaas.common;
+package nl.mpi.yams.common;
 
 import nl.mpi.flap.module.BaseModule;
 
@@ -26,11 +26,11 @@ import nl.mpi.flap.module.BaseModule;
 public class HelloWorldPlugin implements BaseModule {
 
     public String getName() {
-        return "Hello World Plugin (yaas-common)";
+        return "Hello World Plugin (yams-common)";
     }
 
     public String getDescription() {
-        return "A Sample Plugin\nnl.mpi\nyaas-common";
+        return "A Sample Plugin\nnl.mpi\nyams-common";
     }
 
     public int getBuildVersionNumber() {

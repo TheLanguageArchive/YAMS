@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yaas.common;
+package nl.mpi.yams.common;
 
 import nl.mpi.flap.module.BaseModule;
 import nl.mpi.flap.plugin.ActivatablePlugin;
@@ -32,11 +32,11 @@ public class HelloWorldActivatablePlugin implements BaseModule, PluginSettings, 
     private boolean activated = false;
 
     public String getName() {
-        return "Sample Activate Plugin Name (yaas-common)";
+        return "Sample Activate Plugin Name (yams-common)";
     }
 
     public String getDescription() {
-        return "Sample Activate Plugin Description String\nnl.mpi\nyaas-common";
+        return "Sample Activate Plugin Description String\nnl.mpi\nyams-common";
     }
 
     public int getBuildVersionNumber() {

@@ -16,8 +16,10 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package nl.mpi.yaas.common.db;
+package nl.mpi.yams.common.db;
 
+import nl.mpi.yams.common.db.DbAdaptor;
+import nl.mpi.yams.common.db.DataBaseManager;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,17 +38,17 @@ import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
-import nl.mpi.yaas.common.data.DataNodeId;
-import nl.mpi.yaas.common.data.DatabaseLinks;
-import nl.mpi.yaas.common.data.DatabaseList;
-import nl.mpi.yaas.common.data.DatabaseStats;
-import nl.mpi.yaas.common.data.HighlighableDataNode;
-import nl.mpi.yaas.common.data.IconTable;
-import nl.mpi.yaas.common.data.IconTableBase64;
-import nl.mpi.yaas.common.data.MetadataFileType;
-import nl.mpi.yaas.common.data.NodeTypeImage;
-import nl.mpi.yaas.common.data.QueryDataStructures;
-import nl.mpi.yaas.common.data.SearchParameters;
+import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.DatabaseLinks;
+import nl.mpi.yams.common.data.DatabaseList;
+import nl.mpi.yams.common.data.DatabaseStats;
+import nl.mpi.yams.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.IconTable;
+import nl.mpi.yams.common.data.IconTableBase64;
+import nl.mpi.yams.common.data.MetadataFileType;
+import nl.mpi.yams.common.data.NodeTypeImage;
+import nl.mpi.yams.common.data.QueryDataStructures;
+import nl.mpi.yams.common.data.SearchParameters;
 import org.junit.Assert;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
