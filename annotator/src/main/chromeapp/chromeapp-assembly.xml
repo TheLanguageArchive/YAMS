@@ -7,7 +7,7 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>${project.build.directory}/annotator-1.0-SNAPSHOT</directory>
+            <directory>${project.build.directory}/${project.build.finalName}</directory>
             <includes>
                 <include>*.*</include>
                 <include>/images/**</include>

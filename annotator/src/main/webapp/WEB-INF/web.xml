@@ -8,7 +8,7 @@
   <!-- Servlets -->
   <servlet>
     <servlet-name>greetServlet</servlet-name>
-    <servlet-class>nl.mpi.yaas.annotator.server.GreetingServiceImpl</servlet-class>
+    <servlet-class>nl.mpi.yams.annotator.server.GreetingServiceImpl</servlet-class>
   </servlet>
 
   <servlet-mapping>

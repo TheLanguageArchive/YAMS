@@ -7,7 +7,7 @@
 <stringAttribute key="com.google.gwt.eclipse.core.STYLE" value="OBFUSCATED"/>
 <stringAttribute key="com.google.gwt.eclipse.core.WEB_MODE" value="true"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/yaas.annotator/src/test/java/nl/mpi/yaas/annotator/client/GwtTestannotator.java"/>
+<listEntry value="/yams.annotator/src/test/java/nl/mpi/yams/annotator/client/GwtTestannotator.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -17,6 +17,6 @@
 <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
 <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="com.google.gdt.eclipse.maven.mavenClasspathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="nl.mpi.yaas.annotator.client.GwtTestannotator"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="yaas.annotator"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="nl.mpi.yams.annotator.client.GwtTestannotator"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="yams.annotator"/>
 </launchConfiguration>

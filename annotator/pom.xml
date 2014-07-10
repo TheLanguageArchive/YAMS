@@ -12,7 +12,7 @@
     <artifactId>annotator</artifactId>
     <packaging>war</packaging>
     <version>1.0-pretesting-SNAPSHOT</version>
-    <name>YAAS Annotator</name>
+    <name>YAMS Annotator</name>
 
     <properties>
         <!-- Convenience property to set the GWT version -->
@@ -82,7 +82,7 @@
                 <configuration>
                     <runTarget>annotator.html</runTarget>
                     <hostedWebapp>${webappDirectory}</hostedWebapp>
-                    <i18nMessagesBundle>nl.mpi.yaas.annotator.client.Messages</i18nMessagesBundle>
+                    <i18nMessagesBundle>nl.mpi.yams.annotator.client.Messages</i18nMessagesBundle>
                 </configuration>
             </plugin>
 
@@ -118,7 +118,7 @@
                 <inherited>false</inherited>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    <finalName>yaas-annotator</finalName>
+                    <finalName>yams-annotator</finalName>
                     <descriptors>
                         <descriptor>src/main/phonegap/phonegap-assembly.xml</descriptor>
                         <descriptor>src/main/chromeapp/chromeapp-assembly.xml</descriptor>

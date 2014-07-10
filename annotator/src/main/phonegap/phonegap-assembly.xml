@@ -7,7 +7,7 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <files>
         <file>
-            <source>${project.build.directory}/annotator-1.0-SNAPSHOT/annotator.html</source>
+            <source>${project.build.directory}/${project.build.finalName}/annotator.html</source>
             <outputDirectory>/</outputDirectory>
             <destName>index.html</destName>
             <!--<fileMode>0644</fileMode>-->
@@ -15,7 +15,7 @@
     </files>
     <fileSets>
         <fileSet>
-            <directory>${project.build.directory}/annotator-1.0-SNAPSHOT</directory>
+            <directory>${project.build.directory}/${project.build.finalName}</directory>
             <includes>
                 <include>*.*</include>
                 <include>/images/**</include>
