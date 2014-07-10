@@ -37,13 +37,13 @@ import javax.ws.rs.core.Response;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.yaas.common.data.DatabaseList;
-import nl.mpi.yaas.common.data.DatabaseStats;
-import nl.mpi.yaas.common.data.HighlighableDataNode;
-import nl.mpi.yaas.common.data.MetadataFileType;
-import nl.mpi.yaas.common.db.DataBaseManager;
-import nl.mpi.yaas.common.db.DbAdaptor;
-import nl.mpi.yaas.common.db.RestDbAdaptor;
+import nl.mpi.yams.common.data.DatabaseList;
+import nl.mpi.yams.common.data.DatabaseStats;
+import nl.mpi.yams.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.MetadataFileType;
+import nl.mpi.yams.common.db.DataBaseManager;
+import nl.mpi.yams.common.db.DbAdaptor;
+import nl.mpi.yams.common.db.RestDbAdaptor;
 import org.slf4j.LoggerFactory;
 
 /**
