@@ -73,8 +73,8 @@ public class service {
     @Produces({MediaType.TEXT_HTML})
     public String getHtmlListing() throws QueryException {
         StringBuilder stringBuilder = new StringBuilder();
-        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(DataBaseManager.defaultDataBase);
-        for (String dbName : yaasDatabase.getDatabaseList()) {
+        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(DataBaseManager.defaultDataBase);
+        for (String dbName : yamsDatabase.getDatabaseList()) {
             stringBuilder.append("<h3>");
             stringBuilder.append(dbName);
             stringBuilder.append("</h3><a href=\"./dbinfo/");
@@ -95,8 +95,8 @@ public class service {
     @Path("/list")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getDatabaseList(@PathParam("dbname") String dbName) throws QueryException {
-        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(dbName);
-        DatabaseList databaseList = yaasDatabase.getDatabaseStatsList();
+        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        DatabaseList databaseList = yamsDatabase.getDatabaseStatsList();
         return Response.ok(databaseList).build();
     }
 
@@ -104,8 +104,8 @@ public class service {
     @Path("/dbinfo/{dbname}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getDatabaseInfo(@PathParam("dbname") String dbName) throws QueryException {
-        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(dbName);
-        DatabaseStats databaseStats = yaasDatabase.getDatabaseStats();
+        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        DatabaseStats databaseStats = yamsDatabase.getDatabaseStats();
         return Response.ok(databaseStats).build();
     }
 
@@ -114,8 +114,8 @@ public class service {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getHints(@PathParam("dbname") String dbName, @PathParam("text") String userText) throws QueryException {
         final MetadataFileType options = new MetadataFileType(null, null, userText);
-        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(dbName);
-        MetadataFileType[] metadataFieldTypes = yaasDatabase.getMetadataFieldValues(options, 100);
+        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        MetadataFileType[] metadataFieldTypes = yamsDatabase.getMetadataFieldValues(options, 100);
         return Response.ok(metadataFieldTypes).build();
     }
 
@@ -123,8 +123,8 @@ public class service {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/data/{dbname}")
     public Response getRootNode(@PathParam("dbname") String dbName) throws QueryException {
-        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(dbName);
-        final SerialisableDataNode rootNodes = yaasDatabase.getRootNodes();
+        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        final SerialisableDataNode rootNodes = yamsDatabase.getRootNodes();
         return Response.ok(rootNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
     }
 
@@ -133,8 +133,8 @@ public class service {
     @Path("/data/{dbname}/linksof")
 //    @Path("hdl{hdl}")
     public Response getChildDataNodes(@PathParam("dbname") String dbName, @QueryParam("url") final String identifier, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws QueryException {
-        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(dbName);
-        final SerialisableDataNode childNodes = yaasDatabase.getChildNodesOfHdl(identifier, start, end);
+        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        final SerialisableDataNode childNodes = yamsDatabase.getChildNodesOfHdl(identifier, start, end);
         return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
     }
 
@@ -143,10 +143,10 @@ public class service {
     @Path("/data/{dbname}/node")
 //    @Path("hdl{hdl}")
     public Response getDataNode(@PathParam("dbname") String dbName, @QueryParam("url") final String identifier) throws QueryException {
-        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yaasDatabase = getDatabase(dbName);
+        DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         List<String> identifierList = new ArrayList<String>();
         identifierList.add(identifier);
-        final SerialisableDataNode childNodes = yaasDatabase.getNodeDatasByHdls(identifierList);
+        final SerialisableDataNode childNodes = yamsDatabase.getNodeDatasByHdls(identifierList);
         return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
     }
 

@@ -10,8 +10,8 @@ It is recommended to use the zip file version of BaseX and edit the ./bin/basexh
     VM=-Xmx######m
 
 The read only guest user can be created by starting the command line client: ./basexclient
-create user yaasguest
-grant read to yaasguest
+create user yamsguest
+grant read to yamsguest
 For more details see: http://docs.basex.org/wiki/User_Management
 
 The database can then be started with: ./bin/basexhttp
