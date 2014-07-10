@@ -3,14 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>yaas-parent</artifactId>
+        <artifactId>yams-parent</artifactId>
         <groupId>nl.mpi</groupId>
         <version>1.0</version>
     </parent>
 
     <groupId>nl.mpi</groupId>
     <artifactId>yams-cs-connector</artifactId>
-    <version>1.0.20-pretesting</version>
+    <version>1.0.23-pretesting</version>
     <packaging>war</packaging>
 
     <name>yams-cs-connector</name>
