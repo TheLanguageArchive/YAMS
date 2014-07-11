@@ -153,7 +153,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
     }
 
     public HighlighableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList) throws WebQueryException {
-//        return new YaasDataNode(criterionJoinType.name());
+//        return new YamsDataNode(criterionJoinType.name());
         try {
             DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
             //logger.info("databaseName:" + databaseName);

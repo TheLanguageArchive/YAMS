@@ -23,7 +23,7 @@ package nl.mpi.yams.client;
  */
 public interface Pageable {
 
-    public void addYaasTreeItem(int index);
+    public void addYamsTreeItem(int index);
 
     public int getCount();
 }

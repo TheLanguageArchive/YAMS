@@ -25,10 +25,10 @@
         id        = "nl.mpi.yams"
         version   = "1.0.0">
 
-    <name>YAAS mobile test application</name>
+    <name>YAMS mobile test application</name>
 
     <description>
-        Test YAAS application.
+        Test YAMS application.
     </description>
 
     <author href="lux17.mpi.nl/ds/yams" email="">

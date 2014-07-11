@@ -200,7 +200,7 @@
         </script> 
     </head>
     <body>
-        <h1 id="header">YAAS Web Prototype Statistics</h1>
+        <h1 id="header">YAMS Web Prototype Statistics</h1>
         <div id="main2">
             <div  id="main">
                 REST URL: <%= basexRestUrl%><br>

@@ -229,7 +229,7 @@ public abstract class YamsTreeItem extends TreeItem {
 
     abstract void setLabel();
 
-    public SerialisableDataNode getYaasDataNode() {
+    public SerialisableDataNode getYamsDataNode() {
         return yamsDataNode;
     }
 }
