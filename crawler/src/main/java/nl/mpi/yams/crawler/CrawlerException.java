@@ -15,33 +15,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yaas.crawler;
-
-import nl.mpi.flap.module.BaseModule;
+package nl.mpi.yams.crawler;
 
 /**
- * Hello world plugin
+ * Created on : Mar 21, 2013, 4:32:26 PM
  *
+ * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class HelloWorldPlugin implements BaseModule {
+public class CrawlerException extends Exception {
 
-    public String getName() {
-        return "Hello World Plugin (yaas-crawler)";
+    public CrawlerException(String string) {
+        super(string);
     }
 
-    public String getDescription() {
-        return "A Sample Plugin\nnl.mpi\nyaas-crawler";
-    }
-
-    public int getBuildVersionNumber() {
-        return 0;
-    }
-
-    public int getMajorVersionNumber() {
-        return 0;
-    }
-
-    public int getMinorVersionNumber() {
-        return 0;
+    public CrawlerException(Throwable thrwbl) {
+        super(thrwbl);
     }
 }

@@ -15,51 +15,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yaas.crawler;
+package nl.mpi.yams.crawler;
 
 import nl.mpi.flap.module.BaseModule;
-import nl.mpi.flap.plugin.ActivatablePlugin;
-import nl.mpi.flap.plugin.PluginDialogHandler;
-import nl.mpi.flap.plugin.PluginException;
-import nl.mpi.flap.plugin.PluginSessionStorage;
-import nl.mpi.flap.plugin.PluginSettings;
 
 /**
- * Hello world activatable plugin
+ * Hello world plugin
+ *
  */
-public class HelloWorldActivatablePlugin implements BaseModule, PluginSettings, ActivatablePlugin {
-
-    private boolean activated = false;
+public class HelloWorldPlugin implements BaseModule {
 
     public String getName() {
-        return "Sample Activate Plugin Name (yaas-crawler)";
+        return "Hello World Plugin (yaas-crawler)";
     }
 
     public String getDescription() {
-        return "Sample Activate Plugin Description String\nnl.mpi\nyaas-crawler";
+        return "A Sample Plugin\nnl.mpi\nyaas-crawler";
     }
 
     public int getBuildVersionNumber() {
-        return 3;
+        return 0;
     }
 
     public int getMajorVersionNumber() {
-        return 1;
+        return 0;
     }
 
     public int getMinorVersionNumber() {
-        return 2;
-    }
-
-    public void activatePlugin(PluginDialogHandler dialogHandler, PluginSessionStorage sessionStorage) throws PluginException {
-        activated = true;
-    }
-
-    public void deactivatePlugin(PluginDialogHandler dialogHandler, PluginSessionStorage sessionStorage) throws PluginException {
-        activated = false;
-    }
-
-    public boolean getIsActivated() throws PluginException {
-        return activated;
+        return 0;
     }
 }
