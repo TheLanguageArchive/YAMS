@@ -44,7 +44,7 @@ public class BuildNumberTest extends TestCase {
     public class AbstractBaseModuleImpl extends AbstractBaseModule {
 
         public AbstractBaseModuleImpl() throws PluginException {
-            super("test name", "test description", "nl.mpi.yaas-crawler");
+            super("test name", "test description", "nl.mpi.yams-crawler");
         }
     }
 }

@@ -90,7 +90,7 @@ public class Main {
             // check for valid actions and show help if none found
             if (!line.hasOption("d") && !line.hasOption("c") && !line.hasOption("a") && !line.hasOption("f")) {
                 HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("yaas-crawler", options);
+                formatter.printHelp("yams-crawler", options);
                 System.exit(-1);
             }
 

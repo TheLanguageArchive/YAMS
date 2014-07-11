@@ -10,7 +10,7 @@
         <version>1.0</version>
     </parent>
     <!--<version>${plugin.majorVersion}.${plugin.minorVersion}.0000000-${plugin.branch}</version>-->
-    <version>1.0.60-pretesting</version>
+    <version>1.0.67-pretesting</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.license>gpl20</netbeans.hint.license>
@@ -38,7 +38,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>nl.mpi.yaas.crawler.Main</mainClass>
+                            <mainClass>nl.mpi.yams.crawler.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>plugins-core</artifactId>
-            <version>1.2.113-stable</version>
+            <version>1.3-pretesting-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

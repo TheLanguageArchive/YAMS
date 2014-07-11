@@ -26,11 +26,11 @@ import nl.mpi.flap.module.BaseModule;
 public class HelloWorldPlugin implements BaseModule {
 
     public String getName() {
-        return "Hello World Plugin (yaas-crawler)";
+        return "Hello World Plugin (yams-crawler)";
     }
 
     public String getDescription() {
-        return "A Sample Plugin\nnl.mpi\nyaas-crawler";
+        return "A Sample Plugin\nnl.mpi\nyams-crawler";
     }
 
     public int getBuildVersionNumber() {

@@ -64,7 +64,7 @@ import nl.mpi.yams.common.db.RestDbAdaptor;
 public class RemoteArchiveCrawler {
 
     final PluginArbilDataNodeLoader dataNodeLoader;
-    final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yaasDatabase;
+    final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase;
     final IconTable iconTable;
     final private int numberToInsert;
     private int numberInserted = 0;
@@ -85,7 +85,7 @@ public class RemoteArchiveCrawler {
         final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
         final ArbilDesktopInjector injector = new ArbilDesktopInjector();
         final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
-        injector.injectHandlers(arbilSessionStorage, versionManager, new ArbilLogConfigurer(versionManager.getApplicationVersion(), "yaas"));
+        injector.injectHandlers(arbilSessionStorage, versionManager, new ArbilLogConfigurer(versionManager.getApplicationVersion(), "yams"));
 
         final ArbilWindowManager arbilWindowManager = injector.getWindowManager();
         final MimeHashQueue mockMimeHashQueue = new MimeHashQueue() {
@@ -142,8 +142,8 @@ public class RemoteArchiveCrawler {
                 dbAdaptor = new LocalDbAdaptor();
             }
 //        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File());
-            yaasDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
-//            yaasDatabase.clearDatabaseStats();
+            yamsDatabase = new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
+//            yamsDatabase.clearDatabaseStats();
         } catch (MalformedURLException exception) {
             throw new QueryException(exception);
         } catch (IOException exception) {
@@ -153,11 +153,11 @@ public class RemoteArchiveCrawler {
 
     public void clearAndCalculateDbStats() throws QueryException {
         System.out.println("Removing the old database statistics");
-        yaasDatabase.clearDatabaseStats();
+        yamsDatabase.clearDatabaseStats();
         System.out.println("Creating the database indexes");
-        yaasDatabase.createIndexes();
+        yamsDatabase.createIndexes();
         System.out.println("Calculating the database statistics");
-        final DatabaseStats databaseStats = yaasDatabase.getDatabaseStats();
+        final DatabaseStats databaseStats = yamsDatabase.getDatabaseStats();
         System.out.println("KnownDocumentsCount: " + databaseStats.getKnownDocumentsCount());
         System.out.println("MissingDocumentsCount: " + databaseStats.getMisingDocumentsCount());
         System.out.println("RootDocumentsCount: " + databaseStats.getRootDocumentsCount());
@@ -165,19 +165,19 @@ public class RemoteArchiveCrawler {
 
     public void insertKnowIcons() throws PluginException, QueryException {
         System.out.println("Inserting the known icons");
-        yaasDatabase.insertNodeIconsIntoDatabase(iconTable);
+        yamsDatabase.insertNodeIconsIntoDatabase(iconTable);
     }
 
     public void preloadFacets() throws QueryException {
         System.out.println("Preloading facets");
-        for (MetadataFileType metadataType : yaasDatabase.getMetadataTypes(null)) {
+        for (MetadataFileType metadataType : yamsDatabase.getMetadataTypes(null)) {
             System.out.println("File type: " + metadataType.getLabel());
-            for (MetadataFileType metadataPath : yaasDatabase.getMetadataPaths(metadataType)) {
+            for (MetadataFileType metadataPath : yamsDatabase.getMetadataPaths(metadataType)) {
                 if (metadataPath.getPath() != null || metadataType.getType() != null) {
                     System.out.println("Path type: " + metadataPath.getLabel());
                     // we are no longer getting the node values for each facet and will replace this with granular value requests based on user input and cookie storage
 //                    try {
-//                        final MetadataFileType[] metadataFieldValues = yaasDatabase.getMetadataFieldValues(metadataPath);
+//                        final MetadataFileType[] metadataFieldValues = yamsDatabase.getMetadataFieldValues(metadataPath);
 //                        if (metadataFieldValues != null) {
 //                            System.out.println("Values: " + metadataFieldValues.length);
 //                        } else {
@@ -194,11 +194,11 @@ public class RemoteArchiveCrawler {
     // todo: preload the faceted tree data
 //    public void preloadFacetedTreeData() throws QueryException {
 //        System.out.println("Preloading faceted tree data");
-//        for (MetadataFileType metadataType : yaasDatabase.getMetadataTypes(null)) {
+//        for (MetadataFileType metadataType : yamsDatabase.getMetadataTypes(null)) {
 //            System.out.println("File type: " + metadataType.getLabel());
-//            for (MetadataFileType metadataPath : yaasDatabase.getMetadataPaths(metadataType)) {
+//            for (MetadataFileType metadataPath : yamsDatabase.getMetadataPaths(metadataType)) {
 //                System.out.println("Path type: " + metadataPath.getLabel());
-//                final MetadataFileType[] metadataFieldValues = yaasDatabase.getMetadataFieldValues(metadataPath);
+//                final MetadataFileType[] metadataFieldValues = yamsDatabase.getMetadataFieldValues(metadataPath);
 //                if (metadataFieldValues != null) {
 //                    System.out.println("Values: " + metadataFieldValues.length);
 //                } else {
@@ -214,7 +214,7 @@ public class RemoteArchiveCrawler {
             while (continueGetting) {
                 System.out.println("Links read: " + databaseLinks.getRecentLinks().size());
                 System.out.println("Links found: " + databaseLinks.getChildLinks().size());
-                final Set<DataNodeLink> handlesOfMissing = yaasDatabase.getHandlesOfMissing(databaseLinks, 1000, crawlFilter);
+                final Set<DataNodeLink> handlesOfMissing = yamsDatabase.getHandlesOfMissing(databaseLinks, 1000, crawlFilter);
                 if (handlesOfMissing.isEmpty()) {
                     continueGetting = false;
                 }
@@ -229,11 +229,11 @@ public class RemoteArchiveCrawler {
                     ArbilDataNodeContainer nodeContainer = null;
                     ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, new URI(targetHandle));
 //                    System.out.println("arbil url: " + dataNode.getUrlString());
-                    loadAndInsert(yaasDatabase, dataNode, databaseLinks);
+                    loadAndInsert(yamsDatabase, dataNode, databaseLinks);
                 }
             }
             // store the current state
-            yaasDatabase.getHandlesOfMissing(databaseLinks, 0, crawlFilter);
+            yamsDatabase.getHandlesOfMissing(databaseLinks, 0, crawlFilter);
             System.out.println("Update complete");
         } catch (URISyntaxException exception) {
             System.out.println(exception.getMessage());
@@ -260,12 +260,12 @@ public class RemoteArchiveCrawler {
         System.out.println("FindAndInsertMissingNodes");
         try {
             // todo: change this to a loop that gets more missing document URLs in blocks of 100 from the db until the max
-//            final IterableResult handlesOfMissing = yaasDatabase.getHandlesOfMissing();
+//            final IterableResult handlesOfMissing = yamsDatabase.getHandlesOfMissing();
             boolean continueGetting = true;
             StringTokenizer stringTokenizer = null;
             while (continueGetting) {
                 if (stringTokenizer == null) {
-                    String handlesOfMissing = yaasDatabase.getHandlesOfMissing();
+                    String handlesOfMissing = yamsDatabase.getHandlesOfMissing();
                     System.out.println("Nodes to get length: " + handlesOfMissing.length());
                     stringTokenizer = new StringTokenizer(handlesOfMissing);
                     continueGetting = stringTokenizer.hasMoreTokens();
@@ -286,7 +286,7 @@ public class RemoteArchiveCrawler {
                     ArbilDataNodeContainer nodeContainer = null; //new ArbilDataNodeContainer() {
                     ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, new URI(targetHandle));
 //                    System.out.println("arbil url: " + dataNode.getUrlString());
-                    loadAndInsert(yaasDatabase, dataNode, new DatabaseLinks());
+                    loadAndInsert(yamsDatabase, dataNode, new DatabaseLinks());
                 } catch (NoSuchElementException exception) {
                     stringTokenizer = null;
                 }
@@ -316,7 +316,7 @@ public class RemoteArchiveCrawler {
     public void checkDbExists() {
         try {
             System.out.println("Checking the database exists");
-            yaasDatabase.checkDbExists();
+            yamsDatabase.checkDbExists();
         } catch (QueryException exception) {
             System.out.println(exception.getMessage());
             System.exit(-1);
@@ -326,7 +326,7 @@ public class RemoteArchiveCrawler {
     public void dropAllRecords() {
         try {
             System.out.println("Dropping old crawled data");
-            yaasDatabase.dropAllRecords(); // this will drop the old data and may drop the database depending on the database module used
+            yamsDatabase.dropAllRecords(); // this will drop the old data and may drop the database depending on the database module used
         } catch (QueryException exception) {
             System.out.println(exception.getMessage());
             System.exit(-1);
@@ -341,9 +341,9 @@ public class RemoteArchiveCrawler {
             ArbilDataNode dataNode = (ArbilDataNode) dataNodeLoader.getPluginArbilDataNode(nodeContainer, startURI);
             // because we add the root link before the node is loaded the archive handle is not known
             databaseLinks.insertRootLink(new DataNodeLink(dataNode.getUrlString(), dataNode.archiveHandle));
-            loadAndInsert(yaasDatabase, dataNode, databaseLinks);
+            loadAndInsert(yamsDatabase, dataNode, databaseLinks);
             // store the current state
-            yaasDatabase.getHandlesOfMissing(databaseLinks, 0, crawlFilter);
+            yamsDatabase.getHandlesOfMissing(databaseLinks, 0, crawlFilter);
             System.out.println("Crawl complete");
         } catch (InterruptedException exception) {
             System.out.println(exception.getMessage());

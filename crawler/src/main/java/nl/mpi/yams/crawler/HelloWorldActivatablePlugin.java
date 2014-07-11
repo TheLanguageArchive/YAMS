@@ -32,11 +32,11 @@ public class HelloWorldActivatablePlugin implements BaseModule, PluginSettings, 
     private boolean activated = false;
 
     public String getName() {
-        return "Sample Activate Plugin Name (yaas-crawler)";
+        return "Sample Activate Plugin Name (yams-crawler)";
     }
 
     public String getDescription() {
-        return "Sample Activate Plugin Description String\nnl.mpi\nyaas-crawler";
+        return "Sample Activate Plugin Description String\nnl.mpi\nyams-crawler";
     }
 
     public int getBuildVersionNumber() {
