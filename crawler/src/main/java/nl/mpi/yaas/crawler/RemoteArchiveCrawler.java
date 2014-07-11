@@ -18,8 +18,8 @@
  */
 package nl.mpi.yaas.crawler;
 
-import nl.mpi.yaas.common.data.DatabaseLinks;
-import nl.mpi.yaas.common.data.IconTable;
+import nl.mpi.yams.common.data.DatabaseLinks;
+import nl.mpi.yams.common.data.IconTable;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -49,12 +49,12 @@ import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
 import nl.mpi.flap.plugin.PluginException;
-import nl.mpi.yaas.common.data.DatabaseStats;
-import nl.mpi.yaas.common.data.MetadataFileType;
-import nl.mpi.yaas.common.db.DataBaseManager;
-import nl.mpi.yaas.common.db.DbAdaptor;
-import nl.mpi.yaas.common.db.LocalDbAdaptor;
-import nl.mpi.yaas.common.db.RestDbAdaptor;
+import nl.mpi.yams.common.data.DatabaseStats;
+import nl.mpi.yams.common.data.MetadataFileType;
+import nl.mpi.yams.common.db.DataBaseManager;
+import nl.mpi.yams.common.db.DbAdaptor;
+import nl.mpi.yams.common.db.LocalDbAdaptor;
+import nl.mpi.yams.common.db.RestDbAdaptor;
 
 /**
  * Created on : Feb 6, 2013, 2:04:40 PM
