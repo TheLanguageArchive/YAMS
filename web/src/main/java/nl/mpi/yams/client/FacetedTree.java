@@ -60,8 +60,8 @@ public class FacetedTree extends VerticalPanel implements HistoryListener {
                 final TreeItem selectedItem = event.getTarget();
                 for (int childCount = 0; childCount < selectedItem.getChildCount(); childCount++) {
                     final TreeItem child = selectedItem.getChild(childCount);
-                    if (child instanceof YaasTreeFacet) {
-                        YaasTreeFacet treeFacet = (YaasTreeFacet) child;
+                    if (child instanceof YamsTreeFacet) {
+                        YamsTreeFacet treeFacet = (YamsTreeFacet) child;
                         treeFacet.loadChildFacetsOnce(selectedFacets);
                     }
                 }
@@ -97,7 +97,7 @@ public class FacetedTree extends VerticalPanel implements HistoryListener {
             menuBar.addItem(labelString, getMenuItems(databaseName, menuIndex++));
         }
         if (!selectedFacets.isEmpty()) {
-            final YaasTreeFacet yaasTreeFacet = new YaasTreeFacet(databaseName, null, searchOptionsService, null, -1);
+            final YamsTreeFacet yaasTreeFacet = new YamsTreeFacet(databaseName, null, searchOptionsService, null, -1);
             facetTree.addItem(yaasTreeFacet);
             yaasTreeFacet.loadChildFacets(selectedFacets);
         }

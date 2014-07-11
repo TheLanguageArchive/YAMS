@@ -42,7 +42,7 @@ import nl.mpi.flap.model.SerialisableDataNode;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public abstract class YaasTreeItem extends TreeItem {
+public abstract class YamsTreeItem extends TreeItem {
 
     public static final String ERROR_GETTING_CHILD_NODES = "Error getting child nodes";
     public static final String LOADING_CHILD_NODES_FAILED = "Loading child nodes failed";
@@ -66,7 +66,7 @@ public abstract class YaasTreeItem extends TreeItem {
     protected final TreeNodeCheckboxListener checkboxListener;
     protected final TreeNodeClickListener clickListener;
 
-    public YaasTreeItem(DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener) {
+    public YamsTreeItem(DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener) {
         super(new HorizontalPanel());
         this.dataNodeLoader = dataNodeLoader;
         this.popupPanel = popupPanel;
@@ -116,7 +116,7 @@ public abstract class YaasTreeItem extends TreeItem {
 
     protected void hideShowExpandButton() {
         // this check will determine if the expand button is visible, but also if the click action is available. The click action was suppressed for empty data nodes like "Actors" but this behaivour is undefined at this point for CS2CMDI.
-        final boolean hasFields = (this instanceof YaasJsonTreeItem || yaasDataNode != null && yaasDataNode.getFieldGroups() != null);
+        final boolean hasFields = (this instanceof YamsJsonTreeItem || yaasDataNode != null && yaasDataNode.getFieldGroups() != null);
         nodeLabel.setVisible(!hasFields);
         if (checkboxListener != null) {
             checkBox.setVisible(hasFields);

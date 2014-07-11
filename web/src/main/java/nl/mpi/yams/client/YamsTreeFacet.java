@@ -30,17 +30,17 @@ import nl.mpi.yams.common.data.MetadataFileType;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class YaasTreeFacet extends TreeItem {
+public class YamsTreeFacet extends TreeItem {
 
     private static final Logger logger = Logger.getLogger("");
     private final MetadataFileType selectedFacet;
     final private SearchOptionsServiceAsync searchOptionsService;
     final private int levelIndex;
-    final private YaasTreeFacet parentFacet;
+    final private YamsTreeFacet parentFacet;
     private boolean loadRequestMade = false;
     private final String databaseName;
 
-    public YaasTreeFacet(String databaseName, MetadataFileType selectedFacet, SearchOptionsServiceAsync searchOptionsService, YaasTreeFacet parentFacet, int levelIndex) {
+    public YamsTreeFacet(String databaseName, MetadataFileType selectedFacet, SearchOptionsServiceAsync searchOptionsService, YamsTreeFacet parentFacet, int levelIndex) {
         this.databaseName = databaseName;
         this.selectedFacet = selectedFacet;
         this.searchOptionsService = searchOptionsService;
@@ -85,7 +85,7 @@ public class YaasTreeFacet extends TreeItem {
                 removeItems();
                 if (result != null && result.length > 0) {
                     for (final MetadataFileType facetType : result) {
-                        addItem(new YaasTreeFacet(databaseName, facetType, searchOptionsService, YaasTreeFacet.this, levelIndex + 1));
+                        addItem(new YamsTreeFacet(databaseName, facetType, searchOptionsService, YamsTreeFacet.this, levelIndex + 1));
                     }
                 }
             }

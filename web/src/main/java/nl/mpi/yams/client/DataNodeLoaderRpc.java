@@ -86,8 +86,8 @@ public class DataNodeLoaderRpc implements DataNodeLoader {
         });
     }
 
-    public String getNodeIcon(SerialisableDataNode yaasDataNode) {
-        final NodeTypeImageBase64 typeIcon = iconTableBase64.getByType(yaasDataNode.getType());
+    public String getNodeIcon(SerialisableDataNode yamsDataNode) {
+        final NodeTypeImageBase64 typeIcon = iconTableBase64.getByType(yamsDataNode.getType());
         if (typeIcon != null) {
             return typeIcon.getInlineImageDataString();
         }

@@ -148,8 +148,8 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 //        });
     }
 
-    public String getNodeIcon(SerialisableDataNode yaasDataNode) {
-        return yaasDataNode.getType().getID();
+    public String getNodeIcon(SerialisableDataNode yamsDataNode) {
+        return yamsDataNode.getType().getID();
     }
 
     private RequestCallback geRequestBuilder(final RequestBuilder builder, final DataNodeLoaderListener dataNodeLoaderListener, final String targetUri) {

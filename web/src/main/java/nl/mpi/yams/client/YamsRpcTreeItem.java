@@ -32,7 +32,7 @@ import static nl.mpi.flap.model.DataNodeType.IMDI_RESOURCE;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
-import static nl.mpi.yams.client.YaasTreeItem.logger;
+import static nl.mpi.yams.client.YamsTreeItem.logger;
 import nl.mpi.yams.common.data.DataNodeHighlight;
 import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.HighlighableDataNode;
@@ -41,7 +41,7 @@ import nl.mpi.yams.common.data.HighlighableDataNode;
  * @since May 23, 2014 10:22:08 AM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class YaasRpcTreeItem extends YaasTreeItem {
+public class YamsRpcTreeItem extends YamsTreeItem {
 
     private DataNodeId dataNodeId = null;
     private final String databaseName;
@@ -49,7 +49,7 @@ public class YaasRpcTreeItem extends YaasTreeItem {
     private final TreeTableHeader treeTableHeader;
     private final boolean displayFlatNodes;
 
-    public YaasRpcTreeItem(String databaseName, DataNodeId dataNodeId, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, boolean displayFlatNodes, final YaasTreeItemLoadedListener itemLoadedListener) {
+    public YamsRpcTreeItem(String databaseName, DataNodeId dataNodeId, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, boolean displayFlatNodes, final YamsTreeItemLoadedListener itemLoadedListener) {
         super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
         this.dataNodeId = dataNodeId;
         this.databaseName = databaseName;
@@ -60,7 +60,7 @@ public class YaasRpcTreeItem extends YaasTreeItem {
         loadDataNode(itemLoadedListener);
     }
 
-    public YaasRpcTreeItem(String databaseName, SerialisableDataNode yaasDataNode, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, boolean displayFlatNodes) {
+    public YamsRpcTreeItem(String databaseName, SerialisableDataNode yaasDataNode, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, boolean displayFlatNodes) {
         super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
         this.yaasDataNode = yaasDataNode;
         this.treeTableHeader = treeTableHeader;
@@ -243,7 +243,7 @@ public class YaasRpcTreeItem extends YaasTreeItem {
                             final ArrayList<FieldGroup> fieldGroup = new ArrayList<FieldGroup>();
                             fieldGroup.add(new FieldGroup("URL", urlFields));
                             resourceDataNode.setFieldGroups(fieldGroup);
-                            YaasTreeItem yaasTreeItem = new YaasRpcTreeItem(databaseName, resourceDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
+                            YamsTreeItem yaasTreeItem = new YamsRpcTreeItem(databaseName, resourceDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
                             addItem(yaasTreeItem);
                             loadedCount++;
                         }
@@ -295,7 +295,7 @@ public class YaasRpcTreeItem extends YaasTreeItem {
         }
     }
 
-    private void loadDataNode(final YaasTreeItemLoadedListener itemLoadedListener) {
+    private void loadDataNode(final YamsTreeItemLoadedListener itemLoadedListener) {
         if (loadAttempted == false) {
             loadAttempted = true;
             setText("loading...");
@@ -320,7 +320,7 @@ public class YaasRpcTreeItem extends YaasTreeItem {
                     hideShowExpandButton();
                     addColumnsForHighlights();
                     if (itemLoadedListener != null) {
-                        itemLoadedListener.yaasTreeItemLoaded(YaasRpcTreeItem.this);
+                        itemLoadedListener.yaasTreeItemLoaded(YamsRpcTreeItem.this);
                     }
                 }
 
@@ -365,7 +365,7 @@ public class YaasRpcTreeItem extends YaasTreeItem {
     }
 
     protected void insertLoadedChildNode(SerialisableDataNode childDataNode) {
-        YaasRpcTreeItem yaasTreeItem = new YaasRpcTreeItem(databaseName, childDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
+        YamsRpcTreeItem yaasTreeItem = new YamsRpcTreeItem(databaseName, childDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
         yaasTreeItem.setHighlights(highlighedLinks);
         addItem(yaasTreeItem);
 

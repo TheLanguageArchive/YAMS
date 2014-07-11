@@ -29,11 +29,11 @@ import nl.mpi.yams.common.data.DataNodeId;
  * @since May 23, 2014 10:22:42 AM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class YaasJsonTreeItem extends YaasTreeItem {
+public class YamsJsonTreeItem extends YamsTreeItem {
 
-    final private YaasTreeItemLoadedListener itemLoadedListener;
+    final private YamsTreeItemLoadedListener itemLoadedListener;
 
-    public YaasJsonTreeItem(SerialisableDataNode childDataNode, DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, final YaasTreeItemLoadedListener itemLoadedListener) {
+    public YamsJsonTreeItem(SerialisableDataNode childDataNode, DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, final YamsTreeItemLoadedListener itemLoadedListener) {
         super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
         this.itemLoadedListener = itemLoadedListener;
         this.yaasDataNode = childDataNode;
@@ -42,20 +42,20 @@ public class YaasJsonTreeItem extends YaasTreeItem {
         setNodeIconStye(this.yaasDataNode.getType(), this.yaasDataNode.getPermissions());
         hideShowExpandButton();
         if (itemLoadedListener != null) {
-            itemLoadedListener.yaasTreeItemLoaded(YaasJsonTreeItem.this);
+            itemLoadedListener.yaasTreeItemLoaded(YamsJsonTreeItem.this);
         }
         if (yaasDataNode.getLinkCount() > 0) {
             addItem(loadingTreeItem);
         }
     }
 
-    public YaasJsonTreeItem(DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, final YaasTreeItemLoadedListener itemLoadedListener) {
+    public YamsJsonTreeItem(DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, final YamsTreeItemLoadedListener itemLoadedListener) {
         super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
         this.itemLoadedListener = itemLoadedListener;
         loadDataNode(itemLoadedListener);
     }
 
-    private void loadDataNode(final YaasTreeItemLoadedListener itemLoadedListener) {
+    private void loadDataNode(final YamsTreeItemLoadedListener itemLoadedListener) {
         if (loadAttempted == false) {
             loadAttempted = true;
             setText("loading...");
@@ -79,7 +79,7 @@ public class YaasJsonTreeItem extends YaasTreeItem {
                     setNodeIconStye(yaasDataNode.getType(), yaasDataNode.getPermissions());
                     hideShowExpandButton();
                     if (itemLoadedListener != null) {
-                        itemLoadedListener.yaasTreeItemLoaded(YaasJsonTreeItem.this);
+                        itemLoadedListener.yaasTreeItemLoaded(YamsJsonTreeItem.this);
                     }
                 }
 
@@ -156,7 +156,7 @@ public class YaasJsonTreeItem extends YaasTreeItem {
 
     @Override
     void insertLoadedChildNode(SerialisableDataNode childDataNode) {
-        YaasJsonTreeItem yaasTreeItem = new YaasJsonTreeItem(childDataNode, dataNodeLoader, popupPanel, checkboxListener, clickListener, itemLoadedListener);
+        YamsJsonTreeItem yaasTreeItem = new YamsJsonTreeItem(childDataNode, dataNodeLoader, popupPanel, checkboxListener, clickListener, itemLoadedListener);
         addItem(yaasTreeItem);
     }
 

@@ -47,7 +47,7 @@ public class DataNodeTree extends Tree {
     private final TreeNodeCheckboxListener checkboxListener;
     private final TreeNodeClickListener clickListener;
     private static final Logger logger = Logger.getLogger("");
-    final YaasTreeItemLoadedListener yaasTreeItemLoadedListener;
+    final YamsTreeItemLoadedListener yaasTreeItemLoadedListener;
 
     public DataNodeTree(TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64, final boolean openWhenLoaded) {
         //logger.info("DataNodeTree");
@@ -62,9 +62,9 @@ public class DataNodeTree extends Tree {
             popupPanel = null;
         }
         if (openWhenLoaded) {
-            yaasTreeItemLoadedListener = new YaasTreeItemLoadedListener() {
+            yaasTreeItemLoadedListener = new YamsTreeItemLoadedListener() {
 
-                public void yaasTreeItemLoaded(YaasTreeItem yaasTreeItem) {
+                public void yaasTreeItemLoaded(YamsTreeItem yaasTreeItem) {
                     if (yaasTreeItem.getChildCount() > 0) {
                         DataNodeTree.this.setSelectedItem(yaasTreeItem.getChild(0));
                         ensureSelectedItemVisible();
@@ -89,8 +89,8 @@ public class DataNodeTree extends Tree {
         addOpenHandler(new OpenHandler<TreeItem>() {
             public void onOpen(OpenEvent<TreeItem> event) {
                 final Object selectedItem = event.getTarget();
-                if (selectedItem instanceof YaasTreeItem) {
-                    YaasTreeItem yaasTreeItem = (YaasTreeItem) selectedItem;
+                if (selectedItem instanceof YamsTreeItem) {
+                    YamsTreeItem yaasTreeItem = (YamsTreeItem) selectedItem;
                     yaasTreeItem.loadChildNodes();
 //                    History.newItem(yaasTreeItem.getYaasDataNode().getArchiveHandle());
                 }
@@ -105,8 +105,8 @@ public class DataNodeTree extends Tree {
 //        addSelectionHandler(new SelectionHandler<TreeItem>() {
 //            public void onSelection(SelectionEvent event) {
 //                final Object selectedItem = event.getSelectedItem();
-//                if (selectedItem instanceof YaasTreeItem) {
-//                    YaasTreeItem yaasTreeItem = (YaasTreeItem) selectedItem;
+//                if (selectedItem instanceof YamsTreeItem) {
+//                    YamsTreeItem yaasTreeItem = (YamsTreeItem) selectedItem;
 //                    dataNodeTable.addDataNode(yaasTreeItem.getYaasDataNode());
 //                }
 //            }
@@ -116,7 +116,7 @@ public class DataNodeTree extends Tree {
     public void addCsRootToTree() {
 //        logger.info("addCsRootToTree");
         final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson();
-        final YaasJsonTreeItem yaasTreeItem = new YaasJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
+        final YamsJsonTreeItem yaasTreeItem = new YamsJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
         DataNodeTree.this.addItem(yaasTreeItem);
 //            }
 //});
@@ -127,8 +127,8 @@ public class DataNodeTree extends Tree {
 //        final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
         addPagingButton(new Pageable() {
             public void addYaasTreeItem(int index) {
-                final YaasTreeItem yaasTreeItem = new YaasRpcTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
-//                final YaasJsonTreeItem yaasTreeItem = new YaasJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
+                final YamsTreeItem yaasTreeItem = new YamsRpcTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
+//                final YamsJsonTreeItem yaasTreeItem = new YamsJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }
 
@@ -147,8 +147,8 @@ public class DataNodeTree extends Tree {
         addPagingButton(new Pageable() {
 
             public void addYaasTreeItem(int index) {
-                final YaasRpcTreeItem yaasTreeItem = new YaasRpcTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
-//                final YaasJsonTreeItem yaasTreeItem = new YaasJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
+                final YamsRpcTreeItem yaasTreeItem = new YamsRpcTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
+//                final YamsJsonTreeItem yaasTreeItem = new YamsJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
                 yaasTreeItem.setHighlights(dataNode);
                 DataNodeTree.this.addItem(yaasTreeItem);
             }

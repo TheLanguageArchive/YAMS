@@ -21,7 +21,7 @@ package nl.mpi.yams.client;
  * @since Apr 25, 2014 11:42:10 AM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public interface YaasTreeItemLoadedListener {
+public interface YamsTreeItemLoadedListener {
 
-    public void yaasTreeItemLoaded(YaasTreeItem yaasTreeItem);
+    public void yaasTreeItemLoaded(YamsTreeItem yaasTreeItem);
 }

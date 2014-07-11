@@ -9,8 +9,8 @@
     <groupId>nl.mpi</groupId>
     <artifactId>yams-gwt</artifactId>
     <packaging>war</packaging>
-    <version>1.0.184-pretesting</version>
-    <name>YAAS GWT</name>
+    <version>1.0.213-pretesting</version>
+    <name>YAMS GWT</name>
     <parent>
         <groupId>nl.mpi</groupId>
         <artifactId>yams-parent</artifactId>
@@ -171,7 +171,7 @@
                     <!--<style>DETAILED</style> this 'style detailed' turns off the javascript obfuscaton -->
                     <runTarget>yams.html</runTarget>
                     <hostedWebapp>${webappDirectory}</hostedWebapp>
-                    <i18nMessagesBundle>nl.mpi.yaas.client.Messages</i18nMessagesBundle>
+                    <i18nMessagesBundle>nl.mpi.yams.client.Messages</i18nMessagesBundle>
                 </configuration>
             </plugin>
 

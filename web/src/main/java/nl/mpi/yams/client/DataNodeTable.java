@@ -58,8 +58,8 @@ public class DataNodeTable extends DialogBox {
         this.setModal(false);
     }
 
-    public void removeDataNode(SerialisableDataNode yaasDataNode) {
-        dataNodes.remove(yaasDataNode);
+    public void removeDataNode(SerialisableDataNode yamsDataNode) {
+        dataNodes.remove(yamsDataNode);
         updateTable();
         if (dataNodes.isEmpty()) {
             this.hide();

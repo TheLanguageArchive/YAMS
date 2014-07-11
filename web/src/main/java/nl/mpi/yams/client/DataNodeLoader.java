@@ -37,5 +37,5 @@ public interface DataNodeLoader {
 
     void requestLoadUri(List<String> dataNodeUriList, final DataNodeLoaderListener dataNodeLoaderListener);
 
-    String getNodeIcon(SerialisableDataNode yaasDataNode);
+    String getNodeIcon(SerialisableDataNode yamsDataNode);
 }
