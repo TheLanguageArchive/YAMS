@@ -45,25 +45,15 @@ import static org.junit.Assert.*;
 public class YamsCsResourceTest {
 
     private Mockery context = new JUnit4Mockery();
-//    private ArchivePropertyDao archiveDao;
-//    private ArchiveObjectDao aoDao;
-//    private CorpusStructureDao csDao;
-//    private VPathService vPathService;
     private CorpusStructureProvider corpusStructureProvider;
     private AccessInfoProvider accessInfoProvider;
     private HttpServletRequest request;
 
     @Before
-    public void setUp() {
-//        archiveDao = context.mock(ArchivePropertyDao.class);
-//        aoDao = context.mock(ArchiveObjectDao.class);
-//        csDao = context.mock(CorpusStructureDao.class);
-//        vPathService = context.mock(VPathService.class);        
+    public void setUp() {    
         corpusStructureProvider = context.mock(CorpusStructureProvider.class);
         accessInfoProvider = context.mock(AccessInfoProvider.class);
         request = context.mock(HttpServletRequest.class);
-//        corpusStructureProviderImpl = new CorpusStructureProviderImpl(archiveDao, aoDao, csDao);
-//        corpusStructureProviderImpl.initializeWithVPathService(vPathService);
     }
 
     @After

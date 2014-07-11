@@ -45,23 +45,10 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <!--    <servlet>
-        <servlet-name>ServletAdaptor</servlet-name>
-        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>-->
     <servlet-mapping>
         <servlet-name>YAMS CS2 CMDI</servlet-name>
         <url-pattern>/yams-cs-connector/*</url-pattern>
     </servlet-mapping>
-    <!--    <servlet-mapping>
-        <servlet-name>ServletAdaptor</servlet-name>
-        <url-pattern>/webresources/*</url-pattern>
-    </servlet-mapping>-->
-    <!--    <servlet-mapping>
-        <servlet-name>ServletAdaptor</servlet-name>
-        <url-pattern>/webresources/*</url-pattern>
-    </servlet-mapping>-->
     <!-- start SHHAA config -->
     <context-param>
         <param-name>ShhaaConfigLocation</param-name>

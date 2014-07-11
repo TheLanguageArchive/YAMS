@@ -131,12 +131,6 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
     @Override
     public Integer getLinkCount() {
         // todo: it would be nice if corpus structure provides us with a child link count but instead we get a list
-//        corpusStructureProvider.
-//        archiveObject.getFileInfo().
-//        archiveObject.getLastUpdate()
-//        archiveObject.getProfile()
-//        CorpusStructDB.
-//                archiveObject.isOnSite()
         return corpusStructureProvider.getChildNodeURIs(archiveObject.getNodeURI()).size();
     }
 }
