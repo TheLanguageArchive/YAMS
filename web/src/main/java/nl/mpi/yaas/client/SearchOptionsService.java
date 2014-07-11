@@ -22,13 +22,13 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import java.util.List;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.yaas.common.data.DataNodeId;
-import nl.mpi.yaas.common.data.DatabaseStats;
-import nl.mpi.yaas.common.data.HighlighableDataNode;
-import nl.mpi.yaas.common.data.IconTableBase64;
-import nl.mpi.yaas.common.data.MetadataFileType;
-import nl.mpi.yaas.common.data.QueryDataStructures;
-import nl.mpi.yaas.common.data.SearchParameters;
+import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.DatabaseStats;
+import nl.mpi.yams.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.IconTableBase64;
+import nl.mpi.yams.common.data.MetadataFileType;
+import nl.mpi.yams.common.data.QueryDataStructures;
+import nl.mpi.yams.common.data.SearchParameters;
 import nl.mpi.yaas.shared.WebQueryException;
 
 /**

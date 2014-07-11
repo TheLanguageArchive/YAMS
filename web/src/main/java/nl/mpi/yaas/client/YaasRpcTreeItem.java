@@ -33,9 +33,9 @@ import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import static nl.mpi.yaas.client.YaasTreeItem.logger;
-import nl.mpi.yaas.common.data.DataNodeHighlight;
-import nl.mpi.yaas.common.data.DataNodeId;
-import nl.mpi.yaas.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.DataNodeHighlight;
+import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.HighlighableDataNode;
 
 /**
  * @since May 23, 2014 10:22:08 AM (creation date)

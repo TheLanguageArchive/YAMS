@@ -39,7 +39,7 @@ import static nl.mpi.flap.model.DataNodeType.IMDI_RESOURCE;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.yaas.common.data.DataNodeHighlight;
+import nl.mpi.yams.common.data.DataNodeHighlight;
 
 /**
  * Created on : Apr 5, 2013, 2:05:30 PM

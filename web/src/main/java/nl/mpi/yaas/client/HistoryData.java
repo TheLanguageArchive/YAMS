@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.mpi.yaas.common.data.DataNodeId;
-import nl.mpi.yaas.common.data.MetadataFileType;
-import nl.mpi.yaas.common.data.QueryDataStructures;
-import nl.mpi.yaas.common.data.SearchParameters;
+import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.MetadataFileType;
+import nl.mpi.yams.common.data.QueryDataStructures;
+import nl.mpi.yams.common.data.SearchParameters;
 
 /**
  * @since Feb 11, 2014 10:08:14 AM (creation date)

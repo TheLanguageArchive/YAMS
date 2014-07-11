@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.logging.Logger;
-import nl.mpi.yaas.common.data.DatabaseStats;
+import nl.mpi.yams.common.data.DatabaseStats;
 
 /**
  * @since Nov 4, 2013 4:02:36 PM (creation date)

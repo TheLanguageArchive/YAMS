@@ -22,8 +22,8 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import nl.mpi.yaas.common.data.IconTableBase64;
-import nl.mpi.yaas.common.data.NodeTypeImageBase64;
+import nl.mpi.yams.common.data.IconTableBase64;
+import nl.mpi.yams.common.data.NodeTypeImageBase64;
 
 /**
  * Created on : May 27, 2013, 15:35 PM

@@ -30,9 +30,9 @@ import com.google.gwt.user.client.ui.TreeItem;
 import java.util.List;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
-import nl.mpi.yaas.common.data.DataNodeId;
-import nl.mpi.yaas.common.data.HighlighableDataNode;
-import nl.mpi.yaas.common.data.IconTableBase64;
+import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.IconTableBase64;
 
 /**
  * Created on : Jan 29, 2013, 2:27:32 PM

@@ -34,9 +34,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodePermissions;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.yaas.common.data.DataNodeId;
-import nl.mpi.yaas.common.data.DatabaseStats;
-import nl.mpi.yaas.common.data.IconTableBase64;
+import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.DatabaseStats;
+import nl.mpi.yams.common.data.IconTableBase64;
 
 /**
  * @since Mar 25, 2014 2:57:45 PM (creation date)

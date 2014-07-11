@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yams.common.data.MetadataFileType;
 
 /**
  * Created on : Jul 16, 2013, 11:21:39 AM

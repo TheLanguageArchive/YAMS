@@ -26,7 +26,7 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.mpi.yaas.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.HighlighableDataNode;
 
 /**
  * Created on : Feb 4, 2013, 11:07:09 AM

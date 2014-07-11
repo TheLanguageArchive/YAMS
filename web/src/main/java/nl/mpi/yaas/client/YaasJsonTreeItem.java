@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.logging.Level;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.yaas.common.data.DataNodeId;
+import nl.mpi.yams.common.data.DataNodeId;
 
 /**
  * @since May 23, 2014 10:22:42 AM (creation date)

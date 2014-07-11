@@ -39,8 +39,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.mpi.yaas.common.data.MetadataFileType;
-import nl.mpi.yaas.common.data.QueryDataStructures;
+import nl.mpi.yams.common.data.MetadataFileType;
+import nl.mpi.yams.common.data.QueryDataStructures;
 
 /**
  * Created on : Feb 5, 2013, 11:44:03 AM

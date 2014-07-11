@@ -38,8 +38,8 @@ import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yaas.client.HistoryData.NodeActionType;
 import static nl.mpi.yaas.client.HistoryData.NodeActionType.citation;
 import static nl.mpi.yaas.client.HistoryData.NodeActionType.details;
-import nl.mpi.yaas.common.data.DataNodeId;
-import nl.mpi.yaas.common.data.IconTableBase64;
+import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.IconTableBase64;
 
 /**
  * @since Apr 11, 2014 1:39:33 PM (creation date)

@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.TreeItem;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.mpi.yaas.common.data.MetadataFileType;
+import nl.mpi.yams.common.data.MetadataFileType;
 
 /**
  * Created on : Jul 18, 2013, 11:23:53 AM

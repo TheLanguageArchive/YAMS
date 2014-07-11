@@ -33,8 +33,8 @@ import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.yaas.common.data.HighlighableDataNode;
-import nl.mpi.yaas.common.data.IconTableBase64;
+import nl.mpi.yams.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.IconTableBase64;
 
 /**
  * @since Feb 06, 2014 11:37 AM (creation date)

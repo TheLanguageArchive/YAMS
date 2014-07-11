@@ -30,9 +30,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Logger;
-import nl.mpi.yaas.common.data.QueryDataStructures.CriterionJoinType;
-import nl.mpi.yaas.common.data.QueryDataStructures.SearchOption;
-import nl.mpi.yaas.common.data.SearchParameters;
+import nl.mpi.yams.common.data.QueryDataStructures.CriterionJoinType;
+import nl.mpi.yams.common.data.QueryDataStructures.SearchOption;
+import nl.mpi.yams.common.data.SearchParameters;
 
 /**
  * Created on : Jan 29, 2013, 2:50:44 PM

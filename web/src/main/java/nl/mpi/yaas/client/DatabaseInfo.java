@@ -21,8 +21,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.mpi.yaas.common.data.DatabaseStats;
-import nl.mpi.yaas.common.data.IconTableBase64;
+import nl.mpi.yams.common.data.DatabaseStats;
+import nl.mpi.yams.common.data.IconTableBase64;
 
 /**
  * @since Mar 25, 2014 3:07:25 PM (creation date)

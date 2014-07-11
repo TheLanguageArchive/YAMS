@@ -35,7 +35,7 @@ import nl.mpi.flap.model.DataNodePermissions;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.yaas.common.data.DataNodeId;
+import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yaas.shared.JsonDataNode;
 import nl.mpi.yaas.shared.WebQueryException;
 

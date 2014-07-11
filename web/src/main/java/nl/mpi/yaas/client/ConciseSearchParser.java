@@ -19,9 +19,9 @@ package nl.mpi.yaas.client;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import nl.mpi.yaas.common.data.MetadataFileType;
-import nl.mpi.yaas.common.data.QueryDataStructures;
-import nl.mpi.yaas.common.data.SearchParameters;
+import nl.mpi.yams.common.data.MetadataFileType;
+import nl.mpi.yams.common.data.QueryDataStructures;
+import nl.mpi.yams.common.data.SearchParameters;
 
 /**
  * @since Mar 19, 2014 5:28:19 PM (creation date)

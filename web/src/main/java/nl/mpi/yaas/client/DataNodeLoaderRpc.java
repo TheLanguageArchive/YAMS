@@ -21,9 +21,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.List;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.yaas.common.data.DataNodeId;
-import nl.mpi.yaas.common.data.IconTableBase64;
-import nl.mpi.yaas.common.data.NodeTypeImageBase64;
+import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.IconTableBase64;
+import nl.mpi.yams.common.data.NodeTypeImageBase64;
 
 /**
  * @since Mar 26, 2014 1:28:03 PM (creation date)

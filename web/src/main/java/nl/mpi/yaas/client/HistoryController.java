@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.yaas.client.HistoryData.NodeActionType;
-import nl.mpi.yaas.common.data.DataNodeId;
-import nl.mpi.yaas.common.data.QueryDataStructures;
-import nl.mpi.yaas.common.data.SearchParameters;
+import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.QueryDataStructures;
+import nl.mpi.yams.common.data.SearchParameters;
 
 /**
  * @since Feb 07, 2014 16:01 PM (creation date)

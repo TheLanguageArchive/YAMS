@@ -21,7 +21,7 @@ package nl.mpi.yaas.client;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.logging.Logger;
-import nl.mpi.yaas.common.data.DatabaseStats;
+import nl.mpi.yams.common.data.DatabaseStats;
 
 /**
  * Created on : Apr 2, 2013, 11:38:02 AM

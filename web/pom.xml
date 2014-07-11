@@ -7,13 +7,13 @@
     <!-- POM file generated with GWT webAppCreator -->
     <modelVersion>4.0.0</modelVersion>
     <groupId>nl.mpi</groupId>
-    <artifactId>yaas-gwt</artifactId>
+    <artifactId>yams-gwt</artifactId>
     <packaging>war</packaging>
     <version>1.0.184-pretesting</version>
     <name>YAAS GWT</name>
     <parent>
         <groupId>nl.mpi</groupId>
-        <artifactId>yaas-parent</artifactId>
+        <artifactId>yams-parent</artifactId>
         <version>1.0</version>
     </parent>
     <properties>
@@ -60,25 +60,29 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${project.logging.slf4jVersion}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>nl.mpi</groupId>
             <artifactId>plugins-core</artifactId>
             <version>1.3-pretesting-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>nl.mpi</groupId>
-            <artifactId>yaas-common</artifactId>
+            <artifactId>yams-common</artifactId>
             <version>1.0-pretesting-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.mpg.mpgaai</groupId>
             <artifactId>mpgaai-shhaa</artifactId>
             <version>1.0.5</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--        <dependency>
             <groupId>com.googlecode.gwtphonegap</groupId>
@@ -120,6 +124,11 @@
             <artifactId>gettext-maven-plugin</artifactId>
             <version>1.2.4</version>
         </dependency>-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.7</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -160,7 +169,7 @@
                 gwt-maven-plugin documentation at codehaus.org -->
                 <configuration> 
                     <!--<style>DETAILED</style> this 'style detailed' turns off the javascript obfuscaton -->
-                    <runTarget>yaas.html</runTarget>
+                    <runTarget>yams.html</runTarget>
                     <hostedWebapp>${webappDirectory}</hostedWebapp>
                     <i18nMessagesBundle>nl.mpi.yaas.client.Messages</i18nMessagesBundle>
                 </configuration>

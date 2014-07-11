@@ -15,27 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yaas.client;
+package nl.mpi.yaas.shared;
 
-import java.util.List;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.yams.common.data.DataNodeId;
 
 /**
- * @since Mar 26, 2014 1:28:03 PM (creation date)
+ * @since Jun 24, 2014 11:30:54 AM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public interface DataNodeLoader {
+public class ErrorDataNode extends SerialisableDataNode {
 
-    void requestLoadRoot(final DataNodeLoaderListener dataNodeLoaderListener);
-
-    void requestLoadChildrenOf(DataNodeId dataNodeId, int first, int last, final DataNodeLoaderListener dataNodeLoaderListener);
-
-    void requestLoad(List<DataNodeId> dataNodeIdList, final DataNodeLoaderListener dataNodeLoaderListener);
-
-    void requestLoadHdl(List<String> dataNodeHdlList, final DataNodeLoaderListener dataNodeLoaderListener);
-
-    void requestLoadUri(List<String> dataNodeUriList, final DataNodeLoaderListener dataNodeLoaderListener);
-
-    String getNodeIcon(SerialisableDataNode yaasDataNode);
 }
