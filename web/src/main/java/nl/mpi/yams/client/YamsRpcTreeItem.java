@@ -60,16 +60,16 @@ public class YamsRpcTreeItem extends YamsTreeItem {
         loadDataNode(itemLoadedListener);
     }
 
-    public YamsRpcTreeItem(String databaseName, SerialisableDataNode yaasDataNode, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, boolean displayFlatNodes) {
+    public YamsRpcTreeItem(String databaseName, SerialisableDataNode yamsDataNode, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, boolean displayFlatNodes) {
         super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
-        this.yaasDataNode = yaasDataNode;
+        this.yamsDataNode = yamsDataNode;
         this.treeTableHeader = treeTableHeader;
         this.databaseName = databaseName;
         this.displayFlatNodes = displayFlatNodes;
         setLabel();
         try {
-            if (yaasDataNode.getType() == null || !IMDI_RESOURCE.equals(yaasDataNode.getType().getID())) { // do not show child links of imdi resource nodes
-                if (getFilteredChildNodes() != null || !getFlatChildIds(yaasDataNode, new ArrayList<DataNodeLink>()).isEmpty()) {
+            if (yamsDataNode.getType() == null || !IMDI_RESOURCE.equals(yamsDataNode.getType().getID())) { // do not show child links of imdi resource nodes
+                if (getFilteredChildNodes() != null || !getFlatChildIds(yamsDataNode, new ArrayList<DataNodeLink>()).isEmpty()) {
                     addItem(loadingTreeItem);
                 }
             }
@@ -78,7 +78,7 @@ public class YamsRpcTreeItem extends YamsTreeItem {
             addItem(errorTreeItem);
             logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
         }
-        setNodeIconData(dataNodeLoader.getNodeIcon(yaasDataNode));
+        setNodeIconData(dataNodeLoader.getNodeIcon(yamsDataNode));
         // todo: add a click handler so that clicking anywhere will open the branch
     }
 
@@ -96,7 +96,7 @@ public class YamsRpcTreeItem extends YamsTreeItem {
                             final Style style = label.getElement().getStyle();
                             style.setLeft(treeTableHeader.getLeftForColumn(fieldGroup.getFieldName()), Style.Unit.PX);//"position:relative;left:110px;width:200px;"
                             style.setPosition(Style.Position.ABSOLUTE);
-//                    label.setStyleName("yaas-treeNode-result-" + dataField.getPath());
+//                    label.setStyleName("yams-treeNode-result-" + dataField.getPath());
                         }
                     }
                 }
@@ -114,15 +114,15 @@ public class YamsRpcTreeItem extends YamsTreeItem {
     private void addColumnsForHighlights() {
         final HorizontalPanel horizontalPanel = new HorizontalPanel();
         verticalPanel.add(horizontalPanel);
-        if (yaasDataNode != null) {
+        if (yamsDataNode != null) {
             for (DataNodeHighlight highlight : highlighedLinks) {
-                addColumnForHighlight(horizontalPanel, yaasDataNode, highlight);
+                addColumnForHighlight(horizontalPanel, yamsDataNode, highlight);
             }
         }
     }
 
     protected Widget getPopupWidget() {
-        return new SingleDataNodeTable(yaasDataNode, highlighedLinks);
+        return new SingleDataNodeTable(yamsDataNode, highlighedLinks);
     }
 
     public void setHighlights(HighlighableDataNode dataNode) {
@@ -141,14 +141,14 @@ public class YamsRpcTreeItem extends YamsTreeItem {
             }
         }
         if (isHighlighted) {
-            nodeLabel.setStyleName("yaas-treeNode-highlighted");
-            nodeDetailsAnchor.setStyleName("yaas-treeNode-highlighted");
+            nodeLabel.setStyleName("yams-treeNode-highlighted");
+            nodeDetailsAnchor.setStyleName("yams-treeNode-highlighted");
         } else if (childHighlighted) {
-            nodeLabel.setStyleName("yaas-childNode-highlighted");
-            nodeDetailsAnchor.setStyleName("yaas-childNode-highlighted");
+            nodeLabel.setStyleName("yams-childNode-highlighted");
+            nodeDetailsAnchor.setStyleName("yams-childNode-highlighted");
         } else {
-            nodeLabel.setStyleName("yaas-treeNode");
-            nodeDetailsAnchor.setStyleName("yaas-treeNode");
+            nodeLabel.setStyleName("yams-treeNode");
+            nodeDetailsAnchor.setStyleName("yams-treeNode");
         }
         addColumnsForHighlights();
     }
@@ -156,11 +156,11 @@ public class YamsRpcTreeItem extends YamsTreeItem {
     public void setHighlights(List<DataNodeHighlight> highlighedLinks) {
         boolean isHighlighted = false;
         boolean childHighlighted = false;
-        if (yaasDataNode == null) {
+        if (yamsDataNode == null) {
             logger.warning("Data node is not loaded when applying tree highlights.");
         } else {
             try {
-                final String uri = yaasDataNode.getURI();
+                final String uri = yamsDataNode.getURI();
                 if (uri != null) {
                     final String[] uriParts = uri.split("#");
                     if (uriParts != null && uriParts.length >= 2) {
@@ -186,21 +186,21 @@ public class YamsRpcTreeItem extends YamsTreeItem {
             }
         }
         if (isHighlighted) {
-            nodeLabel.setStyleName("yaas-treeNode-highlighted");
-            nodeDetailsAnchor.setStyleName("yaas-treeNode-highlighted");
+            nodeLabel.setStyleName("yams-treeNode-highlighted");
+            nodeDetailsAnchor.setStyleName("yams-treeNode-highlighted");
         } else if (childHighlighted) {
-            nodeLabel.setStyleName("yaas-childNode-highlighted");
-            nodeDetailsAnchor.setStyleName("yaas-childNode-highlighted");
+            nodeLabel.setStyleName("yams-childNode-highlighted");
+            nodeDetailsAnchor.setStyleName("yams-childNode-highlighted");
         } else {
-            nodeLabel.setStyleName("yaas-treeNode");
-            nodeDetailsAnchor.setStyleName("yaas-treeNode");
+            nodeLabel.setStyleName("yams-treeNode");
+            nodeDetailsAnchor.setStyleName("yams-treeNode");
         }
     }
 
     public void loadChildNodes() {
         removeItem(loadNextTreeItem);
         removeItem(errorTreeItem);
-        if (yaasDataNode != null) {
+        if (yamsDataNode != null) {
             final List<? extends SerialisableDataNode> childList = getFilteredChildNodes();
             if (childList != null) {
                 removeItem(loadingTreeItem);
@@ -215,7 +215,7 @@ public class YamsRpcTreeItem extends YamsTreeItem {
                 addItem(loadingTreeItem);
                 try {
                     final ArrayList<DataNodeId> dataNodeIdList = new ArrayList<DataNodeId>();
-                    final List<DataNodeLink> flatChildIds = getFlatChildIds(yaasDataNode, new ArrayList<DataNodeLink>());
+                    final List<DataNodeLink> flatChildIds = getFlatChildIds(yamsDataNode, new ArrayList<DataNodeLink>());
                     final int maxToGet = flatChildIds.size();
                     if (maxToGet <= loadedCount) {
                         // all child nodes should be visible so we can just return
@@ -243,8 +243,8 @@ public class YamsRpcTreeItem extends YamsTreeItem {
                             final ArrayList<FieldGroup> fieldGroup = new ArrayList<FieldGroup>();
                             fieldGroup.add(new FieldGroup("URL", urlFields));
                             resourceDataNode.setFieldGroups(fieldGroup);
-                            YamsTreeItem yaasTreeItem = new YamsRpcTreeItem(databaseName, resourceDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
-                            addItem(yaasTreeItem);
+                            YamsTreeItem yamsTreeItem = new YamsRpcTreeItem(databaseName, resourceDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
+                            addItem(yamsTreeItem);
                             loadedCount++;
                         }
                     }
@@ -305,22 +305,22 @@ public class YamsRpcTreeItem extends YamsTreeItem {
             dataNodeLoader.requestLoad(dataNodeIdList, new DataNodeLoaderListener() {
 
                 public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
-                    yaasDataNode = dataNodeList.get(0);
+                    yamsDataNode = dataNodeList.get(0);
                     setLabel();
                     removeItem(loadingTreeItem);
                     try {
-                        if (getFilteredChildNodes() != null || !getFlatChildIds(yaasDataNode, new ArrayList<DataNodeLink>()).isEmpty()) {
+                        if (getFilteredChildNodes() != null || !getFlatChildIds(yamsDataNode, new ArrayList<DataNodeLink>()).isEmpty()) {
                             addItem(loadingTreeItem);
                         }
                     } catch (ModelException exception) {
                         setText("failed to show node loaded via RPC");
                         logger.log(Level.SEVERE, "failed to show node loaded via RPC", exception);
                     }
-                    setNodeIconData(dataNodeLoader.getNodeIcon(yaasDataNode));
+                    setNodeIconData(dataNodeLoader.getNodeIcon(yamsDataNode));
                     hideShowExpandButton();
                     addColumnsForHighlights();
                     if (itemLoadedListener != null) {
-                        itemLoadedListener.yaasTreeItemLoaded(YamsRpcTreeItem.this);
+                        itemLoadedListener.yamsTreeItemLoaded(YamsRpcTreeItem.this);
                     }
                 }
 
@@ -336,13 +336,13 @@ public class YamsRpcTreeItem extends YamsTreeItem {
 
     @Override
     protected void setLabel() {
-        if (yaasDataNode != null) {
+        if (yamsDataNode != null) {
             int childCountsize = -1;
             try {
-                final List<DataNodeLink> flatChildIds = getFlatChildIds(yaasDataNode, new ArrayList<DataNodeLink>());
+                final List<DataNodeLink> flatChildIds = getFlatChildIds(yamsDataNode, new ArrayList<DataNodeLink>());
                 if (!flatChildIds.isEmpty()) {
                     childCountsize = flatChildIds.size();
-                } else if (yaasDataNode.getChildList() != null) {
+                } else if (yamsDataNode.getChildList() != null) {
                     // get the reduced children here
                     final List<? extends SerialisableDataNode> filteredChildNodes = getFilteredChildNodes();
                     if (filteredChildNodes != null) {
@@ -352,12 +352,12 @@ public class YamsRpcTreeItem extends YamsTreeItem {
                     }
                 }
                 if (childCountsize > 0) {
-                    setText(yaasDataNode.getLabel() + "[" + childCountsize + "]");
+                    setText(yamsDataNode.getLabel() + "[" + childCountsize + "]");
                 } else {
-                    setText(yaasDataNode.getLabel());
+                    setText(yamsDataNode.getLabel());
                 }
             } catch (ModelException exception) {
-                setText(yaasDataNode.getLabel() + "[" + exception.getMessage() + "]");
+                setText(yamsDataNode.getLabel() + "[" + exception.getMessage() + "]");
             }
         } else {
             setText("not loaded");
@@ -365,20 +365,20 @@ public class YamsRpcTreeItem extends YamsTreeItem {
     }
 
     protected void insertLoadedChildNode(SerialisableDataNode childDataNode) {
-        YamsRpcTreeItem yaasTreeItem = new YamsRpcTreeItem(databaseName, childDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
-        yaasTreeItem.setHighlights(highlighedLinks);
-        addItem(yaasTreeItem);
+        YamsRpcTreeItem yamsTreeItem = new YamsRpcTreeItem(databaseName, childDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
+        yamsTreeItem.setHighlights(highlighedLinks);
+        addItem(yamsTreeItem);
 
     }
 
     private List<? extends SerialisableDataNode> getFilteredChildNodes() {
-        final List<? extends SerialisableDataNode> childList = yaasDataNode.getChildList();
+        final List<? extends SerialisableDataNode> childList = yamsDataNode.getChildList();
         if (childList == null) {
             return null;
         }
         if (displayFlatNodes) {
             final ArrayList flatNodes = new ArrayList<SerialisableDataNode>();
-            getFlatNodes(yaasDataNode, flatNodes);
+            getFlatNodes(yamsDataNode, flatNodes);
             if (flatNodes.isEmpty()) {
 //                // if the list is empty then return null
                 return null;
@@ -386,7 +386,7 @@ public class YamsRpcTreeItem extends YamsTreeItem {
                 return flatNodes;
             }
         } else {
-            return yaasDataNode.getChildList();
+            return yamsDataNode.getChildList();
         }
     }
 

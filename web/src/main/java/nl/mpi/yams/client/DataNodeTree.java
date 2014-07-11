@@ -47,7 +47,7 @@ public class DataNodeTree extends Tree {
     private final TreeNodeCheckboxListener checkboxListener;
     private final TreeNodeClickListener clickListener;
     private static final Logger logger = Logger.getLogger("");
-    final YamsTreeItemLoadedListener yaasTreeItemLoadedListener;
+    final YamsTreeItemLoadedListener yamsTreeItemLoadedListener;
 
     public DataNodeTree(TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, SearchOptionsServiceAsync searchOptionsService, IconTableBase64 iconTableBase64, final boolean openWhenLoaded) {
         //logger.info("DataNodeTree");
@@ -62,17 +62,17 @@ public class DataNodeTree extends Tree {
             popupPanel = null;
         }
         if (openWhenLoaded) {
-            yaasTreeItemLoadedListener = new YamsTreeItemLoadedListener() {
+            yamsTreeItemLoadedListener = new YamsTreeItemLoadedListener() {
 
-                public void yaasTreeItemLoaded(YamsTreeItem yaasTreeItem) {
-                    if (yaasTreeItem.getChildCount() > 0) {
-                        DataNodeTree.this.setSelectedItem(yaasTreeItem.getChild(0));
+                public void yamsTreeItemLoaded(YamsTreeItem yamsTreeItem) {
+                    if (yamsTreeItem.getChildCount() > 0) {
+                        DataNodeTree.this.setSelectedItem(yamsTreeItem.getChild(0));
                         ensureSelectedItemVisible();
                     }
                 }
             };
         } else {
-            yaasTreeItemLoadedListener = null;
+            yamsTreeItemLoadedListener = null;
         }
 //        // Create a tree with a few items in it.
 //        TreeItem root = new TreeItem();
@@ -90,9 +90,9 @@ public class DataNodeTree extends Tree {
             public void onOpen(OpenEvent<TreeItem> event) {
                 final Object selectedItem = event.getTarget();
                 if (selectedItem instanceof YamsTreeItem) {
-                    YamsTreeItem yaasTreeItem = (YamsTreeItem) selectedItem;
-                    yaasTreeItem.loadChildNodes();
-//                    History.newItem(yaasTreeItem.getYaasDataNode().getArchiveHandle());
+                    YamsTreeItem yamsTreeItem = (YamsTreeItem) selectedItem;
+                    yamsTreeItem.loadChildNodes();
+//                    History.newItem(yamsTreeItem.getYaasDataNode().getArchiveHandle());
                 }
             }
         });
@@ -106,8 +106,8 @@ public class DataNodeTree extends Tree {
 //            public void onSelection(SelectionEvent event) {
 //                final Object selectedItem = event.getSelectedItem();
 //                if (selectedItem instanceof YamsTreeItem) {
-//                    YamsTreeItem yaasTreeItem = (YamsTreeItem) selectedItem;
-//                    dataNodeTable.addDataNode(yaasTreeItem.getYaasDataNode());
+//                    YamsTreeItem yamsTreeItem = (YamsTreeItem) selectedItem;
+//                    dataNodeTable.addDataNode(yamsTreeItem.getYaasDataNode());
 //                }
 //            }
 //        });        
@@ -116,8 +116,8 @@ public class DataNodeTree extends Tree {
     public void addCsRootToTree() {
 //        logger.info("addCsRootToTree");
         final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson();
-        final YamsJsonTreeItem yaasTreeItem = new YamsJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
-        DataNodeTree.this.addItem(yaasTreeItem);
+        final YamsJsonTreeItem yamsTreeItem = new YamsJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yamsTreeItemLoadedListener);
+        DataNodeTree.this.addItem(yamsTreeItem);
 //            }
 //});
     }
@@ -127,9 +127,9 @@ public class DataNodeTree extends Tree {
 //        final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
         addPagingButton(new Pageable() {
             public void addYaasTreeItem(int index) {
-                final YamsTreeItem yaasTreeItem = new YamsRpcTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
-//                final YamsJsonTreeItem yaasTreeItem = new YamsJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
-                DataNodeTree.this.addItem(yaasTreeItem);
+                final YamsTreeItem yamsTreeItem = new YamsRpcTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener, displayFlatNodes, yamsTreeItemLoadedListener);
+//                final YamsJsonTreeItem yamsTreeItem = new YamsJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yamsTreeItemLoadedListener);
+                DataNodeTree.this.addItem(yamsTreeItem);
             }
 
             public int getCount() {
@@ -147,10 +147,10 @@ public class DataNodeTree extends Tree {
         addPagingButton(new Pageable() {
 
             public void addYaasTreeItem(int index) {
-                final YamsRpcTreeItem yaasTreeItem = new YamsRpcTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes, yaasTreeItemLoadedListener);
-//                final YamsJsonTreeItem yaasTreeItem = new YamsJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yaasTreeItemLoadedListener);
-                yaasTreeItem.setHighlights(dataNode);
-                DataNodeTree.this.addItem(yaasTreeItem);
+                final YamsRpcTreeItem yamsTreeItem = new YamsRpcTreeItem(databaseName, new DataNodeId(rootIds.get(index).getIdString()), dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes, yamsTreeItemLoadedListener);
+//                final YamsJsonTreeItem yamsTreeItem = new YamsJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yamsTreeItemLoadedListener);
+                yamsTreeItem.setHighlights(dataNode);
+                DataNodeTree.this.addItem(yamsTreeItem);
             }
 
             public int getCount() {

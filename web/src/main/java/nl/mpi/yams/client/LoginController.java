@@ -58,7 +58,7 @@ public class LoginController {
     }
 
     public native void exportCheckLoginState(LoginController loginController) /*-{
-     $wnd.checkLoginState = function (){ loginController.@nl.mpi.yaas.client.LoginController::checkLoginState()(); }
+     $wnd.checkLoginState = function (){ loginController.@nl.mpi.yams.client.LoginController::checkLoginState()(); }
      }-*/;
 
     protected void checkLoginState() {

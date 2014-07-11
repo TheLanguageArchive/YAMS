@@ -20,9 +20,9 @@
 -->
 <module>
   <!-- Inherit our applications main module.                      -->
-  <inherits name='nl.mpi.yaas.yaas' />
+  <inherits name='nl.mpi.yams.yams' />
 
   <!-- Specify the path to any remote services.                   -->
-  <servlet path="/yaas/greet" class="nl.mpi.yaas.server.GreetingServiceImpl" />
+  <servlet path="/yams/greet" class="nl.mpi.yams.server.GreetingServiceImpl" />
 
 </module>

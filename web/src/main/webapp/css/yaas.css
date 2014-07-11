@@ -23,7 +23,7 @@
 yams-SearchCriterionPanel{
 
 }
-.yaas-floatingTable {
+.yams-floatingTable {
     position: fixed;
     right: 0;
     bottom: 0;
@@ -84,7 +84,7 @@ yams-SearchCriterionPanel{
     position: relative;
 }
 
-.yaas-treeNode {
+.yams-treeNode {
     font-weight: normal;
     /*color: gray;*/
     /*  vertical-align: top;
@@ -94,7 +94,7 @@ yams-SearchCriterionPanel{
     /*background-size: 15px 30px;*/
     /*background-color:white;*/
 }
-.yaas-treeNode-highlighted {
+.yams-treeNode-highlighted {
     font-weight: bold;
     /*color: darkblue;*/
     /*  vertical-align: top;
@@ -104,19 +104,19 @@ yams-SearchCriterionPanel{
     /*    background-color: aquamarine;
         background-size: 15px 15px;*/
 }
-.yaas-childNode-highlighted {
+.yams-childNode-highlighted {
     font-weight: bold;
     background-color:#ccdfdf;
 }
-.yaas-treeNodeDetails {
+.yams-treeNodeDetails {
     border-style:solid;
     border-width:1px;
 }
-.yaas-media-viewer{
+.yams-media-viewer{
     max-height: 200px;
     max-width: 400px;
 }
-.yaas-media-viewer-full-screen{
+.yams-media-viewer-full-screen{
     height: 100%;
     width: 100%;
     left: 0px; 
@@ -125,7 +125,7 @@ yams-SearchCriterionPanel{
     position: fixed; 
     overflow: visible;
 }
-.yaas-media-viewer-close-button{
+.yams-media-viewer-close-button{
     right: 10px; 
     top: 10px; 
     visibility: visible; 
@@ -159,7 +159,7 @@ h1 {
 .serverResponseLabelError {
     color: red;
 }
-.yaas-closeButton {
+.yams-closeButton {
     position: relative;        
     left: 0;
     top: 0;

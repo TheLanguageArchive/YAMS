@@ -72,7 +72,7 @@ public class yams implements EntryPoint {
     }
 
     private void setupPage(final HistoryController historyController) {
-//        final String moduleBaseURL = "http://tlatest03.mpi.nl:8080/yaas-gwt-1.0-SNAPSHOT/yaas/";
+//        final String moduleBaseURL = "http://tlatest03.mpi.nl:8080/yams-gwt-1.0-SNAPSHOT/yams/";
         final String databaseName = historyController.getDatabaseName();
         databaseInfo = new DatabaseInfo(searchOptionsService, historyController);
         final RootPanel linksPanelTag = RootPanel.get("linksPanel");
@@ -118,7 +118,7 @@ public class yams implements EntryPoint {
         }
 //        if (GWT.getHostPageBaseURL().startsWith("file://")) {
 //            RootPanel.get("databaseStats").add(new Label("Changing Service Target"));
-//            final String baseUrl = GWT.getModuleBaseURL().replace("file:///android_asset/www", "http://lux17.mpi.nl/ds/yaas2");
+//            final String baseUrl = GWT.getModuleBaseURL().replace("file:///android_asset/www", "http://lux17.mpi.nl/ds/yams2");
 //            serviceDefTarget.setServiceEntryPoint(baseUrl + serviceDefTarget.getServiceEntryPoint().replace(GWT.getModuleBaseURL(), ""));
 //            serviceDefTarget.setRpcRequestBuilder(new RpcRequestBuilder() {
 //                @Override
@@ -130,12 +130,12 @@ public class yams implements EntryPoint {
 //            RootPanel.get("databaseStats").add(new Label(GWT.getModuleBaseURL()));
 //            RootPanel.get("databaseStats").add(new Label(serviceDefTarget.getServiceEntryPoint()));
 //
-//            PhonegapUtil.prepareService(serviceDefTarget, "http://lux17.mpi.nl/", "ds/yaas/yaas/searchoptions");
+//            PhonegapUtil.prepareService(serviceDefTarget, "http://lux17.mpi.nl/", "ds/yams/yams/searchoptions");
 ////  HandlerManager eventBus = new HandlerManager(null);
 ////  AppController appViewer = new AppController(rpcService, eventBus);
 ////  appViewer.go(RootPanel.get());
 //        }
-        //        serviceDefTarget.setServiceEntryPoint("http://tlatest03.mpi.nl:8080/yaas-gwt-1.0-SNAPSHOT/yaas/searchoptions");
+        //        serviceDefTarget.setServiceEntryPoint("http://tlatest03.mpi.nl:8080/yams-gwt-1.0-SNAPSHOT/yams/searchoptions");
 ////        serviceDefTarget.setServiceEntryPoint(moduleUrl + relativeServiceUrl);
 //
 //        serviceDefTarget.setRpcRequestBuilder(new RpcRequestBuilder() {

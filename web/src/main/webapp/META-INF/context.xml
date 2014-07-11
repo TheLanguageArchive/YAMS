@@ -18,7 +18,7 @@
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 -->
-<Context path="/yaas">
+<Context path="/yams">
     <Parameter name="basexRestUrl" value="http://localhost:8984/rest/" override="false"/>
     <Parameter name="basexUser" value="user" override="false"/>
     <Parameter name="basexPass" value="pass" override="false"/>

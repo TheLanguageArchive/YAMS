@@ -53,7 +53,7 @@ public class ResourceViewer extends VerticalPanel {
 
     public void showUrl(String targetUrl) {
         final Frame frame = new Frame(targetUrl);
-        frame.setStyleName("yaas-media-viewer");
+        frame.setStyleName("yams-media-viewer");
         final HorizontalPanel horizontalPanel = new HorizontalPanel();
         horizontalPanel.setHorizontalAlignment(ALIGN_RIGHT);
         horizontalPanel.setSpacing(20);
@@ -64,7 +64,7 @@ public class ResourceViewer extends VerticalPanel {
                 ResourceViewer.this.remove(frame);
                 ResourceViewer.this.remove(horizontalPanel);
                 final PopupPanel panel = new PopupPanel(true, true);
-                frame.setStyleName("yaas-media-viewer-full-screen");
+                frame.setStyleName("yams-media-viewer-full-screen");
                 absolutePanel.add(frame);
                 Anchor close = new Anchor("close");
                 close.addClickHandler(new ClickHandler() {
@@ -72,7 +72,7 @@ public class ResourceViewer extends VerticalPanel {
                         panel.hide();
                     }
                 });
-                close.setStyleName("yaas-media-viewer-close-button");
+                close.setStyleName("yams-media-viewer-close-button");
                 absolutePanel.add(close);
                 panel.add(absolutePanel);
                 panel.show();

@@ -36,15 +36,15 @@ public class YamsJsonTreeItem extends YamsTreeItem {
     public YamsJsonTreeItem(SerialisableDataNode childDataNode, DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, final YamsTreeItemLoadedListener itemLoadedListener) {
         super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
         this.itemLoadedListener = itemLoadedListener;
-        this.yaasDataNode = childDataNode;
+        this.yamsDataNode = childDataNode;
         setLabel();
         removeItem(loadingTreeItem);
-        setNodeIconStye(this.yaasDataNode.getType(), this.yaasDataNode.getPermissions());
+        setNodeIconStye(this.yamsDataNode.getType(), this.yamsDataNode.getPermissions());
         hideShowExpandButton();
         if (itemLoadedListener != null) {
-            itemLoadedListener.yaasTreeItemLoaded(YamsJsonTreeItem.this);
+            itemLoadedListener.yamsTreeItemLoaded(YamsJsonTreeItem.this);
         }
-        if (yaasDataNode.getLinkCount() > 0) {
+        if (yamsDataNode.getLinkCount() > 0) {
             addItem(loadingTreeItem);
         }
     }
@@ -65,21 +65,21 @@ public class YamsJsonTreeItem extends YamsTreeItem {
 //
                 public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
 //                    logger.info("dataNodeLoaded");
-                    yaasDataNode = dataNodeList.get(0);
+                    yamsDataNode = dataNodeList.get(0);
                     setLabel();
                     removeItem(loadingTreeItem);
 //                    try {
-                    if (yaasDataNode.getLinkCount() > 0) {
+                    if (yamsDataNode.getLinkCount() > 0) {
                         addItem(loadingTreeItem);
                     }
 //                    } catch (ModelException exception) {
 //                        setText(FAILURE);
 //                        logger.log(Level.SEVERE, FAILURE, exception);
 //                    }                   
-                    setNodeIconStye(yaasDataNode.getType(), yaasDataNode.getPermissions());
+                    setNodeIconStye(yamsDataNode.getType(), yamsDataNode.getPermissions());
                     hideShowExpandButton();
                     if (itemLoadedListener != null) {
-                        itemLoadedListener.yaasTreeItemLoaded(YamsJsonTreeItem.this);
+                        itemLoadedListener.yamsTreeItemLoaded(YamsJsonTreeItem.this);
                     }
                 }
 
@@ -101,9 +101,9 @@ public class YamsJsonTreeItem extends YamsTreeItem {
     public void loadChildNodes() {
         removeItem(loadNextTreeItem);
         removeItem(errorTreeItem);
-        if (yaasDataNode != null) {
+        if (yamsDataNode != null) {
             addItem(loadingTreeItem);
-            final int maxToGet = yaasDataNode.getLinkCount();
+            final int maxToGet = yamsDataNode.getLinkCount();
             if (maxToGet <= loadedCount) {
                 // all child nodes should be visible so we can just return
                 removeItem(loadingTreeItem);
@@ -114,7 +114,7 @@ public class YamsJsonTreeItem extends YamsTreeItem {
                 final int firstToGet = (loadedCount == 0) ? loadedCount : loadedCount + 1;
                 final int lastToGet = (maxToGet < firstToGet + numberToGet) ? maxToGet : firstToGet + numberToGet;
 //                    logger.log(Level.INFO, "loadedCount: " + loadedCount + ", numberToGet: " + numberToGet + ", firstToGet: " + firstToGet + ", lastToGet: " + lastToGet + ", maxToGet: " + maxToGet);                    
-                dataNodeLoader.requestLoadChildrenOf(new DataNodeId(yaasDataNode.getURI()), firstToGet, lastToGet, new DataNodeLoaderListener() {
+                dataNodeLoader.requestLoadChildrenOf(new DataNodeId(yamsDataNode.getURI()), firstToGet, lastToGet, new DataNodeLoaderListener() {
 
                     public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
 //                        setText("Loaded " + dataNodeList.size() + " child nodes");
@@ -156,18 +156,18 @@ public class YamsJsonTreeItem extends YamsTreeItem {
 
     @Override
     void insertLoadedChildNode(SerialisableDataNode childDataNode) {
-        YamsJsonTreeItem yaasTreeItem = new YamsJsonTreeItem(childDataNode, dataNodeLoader, popupPanel, checkboxListener, clickListener, itemLoadedListener);
-        addItem(yaasTreeItem);
+        YamsJsonTreeItem yamsTreeItem = new YamsJsonTreeItem(childDataNode, dataNodeLoader, popupPanel, checkboxListener, clickListener, itemLoadedListener);
+        addItem(yamsTreeItem);
     }
 
     @Override
     void setLabel() {
-        if (yaasDataNode != null) {
+        if (yamsDataNode != null) {
             int childCountsize = -1;
             if (childCountsize > 0) {
-                setText(yaasDataNode.getLabel() + "[" + childCountsize + "]");
+                setText(yamsDataNode.getLabel() + "[" + childCountsize + "]");
             } else {
-                setText(yaasDataNode.getLabel());
+                setText(yamsDataNode.getLabel());
             }
         } else {
             setText("not loaded");

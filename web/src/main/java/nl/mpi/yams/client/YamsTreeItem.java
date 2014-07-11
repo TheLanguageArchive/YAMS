@@ -47,7 +47,7 @@ public abstract class YamsTreeItem extends TreeItem {
     public static final String ERROR_GETTING_CHILD_NODES = "Error getting child nodes";
     public static final String LOADING_CHILD_NODES_FAILED = "Loading child nodes failed";
     public static final String FAILED_TO_LOAD = "Failed to load";
-    protected SerialisableDataNode yaasDataNode = null;
+    protected SerialisableDataNode yamsDataNode = null;
     final protected DataNodeLoader dataNodeLoader;
     protected boolean loadAttempted = false;
     final HorizontalPanel outerPanel;
@@ -116,7 +116,7 @@ public abstract class YamsTreeItem extends TreeItem {
 
     protected void hideShowExpandButton() {
         // this check will determine if the expand button is visible, but also if the click action is available. The click action was suppressed for empty data nodes like "Actors" but this behaivour is undefined at this point for CS2CMDI.
-        final boolean hasFields = (this instanceof YamsJsonTreeItem || yaasDataNode != null && yaasDataNode.getFieldGroups() != null);
+        final boolean hasFields = (this instanceof YamsJsonTreeItem || yamsDataNode != null && yamsDataNode.getFieldGroups() != null);
         nodeLabel.setVisible(!hasFields);
         if (checkboxListener != null) {
             checkBox.setVisible(hasFields);
@@ -125,7 +125,7 @@ public abstract class YamsTreeItem extends TreeItem {
     }
 
     private void setupWidgets() {
-        setStylePrimaryName("yaas-treeNode");
+        setStylePrimaryName("yams-treeNode");
         final Style style = outerPanel.getElement().getStyle();
         style.setLeft(0, Style.Unit.PX);
         style.setPosition(Style.Position.RELATIVE);
@@ -142,7 +142,7 @@ public abstract class YamsTreeItem extends TreeItem {
         if (checkboxListener != null) {
             checkBox.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
-                    checkboxListener.stateChanged(checkBox.getValue(), yaasDataNode, checkBox);
+                    checkboxListener.stateChanged(checkBox.getValue(), yamsDataNode, checkBox);
                 }
             });
         }
@@ -163,8 +163,8 @@ public abstract class YamsTreeItem extends TreeItem {
             nodeDetailsAnchor.addClickHandler(new ClickHandler() {
 
                 public void onClick(ClickEvent event) {
-//                    logger.info(yaasDataNode.getLabel());
-                    clickListener.clickEvent(yaasDataNode);
+//                    logger.info(yamsDataNode.getLabel());
+                    clickListener.clickEvent(yamsDataNode);
                 }
             });
         }
@@ -174,7 +174,7 @@ public abstract class YamsTreeItem extends TreeItem {
                 public void onMouseOver(MouseOverEvent event) {
 //                if (singleDataNodeTable == null) {
 //                    singleDataNodeTable = ;
-//                    singleDataNodeTable.setStyleName("yaas-treeNodeDetails");                    
+//                    singleDataNodeTable.setStyleName("yams-treeNodeDetails");                    
                     popupPanel.setWidget(getPopupWidget());
                     popupPanel.setPopupPosition(nodeDetailsAnchor.getAbsoluteLeft() + nodeDetailsAnchor.getOffsetWidth() / 2, nodeDetailsAnchor.getAbsoluteTop() + nodeDetailsAnchor.getOffsetHeight());
                     popupPanel.show();
@@ -199,7 +199,7 @@ public abstract class YamsTreeItem extends TreeItem {
 //        // todo: create a json datanode for use here
 //        // The RequestBuilder code is replaced by a call to the getJson method. So you no longer need the following code in the refreshWatchList method: http://stackoverflow.com/questions/11121374/gwt-requestbuilder-cross-site-requests
 //        // also the current configuration probalby needs on the server: Response.setHeader("Access-Control-Allow-Origin","http://192.168.56.101:8080/BaseX76/rest/");
-//        final String requestUrl = "http://192.168.56.101:8080/BaseX76/rest/yaas-data/" + dataNodeId.getIdString() + "?method=jsonml";
+//        final String requestUrl = "http://192.168.56.101:8080/BaseX76/rest/yams-data/" + dataNodeId.getIdString() + "?method=jsonml";
 //        RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, URL.encode(requestUrl));
 //        try {
 //            Request request = builder.sendRequest(null, new RequestCallback() {
@@ -230,6 +230,6 @@ public abstract class YamsTreeItem extends TreeItem {
     abstract void setLabel();
 
     public SerialisableDataNode getYaasDataNode() {
-        return yaasDataNode;
+        return yamsDataNode;
     }
 }

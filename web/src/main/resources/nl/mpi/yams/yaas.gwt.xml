@@ -18,7 +18,7 @@
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 -->
-<module rename-to='yaas'>
+<module rename-to='yams'>
     <!-- Inherit the core Web Toolkit stuff.                        -->
     <inherits name='com.google.gwt.user.User' />
     <inherits name="com.google.gwt.logging.Logging"/>
@@ -37,11 +37,11 @@
     <!--<inherits name='com.google.gwt.http.HTTP' />-->
 
     <!-- Other module inherits                                      -->
-    <inherits name="nl.mpi.yaas.Common"/>
+    <inherits name="nl.mpi.yams.Common"/>
     <inherits name="nl.mpi.flap.Flap"/>
     <!--<inherits name='com.googlecode.gwtphonegap.PhoneGap' />-->
     <!-- Specify the app entry point class.                         -->
-    <entry-point class='nl.mpi.yaas.client.yams' />
+    <entry-point class='nl.mpi.yams.client.yams' />
 
     <!-- Specify the paths for translatable code                    -->
     <source path='client' />

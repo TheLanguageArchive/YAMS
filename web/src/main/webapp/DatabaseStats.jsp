@@ -19,8 +19,8 @@
 -->
 <%@page import="java.net.MalformedURLException"%>
 <%@page import="nl.mpi.flap.kinnate.entityindexer.QueryException"%>
-<%@page import="nl.mpi.yaas.common.db.DataBaseManager"%>
-<%@page import="nl.mpi.yaas.common.db.RestDbAdaptor"%>
+<%@page import="nl.mpi.yams.common.db.DataBaseManager"%>
+<%@page import="nl.mpi.yams.common.db.RestDbAdaptor"%>
 <%@page import="java.net.URL"%>
 <%@page import="org.slf4j.LoggerFactory"%>
 <%!
@@ -41,7 +41,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link type="text/css" rel="stylesheet" href="yaas.css">
+        <link type="text/css" rel="stylesheet" href="yams.css">
         <script type="text/javascript" src="https://www.google.com/jsapi"></script>
         <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script type="text/javascript">
@@ -214,7 +214,7 @@
                         buttonText = "Go To Search Page";
                     }
                 %>
-                <a href='yaas.html#<%=databaseName%>'><%=buttonText%></a>
+                <a href='yams.html#<%=databaseName%>'><%=buttonText%></a>
                 <div id="chart_div" style="width: 900px; height: 500px;">&nbsp;</div>
             </div>
         </div>

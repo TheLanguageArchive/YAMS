@@ -68,8 +68,8 @@ public class DataNodeTable extends DialogBox {
         }
     }
 
-    public void addDataNode(SerialisableDataNode yaasDataNode) {
-        dataNodes.add(yaasDataNode);
+    public void addDataNode(SerialisableDataNode yamsDataNode) {
+        dataNodes.add(yamsDataNode);
         updateTable();
         this.center();
     }

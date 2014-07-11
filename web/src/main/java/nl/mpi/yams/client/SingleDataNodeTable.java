@@ -50,9 +50,9 @@ public class SingleDataNodeTable extends VerticalPanel {
 
     private static final Logger logger = Logger.getLogger("");
 
-    public SingleDataNodeTable(final SerialisableDataNode yaasDataNode, List<DataNodeHighlight> nodeHighlights) {
-        setStyleName("yaas-treeNodeDetails");
-        final List<FieldGroup> fieldGroups = yaasDataNode.getFieldGroups();
+    public SingleDataNodeTable(final SerialisableDataNode yamsDataNode, List<DataNodeHighlight> nodeHighlights) {
+        setStyleName("yams-treeNodeDetails");
+        final List<FieldGroup> fieldGroups = yamsDataNode.getFieldGroups();
         int rowCounter = 0;
         Set<String> highlightPaths = new HashSet<String>();
         for (DataNodeHighlight highlight : nodeHighlights) {
@@ -60,13 +60,13 @@ public class SingleDataNodeTable extends VerticalPanel {
         }
         final HorizontalPanel buttonPanel = new HorizontalPanel();
         final VerticalPanel linksPanel = new VerticalPanel();
-        final Grid grid = new Grid(yaasDataNode.getFieldGroups().size() + 1, 2);
+        final Grid grid = new Grid(yamsDataNode.getFieldGroups().size() + 1, 2);
 //        final Button closeButton = new Button("x", closeHandler);
-//        closeButton.setStyleName("yaas-closeButton");
+//        closeButton.setStyleName("yams-closeButton");
 //        buttonPanel.add(closeButton);
         buttonPanel.add(linksPanel);
         try {
-            final String uri = yaasDataNode.getURI();
+            final String uri = yamsDataNode.getURI();
             if (uri != null && uri.length() > 0) {
                 Anchor anchor = new Anchor("Metadata Link");
                 anchor.addClickHandler(new ClickHandler() {
@@ -77,7 +77,7 @@ public class SingleDataNodeTable extends VerticalPanel {
                 linksPanel.add(anchor);
             }
             linksPanel.add(new Label());
-            final String archiveHandle = yaasDataNode.getArchiveHandle();
+            final String archiveHandle = yamsDataNode.getArchiveHandle();
             if (archiveHandle != null && archiveHandle.length() > 0) {
                 final String viewLink = archiveHandle.replace("hdl:", "http://hdl.handle.net/");
                 final Anchor imdiBrowserLink = new Anchor("IMDI Browser Link");
@@ -106,9 +106,9 @@ public class SingleDataNodeTable extends VerticalPanel {
                 });
                 linksPanel.add(trovaAnchor);
             }
-            final DataNodeType nodeType = yaasDataNode.getType();
+            final DataNodeType nodeType = yamsDataNode.getType();
             if (nodeType != null && IMDI_RESOURCE.equals(nodeType.getID())) {
-                for (DataNodeLink childLink : yaasDataNode.getChildIds()) {
+                for (DataNodeLink childLink : yamsDataNode.getChildIds()) {
                     final String resourceHandle = childLink.getArchiveHandle();
                     if (resourceHandle != null && resourceHandle.length() > 0) {
                         linksPanel.add(new ResourceViewer(resourceHandle));
@@ -170,7 +170,7 @@ public class SingleDataNodeTable extends VerticalPanel {
                     }
                 }
             }
-            //final String id = yaasDataNode.getID();
+            //final String id = yamsDataNode.getID();
 //            Anchor entryAanchor = new Anchor("view entry", "http://tlatest03:8984/rest/"+dbUri);
 //                linksPanel.add(entryAanchor);
             //linksPanel.add(new Label("DB ID: " + id));
@@ -186,9 +186,9 @@ public class SingleDataNodeTable extends VerticalPanel {
                 final HTML label = new HTML(dataField.getFieldValue());
                 horizontalPanel.add(label);
                 if (highlightPaths.contains(dataField.getPath())) {
-                    label.setStyleName("yaas-treeNode-highlighted");
+                    label.setStyleName("yams-treeNode-highlighted");
                 } else {
-                    label.setStyleName("yaas-treeNode");
+                    label.setStyleName("yams-treeNode");
                 }
             }
             grid.setWidget(rowCounter, 1, horizontalPanel);

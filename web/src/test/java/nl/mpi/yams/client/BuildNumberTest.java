@@ -45,7 +45,7 @@ public class BuildNumberTest extends TestCase {
     public class AbstractBasePluginImpl extends AbstractBaseModule {
 
         public AbstractBasePluginImpl() throws PluginException {
-            super("test name", "test description", "nl.mpi.yaas.client");
+            super("test name", "test description", "nl.mpi.yams.client");
         }
     }
 }

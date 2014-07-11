@@ -119,7 +119,7 @@ public class HistoryDataTest {
 //     */
 //    @Test
 //    public void testGetHistoryToken() {
-//        //http://127.0.0.1:8888/yaas.html?gwt.codesvr=127.0.0.1:9997#EWE-2013-11-13,union,,,is,equals,semi-spontaneous,,,is,equals,Africa,,,is,equals,Ghana,,,is,equals,Gesture%20Project
+//        //http://127.0.0.1:8888/yams.html?gwt.codesvr=127.0.0.1:9997#EWE-2013-11-13,union,,,is,equals,semi-spontaneous,,,is,equals,Africa,,,is,equals,Ghana,,,is,equals,Gesture%20Project
 //        System.out.println("getHistoryToken");
 //        HistoryData instance = new HistoryData();
 //        String expResult = "";
@@ -134,7 +134,7 @@ public class HistoryDataTest {
 //     */
 //    @Test
 //    public void testParseHistoryToken() {
-//        //http://127.0.0.1:8888/yaas.html?gwt.codesvr=127.0.0.1:9997#EWE-2013-11-13,union,,,is,equals,semi-spontaneous,,,is,equals,Africa,,,is,equals,Ghana,,,is,equals,Gesture%20Project
+//        //http://127.0.0.1:8888/yams.html?gwt.codesvr=127.0.0.1:9997#EWE-2013-11-13,union,,,is,equals,semi-spontaneous,,,is,equals,Africa,,,is,equals,Ghana,,,is,equals,Gesture%20Project
 //        System.out.println("parseHistoryToken");
 //        String historyToken = "";
 //        HistoryData instance = new HistoryData();

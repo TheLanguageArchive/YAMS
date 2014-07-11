@@ -97,9 +97,9 @@ public class FacetedTree extends VerticalPanel implements HistoryListener {
             menuBar.addItem(labelString, getMenuItems(databaseName, menuIndex++));
         }
         if (!selectedFacets.isEmpty()) {
-            final YamsTreeFacet yaasTreeFacet = new YamsTreeFacet(databaseName, null, searchOptionsService, null, -1);
-            facetTree.addItem(yaasTreeFacet);
-            yaasTreeFacet.loadChildFacets(selectedFacets);
+            final YamsTreeFacet yamsTreeFacet = new YamsTreeFacet(databaseName, null, searchOptionsService, null, -1);
+            facetTree.addItem(yamsTreeFacet);
+            yamsTreeFacet.loadChildFacets(selectedFacets);
         }
         if (selectedFacets.isEmpty()) {
             menuBar.addItem("<please select a facet>", getMenuItems(databaseName, menuIndex++));

@@ -370,7 +370,7 @@ ul#navigation a {
     content: "\e60d";
 }
 
-.yaas-treeNode-selected{
+.yams-treeNode-selected{
     background: #25466f;
     padding: 5px 20px;
     background-color: #D8E0E5;

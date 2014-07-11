@@ -23,5 +23,5 @@ package nl.mpi.yams.client;
  */
 public interface YamsTreeItemLoadedListener {
 
-    public void yaasTreeItemLoaded(YamsTreeItem yaasTreeItem);
+    public void yamsTreeItemLoaded(YamsTreeItem yamsTreeItem);
 }

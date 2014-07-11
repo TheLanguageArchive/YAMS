@@ -22,7 +22,7 @@
 <!-- config.xml reference: https://build.phonegap.com/docs/config-xml -->
 <widget xmlns     = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
-        id        = "nl.mpi.yaas"
+        id        = "nl.mpi.yams"
         version   = "1.0.0">
 
     <name>YAAS mobile test application</name>
@@ -31,7 +31,7 @@
         Test YAAS application.
     </description>
 
-    <author href="lux17.mpi.nl/ds/yaas" email="">
+    <author href="lux17.mpi.nl/ds/yams" email="">
     </author>
 
     <!--
