@@ -10,7 +10,7 @@
         <version>1.0</version>
     </parent>
     <!--<version>${plugin.majorVersion}.${plugin.minorVersion}.0000000-${plugin.branch}</version>-->
-    <version>1.0.67-pretesting</version>
+    <version>1.0.65-pretesting</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.license>gpl20</netbeans.hint.license>
@@ -122,8 +122,8 @@
         </dependency>-->
         <dependency>
             <groupId>nl.mpi</groupId>
-            <artifactId>arbil</artifactId>
-            <version>2.5.1039-stable</version>
+            <artifactId>arbil-metadata-utils</artifactId>
+            <version>2.6-pretesting-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <artifactId>arbil-help</artifactId>

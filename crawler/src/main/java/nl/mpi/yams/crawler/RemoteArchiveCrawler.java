@@ -22,32 +22,37 @@ import nl.mpi.yams.common.data.DatabaseLinks;
 import nl.mpi.yams.common.data.IconTable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
-import nl.mpi.arbil.ArbilDesktopInjector;
+import javax.swing.JComponent;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.DefaultTreeModel;
 import nl.mpi.arbil.ArbilVersion;
 import nl.mpi.arbil.data.ArbilDataNode;
 import nl.mpi.arbil.data.ArbilDataNodeContainer;
 import nl.mpi.arbil.data.ArbilDataNodeLoader;
 import nl.mpi.arbil.data.ArbilNode;
-import nl.mpi.arbil.data.ArbilTreeHelper;
-import nl.mpi.arbil.ui.ArbilWindowManager;
 import nl.mpi.arbil.userstorage.ArbilSessionStorage;
 import nl.mpi.arbil.util.ApplicationVersionManager;
-import nl.mpi.arbil.util.ArbilLogConfigurer;
+import nl.mpi.arbil.util.MessageDialogHandler;
 import nl.mpi.arbil.util.MimeHashQueue;
+import nl.mpi.arbil.util.TreeHelper;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginArbilDataNodeLoader;
+import nl.mpi.flap.plugin.PluginDialogHandler;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yams.common.data.DatabaseStats;
 import nl.mpi.yams.common.data.MetadataFileType;
@@ -83,11 +88,8 @@ public class RemoteArchiveCrawler {
         }
         iconTable = new IconTable();
         final ApplicationVersionManager versionManager = new ApplicationVersionManager(new ArbilVersion());
-        final ArbilDesktopInjector injector = new ArbilDesktopInjector();
         final ArbilSessionStorage arbilSessionStorage = new ArbilSessionStorage();
-        injector.injectHandlers(arbilSessionStorage, versionManager, new ArbilLogConfigurer(versionManager.getApplicationVersion(), "yams"));
 
-        final ArbilWindowManager arbilWindowManager = injector.getWindowManager();
         final MimeHashQueue mockMimeHashQueue = new MimeHashQueue() {
 
             @Override
@@ -127,7 +129,206 @@ public class RemoteArchiveCrawler {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         };
-        dataNodeLoader = new ArbilDataNodeLoader(arbilWindowManager, arbilSessionStorage, mockMimeHashQueue, new ArbilTreeHelper(arbilSessionStorage, arbilWindowManager));
+        final MessageDialogHandler messageDialogHandler = new MessageDialogHandler() {
+
+            @Override
+            public File[] showMetadataFileSelectBox(String titleText, boolean multipleSelect) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public File[] showDirectorySelectBox(String titleText, boolean multipleSelect) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public File showEmptyExportDirectoryDialogue(String titleText) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void offerUserToSaveChanges() throws Exception {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public boolean askUserToSaveChanges(String entityName) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public MessageDialogHandler.DialogBoxResult showDialogBoxRememberChoice(String message, String title, int optionType, int messageType) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void addMessageDialogToQueue(String messageString, String messageTitle) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public boolean showConfirmDialogBox(String messageString, String messageTitle) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public int showDialogBox(String message, String title, int optionType, int messageType) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public int showDialogBox(String message, String title, int optionType, int messageType, Object[] options, Object initialValue) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public File[] showFileSelectBox(String titleText, boolean directorySelectOnly, boolean multipleSelect, Map<String, FileFilter> fileFilterMap, PluginDialogHandler.DialogueType dialogueType, JComponent customAccessory) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        };
+        final TreeHelper treeHelper = new TreeHelper() {
+
+            @Override
+            public void init() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public int addDefaultCorpusLocations() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public boolean addLocation(URI addedLocation) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public boolean addLocationInteractive(URI addableLocation) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void applyRootLocations() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void deleteNodes(Object sourceObject) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public ArbilDataNode[] getFavouriteNodes() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public DefaultTreeModel getFavouritesTreeModel() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public ArbilDataNode[] getLocalCorpusNodes() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public DefaultTreeModel getLocalCorpusTreeModel() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public DefaultTreeModel getLocalDirectoryTreeModel() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public ArbilDataNode[] getLocalFileNodes() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public ArbilDataNode[] getRemoteCorpusNodes() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public DefaultTreeModel getRemoteCorpusTreeModel() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public boolean isInFavouritesNodes(ArbilDataNode dataNode) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public boolean isShowHiddenFilesInTree() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public boolean isGroupFavouritesByType() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void jumpToSelectionInTree(boolean silent, ArbilDataNode cellDataNode) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void loadLocationsList() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public boolean locationsHaveBeenAdded() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void removeLocation(ArbilDataNode removeObject) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void clearRemoteLocations() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void addLocations(List<URI> locations) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void addLocations(InputStream inputStream) throws IOException {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void removeLocation(URI removeLocation) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void saveLocations(ArbilDataNode[] nodesToAdd, ArbilDataNode[] nodesToRemove) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void setShowHiddenFilesInTree(boolean showState) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void setGroupFavouritesByType(boolean groupFavouritesByType) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        };
+        dataNodeLoader = new ArbilDataNodeLoader(messageDialogHandler, arbilSessionStorage, mockMimeHashQueue, treeHelper);
         try {
             DbAdaptor dbAdaptor;
             if (databaseUrl.startsWith("http://")) {
