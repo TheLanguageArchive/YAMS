@@ -23,51 +23,54 @@ package nl.mpi.yams.client;
  */
 public interface ServiceLocations extends Messages {
 
-    @Key("nl.mpi.rrsUrl")
+    @Key("nl.mpi.yams.rrsUrl")
     String rrsUrl();
 
-    @Key("nl.mpi.amsUrl")
+    @Key("nl.mpi.yams.amsUrl")
     String amsUrl(String nodeIdentifier);
 
-    @Key("nl.mpi.annexUrl")
+    @Key("nl.mpi.yams.annexUrl")
     String annexUrl(String nodeIdentifier);
 
-    @Key("nl.mpi.imdiSearchUrl")
+    @Key("nl.mpi.yams.imdiSearchUrl")
     String imdiSearchUrl();
 
-    @Key("nl.mpi.trovaUrl")
+    @Key("nl.mpi.yams.trovaUrl")
     String trovaUrl();
 
-    @Key("nl.mpi.imdiBrowserManualUrl")
+    @Key("nl.mpi.yams.imdiBrowserManualUrl")
     String imdiBrowserManualUrl();
 
-    @Key("nl.mpi.yamsUrl")
+    @Key("nl.mpi.yams.yamsUrl")
     String yamsUrl(String nodeId);
 
-    @Key("nl.mpi.loginUrl")
+    @Key("nl.mpi.yams.loginUrl")
     String loginUrl();
 
-    @Key("nl.mpi.logoutUrl")
+    @Key("nl.mpi.yams.logoutUrl")
     String logoutUrl();
 
-    @Key("nl.mpi.statusUrl")
+    @Key("nl.mpi.yams.statusUrl")
     String statusUrl();
 
-    @Key("nl.mpi.jsonCsAdaptorUrl")
+    @Key("nl.mpi.yams.jsonCsAdaptorUrl")
     String jsonCsAdaptorUrl();
 
-    @Key("nl.mpi.jsonYamsRestUrl")
+    @Key("nl.mpi.yams.jsonYamsRestUrl")
     String jsonYamsRestUrl(String databaseName);
 
-    @Key("nl.mpi.jsonRootNode")
+    @Key("nl.mpi.yams.jsonRootNode")
     String jsonRootNode(String serviceUrl);
 
-    @Key("nl.mpi.jsonNodeOfUrl")
+    @Key("nl.mpi.yams.jsonNodeOfUrl")
     String jsonNodeOfUrl(String serviceUrl);
 
-    @Key("nl.mpi.jsonLinksOfUrl")
+    @Key("nl.mpi.yams.jsonLinksOfUrl")
     String jsonLinksOfUrl(String serviceUrl, String nodeIdentifier);
 
-    @Key("nl.mpi.jsonNodeGetVar")
+    @Key("nl.mpi.yams.jsonNodeGetVar")
     String jsonNodeGetVar();
+
+    @Key("nl.mpi.yams.defaultDatabaseName")
+    String defaultDatabaseName();
 }

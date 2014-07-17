@@ -17,6 +17,7 @@
  */
 package nl.mpi.yams.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
@@ -35,17 +36,17 @@ import nl.mpi.yams.common.data.SearchParameters;
 public class HistoryController implements ValueChangeHandler<String> {
 
     ArrayList<HistoryListener> historyListeners = new ArrayList<HistoryListener>();
+    final private ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
     private static final Logger logger = Logger.getLogger("");
     private HistoryData historyData;
-    private String defaultDatabase = "";
+    final private String defaultDatabase = serviceLocations.defaultDatabaseName();
 
     public HistoryController() {
         this.historyData = new HistoryData();
     }
 
-    public void setDefaultDatabase(String defaultDatabase) {
+    public void setDefaultDatabase() {
         //logger.info("defaultDatabase:" + defaultDatabase);
-        this.defaultDatabase = defaultDatabase;
         if (historyData.getDatabaseName().isEmpty()) {
             historyData.setDatabaseName(defaultDatabase);
         }

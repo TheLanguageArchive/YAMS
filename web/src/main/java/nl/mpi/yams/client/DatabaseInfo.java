@@ -63,7 +63,7 @@ public class DatabaseInfo {
                 requestCounter--;
                 databaseNames = result;
                 if (databaseNames.length > 0) {
-                    historyController.setDefaultDatabase(databaseNames[0]);
+                    historyController.setDefaultDatabase();//databaseNames[0]
                 }
                 getDatabaseStats();
                 historyController.fireDatabaseInfoEvent();
@@ -76,7 +76,7 @@ public class DatabaseInfo {
             requestCounter++;
             searchOptionsService.getDatabaseStats(databaseName, new AsyncCallback<DatabaseStats>() {
                 public void onFailure(Throwable caught) {
-                    logger.log(Level.SEVERE, "DatabaseInfo:getDatabaseStats", caught);
+                    logger.info("failed to get DatabaseInfo:getDatabaseStats:" + databaseName);
                     ready();
                     requestCounter--;
                     databaseError = true;
@@ -95,7 +95,7 @@ public class DatabaseInfo {
             requestCounter++;
             searchOptionsService.getImageDataForTypes(databaseName, new AsyncCallback<IconTableBase64>() {
                 public void onFailure(Throwable caught) {
-                    logger.log(Level.SEVERE, "DatabaseInfo:getImageDataForTypes", caught);
+                    logger.info("failed to get DatabaseInfo:getImageDataForTypes:" + databaseName);
                     ready();
                     requestCounter--;
                     databaseError = true;
