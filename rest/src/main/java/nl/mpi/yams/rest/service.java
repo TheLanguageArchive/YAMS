@@ -74,7 +74,7 @@ public class service {
     public String getHtmlListing() throws QueryException {
         StringBuilder stringBuilder = new StringBuilder();
         DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(DataBaseManager.defaultDataBase);
-        stringBuilder.append("<a href=\"./dblist\">dblist</a><br>");
+        stringBuilder.append("<a href=\"./dbinfo\">dbinfo</a><br>");
         for (String dbName : yamsDatabase.getDatabaseList()) {
             stringBuilder.append("<h3>");
             stringBuilder.append(dbName);
@@ -93,7 +93,7 @@ public class service {
     }
 
     @GET
-    @Path("/dblist")
+    @Path("/dbinfo")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getDatabaseList() throws QueryException {
         DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase("");
