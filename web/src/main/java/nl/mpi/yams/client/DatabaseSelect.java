@@ -40,11 +40,11 @@ public class DatabaseSelect extends VerticalPanel implements HistoryListener {
     private static final String LOADING_DATABASE = "Loading database.";
     private static final Logger logger = Logger.getLogger("");
     private final HistoryController historyController;
-    private final DatabaseInfo databaseInfo;
+    private final DatabaseInformation databaseInfo;
     private final Label databaseInfoLabel;
     final private Image loadingImage;
 
-    public DatabaseSelect(final HistoryController historyController, DatabaseInfo databaseInfo) {
+    public DatabaseSelect(final HistoryController historyController, DatabaseInformation databaseInfo) {
         add(databaseListBox);
         databaseInfoLabel = new Label(LOADING_DATABASE_LIST);
         add(databaseInfoLabel);

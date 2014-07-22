@@ -33,7 +33,7 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
     private final TextBox searchBox;
     private final Button searchButton;
 
-    public ConciseSearchBox(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInfo databaseInfo, ResultsPanel resultsPanel) {
+    public ConciseSearchBox(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInformation databaseInfo, ResultsPanel resultsPanel) {
         this.setStyleName("yams-ConciseSearchBox");
         this.historyController = historyController;
         searchBox = new TextBox();

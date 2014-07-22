@@ -18,11 +18,13 @@
  */
 package nl.mpi.yams.client;
 
-import nl.mpi.yams.client.GreetingService;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
+import java.util.List;
+import static junit.framework.Assert.assertTrue;
+import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yams.shared.FieldVerifier;
 import org.junit.Ignore;
 
@@ -65,9 +67,9 @@ public class GwtTestyams extends GWTTestCase {
     @Ignore
     public void testGreetingService() {
         // Create the service that we will test.
-        GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
-        ServiceDefTarget target = (ServiceDefTarget) greetingService;
-        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "yams/greet");
+        SearchOptionsServiceAsync searchOptionsService = GWT.create(SearchOptionsService.class);
+        ServiceDefTarget target = (ServiceDefTarget) searchOptionsService;
+        target.setServiceEntryPoint(GWT.getModuleBaseURL() + "yams/search");
 
         // Since RPC calls are asynchronous, we will need to wait for a response
         // after this test method returns. This line tells the test runner to wait
@@ -75,15 +77,16 @@ public class GwtTestyams extends GWTTestCase {
         delayTestFinish(10000);
 
         // Send a request to the server.
-        greetingService.greetServer("GWT User", new AsyncCallback<String>() {
+        searchOptionsService.getRootDataNodes("YAMS-DB", new AsyncCallback<List<SerialisableDataNode>>() {
             public void onFailure(Throwable caught) {
                 // The request resulted in an unexpected error.
                 fail("Request failure: " + caught.getMessage());
             }
 
-            public void onSuccess(String result) {
+            public void onSuccess(List<SerialisableDataNode> result) {
                 // Verify that the response is correct.
-                assertTrue(result.startsWith("Hello, GWT User!"));
+                assertTrue(result != null);
+                assertEquals(1, result.get(0).getChildList());
 
                 // Now that we have received a response, we need to tell the test runner
                 // that the test is complete. You must call finishTest() after an

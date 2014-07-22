@@ -48,7 +48,7 @@ import nl.mpi.yams.common.data.IconTableBase64;
 public class ActionsPanelController implements HistoryListener {
 
     private static final Logger logger = Logger.getLogger("");
-    private final DatabaseInfo databaseInfo;
+    private final DatabaseInformation databaseInfo;
     private final SearchOptionsServiceAsync searchOptionsService;
     private SerialisableDataNode dataNode = null;
     private DataNodeId nodeId = null;
@@ -137,7 +137,7 @@ public class ActionsPanelController implements HistoryListener {
         historyChange();
     }
 
-    public ActionsPanelController(DatabaseInfo databaseInfo, SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag, RootPanel loginTag, RootPanel logoutTag, RootPanel userSpan) {
+    public ActionsPanelController(DatabaseInformation databaseInfo, SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag, RootPanel loginTag, RootPanel logoutTag, RootPanel userSpan) {
         this.databaseInfo = databaseInfo;
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;

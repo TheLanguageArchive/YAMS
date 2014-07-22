@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.yams.common.data.DataNodeId;
-import nl.mpi.yams.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.HighlightableDataNode;
 import nl.mpi.yams.common.data.IconTableBase64;
 
 /**
@@ -123,8 +123,8 @@ public class DataNodeTree extends Tree {
     }
 
     public void addResultsToTree(final String databaseName, final DataNodeId[] dataNodeIds, final boolean displayFlatNodes) {
-        final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, iconTableBase64, databaseName);
-//        final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
+//        final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, iconTableBase64, databaseName);
+        final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
         addPagingButton(new Pageable() {
             public void addYamsTreeItem(int index) {
                 final YamsTreeItem yamsTreeItem = new YamsRpcTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener, displayFlatNodes, yamsTreeItemLoadedListener);
@@ -138,9 +138,9 @@ public class DataNodeTree extends Tree {
         });
     }
 
-    public void addResultsToTree(final String databaseName, final List<DataNodeLink> rootIds, final HighlighableDataNode dataNode, final boolean displayFlatNodes) {
-        final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, iconTableBase64, databaseName);
-//        final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
+    public void addResultsToTree(final String databaseName, final List<DataNodeLink> rootIds, final HighlightableDataNode dataNode, final boolean displayFlatNodes) {
+//        final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, iconTableBase64, databaseName);
+        final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
         final TreeItem treeItem = new TreeItem(new HorizontalPanel());
         final TreeTableHeader treeTableHeader = new TreeTableHeader(treeItem);
         this.addItem(treeItem);

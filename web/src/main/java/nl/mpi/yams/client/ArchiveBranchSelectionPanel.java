@@ -49,7 +49,7 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
     private static final Logger logger = Logger.getLogger("");
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
-    private final DatabaseInfo databaseInfo;
+    private final DatabaseInformation databaseInfo;
     private final PopupPanel popupPanel = new PopupPanel(true);
     private final VerticalPanel selectedBranchesPanel = new VerticalPanel();
     HashMap<SerialisableDataNode, HorizontalPanel> nodePanels = new HashMap<SerialisableDataNode, HorizontalPanel>();
@@ -57,7 +57,7 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
     private final List<String> windowParamHdls;
     private final List<String> windowParamUrls;
 
-    public ArchiveBranchSelectionPanel(SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, List<String> windowParamHdls, List<String> windowParamUrls) {
+    public ArchiveBranchSelectionPanel(SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInformation databaseInfo, List<String> windowParamHdls, List<String> windowParamUrls) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
@@ -105,8 +105,8 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
         //logger.info(databaseName);
         dataNodeTreeDb = databaseName;
         if (databaseName != null) {
-            final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, databaseIcons, databaseName);
-//            final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
+//            final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, databaseIcons, databaseName);
+            final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
             final DataNodeLoaderListener dataNodeLoaderListener = new DataNodeLoaderListener() {
 
                 public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
@@ -122,12 +122,13 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
                 }
             };
             if (!windowParamHdls.isEmpty()) {
-//                logger.info("windowParamHdls");
+                logger.info("windowParamHdls");
                 dataNodeLoader.requestLoadHdl(windowParamHdls, dataNodeLoaderListener);
             } else if (!windowParamUrls.isEmpty()) {
-//                logger.info("windowParamUrls");
+                logger.info("windowParamUrls");
                 dataNodeLoader.requestLoadUri(windowParamUrls, dataNodeLoaderListener);
             } else {
+                logger.info("dataNodeIds");
                 dataNodeLoader.requestLoad(Arrays.asList(dataNodeIds), dataNodeLoaderListener);
             }
 

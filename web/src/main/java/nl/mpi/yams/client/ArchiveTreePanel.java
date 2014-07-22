@@ -39,11 +39,11 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
     private static final Logger logger = Logger.getLogger("");
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
-    private final DatabaseInfo databaseInfo;
+    private final DatabaseInformation databaseInfo;
     private final ActionsPanelController actionsPanelController;
     HashMap<SerialisableDataNode, HorizontalPanel> nodePanels = new HashMap<SerialisableDataNode, HorizontalPanel>();
 
-    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInfo databaseInfo, ActionsPanelController actionsPanelController, boolean useCorpusStructureDb) {
+    public ArchiveTreePanel(DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, DatabaseInformation databaseInfo, ActionsPanelController actionsPanelController, boolean useCorpusStructureDb) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;

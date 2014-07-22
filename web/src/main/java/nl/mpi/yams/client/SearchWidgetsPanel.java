@@ -58,9 +58,9 @@ public class SearchWidgetsPanel extends VerticalPanel implements HistoryListener
     private final ValueListBox<CriterionJoinType> joinTypeListBox;
     private final VerticalPanel verticalPanel;
     private final ArrayList<SearchCriterionPanel> criterionPanelList = new ArrayList<SearchCriterionPanel>();
-    private final DatabaseInfo databaseInfo;
+    private final DatabaseInformation databaseInfo;
 
-    public SearchWidgetsPanel(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInfo databaseInfo, ResultsPanel resultsPanel, DataNodeTable dataNodeTable, final ArchiveBranchSelectionPanel archiveTreePanel) {
+    public SearchWidgetsPanel(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInformation databaseInfo, ResultsPanel resultsPanel, DataNodeTable dataNodeTable, final ArchiveBranchSelectionPanel archiveTreePanel) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;

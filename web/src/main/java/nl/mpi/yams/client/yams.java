@@ -40,7 +40,7 @@ public class yams implements EntryPoint {
     private static final Logger logger = Logger.getLogger("");
     private SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController = new HistoryController();
-    private DatabaseInfo databaseInfo;
+    private DatabaseInformation databaseInfo;
 //    final PhoneGap phoneGap = GWT.create(PhoneGap.class);
     private boolean debugMode = false;
     private final FlowPanel loggerPanel = new FlowPanel();
@@ -74,7 +74,7 @@ public class yams implements EntryPoint {
     private void setupPage(final HistoryController historyController) {
 //        final String moduleBaseURL = "http://tlatest03.mpi.nl:8080/yams-gwt-1.0-SNAPSHOT/yams/";
         final String databaseName = historyController.getDatabaseName();
-        databaseInfo = new DatabaseInfo(searchOptionsService, historyController);
+        databaseInfo = new DatabaseInformation(searchOptionsService, historyController);
         final RootPanel linksPanelTag = RootPanel.get("linksPanel");
         if (linksPanelTag != null) {
             final StatisticsLink statisticsLink = new StatisticsLink(historyController);

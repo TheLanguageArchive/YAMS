@@ -21,6 +21,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.yams.common.data.DatabaseInfo;
+import nl.mpi.yams.common.data.DatabaseList;
 import nl.mpi.yams.common.data.DatabaseStats;
 import nl.mpi.yams.common.data.IconTableBase64;
 
@@ -28,26 +30,30 @@ import nl.mpi.yams.common.data.IconTableBase64;
  * @since Mar 25, 2014 3:07:25 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class DatabaseInfo {
+public class DatabaseInformation {
 
     private static final Logger logger = Logger.getLogger("");
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
-    private String[] databaseNames = new String[0];
     private boolean databaseError = false; // todo: do we actually want an error state to be stored like this!
     private final HashMap<String, DatabaseStats> databaseStatsMap = new HashMap<String, DatabaseStats>();
     private final HashMap<String, IconTableBase64> iconTableBase64Map = new HashMap<String, IconTableBase64>();
 
     private int requestCounter = 0;
 
-    public DatabaseInfo(SearchOptionsServiceAsync searchOptionsService, HistoryController historyController) {
+    public DatabaseInformation(HistoryController historyController) {
+        this.searchOptionsService = null;
+        this.historyController = historyController;
+    }
+
+    public DatabaseInformation(SearchOptionsServiceAsync searchOptionsService, HistoryController historyController) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
     }
 
     public void getDbInfo() {
         requestCounter++;
-        searchOptionsService.getDatabaseList(new AsyncCallback<String[]>() {
+        searchOptionsService.getDatabaseList(new AsyncCallback<DatabaseList>() {
             public void onFailure(Throwable caught) {
                 logger.log(Level.SEVERE, "DatabaseInfo:getDbInfo", caught);
                 ready();
@@ -57,12 +63,14 @@ public class DatabaseInfo {
                 historyController.fireDatabaseInfoEvent();
             }
 
-            public void onSuccess(String[] result) {
+            public void onSuccess(DatabaseList result) {
+                for (DatabaseInfo databaseInfo : result.getDatabaseInfos()) {
+                    databaseStatsMap.put(databaseInfo.getDatabaseName(), databaseInfo.getDatabaseStats());
+                }
 //                logger.info("getDbInfo");
                 ready();
                 requestCounter--;
-                databaseNames = result;
-                if (databaseNames.length > 0) {
+                if (databaseStatsMap.size() > 0) {
                     historyController.setDefaultDatabase();//databaseNames[0]
                 }
                 getDatabaseStats();
@@ -72,26 +80,7 @@ public class DatabaseInfo {
     }
 
     private void getDatabaseStats() {
-        for (final String databaseName : databaseNames) {
-            requestCounter++;
-            searchOptionsService.getDatabaseStats(databaseName, new AsyncCallback<DatabaseStats>() {
-                public void onFailure(Throwable caught) {
-                    logger.info("failed to get DatabaseInfo:getDatabaseStats:" + databaseName);
-                    ready();
-                    requestCounter--;
-                    databaseError = true;
-                    //logger.log(Level.SEVERE, caught.getMessage());
-                    historyController.fireDatabaseInfoEvent();
-                }
-
-                public void onSuccess(DatabaseStats result) {
-                    //logger.info("getDatabaseStats");
-                    ready();
-                    requestCounter--;
-                    databaseStatsMap.put(databaseName, result);
-                    historyController.fireDatabaseInfoEvent();
-                }
-            });
+        for (final String databaseName : databaseStatsMap.keySet()) {
             requestCounter++;
             searchOptionsService.getImageDataForTypes(databaseName, new AsyncCallback<IconTableBase64>() {
                 public void onFailure(Throwable caught) {
@@ -123,7 +112,13 @@ public class DatabaseInfo {
     }
 
     public String[] getDatabaseList() {
-        return databaseNames;
+        String[] databaseList = new String[databaseStatsMap.size()];
+        int index = 0;
+        for (final String databaseName : databaseStatsMap.keySet()) {
+            databaseList[index] = databaseName;
+            index++;
+        }
+        return databaseList;
     }
 
     public DatabaseStats getDatabaseStats(String databaseName) {
@@ -133,5 +128,4 @@ public class DatabaseInfo {
     public IconTableBase64 getDatabaseIcons(String databaseName) {
         return iconTableBase64Map.get(databaseName);
     }
-
 }

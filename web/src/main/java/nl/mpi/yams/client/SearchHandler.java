@@ -26,7 +26,7 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.mpi.yams.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.HighlightableDataNode;
 
 /**
  * Created on : Feb 4, 2013, 11:07:09 AM
@@ -41,9 +41,9 @@ public abstract class SearchHandler implements ClickHandler, KeyUpHandler {
     private final Object searchLockObject = new Object();
     private final SearchOptionsServiceAsync searchOptionsService;
     private final ResultsPanel resultsPanel;
-    private final DatabaseInfo databaseInfo;
+    private final DatabaseInformation databaseInfo;
 
-    public SearchHandler(HistoryController historyController, DatabaseInfo databaseInfo, SearchOptionsServiceAsync searchOptionsService, ResultsPanel resultsPanel) {
+    public SearchHandler(HistoryController historyController, DatabaseInformation databaseInfo, SearchOptionsServiceAsync searchOptionsService, ResultsPanel resultsPanel) {
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
         this.searchOptionsService = searchOptionsService;
@@ -84,14 +84,14 @@ public abstract class SearchHandler implements ClickHandler, KeyUpHandler {
     private void performSearch() {
 //        logger.info("performSearch");
         final long startTime = System.currentTimeMillis();
-        searchOptionsService.performSearch(historyController.getDatabaseName(), historyController.getCriterionJoinType(), historyController.getSearchParametersList(), new AsyncCallback<HighlighableDataNode>() {
+        searchOptionsService.performSearch(historyController.getDatabaseName(), historyController.getCriterionJoinType(), historyController.getSearchParametersList(), new AsyncCallback<HighlightableDataNode>() {
             public void onFailure(Throwable caught) {
                 logger.log(Level.SEVERE, caught.getMessage());
                 signalSearchDone();
                 finaliseSearch();
             }
 
-            public void onSuccess(HighlighableDataNode result) {
+            public void onSuccess(HighlightableDataNode result) {
                 long responseMils = System.currentTimeMillis() - startTime;
                 final String searchTimeMessage = "PerformSearch response time: " + responseMils + " ms";
                 logger.log(Level.INFO, searchTimeMessage);

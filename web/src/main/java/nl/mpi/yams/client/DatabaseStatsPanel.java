@@ -33,10 +33,10 @@ public class DatabaseStatsPanel extends VerticalPanel implements HistoryListener
     private static final Logger logger = Logger.getLogger("");
     private static final String FAILED_TO_GET_THE_DATABASE_STATISTICS = "Failed to get the database statistics";
     private final HistoryController historyController;
-    private final DatabaseInfo databaseInfo;
+    private final DatabaseInformation databaseInfo;
     private String databaseName = null;
 
-    public DatabaseStatsPanel(DatabaseInfo databaseInfo, HistoryController historyController) {
+    public DatabaseStatsPanel(DatabaseInformation databaseInfo, HistoryController historyController) {
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
     }

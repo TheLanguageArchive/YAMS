@@ -23,8 +23,9 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import java.util.List;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.DatabaseList;
 import nl.mpi.yams.common.data.DatabaseStats;
-import nl.mpi.yams.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.HighlightableDataNode;
 import nl.mpi.yams.common.data.IconTableBase64;
 import nl.mpi.yams.common.data.MetadataFileType;
 import nl.mpi.yams.common.data.QueryDataStructures;
@@ -41,7 +42,7 @@ public interface SearchOptionsService extends RemoteService {
 
     DatabaseStats getDatabaseStats(String databaseName) throws WebQueryException;
 
-    String[] getDatabaseList() throws WebQueryException;
+    DatabaseList getDatabaseList() throws WebQueryException;
 
     MetadataFileType[] getTypeOptions(String databaseName, MetadataFileType metadataFileType) throws WebQueryException;
 
@@ -51,13 +52,15 @@ public interface SearchOptionsService extends RemoteService {
 
     MetadataFileType[] getTreeFacets(String databaseName, MetadataFileType[] metadataFileTypes) throws WebQueryException;
 
-    HighlighableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList) throws WebQueryException;
+    HighlightableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList) throws WebQueryException;
 
     List<SerialisableDataNode> getDataNodesByHdl(String databaseName, List<String> hdlList) throws WebQueryException;
 
     List<SerialisableDataNode> getDataNodesByUrl(String databaseName, List<String> urlList) throws WebQueryException;
 
     List<SerialisableDataNode> getDataNodes(String databaseName, List<DataNodeId> dataNodeIds) throws WebQueryException;
+
+    List<SerialisableDataNode> getRootDataNodes(String databaseName) throws WebQueryException;
 
     IconTableBase64 getImageDataForTypes(String databaseName) throws WebQueryException;
 }

@@ -35,7 +35,7 @@ import nl.mpi.flap.model.SerialisableDataNode;
 import static nl.mpi.yams.client.YamsTreeItem.logger;
 import nl.mpi.yams.common.data.DataNodeHighlight;
 import nl.mpi.yams.common.data.DataNodeId;
-import nl.mpi.yams.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.HighlightableDataNode;
 
 /**
  * @since May 23, 2014 10:22:08 AM (creation date)
@@ -125,7 +125,7 @@ public class YamsRpcTreeItem extends YamsTreeItem {
         return new SingleDataNodeTable(yamsDataNode, highlighedLinks);
     }
 
-    public void setHighlights(HighlighableDataNode dataNode) {
+    public void setHighlights(HighlightableDataNode dataNode) {
         boolean isHighlighted = false;
         boolean childHighlighted = false;
 //        root nodes of a search result always need to be highlighted    
@@ -313,8 +313,8 @@ public class YamsRpcTreeItem extends YamsTreeItem {
                             addItem(loadingTreeItem);
                         }
                     } catch (ModelException exception) {
-                        setText("failed to show node loaded via RPC");
-                        logger.log(Level.SEVERE, "failed to show node loaded via RPC", exception);
+                        setText("failed to show node loaded");
+                        logger.log(Level.SEVERE, "failed to show node loaded", exception);
                     }
                     setNodeIconData(dataNodeLoader.getNodeIcon(yamsDataNode));
                     hideShowExpandButton();

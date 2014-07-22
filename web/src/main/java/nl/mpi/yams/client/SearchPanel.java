@@ -31,7 +31,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
     private static final String FAILED_TO_CONNECT_TO_THE_SERVER = "Failed to connect to the server.";
     private static final String NO__DATABASE__SELECTED = "No Database Selected";
     private final HistoryController historyController;
-    private final DatabaseInfo databaseInfo;
+    private final DatabaseInformation databaseInfo;
     final Label noDatabaseLabel = new Label(NO__DATABASE__SELECTED);
     private String lastUsedDatabase = null;
     final private Image loadingImage = new Image("./loader.gif");
@@ -41,7 +41,7 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
     private final DataNodeTable dataNodeTable;
     private final ArchiveBranchSelectionPanel archiveBranchSelectionPanel;
 
-    public SearchPanel(HistoryController historyController, DatabaseInfo databaseInfo, ResultsPanel resultsPanel, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, ArchiveBranchSelectionPanel archiveBranchSelectionPanel) {
+    public SearchPanel(HistoryController historyController, DatabaseInformation databaseInfo, ResultsPanel resultsPanel, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, ArchiveBranchSelectionPanel archiveBranchSelectionPanel) {
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
         this.resultsPanel = resultsPanel;

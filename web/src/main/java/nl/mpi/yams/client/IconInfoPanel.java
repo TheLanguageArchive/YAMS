@@ -33,9 +33,9 @@ import nl.mpi.yams.common.data.NodeTypeImageBase64;
 public class IconInfoPanel extends VerticalPanel implements HistoryListener {
 
     private final HistoryController historyController;
-    private final DatabaseInfo databaseInfo;
+    private final DatabaseInformation databaseInfo;
 
-    public IconInfoPanel(HistoryController historyController, DatabaseInfo databaseInfo) {
+    public IconInfoPanel(HistoryController historyController, DatabaseInformation databaseInfo) {
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
     }

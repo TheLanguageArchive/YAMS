@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.yams.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.HighlightableDataNode;
 import nl.mpi.yams.common.data.IconTableBase64;
 
 /**
@@ -86,7 +86,7 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
 //        }
     }
 
-    public void addResultsTree(String databaseName, IconTableBase64 iconTableBase64, HighlighableDataNode dataNode, long responseTimeMils) {
+    public void addResultsTree(String databaseName, IconTableBase64 iconTableBase64, HighlightableDataNode dataNode, long responseTimeMils) {
         try {
             VerticalPanel verticalPanel = new VerticalPanel();
             final List<DataNodeLink> childIds = dataNode.getChildIds();

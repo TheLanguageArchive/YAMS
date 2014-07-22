@@ -28,8 +28,9 @@ import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
 import nl.mpi.yams.client.SearchOptionsService;
 import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.DatabaseList;
 import nl.mpi.yams.common.data.DatabaseStats;
-import nl.mpi.yams.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.HighlightableDataNode;
 import nl.mpi.yams.common.data.IconTableBase64;
 import nl.mpi.yams.common.data.MetadataFileType;
 import nl.mpi.yams.common.data.QueryDataStructures;
@@ -74,11 +75,11 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 //        return "admin";
     }
 
-    public String[] getDatabaseList() throws WebQueryException {
+    public DatabaseList getDatabaseList() throws WebQueryException {
 //        logger.info("getDatabaseList");
         try {
-            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(DataBaseManager.defaultDataBase);
-            return yamsDatabase.getDatabaseList();
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(DataBaseManager.defaultDataBase);
+            return yamsDatabase.getDatabaseStatsList();
         } catch (QueryException exception) {
             //exception.printStackTrace();
             //logger.error(exception.getMessage());
@@ -88,7 +89,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public DatabaseStats getDatabaseStats(String databaseName) throws WebQueryException {
         try {
-            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
             DatabaseStats databaseStats = yamsDatabase.getDatabaseStats();
             return databaseStats;
         } catch (QueryException exception) {
@@ -96,7 +97,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    private DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> getDatabase(String databaseName) throws QueryException {
+    private DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDatabase(String databaseName) throws QueryException {
         // the LocalDbAdaptor version of the Arbil database is not intended to multi entry and has be replaced by a REST version
 //        final DbAdaptor dbAdaptor = new LocalDbAdaptor(new File(System.getProperty("user.dir"), "yams-data"));
         String basexRestUrl = getBasexRestUrl();
@@ -105,7 +106,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         //System.out.println("getDatabase: " + databaseName);
         try {
             final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), getBasexUser(), getBasexPass());
-            return new DataBaseManager<HighlighableDataNode, DataField, MetadataFileType>(HighlighableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
+            return new DataBaseManager<SerialisableDataNode, DataField, MetadataFileType>(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
         } catch (MalformedURLException exception) {
             throw new QueryException("Failed to open the database connection at: " + basexRestUrl, exception);
         }
@@ -114,7 +115,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
     public MetadataFileType[] getTypeOptions(String databaseName, MetadataFileType metadataFileType) throws WebQueryException {
         //logger.info("getTypeOptions:" + databaseName);
         try {
-            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
             MetadataFileType[] metadataPathTypes = yamsDatabase.getMetadataTypes(metadataFileType);
             return metadataPathTypes;
         } catch (QueryException exception) {
@@ -124,7 +125,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public MetadataFileType[] getPathOptions(String databaseName, MetadataFileType metadataFileType) throws WebQueryException {
         try {
-            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
             MetadataFileType[] metadataFieldTypes = yamsDatabase.getMetadataPaths(metadataFileType);
             return metadataFieldTypes;
         } catch (QueryException exception) {
@@ -134,7 +135,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public MetadataFileType[] getValueOptions(String databaseName, MetadataFileType metadataFileType) throws WebQueryException {
         try {
-            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
             MetadataFileType[] metadataFieldTypes = yamsDatabase.getMetadataFieldValues(metadataFileType, 5);
             return metadataFieldTypes;
         } catch (QueryException exception) {
@@ -144,7 +145,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public MetadataFileType[] getTreeFacets(String databaseName, MetadataFileType[] metadataFileTypes) throws WebQueryException {
         try {
-            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
             MetadataFileType[] metadataFieldTypes = yamsDatabase.getTreeFacetTypes(metadataFileTypes);
             return metadataFieldTypes;
         } catch (QueryException exception) {
@@ -152,12 +153,12 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
         }
     }
 
-    public HighlighableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList) throws WebQueryException {
+    public HighlightableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList) throws WebQueryException {
 //        return new YamsDataNode(criterionJoinType.name());
         try {
-            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
             //logger.info("databaseName:" + databaseName);
-            HighlighableDataNode yamsDataNode = yamsDatabase.getSearchResult(criterionJoinType, searchParametersList);
+            HighlightableDataNode yamsDataNode = (HighlightableDataNode) yamsDatabase.getSearchResult(criterionJoinType, searchParametersList);
             return yamsDataNode;
 //            ArrayList<String> returnList = new ArrayList<String>();
 //            for (WebMetadataFileType metadataFileType : metadataFieldTypes) {
@@ -172,7 +173,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public List<SerialisableDataNode> getDataNodesByHdl(String databaseName, List<String> hdlList) throws WebQueryException {
         try {
-            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
             SerialisableDataNode yamsDataNode = yamsDatabase.getNodeDatasByHdls(hdlList);
             final List<SerialisableDataNode> name = (List<SerialisableDataNode>) yamsDataNode.getChildList();
             //logger.info("getDataNodesByHdl:done:" + yamsDataNode.getChildList().size());
@@ -184,7 +185,7 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public List<SerialisableDataNode> getDataNodesByUrl(String databaseName, List<String> urlList) throws WebQueryException {
         try {
-            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
             SerialisableDataNode yamsDataNode = yamsDatabase.getNodeDatasByUrls(urlList);
             return (List<SerialisableDataNode>) yamsDataNode.getChildList();
         } catch (QueryException exception) {
@@ -194,10 +195,10 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public List<SerialisableDataNode> getDataNodes(String databaseName, List<DataNodeId> dataNodeIds) throws WebQueryException {
         try {
-            //logger.info("getDataNodes");
-            //logger.info(databaseName);
-            //logger.info(Integer.toString(dataNodeIds.size()));
-            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
+            logger.info("getDataNodes");
+            logger.info(databaseName);
+            logger.info(Integer.toString(dataNodeIds.size()));
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
             SerialisableDataNode yamsDataNode = yamsDatabase.getNodeDatasByIDs(dataNodeIds);
             return (List<SerialisableDataNode>) yamsDataNode.getChildList();
         } catch (QueryException exception) {
@@ -207,13 +208,25 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
 
     public IconTableBase64 getImageDataForTypes(String databaseName) throws WebQueryException {
         try {
-            DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
             final IconTableBase64 nodeIcons = yamsDatabase.getNodeIconsBase64();
             return nodeIcons;
         } catch (PluginException exception) {
             throw new WebQueryException("getImageDataForTypes", exception);
         } catch (QueryException exception) {
             throw new WebQueryException("getImageDataForTypes", exception);
+        }
+    }
+
+    public List<SerialisableDataNode> getRootDataNodes(String databaseName) throws WebQueryException {
+        try {
+            logger.info("getRootDataNodes");
+            logger.info(databaseName);
+            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
+            SerialisableDataNode yamsDataNode = yamsDatabase.getRootNodes();
+            return (List<SerialisableDataNode>) yamsDataNode.getChildList();
+        } catch (QueryException exception) {
+            throw new WebQueryException("getRootDataNodes", exception);
         }
     }
 }
