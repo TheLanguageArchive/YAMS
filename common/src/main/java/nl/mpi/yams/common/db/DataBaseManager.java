@@ -200,11 +200,7 @@ public class DataBaseManager<D, F, M> {
                 + "return $iconDoc\n"
                 + "}</DatabaseInfo>}</DatabaseList>\n";
         String queryResult;
-        System.out.println("databaseListQuery:" + databaseListQuery);
         queryResult = dbAdaptor.executeQuery(databaseName, databaseListQuery);
-        System.out.println("queryResult: " + queryResult);
-        logger.info("databaseListQuery: " + databaseListQuery);
-        logger.info("databaseList: " + queryResult);
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(DatabaseList.class, DatabaseStats.class, DataNodeId.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();

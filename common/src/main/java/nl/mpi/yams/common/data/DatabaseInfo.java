@@ -17,6 +17,7 @@
  */
 package nl.mpi.yams.common.data;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -25,7 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Peter Withers <peter.withers@mpi.nl>
  */
 @XmlRootElement(name = "DatabaseInfo")
-public class DatabaseInfo {
+public class DatabaseInfo implements Serializable {
 
     private String databaseName = null;
     protected DatabaseStats databaseStats = new DatabaseStats();

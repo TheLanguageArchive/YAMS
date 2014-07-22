@@ -17,6 +17,7 @@
  */
 package nl.mpi.yams.common.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
@@ -27,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Peter Withers <peter.withers@mpi.nl>
  */
 @XmlRootElement(name = "DatabaseList")
-public class DatabaseList {
+public class DatabaseList implements Serializable {
 
     protected long queryTimeMS = -1;
     protected List<DatabaseInfo> databaseInfos = new ArrayList<DatabaseInfo>();
@@ -50,7 +51,6 @@ public class DatabaseList {
     public List<DatabaseInfo> getDatabaseInfos() {
         return databaseInfos;
     }
-
 
     public void setDatabaseInfos(List<DatabaseInfo> databaseList) {
         this.databaseInfos = databaseList;
