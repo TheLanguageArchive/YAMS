@@ -467,7 +467,7 @@ public abstract class DataBaseManagerTest {
         final DataBaseManager<HighlighableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
         dbManager.getDatabaseStats();
         DatabaseList result = dbManager.getDatabaseStatsList();
-        assertTrue("Unexpected db names length: " + result.getDatabaseList().size(), result.getDatabaseList().size() > 0);
+        assertTrue("Unexpected db names length: " + result.getDatabaseInfos().size(), result.getDatabaseInfos().size() > 0);
     }
 
     /**

@@ -17,42 +17,34 @@
  */
 package nl.mpi.yams.common.data;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @since Feb 17, 2014 3:28:13 PM (creation date)
+ * @since Jul 22, 2014 1:26:00 PM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-@XmlRootElement(name = "DatabaseList")
-public class DatabaseList {
+@XmlRootElement(name = "DatabaseInfo")
+public class DatabaseInfo {
 
-    protected long queryTimeMS = -1;
-    protected List<DatabaseInfo> databaseInfos = new ArrayList<DatabaseInfo>();
-//    @XmlElement(name = "NodeIcons")
-//    protected IconTable iconTable;
+    private String databaseName = null;
+    protected DatabaseStats databaseStats = new DatabaseStats();
 
-    public DatabaseList() {
+    public String getDatabaseName() {
+        return databaseName;
     }
 
-    @XmlElement(name = "QueryTimeMS")
-    public void setQueryTimeMS(long queryTimeMS) {
-        this.queryTimeMS = queryTimeMS;
+    @XmlElement(name = "DatabaseName")
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
     }
 
-    public long getQueryTimeMS() {
-        return queryTimeMS;
+    public DatabaseStats getDatabaseStats() {
+        return databaseStats;
     }
 
-    @XmlElement(name = "DatabaseInfo")
-    public List<DatabaseInfo> getDatabaseInfos() {
-        return databaseInfos;
-    }
-
-
-    public void setDatabaseInfos(List<DatabaseInfo> databaseList) {
-        this.databaseInfos = databaseList;
+    @XmlElement(name = "DatabaseStats")
+    public void setDatabaseStats(DatabaseStats databaseStats) {
+        this.databaseStats = databaseStats;
     }
 }

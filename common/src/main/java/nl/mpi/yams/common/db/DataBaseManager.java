@@ -30,7 +30,10 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
+import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.DataNodeLink;
+import nl.mpi.flap.model.DataNodeType;
+import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.flap.plugin.PluginException;
@@ -38,6 +41,7 @@ import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.DatabaseLinks;
 import nl.mpi.yams.common.data.DatabaseList;
 import nl.mpi.yams.common.data.DatabaseStats;
+import nl.mpi.yams.common.data.HighlighableDataNode;
 import nl.mpi.yams.common.data.IconTable;
 import nl.mpi.yams.common.data.IconTableBase64;
 import nl.mpi.yams.common.data.MetadataFileType;
@@ -75,7 +79,7 @@ public class DataBaseManager<D, F, M> {
     final static public String defaultDataBase = "yams-data";
     final static public String testDataBase = "yams-test-data";
     final static public String facetsCollection = "Facets";
-    final static public String dbStatsDocument = "DbStats";
+    final static public String dbStatsDocument = "DatabaseStats";
     final static private String linksDocument = "DatabaseLinks";
     final static public String iconTableDocument = "IconTable";
     final private String crawledDataCollection = "CrawledData";
@@ -189,12 +193,12 @@ public class DataBaseManager<D, F, M> {
     public DatabaseList getDatabaseStatsList() throws QueryException {
         long startTime = System.currentTimeMillis();
         String databaseListQuery = "<DatabaseList>{\n"
-                + "for $dbName in db:list() return <Database><name>{$dbName}</name>{"
+                + "for $dbName in db:list() return <DatabaseInfo><DatabaseName>{$dbName}</DatabaseName>{"
                 + "for $statsDoc in collection($dbName)/" + dbStatsDocument + "\n"
                 + "return $statsDoc,\n"
                 + "for $iconDoc in collection($dbName)/" + iconTableDocument + "\n"
                 + "return $iconDoc\n"
-                + "}</Database>}</DatabaseList>\n";
+                + "}</DatabaseInfo>}</DatabaseList>\n";
         String queryResult;
         System.out.println("databaseListQuery:" + databaseListQuery);
         queryResult = dbAdaptor.executeQuery(databaseName, databaseListQuery);
@@ -682,6 +686,7 @@ public class DataBaseManager<D, F, M> {
     }
 
     private String getNodesByIdQuery(final List<DataNodeId> nodeIDs) {
+        //logger.info("getNodesByIdQuery");
         StringBuilder queryStringBuilder = new StringBuilder();
         queryStringBuilder.append("<DataNode>\n");
         queryStringBuilder.append("{for $dataNode in collection('");
@@ -689,6 +694,7 @@ public class DataBaseManager<D, F, M> {
         queryStringBuilder.append("')/DataNode where $dataNode/@ID = (\n");
         boolean firstLoop = true;
         for (DataNodeId dataNodeId : nodeIDs) {
+            //logger.info(dataNodeId.getIdString());
             if (!firstLoop) {
                 queryStringBuilder.append(",");
             }
@@ -1078,18 +1084,42 @@ public class DataBaseManager<D, F, M> {
     public D getNodeDatasByIDs(final List<DataNodeId> nodeIDs) throws QueryException {
         final String queryString = getNodesByIdQuery(nodeIDs);
         //logger.info(queryString);
+        //logger.info("getDbTreeNode");
         return getDbTreeNode(queryString);
     }
 
     private D getDbTreeNode(String queryString) throws QueryException {
 //        long startTime = System.currentTimeMillis();
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(dClass);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            //logger.info("JAXBContext.newInstance(dClass)--- stack trace verions");
+            //logger.info(dClass.getName());
+
+//            JAXBContext jaxbContext3 = JAXBContext.newInstance(DataField.class);
+//            logger.info("jaxbContext.createUnmarshaller()DataField");
+//            Unmarshaller unmarshaller3 = jaxbContext3.createUnmarshaller();
+//
+//            JAXBContext jaxbContext1 = JAXBContext.newInstance(FieldGroup.class);
+//            logger.info("jaxbContext.createUnmarshaller()FieldGroup");
+//            Unmarshaller unmarshaller1 = jaxbContext1.createUnmarshaller();
+//
+//            JAXBContext jaxbContext4 = JAXBContext.newInstance(DataNodeType.class);
+//            logger.info("jaxbContext.createUnmarshaller()DataNodeType");
+//            Unmarshaller unmarshaller4 = jaxbContext4.createUnmarshaller();
+//
+//            JAXBContext jaxbContext5 = JAXBContext.newInstance(SerialisableDataNode.class);
+//            logger.info("jaxbContext.createUnmarshaller()SerialisableDataNode");
+//            Unmarshaller unmarshaller5 = jaxbContext5.createUnmarshaller();
+//
+//            JAXBContext jaxbContext2 = JAXBContext.newInstance(HighlighableDataNode.class);
+//            logger.info("jaxbContext.createUnmarshaller()HighlighableDataNode");
+//            Unmarshaller unmarshaller2 = jaxbContext2.createUnmarshaller();
             String queryResult;
-            //logger.debug("queryString: " + queryString);
+//            logger.debug("queryString: " + queryString);
             queryResult = dbAdaptor.executeQuery(databaseName, queryString);
             //logger.debug("queryResult: " + queryResult);
+            JAXBContext jaxbContext = JAXBContext.newInstance(dClass);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
             D rootTreeNode = (D) unmarshaller.unmarshal(new StreamSource(new StringReader(queryResult)), dClass).getValue();
 //            long queryMils = System.currentTimeMillis() - startTime;
 //            int resultCount = 0;
@@ -1101,7 +1131,8 @@ public class DataBaseManager<D, F, M> {
             //logger.debug("rootTreeNode");
             return rootTreeNode;
         } catch (JAXBException exception) {
-            //logger.debug(exception.getMessage());
+            logger.debug(exception.getMessage());
+//            exception.printStackTrace();
             throw new QueryException("Error getting search options");
         }
     }
