@@ -41,7 +41,7 @@ import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.DatabaseLinks;
 import nl.mpi.yams.common.data.DatabaseList;
 import nl.mpi.yams.common.data.DatabaseStats;
-import nl.mpi.yams.common.data.HighlighableDataNode;
+import nl.mpi.yams.common.data.HighlightableDataNode;
 import nl.mpi.yams.common.data.IconTable;
 import nl.mpi.yams.common.data.IconTableBase64;
 import nl.mpi.yams.common.data.MetadataFileType;
@@ -1110,8 +1110,8 @@ public class DataBaseManager<D, F, M> {
 //            logger.info("jaxbContext.createUnmarshaller()SerialisableDataNode");
 //            Unmarshaller unmarshaller5 = jaxbContext5.createUnmarshaller();
 //
-//            JAXBContext jaxbContext2 = JAXBContext.newInstance(HighlighableDataNode.class);
-//            logger.info("jaxbContext.createUnmarshaller()HighlighableDataNode");
+//            JAXBContext jaxbContext2 = JAXBContext.newInstance(HighlightableDataNode.class);
+//            logger.info("jaxbContext.createUnmarshaller()HighlightableDataNode");
 //            Unmarshaller unmarshaller2 = jaxbContext2.createUnmarshaller();
             String queryResult;
 //            logger.debug("queryString: " + queryString);

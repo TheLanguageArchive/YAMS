@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import nl.mpi.flap.model.SerialisableDataNode;
 
 /**
@@ -29,7 +30,8 @@ import nl.mpi.flap.model.SerialisableDataNode;
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
-public class HighlighableDataNode extends SerialisableDataNode implements Serializable {
+@XmlRootElement(name = "DataNode")
+public class HighlightableDataNode extends SerialisableDataNode implements Serializable {
 
     private List<DataNodeHighlight> highlights = new ArrayList<DataNodeHighlight>();
 
