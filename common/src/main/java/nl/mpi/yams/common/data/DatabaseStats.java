@@ -50,6 +50,14 @@ public class DatabaseStats implements Serializable {
     public DatabaseStats() {
     }
 
+    public DatabaseStats(int knownDocumentsCount, int misingDocumentsCount, int duplicateDocumentsCount, int rootDocumentsCount, DataNodeId[] rootDocumentsIDs) {
+        this.knownDocumentsCount = knownDocumentsCount;
+        this.misingDocumentsCount = misingDocumentsCount;
+        this.duplicateDocumentsCount = duplicateDocumentsCount;
+        this.rootDocumentsCount = rootDocumentsCount;
+        this.rootDocumentsIDs = rootDocumentsIDs;
+    }
+
     public boolean isIsCachedResults() {
         return isCachedResults;
     }
