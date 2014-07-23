@@ -156,10 +156,17 @@ public class SearchOptionsServiceImpl extends RemoteServiceServlet implements Se
     public HighlightableDataNode performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList) throws WebQueryException {
 //        return new YamsDataNode(criterionJoinType.name());
         try {
-            DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(databaseName);
+            String basexRestUrl = getBasexRestUrl();
+            try {
+                final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), getBasexUser(), getBasexPass());
+                DataBaseManager yamsDatabase = new DataBaseManager<HighlightableDataNode, DataField, MetadataFileType>(HighlightableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
+                HighlightableDataNode yamsDataNode = (HighlightableDataNode) yamsDatabase.getSearchResult(criterionJoinType, searchParametersList);
+                return yamsDataNode;
+            } catch (MalformedURLException exception) {
+                throw new QueryException("Failed to open the database connection at: " + basexRestUrl, exception);
+            }
             //logger.info("databaseName:" + databaseName);
-            HighlightableDataNode yamsDataNode = (HighlightableDataNode) yamsDatabase.getSearchResult(criterionJoinType, searchParametersList);
-            return yamsDataNode;
+
 //            ArrayList<String> returnList = new ArrayList<String>();
 //            for (WebMetadataFileType metadataFileType : metadataFieldTypes) {
 //                returnList.add(metadataFileType.getFieldName());
