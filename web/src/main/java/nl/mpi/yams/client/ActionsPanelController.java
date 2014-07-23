@@ -90,8 +90,12 @@ public class ActionsPanelController implements HistoryListener {
             final String databaseName = historyController.getDatabaseName();
             if (databaseName != null) {
                 final IconTableBase64 databaseIcons = databaseInfo.getDatabaseIcons(databaseName);
-//                final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, databaseIcons, databaseName);
-                final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
+                final DataNodeLoader dataNodeLoader;
+                if (searchOptionsService != null) {
+                    dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, databaseIcons, databaseName);
+                } else {
+                    dataNodeLoader = new DataNodeLoaderJson(databaseName);
+                }
 //                logger.info("branchSelectionList.size():" + branchSelectionList.size());
                 if (branchSelectionList.isEmpty()) {
                     dataNode = null;

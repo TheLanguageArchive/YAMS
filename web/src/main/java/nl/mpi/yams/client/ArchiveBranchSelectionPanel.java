@@ -105,8 +105,12 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
         //logger.info(databaseName);
         dataNodeTreeDb = databaseName;
         if (databaseName != null) {
-//            final DataNodeLoader dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, databaseIcons, databaseName);
-            final DataNodeLoader dataNodeLoader = new DataNodeLoaderJson(databaseName);
+            final DataNodeLoader dataNodeLoader;
+            if (searchOptionsService != null) {
+                dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, databaseIcons, databaseName);
+            } else {
+                dataNodeLoader = new DataNodeLoaderJson(databaseName);
+            }
             final DataNodeLoaderListener dataNodeLoaderListener = new DataNodeLoaderListener() {
 
                 public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
