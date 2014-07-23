@@ -94,20 +94,20 @@ public class service {
 
     @GET
     @Path("/dbinfo")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON})
     public Response getDatabaseList() throws QueryException {
         DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase("");
         DatabaseList databaseList = yamsDatabase.getDatabaseStatsList();
-        return Response.ok(databaseList).build();
+        return Response.ok(databaseList).header("Access-Control-Allow-Origin", "*").build();
     }
 
     @GET
     @Path("/dbinfo/{dbname}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON})
     public Response getDatabaseInfo(@PathParam("dbname") String dbName) throws QueryException {
         DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         DatabaseStats databaseStats = yamsDatabase.getDatabaseStats();
-        return Response.ok(databaseStats).build();
+        return Response.ok(databaseStats).header("Access-Control-Allow-Origin", "*").build();
     }
 
     @GET
@@ -117,7 +117,7 @@ public class service {
         final MetadataFileType options = new MetadataFileType(null, null, userText);
         DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         MetadataFileType[] metadataFieldTypes = yamsDatabase.getMetadataFieldValues(options, 100);
-        return Response.ok(metadataFieldTypes).build();
+        return Response.ok(metadataFieldTypes).header("Access-Control-Allow-Origin", "*").build();
     }
 
     @GET
