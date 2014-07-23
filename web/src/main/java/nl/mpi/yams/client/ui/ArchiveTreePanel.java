@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yams.client;
+package nl.mpi.yams.client.ui;
 
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import java.util.HashMap;
@@ -23,6 +23,13 @@ import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.yams.client.ActionsPanelController;
+import nl.mpi.yams.client.DatabaseInformation;
+import nl.mpi.yams.client.HistoryController;
+import nl.mpi.yams.client.HistoryData;
+import nl.mpi.yams.client.HistoryListener;
+import nl.mpi.yams.client.SearchOptionsServiceAsync;
+import nl.mpi.yams.client.TreeNodeClickListener;
 import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.DatabaseStats;
 import nl.mpi.yams.common.data.IconTableBase64;

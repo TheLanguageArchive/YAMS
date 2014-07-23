@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package nl.mpi.yams.client;
+package nl.mpi.yams.client.ui;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -30,6 +30,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Logger;
+import nl.mpi.yams.client.DatabaseInformation;
+import nl.mpi.yams.client.HistoryController;
+import nl.mpi.yams.client.HistoryListener;
+import nl.mpi.yams.client.SearchHandler;
+import nl.mpi.yams.client.SearchOptionsServiceAsync;
 import nl.mpi.yams.common.data.QueryDataStructures.CriterionJoinType;
 import nl.mpi.yams.common.data.QueryDataStructures.SearchOption;
 import nl.mpi.yams.common.data.SearchParameters;
@@ -153,7 +158,7 @@ public class SearchWidgetsPanel extends VerticalPanel implements HistoryListener
 
         searchHandler = new SearchHandler(historyController, databaseInfo, searchOptionsService, resultsPanel) {
             @Override
-            void prepareSearch() {
+            protected void prepareSearch() {
                 searchButton.setEnabled(false);
                 searchButton.setHTML(SEARCHING_LABEL);
                 ArrayList<SearchParameters> searchParametersList = new ArrayList<SearchParameters>();
@@ -164,7 +169,7 @@ public class SearchWidgetsPanel extends VerticalPanel implements HistoryListener
                 historyController.setSearchParameters(joinTypeListBox.getValue(), searchParametersList);
             }
 
-            @Override
+            protected @Override
             void finaliseSearch() {
                 searchButton.setEnabled(true);
                 searchButton.setHTML(SEARCH_LABEL);

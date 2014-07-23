@@ -18,6 +18,11 @@
  */
 package nl.mpi.yams.client;
 
+import nl.mpi.yams.client.ui.ArchiveBranchSelectionPanel;
+import nl.mpi.yams.client.ui.DatabaseStatsPanel;
+import nl.mpi.yams.client.ui.DataNodeTable;
+import nl.mpi.yams.client.ui.ConciseSearchBox;
+import nl.mpi.yams.client.ui.SearchPanel;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -34,6 +39,11 @@ import java.util.List;
 //import com.googlecode.gwtphonegap.client.PhoneGap;
 //import com.googlecode.gwtphonegap.client.util.PhonegapUtil;
 import java.util.logging.Logger;
+import nl.mpi.yams.client.ui.ArchiveTreePanel;
+import nl.mpi.yams.client.ui.FacetedTree;
+import nl.mpi.yams.client.ui.IconInfoPanel;
+import nl.mpi.yams.client.ui.ResultsPanel;
+import nl.mpi.yams.client.ui.StatisticsLink;
 
 public class yams implements EntryPoint {
 

@@ -15,12 +15,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yams.client;
+package nl.mpi.yams.client.ui;
 
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import nl.mpi.yams.client.DatabaseInformation;
+import nl.mpi.yams.client.HistoryController;
+import nl.mpi.yams.client.HistoryListener;
+import nl.mpi.yams.client.SearchOptionsServiceAsync;
 
 /**
  * @since May 16, 2014 2:37:56 PM (creation date)

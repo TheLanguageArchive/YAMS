@@ -15,9 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yams.client;
+package nl.mpi.yams.client.ui;
 
 import com.google.gwt.user.client.ui.Anchor;
+import nl.mpi.yams.client.HistoryController;
+import nl.mpi.yams.client.HistoryListener;
 
 /**
  * @since May 16, 2014 3:16:09 PM (creation date)

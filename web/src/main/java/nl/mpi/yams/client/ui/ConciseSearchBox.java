@@ -15,12 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yams.client;
+package nl.mpi.yams.client.ui;
 
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import java.util.logging.Logger;
+import nl.mpi.yams.client.ConciseSearchParser;
+import nl.mpi.yams.client.DatabaseInformation;
+import nl.mpi.yams.client.HistoryController;
+import nl.mpi.yams.client.HistoryData;
+import nl.mpi.yams.client.HistoryListener;
+import nl.mpi.yams.client.SearchHandler;
+import nl.mpi.yams.client.SearchOptionsServiceAsync;
 
 /**
  * @since Mar 18, 2014 1:27:32 PM (creation date)
@@ -40,7 +47,7 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
         searchButton = new Button("search");
         SearchHandler searchHandler = new SearchHandler(historyController, databaseInfo, searchOptionsService, resultsPanel) {
             @Override
-            void prepareSearch() {
+            protected void prepareSearch() {
                 searchButton.setEnabled(false);
                 final HistoryData searchParameters = new ConciseSearchParser().parseConciseSearch(historyController, searchBox.getText());
                 historyController.setHistoryData(searchParameters);
@@ -48,7 +55,7 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
             }
 
             @Override
-            void finaliseSearch() {
+            protected void finaliseSearch() {
                 searchButton.setEnabled(true);
 //                searchButton.setHTML(SEARCH_LABEL);
             }

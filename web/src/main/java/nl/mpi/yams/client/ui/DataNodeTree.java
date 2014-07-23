@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package nl.mpi.yams.client;
+package nl.mpi.yams.client.ui;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -30,6 +30,15 @@ import com.google.gwt.user.client.ui.TreeItem;
 import java.util.List;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
+import nl.mpi.yams.client.DataNodeLoader;
+import nl.mpi.yams.client.DataNodeLoaderJson;
+import nl.mpi.yams.client.DataNodeLoaderRpc;
+import nl.mpi.yams.client.Pageable;
+import nl.mpi.yams.client.SearchOptionsServiceAsync;
+import nl.mpi.yams.client.TreeNodeCheckboxListener;
+import nl.mpi.yams.client.TreeNodeClickListener;
+import nl.mpi.yams.client.TreeTableHeader;
+import nl.mpi.yams.client.YamsTreeItemLoadedListener;
 import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.HighlightableDataNode;
 import nl.mpi.yams.common.data.IconTableBase64;

@@ -26,6 +26,7 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.yams.client.ui.ResultsPanel;
 import nl.mpi.yams.common.data.HighlightableDataNode;
 
 /**
@@ -77,9 +78,9 @@ public abstract class SearchHandler implements ClickHandler, KeyUpHandler {
         searchInProgress = false;
     }
 
-    abstract void prepareSearch();
+    protected abstract void prepareSearch();
 
-    abstract void finaliseSearch();
+    protected abstract void finaliseSearch();
 
     private void performSearch() {
 //        logger.info("performSearch");

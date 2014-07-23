@@ -38,6 +38,8 @@ import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yams.client.HistoryData.NodeActionType;
 import static nl.mpi.yams.client.HistoryData.NodeActionType.citation;
 import static nl.mpi.yams.client.HistoryData.NodeActionType.details;
+import nl.mpi.yams.client.ui.CitationPanel;
+import nl.mpi.yams.client.ui.MetadataDetailsPanel;
 import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.IconTableBase64;
 

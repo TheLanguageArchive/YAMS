@@ -17,6 +17,8 @@
  */
 package nl.mpi.yams.client;
 
+import nl.mpi.yams.client.ui.YamsTreeItem;
+
 /**
  * @since Apr 25, 2014 11:42:10 AM (creation date)
  * @author Peter Withers <peter.withers@mpi.nl>

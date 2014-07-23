@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package nl.mpi.yams.client;
+package nl.mpi.yams.client.ui;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -39,6 +39,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.yams.client.SearchHandler;
+import nl.mpi.yams.client.SearchOptionsServiceAsync;
+import nl.mpi.yams.client.SearchSuggestionsStorage;
 import nl.mpi.yams.common.data.MetadataFileType;
 import nl.mpi.yams.common.data.QueryDataStructures;
 

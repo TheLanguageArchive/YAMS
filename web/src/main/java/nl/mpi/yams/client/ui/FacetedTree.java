@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package nl.mpi.yams.client;
+package nl.mpi.yams.client.ui;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.OpenEvent;
@@ -30,6 +30,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.yams.client.HistoryController;
+import nl.mpi.yams.client.HistoryListener;
+import nl.mpi.yams.client.SearchOptionsServiceAsync;
 import nl.mpi.yams.common.data.MetadataFileType;
 
 /**

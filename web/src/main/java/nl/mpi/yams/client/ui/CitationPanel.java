@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yams.client;
+package nl.mpi.yams.client.ui;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Anchor;
@@ -27,6 +27,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.yams.client.CitationStrings;
+import nl.mpi.yams.client.HandleFormatter;
 
 /**
  * @since Apr 8, 2014 5:36:56 PM (creation date)

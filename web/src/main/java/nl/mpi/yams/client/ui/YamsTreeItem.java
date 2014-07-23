@@ -16,7 +16,7 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package nl.mpi.yams.client;
+package nl.mpi.yams.client.ui;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -36,6 +36,9 @@ import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodePermissions;
 import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.yams.client.DataNodeLoader;
+import nl.mpi.yams.client.TreeNodeCheckboxListener;
+import nl.mpi.yams.client.TreeNodeClickListener;
 
 /**
  * Created on : Feb 5, 2013, 1:24:35 PM
