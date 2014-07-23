@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package nl.mpi.yams.client;
+package nl.mpi.yams.client.controllers;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
@@ -27,6 +27,7 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Timer;
 import java.util.logging.Logger;
+import nl.mpi.yams.client.ServiceLocations;
 import nl.mpi.yams.shared.LoginStatus;
 
 /**
@@ -58,7 +59,7 @@ public class LoginController {
     }
 
     public native void exportCheckLoginState(LoginController loginController) /*-{
-     $wnd.checkLoginState = function (){ loginController.@nl.mpi.yams.client.LoginController::checkLoginState()(); }
+     $wnd.checkLoginState = function (){ loginController.@nl.mpi.yams.client.controllers.LoginController::checkLoginState()(); }
      }-*/;
 
     protected void checkLoginState() {

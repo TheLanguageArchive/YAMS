@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import java.util.logging.Logger;
 import nl.mpi.yams.client.ConciseSearchParser;
 import nl.mpi.yams.client.DatabaseInformation;
-import nl.mpi.yams.client.HistoryController;
+import nl.mpi.yams.client.controllers.HistoryController;
 import nl.mpi.yams.client.HistoryData;
 import nl.mpi.yams.client.HistoryListener;
 import nl.mpi.yams.client.SearchHandler;

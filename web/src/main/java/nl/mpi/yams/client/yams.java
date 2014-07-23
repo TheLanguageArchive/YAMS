@@ -18,6 +18,8 @@
  */
 package nl.mpi.yams.client;
 
+import nl.mpi.yams.client.controllers.ActionsPanelController;
+import nl.mpi.yams.client.controllers.HistoryController;
 import nl.mpi.yams.client.ui.ArchiveBranchSelectionPanel;
 import nl.mpi.yams.client.ui.DatabaseStatsPanel;
 import nl.mpi.yams.client.ui.DataNodeTable;

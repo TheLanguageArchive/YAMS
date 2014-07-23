@@ -18,7 +18,7 @@
 package nl.mpi.yams.client.ui;
 
 import com.google.gwt.user.client.ui.Anchor;
-import nl.mpi.yams.client.HistoryController;
+import nl.mpi.yams.client.controllers.HistoryController;
 import nl.mpi.yams.client.HistoryListener;
 
 /**

@@ -18,6 +18,7 @@
  */
 package nl.mpi.yams.client;
 
+import nl.mpi.yams.client.controllers.HistoryController;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;

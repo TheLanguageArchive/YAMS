@@ -39,7 +39,7 @@ import nl.mpi.yams.client.DataNodeLoaderJson;
 import nl.mpi.yams.client.DataNodeLoaderListener;
 import nl.mpi.yams.client.DataNodeLoaderRpc;
 import nl.mpi.yams.client.DatabaseInformation;
-import nl.mpi.yams.client.HistoryController;
+import nl.mpi.yams.client.controllers.HistoryController;
 import nl.mpi.yams.client.HistoryListener;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
 import nl.mpi.yams.client.TreeNodeCheckboxListener;

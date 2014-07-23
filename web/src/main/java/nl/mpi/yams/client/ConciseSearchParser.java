@@ -17,6 +17,7 @@
  */
 package nl.mpi.yams.client;
 
+import nl.mpi.yams.client.controllers.HistoryController;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import nl.mpi.yams.common.data.MetadataFileType;

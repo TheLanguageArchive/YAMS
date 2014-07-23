@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.mpi.yams.client.HistoryController;
+import nl.mpi.yams.client.controllers.HistoryController;
 import nl.mpi.yams.client.HistoryListener;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
 import nl.mpi.yams.common.data.MetadataFileType;

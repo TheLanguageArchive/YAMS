@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import nl.mpi.yams.client.DatabaseInformation;
-import nl.mpi.yams.client.HistoryController;
+import nl.mpi.yams.client.controllers.HistoryController;
 import nl.mpi.yams.client.HistoryListener;
 import nl.mpi.yams.common.data.IconTableBase64;
 import nl.mpi.yams.common.data.NodeTypeImageBase64;

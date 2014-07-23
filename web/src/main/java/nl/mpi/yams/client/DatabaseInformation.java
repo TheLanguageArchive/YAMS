@@ -17,6 +17,7 @@
  */
 package nl.mpi.yams.client;
 
+import nl.mpi.yams.client.controllers.HistoryController;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsonUtils;

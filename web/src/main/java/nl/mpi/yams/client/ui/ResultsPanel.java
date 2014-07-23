@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
-import nl.mpi.yams.client.HistoryController;
+import nl.mpi.yams.client.controllers.HistoryController;
 import nl.mpi.yams.client.HistoryListener;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
 import nl.mpi.yams.client.TreeNodeCheckboxListener;
