@@ -54,11 +54,11 @@ public class DataNodeLoaderJson implements DataNodeLoader {
     }
 
     public DataNodeLoaderJson(String databaseName) {
-        jsonUrl = serviceLocations.jsonYamsRestUrl(databaseName);
+        jsonUrl = serviceLocations.jsonRootNodeUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName);
     }
 
     public void requestLoadRoot(final DataNodeLoaderListener dataNodeLoaderListener) {
-        final String jsonRootUrl = serviceLocations.jsonRootNode(jsonUrl);
+        final String jsonRootUrl = jsonUrl;
         // Send request to server and catch any errors.
         final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, jsonRootUrl);
         try {
@@ -89,16 +89,13 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 //        logger.info("requestLoad");
 // Send request to server and catch any errors.
         StringBuilder stringBuilder = new StringBuilder();
-        final String jsonNodesOfUrl = serviceLocations.jsonNodeOfUrl(jsonUrl);
-        stringBuilder.append(jsonNodesOfUrl);
-        stringBuilder.append("?");
         for (DataNodeId dataNodeId : dataNodeIdList) {
             stringBuilder.append(serviceLocations.jsonNodeGetVar());
             stringBuilder.append(dataNodeId.getIdString());
             stringBuilder.append("&");
         }
 //        final String jsonLinksOfUrl = serviceLocations.jsonYamsDataUrl(jsonUrl, stringBuilder.toString());
-        final String restNodeUrl = stringBuilder.toString();
+        final String restNodeUrl = serviceLocations.jsonNodeOfUrl(jsonUrl, stringBuilder.toString());
 //        logger.warning(restNodeUrl);
         final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, restNodeUrl);
         try {
@@ -114,15 +111,12 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 //        logger.info("requestLoadHdl");
         // Send request to server and catch any errors.
         StringBuilder stringBuilder = new StringBuilder();
-        final String jsonNodesOfUrl = serviceLocations.jsonNodeOfUrl(jsonUrl);
-        stringBuilder.append(jsonNodesOfUrl);
-        stringBuilder.append("?");
         for (String dataNodeHdl : dataNodeHdlList) {
             stringBuilder.append(serviceLocations.jsonNodeGetVar());
             stringBuilder.append(dataNodeHdl);
             stringBuilder.append("&");
         }
-        final String restNodeUrl = stringBuilder.toString();
+        final String restNodeUrl = serviceLocations.jsonNodeOfUrl(jsonUrl, stringBuilder.toString());
 //        logger.warning(restNodeUrl);
 //        final String jsonLinksOfUrl = serviceLocations.jsonLinksOfUrl(jsonUrl, stringBuilder.toString());
         final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, restNodeUrl);

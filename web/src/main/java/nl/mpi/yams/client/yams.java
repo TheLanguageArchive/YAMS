@@ -40,6 +40,7 @@ public class yams implements EntryPoint {
     private static final Logger logger = Logger.getLogger("");
     private SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController = new HistoryController();
+    final private ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
     private DatabaseInformation databaseInfo;
 //    final PhoneGap phoneGap = GWT.create(PhoneGap.class);
     private boolean debugMode = false;
@@ -48,7 +49,8 @@ public class yams implements EntryPoint {
     private final List<String> windowParamUrls = new ArrayList<String>();
 
     public void onModuleLoad() {
-        searchOptionsService = GWT.create(SearchOptionsService.class);
+        searchOptionsService = null;
+//        searchOptionsService = GWT.create(SearchOptionsService.class);
         setSearchBranchFromWindowParameter();
         setupPage(historyController);
         History.addValueChangeHandler(historyController);
@@ -113,8 +115,14 @@ public class yams implements EntryPoint {
             searchOptionsPanelTag.add(new SearchPanel(historyController, databaseInfo, resultsPanel, searchOptionsService, dataNodeTable, archiveBranchSelectionPanel));
         }
         if (databaseStatsTag != null) {
-            final ServiceDefTarget serviceDefTarget = (ServiceDefTarget) searchOptionsService;
-            databaseStatsTag.add(new Label(serviceDefTarget.getServiceEntryPoint()));
+            if (searchOptionsService != null) {
+                final ServiceDefTarget serviceDefTarget = (ServiceDefTarget) searchOptionsService;
+                databaseStatsTag.add(new Label("GWT RPS: " + serviceDefTarget.getServiceEntryPoint()));
+            } else {
+                databaseStatsTag.add(new Label("GWT RPS not available"));
+            }
+            databaseStatsTag.add(new Label("CsAdaptorUrl" + serviceLocations.jsonCsAdaptorUrl()));
+            databaseStatsTag.add(new Label("BasexAdaptorUrl: " + serviceLocations.jsonBasexAdaptorUrl()));
         }
 //        if (GWT.getHostPageBaseURL().startsWith("file://")) {
 //            RootPanel.get("databaseStats").add(new Label("Changing Service Target"));

@@ -56,17 +56,23 @@ public interface ServiceLocations extends Messages {
     @Key("nl.mpi.yams.jsonCsAdaptorUrl")
     String jsonCsAdaptorUrl();
 
-    @Key("nl.mpi.yams.jsonYamsRestUrl")
-    String jsonYamsRestUrl(String databaseName);
+    @Key("nl.mpi.yams.jsonBasexAdaptorUrl")
+    String jsonBasexAdaptorUrl();
 
-    @Key("nl.mpi.yams.jsonRootNode")
-    String jsonRootNode(String serviceUrl);
+    @Key("nl.mpi.yams.jsonRootNodeUrl")
+    String jsonRootNodeUrl(String serviceUrl,String databaseName);
 
-    @Key("nl.mpi.yams.jsonNodeOfUrl")
-    String jsonNodeOfUrl(String serviceUrl);
+    @Key("nl.mpi.yams.jsonDbInfoListUrl")
+    String jsonDbInfoListUrl(String serviceUrl);
+
+    @Key("nl.mpi.yams.jsonDbInfoUrl")
+    String jsonDbInfoUrl(String serviceUrl, String databaseName);
+
+    @Key("nl.mpi.yams.jsonDbInfoUrl")
+    String jsonNodeOfUrl(String serviceUrl, String identifierGetPart);
 
     @Key("nl.mpi.yams.jsonLinksOfUrl")
-    String jsonLinksOfUrl(String serviceUrl, String nodeIdentifier);
+    String jsonLinksOfUrl(String serviceUrl, String identifierGetPart);
 
     @Key("nl.mpi.yams.jsonNodeGetVar")
     String jsonNodeGetVar();

@@ -17,14 +17,24 @@
  */
 package nl.mpi.yams.client;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.JsonUtils;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.DatabaseInfo;
 import nl.mpi.yams.common.data.DatabaseList;
 import nl.mpi.yams.common.data.DatabaseStats;
 import nl.mpi.yams.common.data.IconTableBase64;
+import nl.mpi.yams.shared.JsonDatabaseList;
 
 /**
  * @since Mar 25, 2014 3:07:25 PM (creation date)
@@ -38,7 +48,7 @@ public class DatabaseInformation {
     private boolean databaseError = false; // todo: do we actually want an error state to be stored like this!
     private final HashMap<String, DatabaseStats> databaseStatsMap = new HashMap<String, DatabaseStats>();
     private final HashMap<String, IconTableBase64> iconTableBase64Map = new HashMap<String, IconTableBase64>();
-
+    final private ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
     private int requestCounter = 0;
 
     public DatabaseInformation(HistoryController historyController) {
@@ -52,6 +62,14 @@ public class DatabaseInformation {
     }
 
     public void getDbInfo() {
+        if (searchOptionsService != null) {
+            getDbInfoRPC();
+        } else {
+            getDbInfoJson();
+        }
+    }
+
+    public void getDbInfoRPC() {
         requestCounter++;
         searchOptionsService.getDatabaseList(new AsyncCallback<DatabaseList>() {
             public void onFailure(Throwable caught) {
@@ -73,13 +91,86 @@ public class DatabaseInformation {
                 if (databaseStatsMap.size() > 0) {
                     historyController.setDefaultDatabase();//databaseNames[0]
                 }
-                getDatabaseStats();
+                getDatabaseIcons();
                 historyController.fireDatabaseInfoEvent();
             }
         });
     }
 
-    private void getDatabaseStats() {
+    public void getDbInfoJson() {
+        requestCounter++;
+        final String jsonDbinfoUrl = serviceLocations.jsonDbInfoListUrl(serviceLocations.jsonBasexAdaptorUrl());
+        // Send request to server and catch any errors.
+//        logger.info(jsonDbinfoUrl);
+        final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, jsonDbinfoUrl);
+        try {
+            final Request request = builder.sendRequest(null, new RequestCallback() {
+
+                public void onResponseReceived(Request request, Response response) {
+                    if (200 == response.getStatusCode()) {
+                        final String text = response.getText();
+//                        logger.info("onResponseReceived");
+//                        logger.info(jsonDbinfoUrl);
+//                        logger.info(text);
+//                        logger.info("onResponseReceivedEnd");
+                        // we need this json object to be a json array at this point so we add square brackets
+                        final JsArray<JsonDatabaseList> jsonArray = JsonUtils.safeEval("[" + text + "]");
+                        final JsonDatabaseList jsonDatabaseList = (JsonDatabaseList) jsonArray.get(0);
+                        for (int index = 0; index < jsonDatabaseList.getSize(); index++) {
+                            final int rootDocumentsCount = jsonDatabaseList.getRootDocumentsCount(index);
+                            final DataNodeId[] dataNodeIds;
+                            if (rootDocumentsCount > 0) {
+                                dataNodeIds = new DataNodeId[rootDocumentsCount];
+                                for (int idIndex = 0; idIndex < rootDocumentsCount; idIndex++) {
+                                    dataNodeIds[idIndex] = new DataNodeId(jsonDatabaseList.getRootDocumentsIDs(index, idIndex));
+                                }
+                            } else {
+                                dataNodeIds = new DataNodeId[0];
+                            }
+                            final DatabaseStats databaseStats = new DatabaseStats(
+                                    jsonDatabaseList.getKnownDocumentsCount(index),
+                                    jsonDatabaseList.getMissingDocumentsCount(index),
+                                    jsonDatabaseList.getDuplicateDocumentsCount(index),
+                                    jsonDatabaseList.getRootDocumentsCount(index),
+                                    dataNodeIds);
+                            final String databaseName = jsonDatabaseList.getDatabaseName(index);
+                            databaseStatsMap.put(databaseName, databaseStats);
+                        }
+                    } else {
+                        logger.warning("Couldn't retrieve JSON: non 200");
+                        logger.warning(jsonDbinfoUrl);
+                        logger.warning(response.getStatusText());
+                        logger.warning("StatusCode: " + Integer.toString(response.getStatusCode()));
+                    }
+                    ready();
+                    requestCounter--;
+                    if (databaseStatsMap.size() > 0) {
+                        historyController.setDefaultDatabase();//databaseNames[0]
+                    }
+//                    getDatabaseIcons();
+                    historyController.fireDatabaseInfoEvent();
+                }
+
+                public void onError(Request request, Throwable exception) {
+                    logger.log(Level.SEVERE, "DatabaseInfo:getDbInfoJsonError", exception);
+                    ready();
+                    requestCounter--;
+                    logger.log(Level.SEVERE, exception.getMessage());
+                    databaseError = true;
+                    historyController.fireDatabaseInfoEvent();
+                }
+            });
+        } catch (RequestException exception) {
+            logger.log(Level.SEVERE, "DatabaseInfo:getDbInfoJson", exception);
+            ready();
+            requestCounter--;
+            logger.log(Level.SEVERE, exception.getMessage());
+            databaseError = true;
+            historyController.fireDatabaseInfoEvent();
+        }
+    }
+
+    private void getDatabaseIcons() {
         for (final String databaseName : databaseStatsMap.keySet()) {
             requestCounter++;
             searchOptionsService.getImageDataForTypes(databaseName, new AsyncCallback<IconTableBase64>() {
