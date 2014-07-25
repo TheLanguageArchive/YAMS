@@ -200,7 +200,9 @@ public class DataBaseManager<D, F, M> {
                 + "return $iconDoc\n"
                 + "}</DatabaseInfo>}</DatabaseList>\n";
         String queryResult;
+//        logger.info("databaseListQuery: " + databaseListQuery);
         queryResult = dbAdaptor.executeQuery(databaseName, databaseListQuery);
+//        logger.info("databaseList: " + queryResult);
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(DatabaseList.class, DatabaseStats.class, DataNodeId.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -491,15 +493,15 @@ public class DataBaseManager<D, F, M> {
     private String getTypeClause(MetadataFileType metadataFileType) {
         String typeClause = "";
         if (metadataFileType != null) {
-            if (metadataFileType.getType() != null) {
+            if (metadataFileType.getType() != null && !metadataFileType.getType().isEmpty()) {
                 typeClause += "[/DataNode/Type/@Label = '" + metadataFileType.getType() + "']";
             }
-            if (metadataFileType.getPath() != null) {
+            if (metadataFileType.getPath() != null && !metadataFileType.getPath().isEmpty()) {
                 typeClause += "//DataNode/FieldGroup[@Label = '" + metadataFileType.getPath() + "']";
-                if (metadataFileType.getValue() != null) {
+                if (metadataFileType.getValue() != null && !metadataFileType.getValue().isEmpty()) {
                     typeClause += "[FieldData/contains(@FieldValue, '" + metadataFileType.getValue() + "')]";
                 }
-            } else if (metadataFileType.getValue() != null) {
+            } else if (metadataFileType.getValue() != null && !metadataFileType.getValue().isEmpty()) {
                 typeClause += "//DataNode/FieldGroup[FieldData/contains(@FieldValue, '" + metadataFileType.getValue() + "')]";
             }
         }
@@ -509,10 +511,10 @@ public class DataBaseManager<D, F, M> {
     private String getTypeNodes(MetadataFileType metadataFileType) {
         String typeNodes = "";
         if (metadataFileType != null) {
-            if (metadataFileType.getPath() != null) {
+            if (metadataFileType.getPath() != null && !metadataFileType.getPath().isEmpty()) {
                 typeNodes += "<Path>" + metadataFileType.getPath() + "</Path>";
             }
-            if (metadataFileType.getType() != null) {
+            if (metadataFileType.getType() != null && !metadataFileType.getType().isEmpty()) {
                 typeNodes += "<Type>" + metadataFileType.getType() + "</Type>";
             }
         }
