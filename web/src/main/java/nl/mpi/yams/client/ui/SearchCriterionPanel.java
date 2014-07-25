@@ -313,15 +313,8 @@ public class SearchCriterionPanel extends HorizontalPanel {
                     valuesPathsImage.setVisible(true);
                     final MetadataFileType typeSelection = fieldsOptionsListBox.getValue();
                     final MetadataFileType options = new MetadataFileType(typeSelection.getType(), typeSelection.getPath(), request.getQuery());
-                    searchOptionsService.getValueOptions(databaseName, options, new AsyncCallback<MetadataFileType[]>() {
-                        public void onFailure(Throwable caught) {
-                            requestInProgress = false;
-                            valuesPathsImage.setVisible(false);
-                            logger.log(Level.SEVERE, caught.getMessage());
-                            hintLabel.setText("hint: try specifying a type and or path before typing");
-                        }
-
-                        public void onSuccess(MetadataFileType[] result) {
+                    new MetadataFileTypeLoader(searchOptionsService).loadValueOptions(databaseName, options, new MetadataFileTypeListener() {
+                        public void metadataFileTypesLoaded(MetadataFileType[] result) {
                             requestInProgress = false;
                             hintLabel.setText("");
                             HashSet<String> suggestions = new HashSet();
@@ -337,6 +330,12 @@ public class SearchCriterionPanel extends HorizontalPanel {
                             }
                             updateSuggestOracle(request, callback);
                             valuesPathsImage.setVisible(false);
+                        }
+
+                        public void metadataFileTypesLoadFailed(Throwable caught) {
+                            requestInProgress = false;
+                            valuesPathsImage.setVisible(false);
+                            hintLabel.setText("hint: try specifying a type and or path before typing");
                         }
                     });
                 }
