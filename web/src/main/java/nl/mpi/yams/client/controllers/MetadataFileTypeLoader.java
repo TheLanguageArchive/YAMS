@@ -60,8 +60,30 @@ public class MetadataFileTypeLoader {
         if (searchOptionsService != null) {
             loadPathOptionsRpc(databaseName, type, listener);
         } else {
-            loadTypesOptionsJson(serviceLocations.jsonMetadataPathsUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, type.getType()), listener);
+            final String typeValue = (type == null || type.getType() == null) ? "" : type.getType();
+            loadTypesOptionsJson(serviceLocations.jsonMetadataPathsUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, typeValue), listener);
         }
+    }
+
+    public void loadValueOptions(final String databaseName, MetadataFileType options, final MetadataFileTypeListener listener) {
+        if (searchOptionsService != null) {
+            loadValueOptionsRpc(databaseName, options, listener);
+        } else {
+            loadTypesOptionsJson(serviceLocations.jsonMetadataValuesUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, options.getType(), options.getPath()), listener);
+        }
+    }
+
+    public void loadValueOptionsRpc(final String databaseName, MetadataFileType options, final MetadataFileTypeListener listener) {
+        searchOptionsService.getValueOptions(databaseName, options, new AsyncCallback<MetadataFileType[]>() {
+            public void onFailure(Throwable caught) {
+                logger.log(Level.SEVERE, caught.getMessage());
+                listener.metadataFileTypesLoadFailed(caught);
+            }
+
+            public void onSuccess(MetadataFileType[] result) {
+                listener.metadataFileTypesLoaded(result);
+            }
+        });
     }
 
     private void loadPathOptionsRpc(final String databaseName, MetadataFileType type, final MetadataFileTypeListener listener) {
