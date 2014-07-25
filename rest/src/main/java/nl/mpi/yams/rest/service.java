@@ -81,13 +81,19 @@ public class service {
             stringBuilder.append("</h3><a href=\"./dbinfo/");
             stringBuilder.append(dbName);
             stringBuilder.append("\">dbinfo</a><br>");
-            stringBuilder.append("<a href=\"./hints/");
-            stringBuilder.append(dbName);
-            stringBuilder.append("/Dutch");
-            stringBuilder.append("\">hints</a><br>");
             stringBuilder.append("<a href=\"./data/");
             stringBuilder.append(dbName);
             stringBuilder.append("\">root nodes</a><br>");
+            stringBuilder.append("<a href=\"./types/");
+            stringBuilder.append(dbName);
+            stringBuilder.append("\">types</a><br>");
+            stringBuilder.append("<a href=\"./paths/");
+            stringBuilder.append(dbName);
+            stringBuilder.append("?type=\">paths</a><br>");
+            stringBuilder.append("<a href=\"./hints/");
+            stringBuilder.append(dbName);
+            stringBuilder.append("?type=&path=&text=");
+            stringBuilder.append("\">hints</a><br>");
         }
         return stringBuilder.toString();
     }
@@ -111,16 +117,6 @@ public class service {
     }
 
     @GET
-    @Path("/hints/{dbname}/{text}")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getHints(@PathParam("dbname") String dbName, @PathParam("text") String userText) throws QueryException {
-        final MetadataFileType options = new MetadataFileType(null, null, userText);
-        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
-        MetadataFileType[] metadataFieldTypes = yamsDatabase.getMetadataFieldValues(options, 100);
-        return Response.ok(metadataFieldTypes).header("Access-Control-Allow-Origin", "*").build();
-    }
-
-    @GET
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/data/{dbname}")
     public Response getRootNode(@PathParam("dbname") String dbName) throws QueryException {
@@ -137,6 +133,34 @@ public class service {
         DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         final SerialisableDataNode childNodes = yamsDatabase.getChildNodesOfHdl(identifier, start, end);
         return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
+    }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/types/{dbname}")
+    public Response getTypeOptions(@PathParam("dbname") String dbName) throws QueryException {
+        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        final MetadataFileType[] metadataTypes = yamsDatabase.getMetadataTypes(null);
+        return Response.ok(metadataTypes).header("Access-Control-Allow-Origin", "*").build();
+    }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/paths/{dbname}")
+    public Response getPathOptions(@PathParam("dbname") String dbName, @QueryParam("type") final String type) throws QueryException {
+        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        final MetadataFileType[] metadataTypes = yamsDatabase.getMetadataPaths(new MetadataFileType(type, null, null));
+        return Response.ok(metadataTypes).header("Access-Control-Allow-Origin", "*").build();
+    }
+
+    @GET
+    @Path("/hints/{dbname}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getHints(@PathParam("dbname") String dbName, @QueryParam("type") final String type, @QueryParam("path") final String path, @QueryParam("text") final String text) throws QueryException {
+        final MetadataFileType options = new MetadataFileType(type, path, text);
+        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        MetadataFileType[] metadataFieldTypes = yamsDatabase.getMetadataFieldValues(options, 100);
+        return Response.ok(metadataFieldTypes).header("Access-Control-Allow-Origin", "*").build();
     }
 
     @GET
