@@ -42,6 +42,8 @@ import java.util.logging.Logger;
 import nl.mpi.yams.client.SearchHandler;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
 import nl.mpi.yams.client.SearchSuggestionsStorage;
+import nl.mpi.yams.client.controllers.MetadataFileTypeListener;
+import nl.mpi.yams.client.controllers.MetadataFileTypeLoader;
 import nl.mpi.yams.common.data.MetadataFileType;
 import nl.mpi.yams.common.data.QueryDataStructures;
 
@@ -153,21 +155,18 @@ public class SearchCriterionPanel extends HorizontalPanel {
 
     private void loadTypesOptions() {
         loadingTypesImage.setVisible(true);
-        searchOptionsService.getTypeOptions(databaseName, null, new AsyncCallback<MetadataFileType[]>() {
-            public void onFailure(Throwable caught) {
-                logger.info("loadTypesOptions");
-                logger.info(databaseName);
-                logger.log(Level.SEVERE, caught.getMessage());
-                loadingTypesImage.setVisible(false);
-            }
-
-            public void onSuccess(MetadataFileType[] result) {
+        new MetadataFileTypeLoader(searchOptionsService).loadTypesOptions(databaseName, new MetadataFileTypeListener() {
+            public void metadataFileTypesLoaded(MetadataFileType[] result) {
                 if (result != null && result.length > 0) {
                     knownFileTypes = result;
                     typesOptionsListBox.setAcceptableValues(Arrays.asList(result));
                     setDefaultFileTypeSelection();
                     loadPathsOptions(typesOptionsListBox.getValue());
                 }
+                loadingTypesImage.setVisible(false);
+            }
+
+            public void metadataFileTypesLoadFailed(Throwable caught) {
                 loadingTypesImage.setVisible(false);
             }
         });

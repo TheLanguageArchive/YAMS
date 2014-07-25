@@ -60,7 +60,13 @@ public interface ServiceLocations extends Messages {
     String jsonBasexAdaptorUrl();
 
     @Key("nl.mpi.yams.jsonRootNodeUrl")
-    String jsonRootNodeUrl(String serviceUrl,String databaseName);
+    String jsonRootNodeUrl(String serviceUrl, String databaseName);
+
+    @Key("nl.mpi.yams.jsonMetadataTypesUrl")
+    String jsonMetadataTypesUrl(String serviceUrl, String databaseName);
+
+    @Key("nl.mpi.yams.jsonMetadataPathsUrl")
+    String jsonMetadataPathsUrl(String serviceUrl, String databaseName);
 
     @Key("nl.mpi.yams.jsonDbInfoListUrl")
     String jsonDbInfoListUrl(String serviceUrl);
