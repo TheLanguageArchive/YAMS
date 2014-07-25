@@ -31,8 +31,6 @@ import java.util.logging.Logger;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
 import nl.mpi.yams.client.ServiceLocations;
 import nl.mpi.yams.common.data.MetadataFileType;
-import nl.mpi.yams.shared.JsonDataNode;
-import nl.mpi.yams.shared.JsonDatabaseList;
 import nl.mpi.yams.shared.JsonMetadataFileType;
 import nl.mpi.yams.shared.WebQueryException;
 
@@ -54,8 +52,29 @@ public class MetadataFileTypeLoader {
         if (searchOptionsService != null) {
             loadTypesOptionsRpc(databaseName, listener);
         } else {
-            loadTypesOptionsJson(databaseName, listener);
+            loadTypesOptionsJson(serviceLocations.jsonMetadataTypesUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName), listener);
         }
+    }
+
+    public void loadPathOptions(final String databaseName, MetadataFileType type, final MetadataFileTypeListener listener) {
+        if (searchOptionsService != null) {
+            loadPathOptionsRpc(databaseName, type, listener);
+        } else {
+            loadTypesOptionsJson(serviceLocations.jsonMetadataPathsUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, type.getType()), listener);
+        }
+    }
+
+    private void loadPathOptionsRpc(final String databaseName, MetadataFileType type, final MetadataFileTypeListener listener) {
+        searchOptionsService.getPathOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
+            public void onFailure(Throwable caught) {
+                logger.log(Level.SEVERE, caught.getMessage());
+                listener.metadataFileTypesLoadFailed(caught);
+            }
+
+            public void onSuccess(MetadataFileType[] result) {
+                listener.metadataFileTypesLoaded(result);
+            }
+        });
     }
 
     private void loadTypesOptionsRpc(final String databaseName, final MetadataFileTypeListener listener) {
@@ -73,8 +92,7 @@ public class MetadataFileTypeLoader {
         });
     }
 
-    private void loadTypesOptionsJson(final String databaseName, final MetadataFileTypeListener listener) {
-        final String jsonDbTypesUrl = serviceLocations.jsonMetadataTypesUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName);
+    private void loadTypesOptionsJson(final String jsonDbTypesUrl, final MetadataFileTypeListener listener) {
         final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, jsonDbTypesUrl);
         try {
             final Request request = builder.sendRequest(null, new RequestCallback() {

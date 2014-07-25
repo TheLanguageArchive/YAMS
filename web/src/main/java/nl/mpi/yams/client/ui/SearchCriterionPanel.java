@@ -208,19 +208,18 @@ public class SearchCriterionPanel extends HorizontalPanel {
 
     private void loadPathsOptions(MetadataFileType type) {
         loadingPathsImage.setVisible(true);
-        searchOptionsService.getPathOptions(databaseName, type, new AsyncCallback<MetadataFileType[]>() {
-            public void onFailure(Throwable caught) {
-                logger.log(Level.SEVERE, caught.getMessage());
-                loadingPathsImage.setVisible(false);
-            }
-
-            public void onSuccess(MetadataFileType[] result) {
+        new MetadataFileTypeLoader(searchOptionsService).loadPathOptions(databaseName, type, new MetadataFileTypeListener() {
+            public void metadataFileTypesLoaded(MetadataFileType[] result) {
                 if (result != null && result.length > 0) {
                     knownFieldTypes = result;
                     fieldsOptionsListBox.setAcceptableValues(Arrays.asList(result));
-                    loadingPathsImage.setVisible(false);
                     setDefaultFieldTypeSelection();
                 }
+                loadingPathsImage.setVisible(false);
+            }
+
+            public void metadataFileTypesLoadFailed(Throwable caught) {
+                loadingPathsImage.setVisible(false);
             }
         });
     }
