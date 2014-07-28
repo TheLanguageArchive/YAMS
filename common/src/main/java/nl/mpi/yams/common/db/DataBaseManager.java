@@ -763,10 +763,10 @@ public class DataBaseManager<D, F, M> {
     private String getMetadataFieldValuesQuery(MetadataFileType metadataFileType, int maxResults) {
         String typeClause = getTypeClause(metadataFileType);
         String typeNodes = getTypeNodes(metadataFileType);
-        return "let $fieldValues := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldData[position() le " + maxResults + "]/@FieldValue/string()\n"
+        return "let $fieldValues := collection('" + databaseName + "/" + crawledDataCollection + "')" + typeClause + "//FieldData/@FieldValue/string()\n"
                 + "return <MetadataFileType>\n"
                 + "{\n"
-                + "for $label in distinct-values($fieldValues)\n"
+                + "for $label in distinct-values($fieldValues)[position() le " + maxResults + "]\n"
                 + "order by $label\n"
                 + "return <MetadataFileType>"
                 + "<Label>{$label}</Label>\n"

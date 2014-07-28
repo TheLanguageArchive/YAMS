@@ -244,8 +244,8 @@ public abstract class DataBaseManagerTest {
         assertEquals(null, result1[0].getType());
         assertEquals(null, result1[0].getPath());
 //        assertEquals(2929, result1[0].getRecordCount());
-        assertEquals("  Author: Jay Gale & Jacqueline Voss       Title: read aloud text (library for the blind)       Publisher: Unspecified       Place: Unspecified       Date: Unspecified       Recording date: 2000  Recording time: Unspecified  From: library for the blind      Produced from: Vlaamse Luister- en Braillebibliotheek    ", result1[9].getLabel());
-        assertEquals("  Author: Jay Gale & Jacqueline Voss       Title: read aloud text (library for the blind)       Publisher: Unspecified       Place: Unspecified       Date: Unspecified       Recording date: 2000  Recording time: Unspecified  From: library for the blind      Produced from: Vlaamse Luister- en Braillebibliotheek    ", result1[9].getValue());
+        assertEquals("text/x-cgn-tag+xml", result1[9].getLabel());
+        assertEquals("text/x-cgn-tag+xml", result1[9].getValue());
 //        assertEquals(1, result1[9].getRecordCount());
         MetadataFileType metadataFileType1 = new MetadataFileType() {
             @Override
