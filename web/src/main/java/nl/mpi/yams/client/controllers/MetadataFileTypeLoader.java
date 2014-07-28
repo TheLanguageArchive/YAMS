@@ -126,20 +126,25 @@ public class MetadataFileTypeLoader {
                     if (200 == response.getStatusCode()) {
                         final String text = response.getText();
                         if (text != null && !text.isEmpty()) {
+                            try {
 //                            logger.info(text);
-                            // remove the outer object to leave only the array to be parsed
-                            final String cleanedText = text.replaceFirst("^\\{[^\\[]*", "").replaceFirst("\\}$", "");
+                                // remove the outer object to leave only the array to be parsed
+                                final String cleanedText = text.replaceFirst("^\\{[^\\[]*", "").replaceFirst("\\}$", "");
 //                            logger.info("onResponseReceived");
 //                            logger.info(jsonDbTypesUrl);
 //                            logger.info(cleanedText);
-                            final JsArray<JsonMetadataFileType> jsonArray = JsonUtils.safeEval(cleanedText);
-                            MetadataFileType[] results = new MetadataFileType[jsonArray.length()];
+                                final JsArray<JsonMetadataFileType> jsonArray = JsonUtils.safeEval(cleanedText);
+                                MetadataFileType[] results = new MetadataFileType[jsonArray.length()];
 
-                            for (int index = 0; index < jsonArray.length(); index++) {
-                                final JsonMetadataFileType fileType = (JsonMetadataFileType) jsonArray.get(index);
-                                results[index] = new MetadataFileType(fileType.getType(), fileType.getPath(), fileType.getLabel(), fileType.getValue(), fileType.getCount());
+                                for (int index = 0; index < jsonArray.length(); index++) {
+                                    final JsonMetadataFileType fileType = (JsonMetadataFileType) jsonArray.get(index);
+                                    results[index] = new MetadataFileType(fileType.getType(), fileType.getPath(), fileType.getLabel(), fileType.getValue(), fileType.getCount());
+                                }
+                                listener.metadataFileTypesLoaded(results);
+                            } catch (IllegalArgumentException exception) {
+                                logger.warning(exception.getMessage());
+                                listener.metadataFileTypesLoaded(new MetadataFileType[0]);
                             }
-                            listener.metadataFileTypesLoaded(results);
                         } else {
                             listener.metadataFileTypesLoaded(new MetadataFileType[0]);
                         }

@@ -272,7 +272,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
         final String path = getMetadataFieldType().getPath();
         final String type = getMetadataFileType().getType();
         final String searchText = getSearchText();
-        logger.info("loading stored suggestions");
+//        logger.info("loading stored suggestions");
         final String[] values = searchSuggestionsStorage.getValues(databaseName, type, path);
 //        oracle.addAll(Arrays.asList(values));
         ArrayList<Suggestion> suggestionList = new ArrayList<Suggestion>();
@@ -305,10 +305,10 @@ public class SearchCriterionPanel extends HorizontalPanel {
                 final String type = getMetadataFileType().getType();
                 updateSuggestOracle(request, callback);
                 if (searchSuggestionsStorage.isDone(databaseName, type, path, searchText) || requestInProgress) {
-                    logger.info("relying on old suggestions");
+//                    logger.info("relying on old suggestions");
                 } else {
                     requestInProgress = true;
-                    logger.info("requesting new suggestions");
+//                    logger.info("requesting new suggestions");
                     searchSuggestionsStorage.setDone(databaseName, type, path, searchText);
                     valuesPathsImage.setVisible(true);
                     final MetadataFileType typeSelection = fieldsOptionsListBox.getValue();
@@ -326,7 +326,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
                                 }
                                 searchSuggestionsStorage.addValues(databaseName, type, path, suggestions);
                             } else {
-                                logger.info("no new suggestions");
+//                                logger.info("no new suggestions");
                             }
                             updateSuggestOracle(request, callback);
                             valuesPathsImage.setVisible(false);

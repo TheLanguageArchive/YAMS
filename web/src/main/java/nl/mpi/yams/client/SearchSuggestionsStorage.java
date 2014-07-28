@@ -52,7 +52,7 @@ public class SearchSuggestionsStorage {
     private String[] getRawValues(String key) {
         final String storedItem = suggestionsStorage.getItem(key);
         if (storedItem != null && storedItem.length() > 3) {
-            logger.info(storedItem);
+//            logger.info(storedItem);
             return storedItem.substring(1, storedItem.length() - 1).split(", ");
         } else {
             return new String[0];
