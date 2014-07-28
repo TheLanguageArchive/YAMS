@@ -56,10 +56,11 @@ public class MetadataFileType implements Serializable {
         this.label = label;
     }
 
-    public MetadataFileType(String type, String path, String label, int recordCount) {
+    public MetadataFileType(String type, String path, String label, String value, int recordCount) {
         this.type = type;
         this.path = path;
         this.label = label;
+        this.value = value;
         this.recordCount = recordCount;
     }
 
