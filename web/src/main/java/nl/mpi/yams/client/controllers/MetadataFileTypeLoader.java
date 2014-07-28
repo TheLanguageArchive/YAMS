@@ -69,7 +69,10 @@ public class MetadataFileTypeLoader {
         if (searchOptionsService != null) {
             loadValueOptionsRpc(databaseName, options, listener);
         } else {
-            loadTypesOptionsJson(serviceLocations.jsonMetadataValuesUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, options.getType(), options.getPath(), options.getValue()), listener);
+            final String typeValue = (options == null || options.getType() == null) ? "" : options.getType();
+            final String pathValue = (options == null || options.getPath() == null) ? "" : options.getPath();
+            final String textValue = (options == null || options.getValue() == null) ? "" : options.getValue();
+            loadTypesOptionsJson(serviceLocations.jsonMetadataValuesUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, typeValue, pathValue, textValue), listener);
         }
     }
 
@@ -122,18 +125,25 @@ public class MetadataFileTypeLoader {
                 public void onResponseReceived(Request request, Response response) {
                     if (200 == response.getStatusCode()) {
                         final String text = response.getText();
-                        logger.info("onResponseReceived");
-                        logger.info(jsonDbTypesUrl);
-                        logger.info(text);
-                        logger.info("onResponseReceivedEnd");
-                        final JsArray<JsonMetadataFileType> jsonArray = JsonUtils.safeEval(text);
-                        MetadataFileType[] results = new MetadataFileType[jsonArray.length()];
+                        if (text != null && !text.isEmpty()) {
+//                            logger.info(text);
+                            // remove the outer object to leave only the array to be parsed
+                            final String cleanedText = text.replaceFirst("^\\{[^\\[]*", "").replaceFirst("\\}$", "");
+//                            logger.info("onResponseReceived");
+//                            logger.info(jsonDbTypesUrl);
+//                            logger.info(cleanedText);
+                            final JsArray<JsonMetadataFileType> jsonArray = JsonUtils.safeEval(cleanedText);
+                            MetadataFileType[] results = new MetadataFileType[jsonArray.length()];
 
-                        for (int index = 0; index < jsonArray.length(); index++) {
-                            final JsonMetadataFileType fileType = (JsonMetadataFileType) jsonArray.get(index);
-                            results[index] = new MetadataFileType(fileType.getType(), fileType.getPath(), fileType.getLabel(), fileType.getCount());
+                            for (int index = 0; index < jsonArray.length(); index++) {
+                                final JsonMetadataFileType fileType = (JsonMetadataFileType) jsonArray.get(index);
+                                results[index] = new MetadataFileType(fileType.getType(), fileType.getPath(), fileType.getLabel(), fileType.getValue(), fileType.getCount());
+                            }
+                            listener.metadataFileTypesLoaded(results);
+                        } else {
+                            listener.metadataFileTypesLoaded(new MetadataFileType[0]);
                         }
-                        listener.metadataFileTypesLoaded(results);
+//                        logger.info("onResponseReceivedEnd");
                     } else {
                         logger.warning("Couldn't retrieve JSON: non 200");
                         logger.warning(jsonDbTypesUrl);
