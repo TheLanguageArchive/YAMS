@@ -107,7 +107,7 @@ public class DataBaseManager<D, F, M> {
         this.dClass = dClass;
         this.fClass = fClass;
         this.mClass = mClass;
-        this.databaseName = databaseName;
+        this.databaseName = escapeBadChars(databaseName);
 //        dbAdaptor.checkDbExists(databaseName);
     }
 
@@ -494,15 +494,15 @@ public class DataBaseManager<D, F, M> {
         String typeClause = "";
         if (metadataFileType != null) {
             if (metadataFileType.getType() != null && !metadataFileType.getType().isEmpty()) {
-                typeClause += "[/DataNode/Type/@Label = '" + metadataFileType.getType() + "']";
+                typeClause += "[/DataNode/Type/@Label = '" + escapeBadChars(metadataFileType.getType()) + "']";
             }
             if (metadataFileType.getPath() != null && !metadataFileType.getPath().isEmpty()) {
-                typeClause += "//DataNode/FieldGroup[@Label = '" + metadataFileType.getPath() + "']";
+                typeClause += "//DataNode/FieldGroup[@Label = '" + escapeBadChars(metadataFileType.getPath()) + "']";
                 if (metadataFileType.getValue() != null && !metadataFileType.getValue().isEmpty()) {
-                    typeClause += "[FieldData/@FieldValue contains text '" + metadataFileType.getValue() + "']";
+                    typeClause += "[FieldData/@FieldValue contains text '" + escapeBadChars(metadataFileType.getValue()) + "']";
                 }
             } else if (metadataFileType.getValue() != null && !metadataFileType.getValue().isEmpty()) {
-                typeClause += "//DataNode/FieldGroup[FieldData/@FieldValue contains text '" + metadataFileType.getValue() + "']";
+                typeClause += "//DataNode/FieldGroup[FieldData/@FieldValue contains text '" + escapeBadChars(metadataFileType.getValue()) + "']";
             }
         }
         return typeClause;
@@ -512,10 +512,10 @@ public class DataBaseManager<D, F, M> {
         String typeNodes = "";
         if (metadataFileType != null) {
             if (metadataFileType.getPath() != null && !metadataFileType.getPath().isEmpty()) {
-                typeNodes += "<Path>" + metadataFileType.getPath() + "</Path>";
+                typeNodes += "<Path>" + escapeBadChars(metadataFileType.getPath()) + "</Path>";
             }
             if (metadataFileType.getType() != null && !metadataFileType.getType().isEmpty()) {
-                typeNodes += "<Type>" + metadataFileType.getType() + "</Type>";
+                typeNodes += "<Type>" + escapeBadChars(metadataFileType.getType()) + "</Type>";
             }
         }
         return typeNodes;
@@ -525,8 +525,8 @@ public class DataBaseManager<D, F, M> {
         if (metadataFileType == null) {
             return facetsCollection + "/" + queryType + "/all";
         }
-        final String type = (metadataFileType.getType() == null) ? "all" : metadataFileType.getType();
-        final String path = (metadataFileType.getPath() == null) ? "all" : metadataFileType.getPath();
+        final String type = (metadataFileType.getType() == null) ? "all" : escapeBadChars(metadataFileType.getType());
+        final String path = (metadataFileType.getPath() == null) ? "all" : escapeBadChars(metadataFileType.getPath());
         return facetsCollection + "/" + queryType + "/" + type + "/" + path;
     }
 
@@ -536,8 +536,8 @@ public class DataBaseManager<D, F, M> {
             if (metadataFileType == null) {
                 documentName += "/all/all";
             } else {
-                final String type = (metadataFileType.getType() == null) ? "all" : metadataFileType.getType();
-                final String path = (metadataFileType.getPath() == null) ? "all" : metadataFileType.getPath();
+                final String type = (metadataFileType.getType() == null) ? "all" : escapeBadChars(metadataFileType.getType());
+                final String path = (metadataFileType.getPath() == null) ? "all" : escapeBadChars(metadataFileType.getPath());
                 documentName += "/" + type + "/" + path;
             }
         }
@@ -611,7 +611,7 @@ public class DataBaseManager<D, F, M> {
 //                separatorString = ",\n";
 //            }
             MetadataFileType treeBranchType = treeBranchTypeList.remove(0);
-            String currentFieldName = treeBranchType.getPath();
+            String currentFieldName = escapeBadChars(treeBranchType.getPath());
             String nextWhereClause = whereClause + "[//*:" + currentFieldName + " = $nameString" + levelCount + "]";
             String nextSelectClause = selectClause + "[*:" + currentFieldName + " = $nameString" + levelCount + "]";
             String nextTrailingSelectClause = "[*:" + currentFieldName + " = $nameString" + levelCount + "]";
@@ -674,8 +674,7 @@ public class DataBaseManager<D, F, M> {
             }
             firstLoop = false;
             queryStringBuilder.append("'");
-            // todo: add use of escapeBadChars()
-            queryStringBuilder.append(value);
+            queryStringBuilder.append(escapeBadChars(value));
             queryStringBuilder.append("'");
         }
         queryStringBuilder.append(") return $dataNode}");
@@ -698,7 +697,7 @@ public class DataBaseManager<D, F, M> {
             }
             firstLoop = false;
             queryStringBuilder.append("'");
-            queryStringBuilder.append(dataNodeId.getIdString());
+            queryStringBuilder.append(escapeBadChars(dataNodeId.getIdString()));
             queryStringBuilder.append("'");
         }
         queryStringBuilder.append(") return $dataNode}");
@@ -716,10 +715,10 @@ public class DataBaseManager<D, F, M> {
         String pathClause = "";
         if (searchParameters.getFileType() != null) {
             if (searchParameters.getFileType().getType() != null) {
-                typeClause += "[Type/@Label = '" + searchParameters.getFileType().getType() + "']";
+                typeClause += "[Type/@Label = '" + escapeBadChars(searchParameters.getFileType().getType()) + "']";
             }
             if (searchParameters.getFieldType().getPath() != null) {
-                pathClause += "[@Label = '" + searchParameters.getFieldType().getPath() + "']";
+                pathClause += "[@Label = '" + escapeBadChars(searchParameters.getFieldType().getPath()) + "']";
             }
         }
         String fieldsQuery = "";
@@ -877,12 +876,12 @@ public class DataBaseManager<D, F, M> {
         }
         for (SearchParameters parameters : searchParametersList) {
             queryStringBuilder.append("(");
-            final String type = parameters.getFileType().getType();
+            final String type = escapeBadChars(parameters.getFileType().getType());
             if (type != null) {
                 queryStringBuilder.append(type);
                 queryStringBuilder.append(" ");
             }
-            final String path = parameters.getFieldType().getPath();
+            final String path = escapeBadChars(parameters.getFieldType().getPath());
             if (path != null) {
                 queryStringBuilder.append(path);
                 queryStringBuilder.append(" ");
@@ -893,7 +892,7 @@ public class DataBaseManager<D, F, M> {
                 }
             }
             queryStringBuilder.append(" ");
-            queryStringBuilder.append(parameters.getSearchString());
+            queryStringBuilder.append(escapeBadChars(parameters.getSearchString()));
             queryStringBuilder.append(") ");
         }
         queryStringBuilder.append("\">");
