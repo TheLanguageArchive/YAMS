@@ -30,9 +30,11 @@ public class JsonMetadataFileType extends JavaScriptObject {
 
     public final native String getLabel() /*-{ return this.Label; }-*/;
 
+    public final native String getValue() /*-{ return this.Label; }-*/;
+
     public final native String getType() /*-{ return this.Type; }-*/;
 
-    public final native int getCount() /*-{ return this.Count; }-*/;
+    public final native int getCount() /*-{ return parseInt(this.Count); }-*/;
 
     public final native String getPath() /*-{ return this.Path; }-*/;
 }

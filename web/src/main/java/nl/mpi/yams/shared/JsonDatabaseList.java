@@ -32,13 +32,13 @@ public class JsonDatabaseList extends JavaScriptObject {
 
     public final native String getDatabaseName(int index) /*-{ return this.DatabaseInfo[index].DatabaseName; }-*/;
 
-    public final native int getKnownDocumentsCount(int index) /*-{ return this.DatabaseInfo[index].DatabaseStats.KnownDocuments; }-*/;
+    public final native int getKnownDocumentsCount(int index) /*-{ return parseInt(this.DatabaseInfo[index].DatabaseStats.KnownDocuments); }-*/;
 
-    public final native int getMissingDocumentsCount(int index) /*-{ return this.DatabaseInfo[index].DatabaseStats.MissingDocuments; }-*/;
+    public final native int getMissingDocumentsCount(int index) /*-{ return parseInt(this.DatabaseInfo[index].DatabaseStats.MissingDocuments); }-*/;
 
-    public final native int getDuplicateDocumentsCount(int index) /*-{ return this.DatabaseInfo[index].DatabaseStats.DuplicateDocuments; }-*/;
+    public final native int getDuplicateDocumentsCount(int index) /*-{ return parseInt(this.DatabaseInfo[index].DatabaseStats.DuplicateDocuments); }-*/;
 
-    public final native int getRootDocumentsCount(int index) /*-{ return this.DatabaseInfo[index].DatabaseStats.RootDocuments; }-*/;
+    public final native int getRootDocumentsCount(int index) /*-{ return parseInt(this.DatabaseInfo[index].DatabaseStats.RootDocuments); }-*/;
 
     public final native String getRootDocumentsIDs(int index, int idIndex) /*-{ return this.DatabaseInfo[index].DatabaseStats.RootDocumentID[idIndex].idString; }-*/;
 }
