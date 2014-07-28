@@ -69,7 +69,7 @@ public class MetadataFileTypeLoader {
         if (searchOptionsService != null) {
             loadValueOptionsRpc(databaseName, options, listener);
         } else {
-            loadTypesOptionsJson(serviceLocations.jsonMetadataValuesUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, options.getType(), options.getPath()), listener);
+            loadTypesOptionsJson(serviceLocations.jsonMetadataValuesUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, options.getType(), options.getPath(), options.getValue()), listener);
         }
     }
 
