@@ -156,10 +156,10 @@ public class service {
     @GET
     @Path("/hints/{dbname}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getHints(@PathParam("dbname") String dbName, @QueryParam("type") final String type, @QueryParam("path") final String path, @QueryParam("text") final String text) throws QueryException {
+    public Response getHints(@PathParam("dbname") String dbName, @QueryParam("type") final String type, @QueryParam("path") final String path, @QueryParam("text") final String text, @QueryParam("max") @DefaultValue("5") final int max) throws QueryException {
         final MetadataFileType options = new MetadataFileType(type, path, text);
         DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
-        MetadataFileType[] metadataFieldTypes = yamsDatabase.getMetadataFieldValues(options, 100);
+        MetadataFileType[] metadataFieldTypes = yamsDatabase.getMetadataFieldValues(options, max);
         return Response.ok(metadataFieldTypes).header("Access-Control-Allow-Origin", "*").build();
     }
 
