@@ -499,10 +499,10 @@ public class DataBaseManager<D, F, M> {
             if (metadataFileType.getPath() != null && !metadataFileType.getPath().isEmpty()) {
                 typeClause += "//DataNode/FieldGroup[@Label = '" + metadataFileType.getPath() + "']";
                 if (metadataFileType.getValue() != null && !metadataFileType.getValue().isEmpty()) {
-                    typeClause += "[FieldData/contains(@FieldValue, '" + metadataFileType.getValue() + "')]";
+                    typeClause += "[FieldData/@FieldValue contains text '" + metadataFileType.getValue() + "']";
                 }
             } else if (metadataFileType.getValue() != null && !metadataFileType.getValue().isEmpty()) {
-                typeClause += "//DataNode/FieldGroup[FieldData/contains(@FieldValue, '" + metadataFileType.getValue() + "')]";
+                typeClause += "//DataNode/FieldGroup[FieldData/@FieldValue contains text '" + metadataFileType.getValue() + "']";
             }
         }
         return typeClause;
