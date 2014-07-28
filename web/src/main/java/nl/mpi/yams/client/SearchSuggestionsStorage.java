@@ -40,7 +40,9 @@ public class SearchSuggestionsStorage {
     final private Storage suggestionsStorage;
 
     public SearchSuggestionsStorage() {
+//        logger.info("SearchSuggestionsStorage");
         suggestionsStorage = Storage.getLocalStorageIfSupported();
+//        suggestionsStorage.clear(); logger.info("storage cleared");
     }
 
     private String getKey(String database, String type, String path) {
