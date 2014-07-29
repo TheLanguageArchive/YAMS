@@ -18,30 +18,23 @@
  */
 package nl.mpi.yams.client.ui;
 
+import nl.mpi.yams.client.controllers.SearchSuggestOracle;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.text.shared.Renderer;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
-import com.google.gwt.user.client.ui.SuggestOracle;
-import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 import com.google.gwt.user.client.ui.ValueListBox;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.yams.client.SearchHandler;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
-import nl.mpi.yams.client.SearchSuggestionsStorage;
 import nl.mpi.yams.client.controllers.MetadataFileTypeListener;
 import nl.mpi.yams.client.controllers.MetadataFileTypeLoader;
 import nl.mpi.yams.common.data.MetadataFileType;
@@ -56,14 +49,12 @@ public class SearchCriterionPanel extends HorizontalPanel {
 
     private static final Logger logger = Logger.getLogger("");
     final private SearchOptionsServiceAsync searchOptionsService;
-    static private boolean requestInProgress = false;
     final private ValueListBox<MetadataFileType> typesOptionsListBox;
     private MetadataFileType[] knownFileTypes = null;
     final private ValueListBox<MetadataFileType> fieldsOptionsListBox;
     private MetadataFileType[] knownFieldTypes = null;
     final private ValueListBox<QueryDataStructures.SearchOption> searchOptionsListBox;
     final private SuggestBox searchTextBox;
-    private MultiWordSuggestOracle oracle;
     final private Image loadingTypesImage;
     final private Image loadingPathsImage;
     final private Image valuesPathsImage;
@@ -71,12 +62,10 @@ public class SearchCriterionPanel extends HorizontalPanel {
     private String databaseName = null;
     private MetadataFileType defaultFileType = null;
     private MetadataFileType defaultPathType = null;
-    private final SearchSuggestionsStorage searchSuggestionsStorage;
 
     public SearchCriterionPanel(final SearchWidgetsPanel searchPanel, SearchOptionsServiceAsync searchOptionsService) {
         this.setStyleName("yams-SearchCriterionPanel");
         this.searchOptionsService = searchOptionsService;
-        searchSuggestionsStorage = new SearchSuggestionsStorage();
         Button removeRowButton = new Button("remove", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 searchPanel.removeSearchCriterionPanel(SearchCriterionPanel.this);
@@ -144,7 +133,35 @@ public class SearchCriterionPanel extends HorizontalPanel {
     }
 
     private SuggestBox getSearchTextBox(SearchHandler searchHandler) {
-        final SuggestBox suggestBox = createTextBox();
+        final SuggestBox suggestBox = new SuggestBox(new SearchSuggestOracle(searchOptionsService) {
+
+            @Override
+            public String getType() {
+                return typesOptionsListBox.getValue().getType();
+            }
+
+            @Override
+            public String getPath() {
+                return fieldsOptionsListBox.getValue().getPath();
+            }
+
+            @Override
+            public String getSearchText() {
+                return searchTextBox.getText();
+            }
+
+            @Override
+            public String getDatabaseName() {
+                return databaseName;
+            }
+
+            @Override
+            public void setHintRequestStatus(boolean requestInProgress, String hintMessage) {
+                valuesPathsImage.setVisible(requestInProgress);
+                hintLabel.setText(hintMessage);
+            }
+        });
+        suggestBox.setAutoSelectEnabled(false);
         suggestBox.addKeyUpHandler(searchHandler);
         return suggestBox;
     }
@@ -265,84 +282,5 @@ public class SearchCriterionPanel extends HorizontalPanel {
             }
         });
         return widget;
-    }
-
-    private void updateSuggestOracle(final SuggestOracle.Request request, final SuggestOracle.Callback callback) {
-//        oracle.clear();
-        final String path = getMetadataFieldType().getPath();
-        final String type = getMetadataFileType().getType();
-        final String searchText = getSearchText();
-//        logger.info("loading stored suggestions");
-        final String[] values = searchSuggestionsStorage.getValues(databaseName, type, path);
-//        oracle.addAll(Arrays.asList(values));
-        ArrayList<Suggestion> suggestionList = new ArrayList<Suggestion>();
-        for (final String entry : values) {
-            if (entry.toLowerCase().contains(searchText.toLowerCase())) {
-                suggestionList.add(new Suggestion() {
-
-                    public String getDisplayString() {
-                        return entry;
-                    }
-
-                    public String getReplacementString() {
-                        return entry;
-                    }
-                });
-//                logger.log(Level.INFO, entry);
-            }
-        }
-        SuggestOracle.Response response = new SuggestOracle.Response(suggestionList);
-        callback.onSuggestionsReady(request, response);
-    }
-
-    private SuggestBox createTextBox() {
-        oracle = new MultiWordSuggestOracle() {
-            @Override
-            public void requestSuggestions(final Request request, final Callback callback) {
-//                logger.info(request.getQuery());
-                final String searchText = getSearchText();
-                final String path = getMetadataFieldType().getPath();
-                final String type = getMetadataFileType().getType();
-                updateSuggestOracle(request, callback);
-                if (searchSuggestionsStorage.isDone(databaseName, type, path, searchText) || requestInProgress) {
-//                    logger.info("relying on old suggestions");
-                } else {
-                    requestInProgress = true;
-//                    logger.info("requesting new suggestions");
-                    searchSuggestionsStorage.setDone(databaseName, type, path, searchText);
-                    valuesPathsImage.setVisible(true);
-                    final MetadataFileType typeSelection = fieldsOptionsListBox.getValue();
-                    final MetadataFileType options = new MetadataFileType(typeSelection.getType(), typeSelection.getPath(), request.getQuery());
-                    new MetadataFileTypeLoader(searchOptionsService).loadValueOptions(databaseName, options, new MetadataFileTypeListener() {
-                        public void metadataFileTypesLoaded(MetadataFileType[] result) {
-                            requestInProgress = false;
-                            hintLabel.setText("");
-                            HashSet<String> suggestions = new HashSet();
-                            if (result != null) {
-//                                logger.info(result.length + "new suggestions");
-                                for (final MetadataFileType type : result) {
-//                                    logger.info(type.getValue());
-                                    suggestions.add(type.getValue());
-                                }
-                                searchSuggestionsStorage.addValues(databaseName, type, path, suggestions);
-                            } else {
-//                                logger.info("no new suggestions");
-                            }
-                            updateSuggestOracle(request, callback);
-                            valuesPathsImage.setVisible(false);
-                        }
-
-                        public void metadataFileTypesLoadFailed(Throwable caught) {
-                            requestInProgress = false;
-                            valuesPathsImage.setVisible(false);
-                            hintLabel.setText("hint: try specifying a type and or path before typing");
-                        }
-                    });
-                }
-            }
-        };
-        final SuggestBox suggestBox = new SuggestBox(oracle);
-        suggestBox.setAutoSelectEnabled(false);
-        return suggestBox;
     }
 }

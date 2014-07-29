@@ -17,9 +17,11 @@
  */
 package nl.mpi.yams.client.ui;
 
+import nl.mpi.yams.client.controllers.SearchSuggestOracle;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.SuggestBox;
 import java.util.logging.Logger;
 import nl.mpi.yams.client.ConciseSearchParser;
 import nl.mpi.yams.client.DatabaseInformation;
@@ -37,13 +39,42 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
 
     private static final Logger logger = Logger.getLogger("");
     private final HistoryController historyController;
-    private final TextBox searchBox;
+    private final SuggestBox searchBox;
     private final Button searchButton;
+    final private Image valuesPathsImage;
 
     public ConciseSearchBox(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInformation databaseInfo, ResultsPanel resultsPanel) {
         this.setStyleName("yams-ConciseSearchBox");
         this.historyController = historyController;
-        searchBox = new TextBox();
+        searchBox = new SuggestBox(new SearchSuggestOracle(searchOptionsService) {
+
+            @Override
+            public String getType() {
+                return null;
+            }
+
+            @Override
+            public String getPath() {
+                return null;
+            }
+
+            @Override
+            public String getSearchText() {
+                return searchBox.getText();
+            }
+
+            @Override
+            public String getDatabaseName() {
+                return historyController.getDatabaseName();
+            }
+
+            @Override
+            public void setHintRequestStatus(boolean requestInProgress, String hintMessage) {
+                valuesPathsImage.setVisible(requestInProgress);
+//                hintLabel.setText(hintMessage);
+            }
+        });
+        searchBox.setAutoSelectEnabled(false);
         searchButton = new Button("search");
         SearchHandler searchHandler = new SearchHandler(historyController, databaseInfo, searchOptionsService, resultsPanel) {
             @Override
@@ -60,9 +91,12 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
 //                searchButton.setHTML(SEARCH_LABEL);
             }
         };
+        valuesPathsImage = new Image("./loader.gif");
         searchButton.addClickHandler(searchHandler);
         searchBox.addKeyUpHandler(searchHandler);
         this.add(searchBox);
+        this.add(valuesPathsImage);
+        valuesPathsImage.setVisible(false);
         this.add(searchButton);
         // todo: add an oracal for commands and values
     }
