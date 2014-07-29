@@ -33,10 +33,10 @@ import com.google.gwt.user.client.ui.ValueListBox;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Logger;
-import nl.mpi.yams.client.SearchHandler;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
 import nl.mpi.yams.client.controllers.MetadataFileTypeListener;
 import nl.mpi.yams.client.controllers.MetadataFileTypeLoader;
+import nl.mpi.yams.client.controllers.SearchHandler;
 import nl.mpi.yams.common.data.MetadataFileType;
 import nl.mpi.yams.common.data.QueryDataStructures;
 

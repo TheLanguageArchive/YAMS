@@ -1,3 +1,5 @@
+package nl.mpi.yams.client.controllers;
+
 /**
  * Copyright (C) 2013 The Language Archive, Max Planck Institute for
  * Psycholinguistics
@@ -16,9 +18,8 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package nl.mpi.yams.client;
 
-import nl.mpi.yams.client.controllers.HistoryController;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -27,6 +28,8 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.yams.client.DatabaseInformation;
+import nl.mpi.yams.client.SearchOptionsServiceAsync;
 import nl.mpi.yams.client.ui.ResultsPanel;
 import nl.mpi.yams.common.data.HighlightableDataNode;
 

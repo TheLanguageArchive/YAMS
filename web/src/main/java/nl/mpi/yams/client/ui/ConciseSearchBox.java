@@ -28,8 +28,8 @@ import nl.mpi.yams.client.DatabaseInformation;
 import nl.mpi.yams.client.controllers.HistoryController;
 import nl.mpi.yams.client.HistoryData;
 import nl.mpi.yams.client.HistoryListener;
-import nl.mpi.yams.client.SearchHandler;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
+import nl.mpi.yams.client.controllers.SearchHandler;
 
 /**
  * @since Mar 18, 2014 1:27:32 PM (creation date)
