@@ -69,7 +69,7 @@ public interface ServiceLocations extends Messages {
     String jsonMetadataPathsUrl(String serviceUrl, String databaseName, String type);
 
     @Key("nl.mpi.yams.jsonMetadataValuesUrl")
-    String jsonMetadataValuesUrl(String serviceUrl, String databaseName, String type, String path, String text);
+    String jsonMetadataValuesUrl(String serviceUrl, String databaseName, String type, String path, String text, int max);
 
     @Key("nl.mpi.yams.jsonDbInfoListUrl")
     String jsonDbInfoListUrl(String serviceUrl);

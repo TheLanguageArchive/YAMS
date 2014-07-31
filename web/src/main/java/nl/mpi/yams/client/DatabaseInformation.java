@@ -19,6 +19,7 @@ package nl.mpi.yams.client;
 
 import nl.mpi.yams.client.controllers.HistoryController;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.http.client.Request;
@@ -110,32 +111,39 @@ public class DatabaseInformation {
                 public void onResponseReceived(Request request, Response response) {
                     if (200 == response.getStatusCode()) {
                         final String text = response.getText();
+                        try {
 //                        logger.info("onResponseReceived");
 //                        logger.info(jsonDbinfoUrl);
 //                        logger.info(text);
 //                        logger.info("onResponseReceivedEnd");
-                        // we need this json object to be a json array at this point so we add square brackets
-                        final JsArray<JsonDatabaseList> jsonArray = JsonUtils.safeEval("[" + text + "]");
-                        final JsonDatabaseList jsonDatabaseList = (JsonDatabaseList) jsonArray.get(0);
-                        for (int index = 0; index < jsonDatabaseList.getSize(); index++) {
-                            final int rootDocumentsCount = jsonDatabaseList.getRootDocumentsCount(index);
-                            final DataNodeId[] dataNodeIds;
-                            if (rootDocumentsCount > 0) {
-                                dataNodeIds = new DataNodeId[rootDocumentsCount];
-                                for (int idIndex = 0; idIndex < rootDocumentsCount; idIndex++) {
-                                    dataNodeIds[idIndex] = new DataNodeId(jsonDatabaseList.getRootDocumentsIDs(index, idIndex));
+                            // we need this json object to be a json array at this point so we add square brackets
+                            final JsArray<JsonDatabaseList> jsonArray = JsonUtils.safeEval("[" + text + "]");
+                            final JsonDatabaseList jsonDatabaseList = (JsonDatabaseList) jsonArray.get(0);
+                            for (int index = 0; index < jsonDatabaseList.getSize(); index++) {
+                                final int rootDocumentsCount = jsonDatabaseList.getRootDocumentsCount(index);
+                                final DataNodeId[] dataNodeIds;
+                                if (rootDocumentsCount > 0) {
+                                    dataNodeIds = new DataNodeId[rootDocumentsCount];
+                                    for (int idIndex = 0; idIndex < rootDocumentsCount; idIndex++) {
+                                        dataNodeIds[idIndex] = new DataNodeId(jsonDatabaseList.getRootDocumentsIDs(index, idIndex));
+                                    }
+                                } else {
+                                    dataNodeIds = new DataNodeId[0];
                                 }
-                            } else {
-                                dataNodeIds = new DataNodeId[0];
+                                final DatabaseStats databaseStats = new DatabaseStats(
+                                        jsonDatabaseList.getKnownDocumentsCount(index),
+                                        jsonDatabaseList.getMissingDocumentsCount(index),
+                                        jsonDatabaseList.getDuplicateDocumentsCount(index),
+                                        jsonDatabaseList.getRootDocumentsCount(index),
+                                        dataNodeIds);
+                                final String databaseName = jsonDatabaseList.getDatabaseName(index);
+                                databaseStatsMap.put(databaseName, databaseStats);
                             }
-                            final DatabaseStats databaseStats = new DatabaseStats(
-                                    jsonDatabaseList.getKnownDocumentsCount(index),
-                                    jsonDatabaseList.getMissingDocumentsCount(index),
-                                    jsonDatabaseList.getDuplicateDocumentsCount(index),
-                                    jsonDatabaseList.getRootDocumentsCount(index),
-                                    dataNodeIds);
-                            final String databaseName = jsonDatabaseList.getDatabaseName(index);
-                            databaseStatsMap.put(databaseName, databaseStats);
+                        } catch (JavaScriptException exception) {
+                            logger.warning("Couldn't parse JSON");
+                            logger.warning(jsonDbinfoUrl);
+                            logger.warning(response.getStatusText());
+                            logger.warning(exception.getMessage());
                         }
                     } else {
                         logger.warning("Couldn't retrieve JSON: non 200");

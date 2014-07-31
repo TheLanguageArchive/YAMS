@@ -17,6 +17,7 @@
  */
 package nl.mpi.yams.client.ui;
 
+import com.google.gwt.core.client.GWT;
 import nl.mpi.yams.client.controllers.SearchSuggestOracle;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -29,6 +30,7 @@ import nl.mpi.yams.client.controllers.HistoryController;
 import nl.mpi.yams.client.HistoryData;
 import nl.mpi.yams.client.HistoryListener;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
+import nl.mpi.yams.client.ServiceLocations;
 import nl.mpi.yams.client.controllers.SearchHandler;
 
 /**
@@ -38,6 +40,7 @@ import nl.mpi.yams.client.controllers.SearchHandler;
 public class ConciseSearchBox extends HorizontalPanel implements HistoryListener {
 
     private static final Logger logger = Logger.getLogger("");
+    final private ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
     private final HistoryController historyController;
     private final SuggestBox searchBox;
     private final Button searchButton;
@@ -74,6 +77,7 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
 //                hintLabel.setText(hintMessage);
             }
         });
+        searchBox.setLimit(20);
         searchBox.setAutoSelectEnabled(false);
         searchButton = new Button("search");
         SearchHandler searchHandler = new SearchHandler(historyController, databaseInfo, searchOptionsService, resultsPanel) {

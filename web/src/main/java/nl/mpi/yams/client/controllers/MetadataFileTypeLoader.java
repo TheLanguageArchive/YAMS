@@ -65,14 +65,14 @@ public class MetadataFileTypeLoader {
         }
     }
 
-    public void loadValueOptions(final String databaseName, MetadataFileType options, final MetadataFileTypeListener listener) {
+    public void loadValueOptions(final String databaseName, MetadataFileType options, final MetadataFileTypeListener listener, int max) {
         if (searchOptionsService != null) {
             loadValueOptionsRpc(databaseName, options, listener);
         } else {
             final String typeValue = (options == null || options.getType() == null) ? "" : options.getType();
             final String pathValue = (options == null || options.getPath() == null) ? "" : options.getPath();
             final String textValue = (options == null || options.getValue() == null) ? "" : options.getValue();
-            loadTypesOptionsJson(serviceLocations.jsonMetadataValuesUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, typeValue, pathValue, textValue), listener);
+            loadTypesOptionsJson(serviceLocations.jsonMetadataValuesUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, typeValue, pathValue, textValue, max), listener);
         }
     }
 
@@ -129,7 +129,7 @@ public class MetadataFileTypeLoader {
                             try {
 //                            logger.info(text);
                                 // remove the outer object to leave only the array to be parsed
-                                final String cleanedText = text.replaceFirst("^\\{[^\\[]*", "").replaceFirst("\\}$", "");
+                                final String cleanedText = "[" + text.replaceFirst("^\\{[^\\{]*", "").replaceFirst("\\]?\\}$", "") + "]";
 //                            logger.info("onResponseReceived");
 //                            logger.info(jsonDbTypesUrl);
 //                            logger.info(cleanedText);

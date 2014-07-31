@@ -162,6 +162,7 @@ public class SearchCriterionPanel extends HorizontalPanel {
             }
         });
         suggestBox.setAutoSelectEnabled(false);
+        suggestBox.setLimit(20);
         suggestBox.addKeyUpHandler(searchHandler);
         return suggestBox;
     }

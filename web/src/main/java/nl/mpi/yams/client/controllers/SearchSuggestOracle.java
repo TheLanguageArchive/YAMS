@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestOracle;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.logging.Logger;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
 import nl.mpi.yams.client.SearchSuggestionsStorage;
 import nl.mpi.yams.common.data.MetadataFileType;
@@ -31,6 +32,7 @@ import nl.mpi.yams.common.data.MetadataFileType;
  */
 public abstract class SearchSuggestOracle extends MultiWordSuggestOracle {
 
+    private static final Logger logger = Logger.getLogger("");
     private final SearchSuggestionsStorage searchSuggestionsStorage;
     final private SearchOptionsServiceAsync searchOptionsService;
     static private boolean requestInProgress = false;
@@ -42,16 +44,17 @@ public abstract class SearchSuggestOracle extends MultiWordSuggestOracle {
 
     @Override
     public void requestSuggestions(final SuggestOracle.Request request, final SuggestOracle.Callback callback) {
-//                logger.info(request.getQuery());
+//        logger.info(request.getQuery());
         final String searchText = getSearchText();
         final String path = getPath();
         final String type = getType();
         updateSuggestOracle(request, callback);
         if (searchSuggestionsStorage.isDone(getDatabaseName(), type, path, searchText) || requestInProgress) {
-//                    logger.info("relying on old suggestions");
+//            logger.info("relying on old suggestions");
+//            logger.info(Boolean.toString(requestInProgress));
         } else {
             requestInProgress = true;
-//                    logger.info("requesting new suggestions");
+//            logger.info("requesting new suggestions");
             searchSuggestionsStorage.setDone(getDatabaseName(), type, path, searchText);
             setHintRequestStatus(true, "");
             final MetadataFileType options = new MetadataFileType(getType(), getPath(), request.getQuery());
@@ -59,24 +62,25 @@ public abstract class SearchSuggestOracle extends MultiWordSuggestOracle {
                 public void metadataFileTypesLoaded(MetadataFileType[] result) {
                     HashSet<String> suggestions = new HashSet();
                     if (result != null) {
-//                                logger.info(result.length + "new suggestions");
+//                        logger.info(result.length + "new suggestions");
                         for (final MetadataFileType type : result) {
-//                                    logger.info(type.getValue());
+//                            logger.info(type.getValue());
                             suggestions.add(type.getValue());
                         }
                         searchSuggestionsStorage.addValues(getDatabaseName(), type, path, suggestions);
                     } else {
-//                                logger.info("no new suggestions");
+//                        logger.info("no new suggestions");
                     }
                     updateSuggestOracle(request, callback);
                     setHintRequestStatus(false, "");
+                    requestInProgress = false;
                 }
 
                 public void metadataFileTypesLoadFailed(Throwable caught) {
                     requestInProgress = false;
                     setHintRequestStatus(false, "hint: try specifying a type and or path before typing");
                 }
-            });
+            }, request.getLimit());
         }
     }
 
@@ -85,6 +89,7 @@ public abstract class SearchSuggestOracle extends MultiWordSuggestOracle {
         final String path = getPath();
         final String type = getType();
         final String searchText = getSearchText();
+        int resultLimit = request.getLimit();
 //        logger.info("loading stored suggestions");
         final String[] values = searchSuggestionsStorage.getValues(getDatabaseName(), type, path);
 //        oracle.addAll(Arrays.asList(values));
@@ -102,6 +107,10 @@ public abstract class SearchSuggestOracle extends MultiWordSuggestOracle {
                     }
                 });
 //                logger.log(Level.INFO, entry);
+                resultLimit--;
+                if (resultLimit <= 0) {
+                    break;
+                }
             }
         }
         SuggestOracle.Response response = new SuggestOracle.Response(suggestionList);
