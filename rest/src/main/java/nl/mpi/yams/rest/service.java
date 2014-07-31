@@ -41,6 +41,8 @@ import nl.mpi.yams.common.data.DatabaseList;
 import nl.mpi.yams.common.data.DatabaseStats;
 import nl.mpi.yams.common.data.HighlightableDataNode;
 import nl.mpi.yams.common.data.MetadataFileType;
+import nl.mpi.yams.common.data.QueryDataStructures;
+import nl.mpi.yams.common.data.SearchParameters;
 import nl.mpi.yams.common.db.DataBaseManager;
 import nl.mpi.yams.common.db.DbAdaptor;
 import nl.mpi.yams.common.db.RestDbAdaptor;
@@ -73,7 +75,7 @@ public class service {
     @Produces({MediaType.TEXT_HTML})
     public String getHtmlListing() throws QueryException {
         StringBuilder stringBuilder = new StringBuilder();
-        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(DataBaseManager.defaultDataBase);
+        DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(DataBaseManager.defaultDataBase);
         stringBuilder.append("<a href=\"./dbinfo\">dbinfo</a><br>");
         for (String dbName : yamsDatabase.getDatabaseList()) {
             stringBuilder.append("<h3>");
@@ -94,6 +96,12 @@ public class service {
             stringBuilder.append(dbName);
             stringBuilder.append("?type=&path=&text=");
             stringBuilder.append("\">hints</a><br>");
+            stringBuilder.append("<a href=\"./search/");
+            stringBuilder.append(dbName);
+            stringBuilder.append("/");
+            stringBuilder.append(QueryDataStructures.CriterionJoinType.union.name());
+            stringBuilder.append("\">search</a><br>");
+
         }
         return stringBuilder.toString();
     }
@@ -102,7 +110,7 @@ public class service {
     @Path("/dbinfo")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getDatabaseList() throws QueryException {
-        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase("");
+        DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase("");
         DatabaseList databaseList = yamsDatabase.getDatabaseStatsList();
         return Response.ok(databaseList).header("Access-Control-Allow-Origin", "*").build();
     }
@@ -111,7 +119,7 @@ public class service {
     @Path("/dbinfo/{dbname}")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getDatabaseInfo(@PathParam("dbname") String dbName) throws QueryException {
-        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         DatabaseStats databaseStats = yamsDatabase.getDatabaseStats();
         return Response.ok(databaseStats).header("Access-Control-Allow-Origin", "*").build();
     }
@@ -120,7 +128,7 @@ public class service {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/data/{dbname}")
     public Response getRootNode(@PathParam("dbname") String dbName) throws QueryException {
-        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         final SerialisableDataNode rootNodes = yamsDatabase.getRootNodes();
         return Response.ok(rootNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
     }
@@ -130,7 +138,7 @@ public class service {
     @Path("/data/{dbname}/linksof")
 //    @Path("hdl{hdl}")
     public Response getChildDataNodes(@PathParam("dbname") String dbName, @QueryParam("url") final String identifier, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws QueryException {
-        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         final SerialisableDataNode childNodes = yamsDatabase.getChildNodesOfHdl(identifier, start, end);
         return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
     }
@@ -139,7 +147,7 @@ public class service {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/types/{dbname}")
     public Response getTypeOptions(@PathParam("dbname") String dbName) throws QueryException {
-        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         final MetadataFileType[] metadataTypes = yamsDatabase.getMetadataTypes(null);
         return Response.ok(metadataTypes).header("Access-Control-Allow-Origin", "*").build();
     }
@@ -148,7 +156,7 @@ public class service {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/paths/{dbname}")
     public Response getPathOptions(@PathParam("dbname") String dbName, @QueryParam("type") final String type) throws QueryException {
-        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         final MetadataFileType[] metadataTypes = yamsDatabase.getMetadataPaths(new MetadataFileType(type, null, null));
         return Response.ok(metadataTypes).header("Access-Control-Allow-Origin", "*").build();
     }
@@ -158,7 +166,7 @@ public class service {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getHints(@PathParam("dbname") String dbName, @QueryParam("type") final String type, @QueryParam("path") final String path, @QueryParam("text") final String text, @QueryParam("max") @DefaultValue("5") final int max) throws QueryException {
         final MetadataFileType options = new MetadataFileType(type, path, text);
-        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         MetadataFileType[] metadataFieldTypes = yamsDatabase.getMetadataFieldValues(options, max);
         return Response.ok(metadataFieldTypes).header("Access-Control-Allow-Origin", "*").build();
     }
@@ -168,12 +176,94 @@ public class service {
     @Path("/data/{dbname}/node")
 //    @Path("hdl{hdl}")
     public Response getDataNode(@PathParam("dbname") String dbName, @QueryParam("url") final String identifier) throws QueryException {
-        DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
-        List<String> identifierList = new ArrayList<>();
+        DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        List<String> identifierList = new ArrayList<String>();
         identifierList.add(identifier);
         final SerialisableDataNode childNodes = yamsDatabase.getNodeDatasByHdls(identifierList);
         return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
     }
+
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Path("/search/{dbname}/{jointype}")
+    public Response perfomSearch(@PathParam("dbname") String dbName, @PathParam("jointype") QueryDataStructures.CriterionJoinType joinType, @QueryParam("url") final String identifier, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws QueryException {
+        String basexRestUrl = getBasexRestUrl();
+        try {
+            final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), getBasexUser(), getBasexPass());
+            DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = new DataBaseManager(HighlightableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dbName);
+            final ArrayList<SearchParameters> arrayList = new ArrayList<SearchParameters>();
+            arrayList.add(new SearchParameters(new MetadataFileType(), new MetadataFileType(), QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "Books"));
+            final HighlightableDataNode foundNodes = yamsDatabase.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, arrayList);
+            return Response.ok(foundNodes).header("Access-Control-Allow-Origin", "*").build();
+        } catch (MalformedURLException exception) {
+            throw new QueryException("Failed to open the database connection at: " + basexRestUrl + " " + exception.getMessage());
+        }
+    }
+
+//    @GET
+//    @Produces({MediaType.APPLICATION_JSON})
+//    @Path("/hdn")
+//    public Response getHDN() throws QueryException {
+//        final HighlightableDataNode dataNode = new HighlightableDataNode();
+//        dataNode.setID("getHDN");
+//        return Response.ok(dataNode).header("Access-Control-Allow-Origin", "*").build();
+//    }
+//
+//    @GET
+//    @Produces({MediaType.APPLICATION_JSON})
+//    @Path("/sdn")
+//    public Response getSDN() throws QueryException {
+//        final SerialisableDataNode dataNode = new SerialisableDataNode();
+//        dataNode.setID("getSDN");
+//        return Response.ok(dataNode).header("Access-Control-Allow-Origin", "*").build();
+//    }
+//
+//    @GET
+//    @Produces({MediaType.APPLICATION_JSON})
+//    @Path("/shdn")
+//    public Response getSHDN() throws QueryException {
+//        final SerialisableDataNode dataNode = new HighlightableDataNode();
+//        dataNode.setID("getSHDN");
+//        return Response.ok(dataNode).header("Access-Control-Allow-Origin", "*").build();
+//    }
+//
+//    @GET
+//    @Produces({MediaType.APPLICATION_JSON})
+//    @Path("/cdn")
+//    public Response getCDN() throws QueryException {
+//        final SerialisableDataNode dataNode = new HighlightableDataNode();
+//        dataNode.setID("getSHDN");
+//        final SerialisableDataNode parentNode = new HighlightableDataNode();
+//        List<SerialisableDataNode> childNodes = new ArrayList<SerialisableDataNode>();
+//        childNodes.add(dataNode);
+//        parentNode.setChildList(childNodes);
+//        return Response.ok(parentNode.getChildList()).header("Access-Control-Allow-Origin", "*").build();
+//    }
+//
+//    @GET
+//    @Produces({MediaType.APPLICATION_JSON})
+//    @Path("/pdn")
+//    public Response getPDN() throws QueryException {
+//        final SerialisableDataNode dataNode = new HighlightableDataNode();
+//        dataNode.setID("getSHDN");
+//        final SerialisableDataNode parentNode = new HighlightableDataNode();
+//        List<SerialisableDataNode> childNodes = new ArrayList<SerialisableDataNode>();
+//        childNodes.add(dataNode);
+//        parentNode.setChildList(childNodes);
+//        parentNode.setID("parentNode");
+//        return Response.ok(parentNode).header("Access-Control-Allow-Origin", "*").build();
+//    }
+//
+//    @GET
+//    @Produces({MediaType.APPLICATION_JSON})
+//    @Path("/ldn")
+//    public Response getLDN() throws QueryException {
+//        final HighlightableDataNode dataNode = new HighlightableDataNode();
+//        dataNode.setID("getSHDN");
+//        List<SerialisableDataNode> childNodes = new ArrayList<SerialisableDataNode>();
+//        childNodes.add(dataNode);
+//        return Response.ok(childNodes).header("Access-Control-Allow-Origin", "*").build();
+//    }
 
     private String getBasexRestUrl() {
         final String initParameterRestUrl = servletContext.getInitParameter("basexRestUrl");
@@ -190,11 +280,11 @@ public class service {
         return initParameterPass;
     }
 
-    private DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> getDatabase(String databaseName) throws QueryException {
+    private DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> getDatabase(String databaseName) throws QueryException {
         String basexRestUrl = getBasexRestUrl();
         try {
             final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), getBasexUser(), getBasexPass());
-            return new DataBaseManager(HighlightableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
+            return new DataBaseManager(SerialisableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, databaseName);
         } catch (MalformedURLException exception) {
             throw new QueryException("Failed to open the database connection at: " + basexRestUrl + " " + exception.getMessage());
         }
