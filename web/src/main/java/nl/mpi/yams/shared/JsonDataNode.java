@@ -34,7 +34,7 @@ public class JsonDataNode extends JavaScriptObject {
 
     public final native String getURI() /*-{ return this.URI; }-*/;
 
-    public final native int getLinkCount() /*-{ return parseInt(this.LinkCount); }-*/;
+    public final native int getLinkCount() /*-{ if (this.ChildLink != null) return parseInt(this.ChildLink.length); else if (this.LinkCount != null) return parseInt(this.LinkCount); else return 0; }-*/;
 
     public final native String getID() /*-{ return this.ID; }-*/;
 
