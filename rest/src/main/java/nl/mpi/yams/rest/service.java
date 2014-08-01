@@ -101,8 +101,15 @@ public class service {
             stringBuilder.append(dbName);
             stringBuilder.append("/");
             stringBuilder.append(QueryDataStructures.CriterionJoinType.union.name());
-            stringBuilder.append("\">search</a><br>");
-
+            stringBuilder.append("?sn=");
+            stringBuilder.append(QueryDataStructures.SearchNegator.is);
+            stringBuilder.append("&st=");
+            stringBuilder.append(QueryDataStructures.SearchType.contains);
+            stringBuilder.append("&ft=&p=&s=Comic&sn=");
+            stringBuilder.append(QueryDataStructures.SearchNegator.is);
+            stringBuilder.append("&st=");
+            stringBuilder.append(QueryDataStructures.SearchType.contains);
+            stringBuilder.append("&ft=&p=&s=Books\">search</a><br>");
         }
         return stringBuilder.toString();
     }
@@ -199,14 +206,29 @@ public class service {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/search/{dbname}/{jointype}")
-    public Response perfomSearch(@PathParam("dbname") String dbName, @PathParam("jointype") QueryDataStructures.CriterionJoinType joinType, @QueryParam("url") final String identifier, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws QueryException {
+    public Response perfomSearch(@PathParam("dbname") String dbName,
+            @PathParam("jointype") String joinType,
+            @QueryParam("sn") @DefaultValue("is") final List<String> searchNegator,
+            @QueryParam("st") @DefaultValue("equals") final List<String> searchType,
+            @QueryParam("ft") @DefaultValue("") final List<String> type,
+            @QueryParam("p") @DefaultValue("") final List<String> path,
+            @QueryParam("s") @DefaultValue("") final List<String> text,
+            @QueryParam("start") @DefaultValue("0") final int start,
+            @QueryParam("end") @DefaultValue("30") final int end) throws QueryException {
         String basexRestUrl = getBasexRestUrl();
         try {
             final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(basexRestUrl), getBasexUser(), getBasexPass());
             DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> yamsDatabase = new DataBaseManager(HighlightableDataNode.class, DataField.class, MetadataFileType.class, dbAdaptor, dbName);
-            final ArrayList<SearchParameters> arrayList = new ArrayList<SearchParameters>();
-            arrayList.add(new SearchParameters(new MetadataFileType(), new MetadataFileType(), QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "Books"));
-            final HighlightableDataNode foundNodes = yamsDatabase.getSearchResult(QueryDataStructures.CriterionJoinType.intersect, arrayList);
+            final ArrayList<SearchParameters> parameters = new ArrayList<SearchParameters>();
+            for (int index = 0; index < text.size(); index++) {
+                final MetadataFileType metadataFileType = (type.size() < index || type.get(index).isEmpty()) ? new MetadataFileType(null, null, null) : new MetadataFileType(type.get(index), null, null);
+                final MetadataFileType metadataPathType = (path.size() < index || path.get(index).isEmpty()) ? new MetadataFileType(null, null, null) : new MetadataFileType(null, path.get(index), null);
+                final QueryDataStructures.SearchNegator currentNegator = (searchNegator.size() < index) ? QueryDataStructures.SearchNegator.valueOf(searchNegator.get(searchNegator.size() - 1)) : QueryDataStructures.SearchNegator.valueOf(searchNegator.get(index));
+                final QueryDataStructures.SearchType currentType = (searchType.size() < index) ? QueryDataStructures.SearchType.valueOf(searchType.get(searchType.size() - 1)) : QueryDataStructures.SearchType.valueOf(searchType.get(index));
+                parameters.add(new SearchParameters(metadataFileType, metadataPathType, currentNegator, currentType, text.get(index)));
+            }
+//            arrayList.add(new SearchParameters(new MetadataFileType(), new MetadataFileType(), QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "Books"));
+            final HighlightableDataNode foundNodes = yamsDatabase.getSearchResult(QueryDataStructures.CriterionJoinType.valueOf(joinType), parameters);
             return Response.ok(foundNodes).header("Access-Control-Allow-Origin", "*").build();
         } catch (MalformedURLException exception) {
             throw new QueryException("Failed to open the database connection at: " + basexRestUrl + " " + exception.getMessage());
