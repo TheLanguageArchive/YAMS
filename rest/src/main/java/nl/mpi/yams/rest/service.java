@@ -37,6 +37,7 @@ import javax.ws.rs.core.Response;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.DatabaseList;
 import nl.mpi.yams.common.data.DatabaseStats;
 import nl.mpi.yams.common.data.HighlightableDataNode;
@@ -175,11 +176,23 @@ public class service {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/data/{dbname}/node")
 //    @Path("hdl{hdl}")
-    public Response getDataNode(@PathParam("dbname") String dbName, @QueryParam("url") final String identifier) throws QueryException {
+    public Response getDataNode(@PathParam("dbname") String dbName, @QueryParam("id") final String identifier) throws QueryException {
         DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
-        List<String> identifierList = new ArrayList<String>();
-        identifierList.add(identifier);
-        final SerialisableDataNode childNodes = yamsDatabase.getNodeDatasByHdls(identifierList);
+        final SerialisableDataNode childNodes;
+        //logger.info(identifier);
+        if (identifier.startsWith("hdl:")) {
+            List<String> identifierList = new ArrayList<String>();
+            identifierList.add(identifier);
+            childNodes = yamsDatabase.getNodeDatasByHdls(identifierList);
+        } else if (identifier.startsWith("http:") || identifier.startsWith("https:")) {
+            List<String> identifierList = new ArrayList<String>();
+            identifierList.add(identifier);
+            childNodes = yamsDatabase.getNodeDatasByUrls(identifierList);
+        } else {
+            List<DataNodeId> identifierList = new ArrayList<DataNodeId>();
+            identifierList.add(new DataNodeId(identifier));
+            childNodes = yamsDatabase.getNodeDatasByIDs(identifierList);
+        }
         return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
     }
 
@@ -264,7 +277,6 @@ public class service {
 //        childNodes.add(dataNode);
 //        return Response.ok(childNodes).header("Access-Control-Allow-Origin", "*").build();
 //    }
-
     private String getBasexRestUrl() {
         final String initParameterRestUrl = servletContext.getInitParameter("basexRestUrl");
         return initParameterRestUrl;
