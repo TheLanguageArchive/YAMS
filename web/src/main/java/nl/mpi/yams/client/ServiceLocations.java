@@ -77,7 +77,7 @@ public interface ServiceLocations extends Messages {
     @Key("nl.mpi.yams.jsonDbInfoUrl")
     String jsonDbInfoUrl(String serviceUrl, String databaseName);
 
-    @Key("nl.mpi.yams.jsonDbInfoUrl")
+    @Key("nl.mpi.yams.jsonNodeOfUrl")
     String jsonNodeOfUrl(String serviceUrl, String identifierGetPart);
 
     @Key("nl.mpi.yams.jsonLinksOfUrl")
