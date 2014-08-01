@@ -10,7 +10,7 @@
 
     <groupId>nl.mpi</groupId>
     <artifactId>yams-cs-connector</artifactId>
-    <version>1.0.23-pretesting</version>
+    <version>1.0.29-pretesting</version>
     <packaging>war</packaging>
 
     <name>yams-cs-connector</name>
@@ -105,7 +105,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>plugins-core</artifactId>
-            <version>1.3-pretesting-SNAPSHOT</version>
+            <version>1.3.119-testing</version>
         </dependency>
         <dependency>
       <groupId>com.sun.jersey</groupId>
@@ -136,17 +136,17 @@
         <dependency>
             <groupId>nl.mpi.corpusstructure</groupId>
             <artifactId>corpus-structure-2-tree-model</artifactId>
-            <version>1.0-beta-3.2</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>nl.mpi.corpusstructure</groupId>
             <artifactId>corpus-structure-2-provider</artifactId>
-            <version>1.0-beta-3.2</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>nl.mpi.corpusstructure</groupId>
             <artifactId>corpus-structure-2-persistence</artifactId>
-            <version>1.0-beta-4-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>

@@ -1,13 +1,13 @@
 Install the war file into tomcat and edit the shhaa.xml and context.xml as required.
 
 If you are installing onto lux16 you will need to perform the following procedure:
-scp svn.mpi.nl/LAT/PluginsAndModules/metadatasearch/trunk/yams-cs-connector/target/yams-cs-connector-1.0.22-pretesting-r41136-mpi-deploy.tar.gz petwit@lux16.mpi.nl:/lat/webapps/dists/
+scp svn.mpi.nl/LAT/PluginsAndModules/metadatasearch/trunk/yams-cs-connector/target/yams-cs-connector-1.0.29-pretesting-r41364-mpi-deploy.tar.gz petwit@lux16.mpi.nl:/lat/webapps/dists/
 sudo su latuser
 cp /lat/tomcat-webuser/conf/Catalina/localhost/ds#yams-cs-connector.xml /lat/tomcat-webuser/conf/Catalina/localhost/ds#yams-cs-connector.xml.back
-cd /lat/webapps/yams-cs-connector; tar -xzvf /lat/webapps/dists/yams-cs-connector-1.0.22-pretesting-r41136-mpi-deploy.tar.gz
-cd /lat/webapps/yams-cs-connector/yams-cs-connector-1.0.22-pretesting-r41136/war; jar -xfv yams-cs-connector-1.0.22-pretesting.war
+cd /lat/webapps/yams-cs-connector; tar -xzvf /lat/webapps/dists/yams-cs-connector-1.0.29-pretesting-r41364-mpi-deploy.tar.gz
+cd /lat/webapps/yams-cs-connector/yams-cs-connector-1.0.29-pretesting-r41364/war; jar -xfv yams-cs-connector-1.0.29-pretesting.war
 rm /lat/webapps/yams-cs-connector/current
-ln -s /lat/webapps/yams-cs-connector/yams-cs-connector-1.0.22-pretesting-r41136/war /lat/webapps/yams-cs-connector/current
+ln -s /lat/webapps/yams-cs-connector/yams-cs-connector-1.0.29-pretesting-r41364/war /lat/webapps/yams-cs-connector/current
 
 # PLEASE NOTE: do not use  crossContext="true" in ds#yams-cs-connector.xml, this causes the application context to be shared across other applications.
 #echo "<?xml version='1.0' encoding='utf-8'?><Context path="/ds/yams-cs-connector" docBase="/lat/webapps/yams-cs-connector/current" debug="0" reloadable="true"></Context>" > /lat/tomcat-webuser/conf/Catalina/localhost/ds#yams-cs-connector.xml
