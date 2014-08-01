@@ -24,6 +24,8 @@ import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.IconTableBase64;
 import nl.mpi.yams.common.data.NodeTypeImageBase64;
+import nl.mpi.yams.common.data.QueryDataStructures;
+import nl.mpi.yams.common.data.SearchParameters;
 
 /**
  * @since Mar 26, 2014 1:28:03 PM (creation date)
@@ -92,5 +94,9 @@ public class DataNodeLoaderRpc implements DataNodeLoader {
             return typeIcon.getInlineImageDataString();
         }
         return ""; // todo: we could return an error or loading icon here
+    }
+
+    public void performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList, DataNodeSearchListener dataNodeSearchListener) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

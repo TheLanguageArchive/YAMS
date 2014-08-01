@@ -18,16 +18,19 @@ package nl.mpi.yams.client.controllers;
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.yams.client.DataNodeLoader;
+import nl.mpi.yams.client.DataNodeLoaderJson;
+import nl.mpi.yams.client.DataNodeLoaderRpc;
+import nl.mpi.yams.client.DataNodeSearchListener;
 import nl.mpi.yams.client.DatabaseInformation;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
 import nl.mpi.yams.client.ui.ResultsPanel;
@@ -40,19 +43,29 @@ import nl.mpi.yams.common.data.HighlightableDataNode;
  */
 public abstract class SearchHandler implements ClickHandler, KeyUpHandler {
 
-    private static final Logger logger = Logger.getLogger("");
-    private final HistoryController historyController;
+    protected static final Logger logger = Logger.getLogger("");
+    protected final HistoryController historyController;
     boolean searchInProgress = false;
-    private final Object searchLockObject = new Object();
-    private final SearchOptionsServiceAsync searchOptionsService;
-    private final ResultsPanel resultsPanel;
-    private final DatabaseInformation databaseInfo;
+    protected final Object searchLockObject = new Object();
+    protected final SearchOptionsServiceAsync searchOptionsService;
+    protected final ResultsPanel resultsPanel;
+    protected final DatabaseInformation databaseInfo;
+    private DataNodeLoader dataNodeLoader;
 
     public SearchHandler(HistoryController historyController, DatabaseInformation databaseInfo, SearchOptionsServiceAsync searchOptionsService, ResultsPanel resultsPanel) {
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
         this.searchOptionsService = searchOptionsService;
         this.resultsPanel = resultsPanel;
+    }
+
+    public void updateDbName() {
+        final String databaseName = historyController.getDatabaseName();
+        if (searchOptionsService != null) {
+            dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, databaseInfo.getDatabaseIcons(databaseName), databaseName);
+        } else {
+            dataNodeLoader = new DataNodeLoaderJson(databaseName);
+        }
     }
 
     public void onClick(ClickEvent event) {
@@ -73,7 +86,11 @@ public abstract class SearchHandler implements ClickHandler, KeyUpHandler {
 //                logger.info("prepareSearch");
                 prepareSearch();
 //                logger.info("performSearch");
-                performSearch();
+                if (searchOptionsService != null) {
+                    performSearchRpc();
+                } else {
+                    performSearchJson();
+                }
             }
         }
     }
@@ -86,8 +103,35 @@ public abstract class SearchHandler implements ClickHandler, KeyUpHandler {
 
     protected abstract void finaliseSearch();
 
-    private void performSearch() {
-//        logger.info("performSearch");
+//    protected abstract void performSearch();
+    protected void performSearchJson() {
+        logger.info("performSearchJson");
+        final long startTime = System.currentTimeMillis();
+        dataNodeLoader.performSearch(historyController.getDatabaseName(), historyController.getCriterionJoinType(), historyController.getSearchParametersList(), new DataNodeSearchListener() {
+
+            public void dataNodeLoaded(List<HighlightableDataNode> dataNodeList) {
+                long responseMils = System.currentTimeMillis() - startTime;
+                final String searchTimeMessage = "PerformSearch response time: " + responseMils + " ms";
+                logger.log(Level.INFO, searchTimeMessage);
+                final String databaseName = historyController.getDatabaseName();
+                for (HighlightableDataNode result : dataNodeList) {
+                    resultsPanel.addResultsTree(databaseName, databaseInfo.getDatabaseIcons(databaseName), result, responseMils);
+                }
+                signalSearchDone();
+                finaliseSearch();
+                historyController.updateHistory(false);
+            }
+
+            public void dataNodeLoadFailed(Throwable caught) {
+                logger.log(Level.SEVERE, caught.getMessage());
+                signalSearchDone();
+                finaliseSearch();
+            }
+        });
+    }
+
+    protected void performSearchRpc() {
+        logger.info("performSearchRpc");
         final long startTime = System.currentTimeMillis();
         searchOptionsService.performSearch(historyController.getDatabaseName(), historyController.getCriterionJoinType(), historyController.getSearchParametersList(), new AsyncCallback<HighlightableDataNode>() {
             public void onFailure(Throwable caught) {

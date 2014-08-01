@@ -101,6 +101,7 @@ public class SearchWidgetsPanel extends VerticalPanel implements HistoryListener
     }
 
     public void historyChange() {
+        searchHandler.updateDbName();
         final CriterionJoinType criterionJoinType = historyController.getCriterionJoinType();
         if (criterionJoinType == null) {
             joinTypeListBox.setValue(CriterionJoinType.values()[0]);

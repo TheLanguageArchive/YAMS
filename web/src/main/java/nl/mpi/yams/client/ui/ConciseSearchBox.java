@@ -45,6 +45,7 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
     private final SuggestBox searchBox;
     private final Button searchButton;
     final private Image valuesPathsImage;
+    private final SearchHandler searchHandler;
 
     public ConciseSearchBox(SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, DatabaseInformation databaseInfo, ResultsPanel resultsPanel) {
         this.setStyleName("yams-ConciseSearchBox");
@@ -80,7 +81,7 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
         searchBox.setLimit(20);
         searchBox.setAutoSelectEnabled(false);
         searchButton = new Button("search");
-        SearchHandler searchHandler = new SearchHandler(historyController, databaseInfo, searchOptionsService, resultsPanel) {
+        searchHandler = new SearchHandler(historyController, databaseInfo, searchOptionsService, resultsPanel) {
             @Override
             protected void prepareSearch() {
                 searchButton.setEnabled(false);
@@ -107,6 +108,7 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
 
     public void historyChange() {
 //        logger.info("historyChange");
+        searchHandler.updateDbName();
         searchBox.setText(new ConciseSearchParser().getConciseString(historyController));
     }
 

@@ -29,13 +29,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.mpi.flap.model.DataField;
+import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.DataNodePermissions;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.yams.common.data.DataNodeHighlight;
 import nl.mpi.yams.common.data.DataNodeId;
+import nl.mpi.yams.common.data.HighlightableDataNode;
+import nl.mpi.yams.common.data.QueryDataStructures;
+import nl.mpi.yams.common.data.SearchParameters;
 import nl.mpi.yams.shared.JsonDataNode;
 import nl.mpi.yams.shared.WebQueryException;
 
@@ -144,6 +148,118 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 
     public String getNodeIcon(SerialisableDataNode yamsDataNode) {
         return yamsDataNode.getType().getID();
+    }
+
+    public void performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList, final DataNodeSearchListener dataNodeSearchListener) {
+        final String searchUrl = serviceLocations.jsonSearchUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, criterionJoinType.name());
+        final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, searchUrl);
+        try {
+            final Request request = builder.sendRequest(null, new RequestCallback() {
+                public void onError(Request request, Throwable exception) {
+                    dataNodeSearchListener.dataNodeLoadFailed(exception);
+                    logger.warning("Couldn't retrieve JSON from: ");
+                    logger.warning(builder.getUrl());
+                }
+
+                public void onResponseReceived(Request request, Response response) {
+                    if (200 == response.getStatusCode()) {
+                        final String text = response.getText();
+                        logger.info("onResponseReceived");
+                        logger.info(searchUrl);
+                        logger.info(text);
+                        final String textCleaned = (text.startsWith("[")) ? text : "[" + text + "]";
+                        logger.info(textCleaned);
+                        logger.info("onResponseReceivedEnd");
+                        final JsArray<JsonDataNode> jsonArray = JsonUtils.safeEval(textCleaned);
+                        List<HighlightableDataNode> dataNodes = new ArrayList<HighlightableDataNode>();
+                        for (int index = 0; index < jsonArray.length(); index++) {
+                            final JsonDataNode jsonDataNode = (JsonDataNode) jsonArray.get(index);
+                            dataNodes.add(new HighlightableDataNode() {
+
+                                @Override
+                                public List<DataNodeHighlight> getHighlights() {
+                                    List<DataNodeHighlight> highlights = new ArrayList<DataNodeHighlight>();
+                                    for (int index = 0; index < jsonDataNode.getHighlightCount(); index++) {
+                                        final DataNodeHighlight dataNodeHighlight = new DataNodeHighlight();
+                                        dataNodeHighlight.setDataNodeId(jsonDataNode.getHighlightId(index));
+                                        dataNodeHighlight.setHighlightPath(jsonDataNode.getHighlightPath(index));
+                                        highlights.add(dataNodeHighlight);
+                                    }
+                                    return highlights;
+                                }
+
+                                @Override
+                                public List<? extends SerialisableDataNode> getChildList() {
+                                    throw new UnsupportedOperationException("Not supported yet.");
+                                }
+
+                                @Override
+                                public Integer getLinkCount() {
+                                    throw new UnsupportedOperationException("Not supported yet.");
+                                }
+
+                                @Override
+                                public List<DataNodeLink> getChildIds() throws ModelException {
+                                    List<DataNodeLink> links = new ArrayList<DataNodeLink>();
+
+                                    for (int index = 0; index < jsonDataNode.getLinkCount(); index++) {
+                                        final DataNodeLink dataNodeLink = new DataNodeLink();
+                                        dataNodeLink.setIdString(jsonDataNode.getChildLinkId(index));
+                                        links.add(dataNodeLink);
+                                    }
+                                    return links;
+                                }
+
+                                @Override
+                                public List<FieldGroup> getFieldGroups() {
+                                    throw new UnsupportedOperationException("Not supported yet.");
+                                }
+
+                                @Override
+                                public DataNodePermissions getPermissions() {
+                                    throw new UnsupportedOperationException("Not supported yet.");
+                                }
+
+                                @Override
+                                public DataNodeType getType() {
+                                    throw new UnsupportedOperationException("Not supported yet.");
+                                }
+
+                                @Override
+                                public String getLabel() {
+                                    return jsonDataNode.getLabel();
+                                }
+
+                                @Override
+                                public String getArchiveHandle() {
+                                    throw new UnsupportedOperationException("Not supported yet.");
+                                }
+
+                                @Override
+                                public String getURI() throws ModelException {
+                                    throw new UnsupportedOperationException("Not supported yet.");
+                                }
+
+                                @Override
+                                public String getID() throws ModelException {
+                                    throw new UnsupportedOperationException("Not supported yet.");
+                                }
+                            });
+                        }
+                        dataNodeSearchListener.dataNodeLoaded(dataNodes);
+                    } else {
+                        dataNodeSearchListener.dataNodeLoadFailed(new WebQueryException("Couldn't retrieve JSON: " + response.getStatusCode()));
+                        logger.warning("Couldn't retrieve JSON");
+                        logger.warning(searchUrl);
+                        logger.warning(response.getStatusText());
+                    }
+                }
+            });
+        } catch (RequestException e) {
+            dataNodeSearchListener.dataNodeLoadFailed(e);
+            logger.warning("Couldn't retrieve JSON");
+            logger.log(Level.SEVERE, "requestLoadRoot", e);
+        }
     }
 
     private RequestCallback geRequestBuilder(final RequestBuilder builder, final DataNodeLoaderListener dataNodeLoaderListener, final String targetUri) {

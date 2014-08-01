@@ -129,7 +129,8 @@ public class MetadataFileTypeLoader {
                             try {
 //                            logger.info(text);
                                 // remove the outer object to leave only the array to be parsed
-                                final String cleanedText = "[" + text.replaceFirst("^\\{[^\\{]*", "").replaceFirst("\\]?\\}$", "") + "]";
+                                final String cleanedText = (text.startsWith("[")) ? text : "[" + text + "]";
+//                              final String cleanedText = "[" + text.replaceFirst("^\\[?\\{[^\\{]*", "").replaceFirst("\\]?\\}\\]?$", "") + "]";
 //                            logger.info("onResponseReceived");
 //                            logger.info(jsonDbTypesUrl);
 //                            logger.info(cleanedText);

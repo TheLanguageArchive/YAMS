@@ -34,7 +34,7 @@ public class JsonDataNode extends JavaScriptObject {
 
     public final native String getURI() /*-{ return this.URI; }-*/;
 
-    public final native int getLinkCount() /*-{ return this.LinkCount; }-*/;
+    public final native int getLinkCount() /*-{ return parseInt(this.LinkCount); }-*/;
 
     public final native String getID() /*-{ return this.ID; }-*/;
 
@@ -45,4 +45,16 @@ public class JsonDataNode extends JavaScriptObject {
     public final native String getTypeFormat() /*-{ return this.Type.Format; }-*/;
 
     public final native String getTypeAccessLevel() /*-{ if (this.Permissions != null) return this.Permissions.AccessLevel; else return null;}-*/;
+
+    public final native int getHighlightCount() /*-{ return this.Highlight.length; }-*/;
+
+    public final native String getHighlightId(int index) /*-{ return this.Highlight[index].ID; }-*/;
+
+    public final native String getHighlightPath(int index) /*-{ return this.Highlight[index].Path; }-*/;
+
+    public final native String getChildLinkId(int index) /*-{ return this.ChildLink[index].ID; }-*/;
+
+    public final native String getURI(int index) /*-{ return this.ChildLink[index].URI; }-*/;
+
+    public final native String getChildLinkArchiveHandle(int index) /*-{ return this.ChildLink[index].ArchiveHandle; }-*/;
 }
