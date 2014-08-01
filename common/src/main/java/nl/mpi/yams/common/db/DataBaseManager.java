@@ -578,6 +578,9 @@ public class DataBaseManager<D, F, M> {
     }
 
     static String escapeBadChars(String inputString) {
+        if (inputString == null) {
+            return null;
+        }
         // our queries use double quotes so single quotes are allowed
         // todo: could ; cause issues?
         return inputString.replace("&", "&amp;").replace("\"", "&quot;").replace("'", "&apos;");
