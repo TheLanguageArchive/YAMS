@@ -87,7 +87,7 @@ public interface ServiceLocations extends Messages {
     String jsonSearchUrl(String serviceUrl, String databaseName, String joinType);
 
     @Key("nl.mpi.yams.jsonSearchParam")
-    String jsonSearchParam(String searchUrl, String type, String path, String text);
+    String jsonSearchParam(String searchUrl, String searchNegator, String searchType, String type, String path, String text);
 
     @Key("nl.mpi.yams.jsonNodeGetVar")
     String jsonNodeGetVar();

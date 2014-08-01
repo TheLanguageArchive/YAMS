@@ -98,6 +98,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
             stringBuilder.append(dataNodeId.getIdString());
             stringBuilder.append("&");
         }
+//        logger.info("jsonUrl:" + jsonUrl);
 //        final String jsonLinksOfUrl = serviceLocations.jsonYamsDataUrl(jsonUrl, stringBuilder.toString());
         final String restNodeUrl = serviceLocations.jsonNodeOfUrl(jsonUrl, stringBuilder.toString());
 //        logger.warning(restNodeUrl);
@@ -151,7 +152,13 @@ public class DataNodeLoaderJson implements DataNodeLoader {
     }
 
     public void performSearch(String databaseName, QueryDataStructures.CriterionJoinType criterionJoinType, List<SearchParameters> searchParametersList, final DataNodeSearchListener dataNodeSearchListener) {
-        final String searchUrl = serviceLocations.jsonSearchUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, criterionJoinType.name());
+        String searchUrl = serviceLocations.jsonSearchUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName, criterionJoinType.name());
+        for (SearchParameters parameters : searchParametersList) {
+            final String type = (parameters.getFileType().getType() == null) ? "" : parameters.getFileType().getType();
+            final String path = (parameters.getFieldType().getPath() == null) ? "" : parameters.getFieldType().getPath();
+            searchUrl = serviceLocations.jsonSearchParam(searchUrl, parameters.getSearchNegator().name(), parameters.getSearchType().name(), type, path, parameters.getSearchString());
+        }
+        final String searchParamUrl = searchUrl;
         final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, searchUrl);
         try {
             final Request request = builder.sendRequest(null, new RequestCallback() {
@@ -165,7 +172,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
                     if (200 == response.getStatusCode()) {
                         final String text = response.getText();
                         logger.info("onResponseReceived");
-                        logger.info(searchUrl);
+                        logger.info(searchParamUrl);
                         logger.info(text);
                         final String textCleaned = (text.startsWith("[")) ? text : "[" + text + "]";
                         logger.info(textCleaned);
@@ -250,7 +257,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
                     } else {
                         dataNodeSearchListener.dataNodeLoadFailed(new WebQueryException("Couldn't retrieve JSON: " + response.getStatusCode()));
                         logger.warning("Couldn't retrieve JSON");
-                        logger.warning(searchUrl);
+                        logger.warning(searchParamUrl);
                         logger.warning(response.getStatusText());
                     }
                 }
