@@ -20,12 +20,14 @@ package nl.mpi.yams.common.data;
 
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created on : Aug 28, 2013, 5:24:13 PM
  *
  * @author Peter Withers <peter.withers@mpi.nl>
  */
+@XmlRootElement(name = "Highlight")
 public class DataNodeHighlight implements Serializable {
 
     private String dataNodeId = null;

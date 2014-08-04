@@ -649,8 +649,8 @@ public class DataBaseManager<D, F, M> {
                 + " collection('" + databaseName + "')/DataNode[@ID eq $dataNodeId]}</DataNode>";
     }
 
-    private String getChildNodesOfHdlQuery(String hdl, int start, int end) {
-        return "<DataNode>{for $childNodeId in collection('" + databaseName + "')/DataNode[@ArchiveHandle eq '" + escapeBadChars(hdl) + "']/ChildLink[position() gt " + start + " and position() le " + end + "]/@ID\n"
+    private String getChildNodesOfAttributeQuery(final String attributeName, String id, int start, int end) {
+        return "<DataNode>{for $childNodeId in collection('" + databaseName + "')/DataNode[@" + attributeName + " eq '" + escapeBadChars(id) + "']/ChildLink[position() gt " + start + " and position() le " + end + "]/@ID\n"
                 + "return collection('" + databaseName + "')/DataNode[@ID eq $childNodeId]}</DataNode>";
     }
 
@@ -1065,7 +1065,19 @@ public class DataBaseManager<D, F, M> {
     }
 
     public D getChildNodesOfHdl(final String nodeIdentifier, int start, int end) throws QueryException {
-        final String queryString = getChildNodesOfHdlQuery(nodeIdentifier, start, end);
+        final String queryString = getChildNodesOfAttributeQuery("ArchiveHandle", nodeIdentifier, start, end);
+        //logger.debug("getMetadataTypes: " + queryString);
+        return getDbTreeNode(queryString);
+    }
+
+    public D getChildNodesOfId(final String nodeIdentifier, int start, int end) throws QueryException {
+        final String queryString = getChildNodesOfAttributeQuery("ID", nodeIdentifier, start, end);
+        //logger.debug("getMetadataTypes: " + queryString);
+        return getDbTreeNode(queryString);
+    }
+
+    public D getChildNodesOfUrl(final String nodeIdentifier, int start, int end) throws QueryException {
+        final String queryString = getChildNodesOfAttributeQuery("URI", nodeIdentifier, start, end);
         //logger.debug("getMetadataTypes: " + queryString);
         return getDbTreeNode(queryString);
     }
