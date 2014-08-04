@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.DataNodePermissions;
@@ -77,7 +78,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 
     public void requestLoadChildrenOf(DataNodeId dataNodeId, int first, int last, DataNodeLoaderListener dataNodeLoaderListener) {
         //logger.info("requestLoadChildrenOf");
-        final String jsonLinksOfUrl = serviceLocations.jsonLinksOfUrl(jsonUrl, dataNodeId.getIdString());
+        final String jsonLinksOfUrl = serviceLocations.jsonLinksOfUrl(jsonUrl, dataNodeId.getIdString(), first, last);
         //logger.info(jsonLinksOfUrl);
         // Send request to server and catch any errors.
         final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, jsonLinksOfUrl);
@@ -337,6 +338,18 @@ public class DataNodeLoaderJson implements DataNodeLoader {
                                 @Override
                                 public List<FieldGroup> getFieldGroups() {
                                     final ArrayList<FieldGroup> fieldGroups = new ArrayList<FieldGroup>();
+                                    for (int groupIndex = 0; groupIndex < jsonDataNode.getFieldGroupCount(); groupIndex++) {
+                                        final ArrayList dataFieldList = new ArrayList<DataField>();
+                                        for (int fieldIndex = 0; fieldIndex < jsonDataNode.getFieldDataCount(groupIndex); fieldIndex++) {
+                                            final DataField dataField = new DataField();
+                                            dataField.setFieldValue(jsonDataNode.getFieldValue(groupIndex, fieldIndex));
+                                            dataField.setKeyName(jsonDataNode.getFieldKeyName(groupIndex, fieldIndex));
+                                            dataField.setLanguageId(jsonDataNode.getFieldLanguageId(groupIndex, fieldIndex));
+                                            dataField.setPath(jsonDataNode.getFieldPath(groupIndex, fieldIndex));
+                                            dataFieldList.add(dataField);
+                                        }
+                                        fieldGroups.add(new FieldGroup(jsonDataNode.getFieldGroupLabel(groupIndex), dataFieldList));
+                                    }
 //                                final ArrayList<DataField> dataFieldList = new ArrayList<DataField>();
 //                                final DataField dataField = new DataField(); 
 //                                dataField.setFieldValue("");

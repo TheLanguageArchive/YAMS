@@ -57,4 +57,18 @@ public class JsonDataNode extends JavaScriptObject {
     public final native String getURI(int index) /*-{ return this.ChildLink[index].URI; }-*/;
 
     public final native String getChildLinkArchiveHandle(int index) /*-{ return this.ChildLink[index].ArchiveHandle; }-*/;
+
+    public final native int getFieldGroupCount() /*-{ if (this.FieldGroup != null) return parseInt(this.FieldGroup.length); else return 0; }-*/;
+
+    public final native String getFieldGroupLabel(int index) /*-{ return this.FieldGroup[index].Label; }-*/;
+
+    public final native int getFieldDataCount(int index) /*-{ if (this.FieldGroup[index].FieldData != null) return parseInt(this.FieldGroup[index].FieldData.length); else return 0; }-*/;
+
+    public final native String getFieldValue(int index, int fieldIndex) /*-{ return this.FieldGroup[index].FieldData[fieldIndex].FieldValue; }-*/;
+
+    public final native String getFieldPath(int index, int fieldIndex) /*-{ return this.FieldGroup[index].FieldData[fieldIndex].Path; }-*/;
+
+    public final native String getFieldLanguageId(int index, int fieldIndex) /*-{ return this.FieldGroup[index].FieldData[fieldIndex].LanguageId; }-*/;
+
+    public final native String getFieldKeyName(int index, int fieldIndex) /*-{ return this.FieldGroup[index].FieldData[fieldIndex].KeyName; }-*/;
 }

@@ -81,7 +81,7 @@ public interface ServiceLocations extends Messages {
     String jsonNodeOfUrl(String serviceUrl, String identifierGetPart);
 
     @Key("nl.mpi.yams.jsonLinksOfUrl")
-    String jsonLinksOfUrl(String serviceUrl, String identifierGetPart);
+    String jsonLinksOfUrl(String serviceUrl, String identifierGetPart, int start, int end);
 
     @Key("nl.mpi.yams.jsonSearchUrl")
     String jsonSearchUrl(String serviceUrl, String databaseName, String joinType);
