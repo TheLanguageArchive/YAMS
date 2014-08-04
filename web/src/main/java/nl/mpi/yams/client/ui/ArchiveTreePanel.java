@@ -71,11 +71,11 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
                     ArchiveTreePanel.this.remove(dataNodeTree);
                     dataNodeTree = null;
                 }
-//                logger.info("ArchiveTreePanel");
+                //logger.info("ArchiveTreePanel");
 //                logger.info(dataNodeTreeDb);
                 final DatabaseStats databaseStats = databaseInfo.getDatabaseStats(databaseName);
                 final IconTableBase64 databaseIcons = databaseInfo.getDatabaseIcons(databaseName);
-                if (databaseStats != null && databaseIcons != null && databaseStats.getRootDocumentsIDs() != null) {
+                if (databaseStats != null && databaseStats.getRootDocumentsIDs() != null) {
                     addDatabaseTree(databaseName, databaseStats.getRootDocumentsIDs(), databaseIcons);
                 }
             }
@@ -85,8 +85,8 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
     }
 
     public void addDatabaseTree(String databaseName, DataNodeId[] dataNodeIds, IconTableBase64 databaseIcons) {
-//        logger.info("addDatabaseTree");
-//        logger.info(databaseName);
+        //logger.info("addDatabaseTree");
+        //logger.info(databaseName);
 //        logger.info("dataNodeIds:" + dataNodeIds.length);
 //        logger.info(dataNodeIds[0].getIdString());
         dataNodeTreeDb = databaseName;

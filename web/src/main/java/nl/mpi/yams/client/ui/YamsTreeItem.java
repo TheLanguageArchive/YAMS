@@ -71,6 +71,7 @@ public abstract class YamsTreeItem extends TreeItem {
 
     public YamsTreeItem(DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener) {
         super(new HorizontalPanel());
+//        logger.info("YamsTreeItem");
         this.dataNodeLoader = dataNodeLoader;
         this.popupPanel = popupPanel;
         this.checkboxListener = checkboxListener;
@@ -118,6 +119,7 @@ public abstract class YamsTreeItem extends TreeItem {
     }
 
     protected void hideShowExpandButton() {
+//        logger.info("hideShowExpandButton");
         // this check will determine if the expand button is visible, but also if the click action is available. The click action was suppressed for empty data nodes like "Actors" but this behaivour is undefined at this point for CS2CMDI.
         final boolean hasFields = (this instanceof YamsJsonTreeItem || yamsDataNode != null && yamsDataNode.getFieldGroups() != null);
         nodeLabel.setVisible(!hasFields);

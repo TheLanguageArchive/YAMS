@@ -40,6 +40,7 @@ public class YamsJsonTreeItem extends YamsTreeItem {
 
     public YamsJsonTreeItem(SerialisableDataNode childDataNode, DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, final YamsTreeItemLoadedListener itemLoadedListener) {
         super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
+//        logger.info("YamsJsonTreeItem-datanode");
         this.itemLoadedListener = itemLoadedListener;
         this.yamsDataNode = childDataNode;
         setLabel();
@@ -49,6 +50,7 @@ public class YamsJsonTreeItem extends YamsTreeItem {
         if (itemLoadedListener != null) {
             itemLoadedListener.yamsTreeItemLoaded(YamsJsonTreeItem.this);
         }
+//        logger.info("yamsDataNode.getLinkCount(): " + yamsDataNode.getLinkCount());
         if (yamsDataNode.getLinkCount() > 0) {
             addItem(loadingTreeItem);
         }
@@ -56,6 +58,7 @@ public class YamsJsonTreeItem extends YamsTreeItem {
 
     public YamsJsonTreeItem(DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, final YamsTreeItemLoadedListener itemLoadedListener) {
         super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
+//        logger.info("YamsJsonTreeItem-root");
         this.itemLoadedListener = itemLoadedListener;
         loadDataNode(itemLoadedListener);
     }

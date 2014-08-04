@@ -57,6 +57,7 @@ public class YamsRpcTreeItem extends YamsTreeItem {
 
     public YamsRpcTreeItem(String databaseName, DataNodeId dataNodeId, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, boolean displayFlatNodes, final YamsTreeItemLoadedListener itemLoadedListener) {
         super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
+        //logger.info("YamsRpcTreeItem");
         this.dataNodeId = dataNodeId;
         this.databaseName = databaseName;
         this.treeTableHeader = treeTableHeader;

@@ -24,6 +24,7 @@ import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.IsTreeItem;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -132,6 +133,7 @@ public class DataNodeTree extends Tree {
     }
 
     public void addResultsToTree(final String databaseName, final DataNodeId[] dataNodeIds, final boolean displayFlatNodes) {
+        //logger.info("addResultsToTree");
         final DataNodeLoader dataNodeLoader;
         if (searchOptionsService != null) {
             dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, iconTableBase64, databaseName);
@@ -140,8 +142,12 @@ public class DataNodeTree extends Tree {
         }
         addPagingButton(new Pageable() {
             public void addYamsTreeItem(int index) {
-                final YamsTreeItem yamsTreeItem = new YamsRpcTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener, displayFlatNodes, yamsTreeItemLoadedListener);
-//                final YamsJsonTreeItem yamsTreeItem = new YamsJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yamsTreeItemLoadedListener);
+                final IsTreeItem yamsTreeItem;
+                if (searchOptionsService != null) {
+                    yamsTreeItem = new YamsRpcTreeItem(databaseName, dataNodeIds[index], dataNodeLoader, null, popupPanel, checkboxListener, clickListener, displayFlatNodes, yamsTreeItemLoadedListener);
+                } else {
+                    yamsTreeItem = new YamsJsonTreeItem(dataNodeLoader, popupPanel, checkboxListener, clickListener, yamsTreeItemLoadedListener);
+                }
                 DataNodeTree.this.addItem(yamsTreeItem);
             }
 

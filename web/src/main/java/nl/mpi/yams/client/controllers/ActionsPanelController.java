@@ -131,18 +131,8 @@ public class ActionsPanelController implements HistoryListener {
                             logger.warning(caught.getMessage());
                         }
                     };
-                    // when getting the data from CS2DB we might get the url or handle or id, so we are trying to resolve this here before querying the server. 
-                    if (nodeId.getIdString().startsWith("hdl:")) {
-                        final List<String> hdlList = new ArrayList<String>();
-                        for (DataNodeId hdl : branchSelectionList) {
-                            hdlList.add(hdl.getIdString());
-                        }
-                        logger.info("requestLoadHdl");
-                        dataNodeLoader.requestLoadHdl(hdlList, dataNodeLoaderListener);
-                    } else {
-                        logger.info("requestLoad");
-                        dataNodeLoader.requestLoad(branchSelectionList, dataNodeLoaderListener);
-                    }
+                    // when getting the data from CS2DB we might get the url or handle or id, rather than trying to resolve this here the server tries to resolve this issue during the following request. 
+                    dataNodeLoader.requestLoad(branchSelectionList, dataNodeLoaderListener);
                 }
             }
         }

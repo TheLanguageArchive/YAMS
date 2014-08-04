@@ -62,6 +62,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
     }
 
     public void requestLoadRoot(final DataNodeLoaderListener dataNodeLoaderListener) {
+        //logger.info("requestLoadRoot");
         final String jsonRootUrl = jsonUrl;
         // Send request to server and catch any errors.
         final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, jsonRootUrl);
@@ -75,9 +76,9 @@ public class DataNodeLoaderJson implements DataNodeLoader {
     }
 
     public void requestLoadChildrenOf(DataNodeId dataNodeId, int first, int last, DataNodeLoaderListener dataNodeLoaderListener) {
-//        logger.info("requestLoadChildrenOf");
+        //logger.info("requestLoadChildrenOf");
         final String jsonLinksOfUrl = serviceLocations.jsonLinksOfUrl(jsonUrl, dataNodeId.getIdString());
-//        logger.info(jsonLinksOfUrl);
+        //logger.info(jsonLinksOfUrl);
         // Send request to server and catch any errors.
         final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, jsonLinksOfUrl);
         try {
@@ -86,11 +87,12 @@ public class DataNodeLoaderJson implements DataNodeLoader {
             dataNodeLoaderListener.dataNodeLoadFailed(e);
             logger.warning("Couldn't retrieve JSON");
             logger.log(Level.SEVERE, "requestLoadChildrenOf", e);
+            logger.warning(jsonLinksOfUrl);
         }
     }
 
     public void requestLoad(List<DataNodeId> dataNodeIdList, final DataNodeLoaderListener dataNodeLoaderListener) {
-//        logger.info("requestLoad");
+        //logger.info("requestLoad");
 // Send request to server and catch any errors.
         StringBuilder stringBuilder = new StringBuilder();
         for (DataNodeId dataNodeId : dataNodeIdList) {
@@ -113,7 +115,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
     }
 
     public void requestLoadHdl(List<String> dataNodeHdlList, final DataNodeLoaderListener dataNodeLoaderListener) {
-//        logger.info("requestLoadHdl");
+        //logger.info("requestLoadHdl");
         // Send request to server and catch any errors.
         StringBuilder stringBuilder = new StringBuilder();
         for (String dataNodeHdl : dataNodeHdlList) {
@@ -284,66 +286,75 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 //                    logger.info(targetUri);
 //                    logger.info(text);
 //                    logger.info("onResponseReceivedEnd");
-                    final JsArray<JsonDataNode> jsonArray = JsonUtils.safeEval(text);
-                    List<SerialisableDataNode> dataNodes = new ArrayList<SerialisableDataNode>();
-                    for (int index = 0; index < jsonArray.length(); index++) {
-                        final JsonDataNode jsonDataNode = (JsonDataNode) jsonArray.get(index);
-                        dataNodes.add(new SerialisableDataNode() {
+                    try {
+                        final JsArray<JsonDataNode> jsonArray = JsonUtils.safeEval(text);
+                        List<SerialisableDataNode> dataNodes = new ArrayList<SerialisableDataNode>();
+                        for (int index = 0; index < jsonArray.length(); index++) {
+                            final JsonDataNode jsonDataNode = (JsonDataNode) jsonArray.get(index);
+                            dataNodes.add(new SerialisableDataNode() {
 
-                            @Override
-                            public DataNodeType getType() {
-                                final DataNodeType dataNodeType = new DataNodeType(jsonDataNode.getLabel(), jsonDataNode.getTypeName(), jsonDataNode.getTypeID(), DataNodeType.FormatType.valueOf(jsonDataNode.getTypeFormat()));
-                                return dataNodeType;
-                            }
-
-                            @Override
-                            public DataNodePermissions getPermissions() {
-                                final DataNodePermissions dataNodePermissions = new DataNodePermissions();
-                                final String typeAccessLevel = jsonDataNode.getTypeAccessLevel();
-                                if (typeAccessLevel != null) {
-                                    dataNodePermissions.setAccessLevel(DataNodePermissions.AccessLevel.valueOf(typeAccessLevel));
+                                @Override
+                                public DataNodeType getType() {
+                                    final DataNodeType dataNodeType = new DataNodeType(jsonDataNode.getLabel(), jsonDataNode.getTypeName(), jsonDataNode.getTypeID(), DataNodeType.FormatType.valueOf(jsonDataNode.getTypeFormat()));
+                                    return dataNodeType;
                                 }
-                                return dataNodePermissions;
-                            }
 
-                            @Override
-                            public String getLabel() {
-                                return jsonDataNode.getLabel();
-                            }
+                                @Override
+                                public DataNodePermissions getPermissions() {
+                                    final DataNodePermissions dataNodePermissions = new DataNodePermissions();
+                                    final String typeAccessLevel = jsonDataNode.getTypeAccessLevel();
+                                    if (typeAccessLevel != null) {
+                                        dataNodePermissions.setAccessLevel(DataNodePermissions.AccessLevel.valueOf(typeAccessLevel));
+                                    }
+                                    return dataNodePermissions;
+                                }
 
-                            @Override
-                            public String getArchiveHandle() {
-                                return jsonDataNode.getArchiveHandle();
-                            }
+                                @Override
+                                public String getLabel() {
+                                    return jsonDataNode.getLabel();
+                                }
 
-                            @Override
-                            public String getURI() throws ModelException {
-                                return jsonDataNode.getURI();
-                            }
+                                @Override
+                                public String getArchiveHandle() {
+                                    return jsonDataNode.getArchiveHandle();
+                                }
 
-                            @Override
-                            public String getID() throws ModelException {
-                                return jsonDataNode.getID();
-                            }
+                                @Override
+                                public String getURI() throws ModelException {
+                                    return jsonDataNode.getURI();
+                                }
 
-                            @Override
-                            public Integer getLinkCount() {
-                                return jsonDataNode.getLinkCount();
-                            }
+                                @Override
+                                public String getID() throws ModelException {
+                                    return jsonDataNode.getID();
+                                }
 
-                            @Override
-                            public List<FieldGroup> getFieldGroups() {
-                                final ArrayList<FieldGroup> fieldGroups = new ArrayList<FieldGroup>();
+                                @Override
+                                public Integer getLinkCount() {
+                                    return jsonDataNode.getLinkCount();
+                                }
+
+                                @Override
+                                public List<FieldGroup> getFieldGroups() {
+                                    final ArrayList<FieldGroup> fieldGroups = new ArrayList<FieldGroup>();
 //                                final ArrayList<DataField> dataFieldList = new ArrayList<DataField>();
 //                                final DataField dataField = new DataField(); 
 //                                dataField.setFieldValue("");
 //                                dataFieldList.add(dataField);
 //                                fieldGroups.add(new FieldGroup("text", dataFieldList));
-                                return fieldGroups;
-                            }
-                        });
+                                    return fieldGroups;
+                                }
+                            });
+                        }
+                        dataNodeLoaderListener.dataNodeLoaded(dataNodes);
+                    } catch (IllegalArgumentException exception) {
+                        dataNodeLoaderListener.dataNodeLoadFailed(new WebQueryException("Couldn't retrieve JSON: " + response.getStatusCode()));
+                        logger.warning("Couldn't parse JSON");
+                        logger.warning(exception.getMessage());
+                        logger.warning(targetUri);
+                        logger.warning(response.getStatusText());
+                        logger.info(text);
                     }
-                    dataNodeLoaderListener.dataNodeLoaded(dataNodes);
                 } else {
                     dataNodeLoaderListener.dataNodeLoadFailed(new WebQueryException("Couldn't retrieve JSON: " + response.getStatusCode()));
                     logger.warning("Couldn't retrieve JSON");

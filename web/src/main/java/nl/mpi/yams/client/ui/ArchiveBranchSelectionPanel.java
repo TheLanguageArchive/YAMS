@@ -134,6 +134,8 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
                     ArchiveBranchSelectionPanel.this.add(new Label("Failed to load"));
                 }
             };
+            // when getting the data from CS2DB we might get the url or handle or id, rather than trying to resolve this here the server tries to resolve this issue during the following request. 
+            // todo: simplify this to one method if possible
             if (!windowParamHdls.isEmpty()) {
                 logger.info("windowParamHdls");
                 dataNodeLoader.requestLoadHdl(windowParamHdls, dataNodeLoaderListener);
