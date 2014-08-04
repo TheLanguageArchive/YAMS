@@ -145,9 +145,16 @@ public class service {
     @Produces({MediaType.APPLICATION_JSON})
     @Path("/data/{dbname}/linksof")
 //    @Path("hdl{hdl}")
-    public Response getChildDataNodes(@PathParam("dbname") String dbName, @QueryParam("url") final String identifier, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws QueryException {
+    public Response getChildDataNodes(@PathParam("dbname") String dbName, @QueryParam("id") final String identifier, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws QueryException {
         DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
-        final SerialisableDataNode childNodes = yamsDatabase.getChildNodesOfHdl(identifier, start, end);
+        final SerialisableDataNode childNodes;
+        if (identifier.startsWith("hdl:")) {
+            childNodes = yamsDatabase.getChildNodesOfHdl(identifier, start, end);
+        } else if (identifier.startsWith("http:") || identifier.startsWith("https:")) {
+            childNodes = yamsDatabase.getChildNodesOfUrl(identifier, start, end);
+        } else {
+            childNodes = yamsDatabase.getChildNodesOfId(identifier, start, end);
+        }
         return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
     }
 
