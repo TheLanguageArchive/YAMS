@@ -44,7 +44,7 @@ public final class JsonDataNode extends JavaScriptObject implements PluginDataNo
 
     public final native String getURI() /*-{ return this.URI; }-*/;
 
-    public final native Integer getLinkCount() /*-{ if (this.ChildLink != null) return parseInt(this.ChildLink.length); else if (this.LinkCount != null) return parseInt(this.LinkCount); else return 0; }-*/;
+    public final native int getLinkCountInt() /*-{ if (this.ChildLink != null) return parseInt(this.ChildLink.length); else if (this.LinkCount != null) return parseInt(this.LinkCount); else return 0; }-*/;
 
     public final native String getID() /*-{ return this.ID; }-*/;
 
@@ -133,5 +133,9 @@ public final class JsonDataNode extends JavaScriptObject implements PluginDataNo
             links.add(dataNodeLink);
         }
         return links;
+    }
+
+    public Integer getLinkCount() {
+        return this.getLinkCountInt();
     }
 }
