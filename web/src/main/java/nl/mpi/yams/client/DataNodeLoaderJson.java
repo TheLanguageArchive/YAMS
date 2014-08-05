@@ -277,12 +277,12 @@ public class DataNodeLoaderJson implements DataNodeLoader {
                 if (200 == response.getStatusCode()) {
                     final String text = response.getText();
 //                    logger.info("onResponseReceived");
-//                    logger.info(targetUri);
+                    logger.info(targetUri);
 //                    logger.info(text);
 //                    logger.info("onResponseReceivedEnd");
                     try {
                         final JsArray<JsonDataNode> jsonArray = JsonUtils.safeEval(text);
-                        List<PluginDataNode> dataNodes = new ArrayList<PluginDataNode>();
+                        List<JsonDataNode> dataNodes = new ArrayList<JsonDataNode>();
                         for (int index = 0; index < jsonArray.length(); index++) {
                             final JsonDataNode jsonDataNode = (JsonDataNode) jsonArray.get(index);
                             dataNodes.add(jsonDataNode);
