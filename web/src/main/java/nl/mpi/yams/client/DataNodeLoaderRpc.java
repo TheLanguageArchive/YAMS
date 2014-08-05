@@ -20,6 +20,7 @@ package nl.mpi.yams.client;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.List;
 import java.util.logging.Logger;
+import nl.mpi.flap.model.PluginDataNode;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.IconTableBase64;
@@ -88,7 +89,7 @@ public class DataNodeLoaderRpc implements DataNodeLoader {
         });
     }
 
-    public String getNodeIcon(SerialisableDataNode yamsDataNode) {
+    public String getNodeIcon(PluginDataNode yamsDataNode) {
         final NodeTypeImageBase64 typeIcon = iconTableBase64.getByType(yamsDataNode.getType());
         if (typeIcon != null) {
             return typeIcon.getInlineImageDataString();

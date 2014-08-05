@@ -18,7 +18,7 @@
 package nl.mpi.yams.client;
 
 import com.google.gwt.user.client.ui.CheckBox;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
 
 /**
  * @since Mar 26, 2014 2:36:19 PM (creation date)
@@ -26,5 +26,5 @@ import nl.mpi.flap.model.SerialisableDataNode;
  */
 public interface TreeNodeCheckboxListener {
 
-    void stateChanged(boolean selected, SerialisableDataNode dataNode, CheckBox checkBox);
+    void stateChanged(boolean selected, PluginDataNode dataNode, CheckBox checkBox);
 }

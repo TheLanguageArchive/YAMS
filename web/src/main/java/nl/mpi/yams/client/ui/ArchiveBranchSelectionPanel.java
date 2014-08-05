@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodePermissions;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
 import nl.mpi.yams.client.DataNodeLoader;
 import nl.mpi.yams.client.DataNodeLoaderJson;
 import nl.mpi.yams.client.DataNodeLoaderListener;
@@ -61,7 +61,7 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
     private final DatabaseInformation databaseInfo;
     private final PopupPanel popupPanel = new PopupPanel(true);
     private final VerticalPanel selectedBranchesPanel = new VerticalPanel();
-    HashMap<SerialisableDataNode, HorizontalPanel> nodePanels = new HashMap<SerialisableDataNode, HorizontalPanel>();
+    HashMap<PluginDataNode, HorizontalPanel> nodePanels = new HashMap<PluginDataNode, HorizontalPanel>();
     private final ArrayList<HorizontalPanel> rootNodePanels = new ArrayList<HorizontalPanel>();
     private final List<String> windowParamHdls;
     private final List<String> windowParamUrls;
@@ -122,9 +122,9 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
             }
             final DataNodeLoaderListener dataNodeLoaderListener = new DataNodeLoaderListener() {
 
-                public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
+                public void dataNodeLoaded(List<? extends PluginDataNode> dataNodeList) {
 //                    logger.info("addDatabaseTree:dataNodeLoaded");
-                    for (SerialisableDataNode dataNode : dataNodeList) {
+                    for (PluginDataNode dataNode : dataNodeList) {
                         rootNodePanels.add(addRootNode(dataNodeLoader, dataNode));
                     }
                 }
@@ -149,7 +149,7 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
 
             dataNodeTree = new DataNodeTree(new TreeNodeCheckboxListener() {
 
-                public void stateChanged(boolean selected, SerialisableDataNode dataNode, CheckBox checkBox) {
+                public void stateChanged(boolean selected, PluginDataNode dataNode, CheckBox checkBox) {
                     if (selected) {
                         addSearchBranch(dataNodeLoader, dataNode, checkBox);
                     } else {
@@ -175,7 +175,7 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
 
     }
 
-    private void removeSearchBranch(SerialisableDataNode dataNode) {
+    private void removeSearchBranch(PluginDataNode dataNode) {
         final HorizontalPanel nodePanel = nodePanels.remove(dataNode);
         if (nodePanel != null) {
             selectedBranchesPanel.remove(nodePanel);
@@ -185,7 +185,7 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
         }
     }
 
-    private HorizontalPanel addRootNode(DataNodeLoader dataNodeLoader, SerialisableDataNode dataNode) {
+    private HorizontalPanel addRootNode(DataNodeLoader dataNodeLoader, PluginDataNode dataNode) {
         final HorizontalPanel horizontalPanel = new HorizontalPanel();
         Image iconImage1 = new Image();
         Image iconImage2 = new Image();
@@ -202,7 +202,7 @@ public class ArchiveBranchSelectionPanel extends HorizontalPanel implements Hist
         return horizontalPanel;
     }
 
-    private void addSearchBranch(DataNodeLoader dataNodeLoader, final SerialisableDataNode dataNode, final CheckBox checkBox) {
+    private void addSearchBranch(DataNodeLoader dataNodeLoader, final PluginDataNode dataNode, final CheckBox checkBox) {
         if (nodePanels.isEmpty()) {
             removeRootNodePanels();
         }

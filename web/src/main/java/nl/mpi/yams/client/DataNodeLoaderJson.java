@@ -29,12 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.DataNodeType;
 import nl.mpi.flap.model.DataNodePermissions;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
+import nl.mpi.flap.model.PluginDataNode;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yams.common.data.DataNodeHighlight;
 import nl.mpi.yams.common.data.DataNodeId;
@@ -150,7 +150,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 //        });
     }
 
-    public String getNodeIcon(SerialisableDataNode yamsDataNode) {
+    public String getNodeIcon(PluginDataNode yamsDataNode) {
         return yamsDataNode.getType().getID();
     }
 
@@ -174,12 +174,12 @@ public class DataNodeLoaderJson implements DataNodeLoader {
                 public void onResponseReceived(Request request, Response response) {
                     if (200 == response.getStatusCode()) {
                         final String text = response.getText();
-                        logger.info("onResponseReceived");
+//                        logger.info("onResponseReceived");
                         logger.info(searchParamUrl);
-                        logger.info(text);
+//                        logger.info(text);
                         final String textCleaned = (text.startsWith("[")) ? text : "[" + text + "]";
-                        logger.info(textCleaned);
-                        logger.info("onResponseReceivedEnd");
+//                        logger.info(textCleaned);
+//                        logger.info("onResponseReceivedEnd");
                         final JsArray<JsonDataNode> jsonArray = JsonUtils.safeEval(textCleaned);
                         List<HighlightableDataNode> dataNodes = new ArrayList<HighlightableDataNode>();
                         for (int index = 0; index < jsonArray.length(); index++) {
@@ -210,14 +210,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 
                                 @Override
                                 public List<DataNodeLink> getChildIds() throws ModelException {
-                                    List<DataNodeLink> links = new ArrayList<DataNodeLink>();
-
-                                    for (int index = 0; index < jsonDataNode.getLinkCount(); index++) {
-                                        final DataNodeLink dataNodeLink = new DataNodeLink();
-                                        dataNodeLink.setIdString(jsonDataNode.getChildLinkId(index));
-                                        links.add(dataNodeLink);
-                                    }
-                                    return links;
+                                    return jsonDataNode.getChildIds();
                                 }
 
                                 @Override
@@ -289,75 +282,10 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 //                    logger.info("onResponseReceivedEnd");
                     try {
                         final JsArray<JsonDataNode> jsonArray = JsonUtils.safeEval(text);
-                        List<SerialisableDataNode> dataNodes = new ArrayList<SerialisableDataNode>();
+                        List<PluginDataNode> dataNodes = new ArrayList<PluginDataNode>();
                         for (int index = 0; index < jsonArray.length(); index++) {
                             final JsonDataNode jsonDataNode = (JsonDataNode) jsonArray.get(index);
-                            dataNodes.add(new SerialisableDataNode() {
-
-                                @Override
-                                public DataNodeType getType() {
-                                    final DataNodeType dataNodeType = new DataNodeType(jsonDataNode.getLabel(), jsonDataNode.getTypeName(), jsonDataNode.getTypeID(), DataNodeType.FormatType.valueOf(jsonDataNode.getTypeFormat()));
-                                    return dataNodeType;
-                                }
-
-                                @Override
-                                public DataNodePermissions getPermissions() {
-                                    final DataNodePermissions dataNodePermissions = new DataNodePermissions();
-                                    final String typeAccessLevel = jsonDataNode.getTypeAccessLevel();
-                                    if (typeAccessLevel != null) {
-                                        dataNodePermissions.setAccessLevel(DataNodePermissions.AccessLevel.valueOf(typeAccessLevel));
-                                    }
-                                    return dataNodePermissions;
-                                }
-
-                                @Override
-                                public String getLabel() {
-                                    return jsonDataNode.getLabel();
-                                }
-
-                                @Override
-                                public String getArchiveHandle() {
-                                    return jsonDataNode.getArchiveHandle();
-                                }
-
-                                @Override
-                                public String getURI() throws ModelException {
-                                    return jsonDataNode.getURI();
-                                }
-
-                                @Override
-                                public String getID() throws ModelException {
-                                    return jsonDataNode.getID();
-                                }
-
-                                @Override
-                                public Integer getLinkCount() {
-                                    return jsonDataNode.getLinkCount();
-                                }
-
-                                @Override
-                                public List<FieldGroup> getFieldGroups() {
-                                    final ArrayList<FieldGroup> fieldGroups = new ArrayList<FieldGroup>();
-                                    for (int groupIndex = 0; groupIndex < jsonDataNode.getFieldGroupCount(); groupIndex++) {
-                                        final ArrayList dataFieldList = new ArrayList<DataField>();
-                                        for (int fieldIndex = 0; fieldIndex < jsonDataNode.getFieldDataCount(groupIndex); fieldIndex++) {
-                                            final DataField dataField = new DataField();
-                                            dataField.setFieldValue(jsonDataNode.getFieldValue(groupIndex, fieldIndex));
-                                            dataField.setKeyName(jsonDataNode.getFieldKeyName(groupIndex, fieldIndex));
-                                            dataField.setLanguageId(jsonDataNode.getFieldLanguageId(groupIndex, fieldIndex));
-                                            dataField.setPath(jsonDataNode.getFieldPath(groupIndex, fieldIndex));
-                                            dataFieldList.add(dataField);
-                                        }
-                                        fieldGroups.add(new FieldGroup(jsonDataNode.getFieldGroupLabel(groupIndex), dataFieldList));
-                                    }
-//                                final ArrayList<DataField> dataFieldList = new ArrayList<DataField>();
-//                                final DataField dataField = new DataField(); 
-//                                dataField.setFieldValue("");
-//                                dataFieldList.add(dataField);
-//                                fieldGroups.add(new FieldGroup("text", dataFieldList));
-                                    return fieldGroups;
-                                }
-                            });
+                            dataNodes.add(jsonDataNode);
                         }
                         dataNodeLoaderListener.dataNodeLoaded(dataNodes);
                     } catch (IllegalArgumentException exception) {

@@ -18,7 +18,7 @@
 package nl.mpi.yams.client;
 
 import java.util.List;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
 import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.QueryDataStructures;
 import nl.mpi.yams.common.data.SearchParameters;
@@ -39,7 +39,7 @@ public interface DataNodeLoader {
 
     void requestLoadUri(List<String> dataNodeUriList, final DataNodeLoaderListener dataNodeLoaderListener);
 
-    String getNodeIcon(SerialisableDataNode yamsDataNode);
+    String getNodeIcon(PluginDataNode yamsDataNode);
 
     void performSearch(String databaseName, final QueryDataStructures.CriterionJoinType criterionJoinType, final List<SearchParameters> searchParametersList, final DataNodeSearchListener dataNodeSearchListener);
 }

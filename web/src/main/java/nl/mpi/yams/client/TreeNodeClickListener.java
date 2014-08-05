@@ -17,7 +17,7 @@
  */
 package nl.mpi.yams.client;
 
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
 
 /**
  * @since Mar 26, 2014 2:36:19 PM (creation date)
@@ -25,5 +25,5 @@ import nl.mpi.flap.model.SerialisableDataNode;
  */
 public interface TreeNodeClickListener {
 
-    void clickEvent(SerialisableDataNode dataNode);
+    void clickEvent(PluginDataNode dataNode);
 }

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
+import nl.mpi.flap.model.PluginDataNode;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yams.client.controllers.ActionsPanelController;
 import nl.mpi.yams.client.DatabaseInformation;
@@ -93,7 +94,7 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
         if (databaseName != null) {
             final TreeNodeClickListener treeNodeClickListener = new TreeNodeClickListener() {
 
-                public void clickEvent(SerialisableDataNode dataNode) {
+                public void clickEvent(PluginDataNode dataNode) {
 //                    logger.info("TreeNodeClickListener");
 //                    actionsPanelController.setDataNode(dataNode);
 //                    detailsPanel.setDataNode(dataNode);
@@ -115,7 +116,7 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
 //            logger.info("addCsDatabaseTree");
             final TreeNodeClickListener treeNodeClickListener = new TreeNodeClickListener() {
 
-                public void clickEvent(SerialisableDataNode dataNode) {
+                public void clickEvent(PluginDataNode dataNode) {
 //                    logger.info("TreeNodeClickListener");
                     try {
                         String id = dataNode.getArchiveHandle();

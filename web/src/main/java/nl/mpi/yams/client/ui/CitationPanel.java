@@ -26,7 +26,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.ModelException;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
 import nl.mpi.yams.client.CitationStrings;
 import nl.mpi.yams.client.HandleFormatter;
 
@@ -37,7 +37,7 @@ import nl.mpi.yams.client.HandleFormatter;
 public class CitationPanel extends VerticalPanel {
 
     private static final Logger logger = Logger.getLogger("");
-    private SerialisableDataNode dataNode;
+    private PluginDataNode dataNode;
 
 //    private static final CitationTemplate CITATION_TEMPLATE = GWT.create(CitationTemplate.class);
     final CitationStrings citationStrings = GWT.create(CitationStrings.class);
@@ -46,7 +46,7 @@ public class CitationPanel extends VerticalPanel {
         this.setVisible(false);
     }
 
-    public void setDataNode(SerialisableDataNode dataNode) {
+    public void setDataNode(PluginDataNode dataNode) {
 //        logger.info("MetadataDetailsPanel");
         this.clear();
 //        logger.info("a-MetadataDetailsPanel");
@@ -74,7 +74,7 @@ public class CitationPanel extends VerticalPanel {
         return horizontalPanel;
     }
 
-    public Panel getPanel(SerialisableDataNode dataNode) {
+    public Panel getPanel(PluginDataNode dataNode) {
         final VerticalPanel simplePanel = new VerticalPanel();
 //        logger.info(dataNode.getLabel());
         simplePanel.add(new Label(citationStrings.panelTitle()));

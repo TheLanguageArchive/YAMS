@@ -34,11 +34,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.DataNodeLink;
-import nl.mpi.flap.model.DataNodeType;
 import static nl.mpi.flap.model.DataNodeType.IMDI_RESOURCE;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
+import nl.mpi.flap.model.PluginDataNodeType;
 import nl.mpi.yams.common.data.DataNodeHighlight;
 
 /**
@@ -50,7 +50,7 @@ public class SingleDataNodeTable extends VerticalPanel {
 
     private static final Logger logger = Logger.getLogger("");
 
-    public SingleDataNodeTable(final SerialisableDataNode yamsDataNode, List<DataNodeHighlight> nodeHighlights) {
+    public SingleDataNodeTable(final PluginDataNode yamsDataNode, List<DataNodeHighlight> nodeHighlights) {
         setStyleName("yams-treeNodeDetails");
         final List<FieldGroup> fieldGroups = yamsDataNode.getFieldGroups();
         int rowCounter = 0;
@@ -106,7 +106,7 @@ public class SingleDataNodeTable extends VerticalPanel {
                 });
                 linksPanel.add(trovaAnchor);
             }
-            final DataNodeType nodeType = yamsDataNode.getType();
+            final PluginDataNodeType nodeType = yamsDataNode.getType();
             if (nodeType != null && IMDI_RESOURCE.equals(nodeType.getID())) {
                 for (DataNodeLink childLink : yamsDataNode.getChildIds()) {
                     final String resourceHandle = childLink.getArchiveHandle();

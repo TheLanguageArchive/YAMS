@@ -18,7 +18,7 @@
 package nl.mpi.yams.client;
 
 import java.util.List;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
 
 /**
  * @since Mar 26, 2014 1:32:09 PM (creation date)
@@ -26,7 +26,7 @@ import nl.mpi.flap.model.SerialisableDataNode;
  */
 public interface DataNodeLoaderListener {
 
-    void dataNodeLoaded(List<SerialisableDataNode> dataNodeList);
+    void dataNodeLoaded(List<? extends PluginDataNode> dataNodeList);
 
     void dataNodeLoadFailed(Throwable caught);
 }

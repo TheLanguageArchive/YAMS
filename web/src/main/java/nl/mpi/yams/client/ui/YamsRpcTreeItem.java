@@ -31,6 +31,8 @@ import nl.mpi.flap.model.DataNodeType;
 import static nl.mpi.flap.model.DataNodeType.IMDI_RESOURCE;
 import nl.mpi.flap.model.FieldGroup;
 import nl.mpi.flap.model.ModelException;
+import nl.mpi.flap.model.PluginDataNode;
+import nl.mpi.flap.model.PluginDataNodeType;
 import nl.mpi.flap.model.SerialisableDataNode;
 import nl.mpi.yams.client.DataNodeLoader;
 import nl.mpi.yams.client.DataNodeLoaderListener;
@@ -67,7 +69,7 @@ public class YamsRpcTreeItem extends YamsTreeItem {
         loadDataNode(itemLoadedListener);
     }
 
-    public YamsRpcTreeItem(String databaseName, SerialisableDataNode yamsDataNode, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, boolean displayFlatNodes) {
+    public YamsRpcTreeItem(String databaseName, PluginDataNode yamsDataNode, DataNodeLoader dataNodeLoader, TreeTableHeader treeTableHeader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, boolean displayFlatNodes) {
         super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
         this.yamsDataNode = yamsDataNode;
         this.treeTableHeader = treeTableHeader;
@@ -89,7 +91,7 @@ public class YamsRpcTreeItem extends YamsTreeItem {
         // todo: add a click handler so that clicking anywhere will open the branch
     }
 
-    private void addColumnForHighlight(HorizontalPanel horizontalPanel, SerialisableDataNode dataNode, DataNodeHighlight highlight) {
+    private void addColumnForHighlight(HorizontalPanel horizontalPanel, PluginDataNode dataNode, DataNodeHighlight highlight) {
         if (dataNode != null && treeTableHeader != null) {
             logger.info(dataNode.getLabel());
             final List<FieldGroup> fieldGroups = dataNode.getFieldGroups();
@@ -108,9 +110,9 @@ public class YamsRpcTreeItem extends YamsTreeItem {
                     }
                 }
             }
-            final List<? extends SerialisableDataNode> childList = dataNode.getChildList();
+            final List<? extends PluginDataNode> childList = dataNode.getChildList();
             if (childList != null) {
-                for (SerialisableDataNode childDataNode : childList) {
+                for (PluginDataNode childDataNode : childList) {
                     addColumnForHighlight(horizontalPanel, childDataNode, highlight);
 //                    if (dataNode != null) {
                 }
@@ -208,12 +210,12 @@ public class YamsRpcTreeItem extends YamsTreeItem {
         removeItem(loadNextTreeItem);
         removeItem(errorTreeItem);
         if (yamsDataNode != null) {
-            final List<? extends SerialisableDataNode> childList = getFilteredChildNodes();
+            final List<? extends PluginDataNode> childList = getFilteredChildNodes();
             if (childList != null) {
                 removeItem(loadingTreeItem);
                 if (childList.size() > loadedCount) // add the meta child nodes
                 {
-                    for (SerialisableDataNode childDataNode : childList) {
+                    for (PluginDataNode childDataNode : childList) {
                         insertLoadedChildNode(childDataNode);
                         loadedCount++;
                     }
@@ -263,11 +265,11 @@ public class YamsRpcTreeItem extends YamsTreeItem {
                     } else {
                         dataNodeLoader.requestLoad(dataNodeIdList, new DataNodeLoaderListener() {
 
-                            public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
+                            public void dataNodeLoaded(List<? extends PluginDataNode> dataNodeList) {
 //                        setText("Loaded " + dataNodeList.size() + " child nodes");
                                 removeItem(loadingTreeItem);
                                 if (dataNodeList != null) {
-                                    for (SerialisableDataNode childDataNode : dataNodeList) {
+                                    for (PluginDataNode childDataNode : dataNodeList) {
                                         insertLoadedChildNode(childDataNode);
                                         loadedCount++;
                                     }
@@ -311,7 +313,7 @@ public class YamsRpcTreeItem extends YamsTreeItem {
             dataNodeIdList.add(dataNodeId);
             dataNodeLoader.requestLoad(dataNodeIdList, new DataNodeLoaderListener() {
 
-                public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
+                public void dataNodeLoaded(List<? extends PluginDataNode> dataNodeList) {
                     yamsDataNode = dataNodeList.get(0);
                     setLabel();
                     removeItem(loadingTreeItem);
@@ -351,7 +353,7 @@ public class YamsRpcTreeItem extends YamsTreeItem {
                     childCountsize = flatChildIds.size();
                 } else if (yamsDataNode.getChildList() != null) {
                     // get the reduced children here
-                    final List<? extends SerialisableDataNode> filteredChildNodes = getFilteredChildNodes();
+                    final List<? extends PluginDataNode> filteredChildNodes = getFilteredChildNodes();
                     if (filteredChildNodes != null) {
                         childCountsize = filteredChildNodes.size();
                     } else {
@@ -371,21 +373,21 @@ public class YamsRpcTreeItem extends YamsTreeItem {
         }
     }
 
-    protected void insertLoadedChildNode(SerialisableDataNode childDataNode) {
+    protected void insertLoadedChildNode(PluginDataNode childDataNode) {
         YamsRpcTreeItem yamsTreeItem = new YamsRpcTreeItem(databaseName, childDataNode, dataNodeLoader, treeTableHeader, popupPanel, checkboxListener, clickListener, displayFlatNodes);
         yamsTreeItem.setHighlights(highlighedLinks);
         addItem(yamsTreeItem);
 
     }
 
-    private List<? extends SerialisableDataNode> getFilteredChildNodes() {
-        final List<? extends SerialisableDataNode> childList = yamsDataNode.getChildList();
+    private List<? extends PluginDataNode> getFilteredChildNodes() {
+        final List<? extends PluginDataNode> childList = yamsDataNode.getChildList();
         if (childList == null) {
             return null;
         }
         if (displayFlatNodes) {
-            final ArrayList flatNodes = new ArrayList<SerialisableDataNode>();
-            getFlatNodes(yamsDataNode, flatNodes);
+            final ArrayList flatNodes = new ArrayList<PluginDataNode>();
+            getFlatNodes((PluginDataNode) yamsDataNode, flatNodes);
             if (flatNodes.isEmpty()) {
 //                // if the list is empty then return null
                 return null;
@@ -397,13 +399,13 @@ public class YamsRpcTreeItem extends YamsTreeItem {
         }
     }
 
-    private List<? extends SerialisableDataNode> getFlatNodes(SerialisableDataNode currentDataNode, List<SerialisableDataNode> flatNodes) {
+    private List<? extends PluginDataNode> getFlatNodes(PluginDataNode currentDataNode, List<PluginDataNode> flatNodes) {
         // this filtering should only be relevant to IMDI nodes because CMDI nodes will have all resouces as links
-        final List<? extends SerialisableDataNode> childList = currentDataNode.getChildList();
+        final List<? extends PluginDataNode> childList = currentDataNode.getChildList();
         if (childList != null) // this filtering should only be relevant to IMDI nodes because CMDI nodes will have all resouces as links
         {
-            for (SerialisableDataNode childDataNode : childList) {
-                final DataNodeType nodeType = childDataNode.getType();
+            for (PluginDataNode childDataNode : childList) {
+                final PluginDataNodeType nodeType = childDataNode.getType();
                 if ((nodeType != null && IMDI_RESOURCE.equals(nodeType.getID()))) {
 //                if (childDataNode.getArchiveHandle() != null) // archive handle is not the best thing to detect resource nodes
                     flatNodes.add(childDataNode);
@@ -414,16 +416,16 @@ public class YamsRpcTreeItem extends YamsTreeItem {
         return flatNodes;
     }
 
-    private List<DataNodeLink> getFlatChildIds(SerialisableDataNode currentDataNode, List<DataNodeLink> dataNodeLinks) throws ModelException {
+    private List<DataNodeLink> getFlatChildIds(PluginDataNode currentDataNode, List<DataNodeLink> dataNodeLinks) throws ModelException {
         final List<DataNodeLink> childIds = currentDataNode.getChildIds();
         if (childIds != null) {
             dataNodeLinks.addAll(childIds);
         }
         if (displayFlatNodes) {
-            final List<? extends SerialisableDataNode> childList = currentDataNode.getChildList();
+            final List<? extends PluginDataNode> childList = currentDataNode.getChildList();
             if (childList != null) // this filtering should only be relevant to IMDI nodes because CMDI nodes will have all resouces as links
             {
-                for (SerialisableDataNode childDataNode : childList) {
+                for (PluginDataNode childDataNode : childList) {
                     getFlatChildIds(childDataNode, dataNodeLinks);
                 }
             }

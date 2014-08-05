@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.FieldGroup;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
 
 /**
  * Created on : Apr 2, 2013, 3:44:06 PM
@@ -36,8 +36,8 @@ import nl.mpi.flap.model.SerialisableDataNode;
  */
 public class DataNodeTable extends DialogBox {
 
-    final private ArrayList<SerialisableDataNode> dataNodes;
-    final private CellTable<SerialisableDataNode> cellTable;
+    final private ArrayList<PluginDataNode> dataNodes;
+    final private CellTable<PluginDataNode> cellTable;
     final private ArrayList<String> currentColumns;
     final private DisclosurePanel disclosurePanel;
     final private ScrollPanel scrollPanel;
@@ -46,8 +46,8 @@ public class DataNodeTable extends DialogBox {
     public DataNodeTable() {
         disclosurePanel = new DisclosurePanel(tableTitle);
 //        add(new Label("Table"));
-        cellTable = new CellTable<SerialisableDataNode>();
-        dataNodes = new ArrayList<SerialisableDataNode>();
+        cellTable = new CellTable<PluginDataNode>();
+        dataNodes = new ArrayList<PluginDataNode>();
         currentColumns = new ArrayList<String>();
         scrollPanel = new ScrollPanel(cellTable);
 //        scrollPanel.setSize("100%", "100%");
@@ -58,7 +58,7 @@ public class DataNodeTable extends DialogBox {
         this.setModal(false);
     }
 
-    public void removeDataNode(SerialisableDataNode yamsDataNode) {
+    public void removeDataNode(PluginDataNode yamsDataNode) {
         dataNodes.remove(yamsDataNode);
         updateTable();
         if (dataNodes.isEmpty()) {
@@ -68,7 +68,7 @@ public class DataNodeTable extends DialogBox {
         }
     }
 
-    public void addDataNode(SerialisableDataNode yamsDataNode) {
+    public void addDataNode(PluginDataNode yamsDataNode) {
         dataNodes.add(yamsDataNode);
         updateTable();
         this.center();
@@ -76,7 +76,7 @@ public class DataNodeTable extends DialogBox {
 
     private HashSet<String> getColumnLabels() {
         HashSet<String> columnLabels = new HashSet<String>();
-        for (SerialisableDataNode dataNode : dataNodes) {
+        for (PluginDataNode dataNode : dataNodes) {
             for (FieldGroup fieldGroup : dataNode.getFieldGroups()) {
                 columnLabels.add(fieldGroup.getFieldName());
             }
@@ -89,9 +89,9 @@ public class DataNodeTable extends DialogBox {
         for (final String currentName : columnLabels) {
             if (!currentColumns.contains(currentName)) {
                 currentColumns.add(currentName);
-                cellTable.addColumn(new TextColumn<SerialisableDataNode>() {
+                cellTable.addColumn(new TextColumn<PluginDataNode>() {
                     @Override
-                    public String getValue(SerialisableDataNode dataNode) {
+                    public String getValue(PluginDataNode dataNode) {
                         for (FieldGroup fieldGroup : dataNode.getFieldGroups()) {
                             if (fieldGroup.getFieldName().equals(currentName)) {
                                 StringBuilder stringBuilder = new StringBuilder();

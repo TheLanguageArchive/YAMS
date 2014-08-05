@@ -34,8 +34,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodePermissions;
-import nl.mpi.flap.model.DataNodeType;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
+import nl.mpi.flap.model.PluginDataNodeType;
 import nl.mpi.yams.client.DataNodeLoader;
 import nl.mpi.yams.client.TreeNodeCheckboxListener;
 import nl.mpi.yams.client.TreeNodeClickListener;
@@ -50,7 +50,7 @@ public abstract class YamsTreeItem extends TreeItem {
     public static final String ERROR_GETTING_CHILD_NODES = "Error getting child nodes";
     public static final String LOADING_CHILD_NODES_FAILED = "Loading child nodes failed";
     public static final String FAILED_TO_LOAD = "Failed to load";
-    protected SerialisableDataNode yamsDataNode = null;
+    protected PluginDataNode yamsDataNode = null;
     final protected DataNodeLoader dataNodeLoader;
     protected boolean loadAttempted = false;
     final HorizontalPanel outerPanel;
@@ -109,7 +109,7 @@ public abstract class YamsTreeItem extends TreeItem {
 
     }
 
-    protected void setNodeIconStye(DataNodeType dataNodeType, DataNodePermissions dataNodePermissions) {
+    protected void setNodeIconStye(PluginDataNodeType dataNodeType, DataNodePermissions dataNodePermissions) {
         iconImage1.setStyleName("access_level_" + dataNodePermissions.getAccessLevel().name());
         iconImage2.setStyleName("format_" + dataNodeType.getFormat().name());
     }
@@ -230,11 +230,11 @@ public abstract class YamsTreeItem extends TreeItem {
 //    }
     public abstract void loadChildNodes();
 
-    abstract void insertLoadedChildNode(SerialisableDataNode childDataNode);
+    abstract void insertLoadedChildNode(PluginDataNode childDataNode);
 
     abstract void setLabel();
 
-    public SerialisableDataNode getYamsDataNode() {
+    public PluginDataNode getYamsDataNode() {
         return yamsDataNode;
     }
 }

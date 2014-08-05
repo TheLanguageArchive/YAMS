@@ -32,7 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
 import nl.mpi.yams.client.controllers.HistoryController;
 import nl.mpi.yams.client.HistoryListener;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
@@ -59,7 +59,7 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
         this.setVisible(false);
         checkboxListener = new TreeNodeCheckboxListener() {
 
-            public void stateChanged(boolean selected, SerialisableDataNode dataNode, CheckBox checkBox) {
+            public void stateChanged(boolean selected, PluginDataNode dataNode, CheckBox checkBox) {
                 if (selected) {
                     dataNodeTable.addDataNode(dataNode);
                 } else {

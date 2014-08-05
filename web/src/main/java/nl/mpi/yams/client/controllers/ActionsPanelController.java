@@ -30,11 +30,10 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.ModelException;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
 import nl.mpi.yams.client.DataNodeLoader;
 import nl.mpi.yams.client.DataNodeLoaderJson;
 import nl.mpi.yams.client.DataNodeLoaderListener;
@@ -61,7 +60,7 @@ public class ActionsPanelController implements HistoryListener {
     private static final Logger logger = Logger.getLogger("");
     private final DatabaseInformation databaseInfo;
     private final SearchOptionsServiceAsync searchOptionsService;
-    private SerialisableDataNode dataNode = null;
+    private PluginDataNode dataNode = null;
     private DataNodeId nodeId = null;
     private final HistoryController historyController;
     final private RootPanel actionsTargetPanel;
@@ -116,7 +115,7 @@ public class ActionsPanelController implements HistoryListener {
 //                    logger.info("branchSelectionList.size():" + branchSelectionList.size());
 //                    logger.info("nodeId.getIdString():" + nodeId.getIdString());
                     final DataNodeLoaderListener dataNodeLoaderListener = new DataNodeLoaderListener() {
-                        public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
+                        public void dataNodeLoaded(List<? extends PluginDataNode> dataNodeList) {
                             if (dataNodeList != null && !dataNodeList.isEmpty()) {
                                 dataNode = dataNodeList.get(0);
 //                                logger.info(dataNode.getLabel());
@@ -375,7 +374,7 @@ public class ActionsPanelController implements HistoryListener {
         }
     }
 
-    public final void setDataNode(SerialisableDataNode dataNode) {
+    public final void setDataNode(PluginDataNode dataNode) {
         this.dataNode = dataNode;
         if (detailsPanel != null) {
             detailsPanel.setVisible(dataNode != null);

@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.DataField;
 import nl.mpi.flap.model.FieldGroup;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
 
 /**
  * @since Apr 8, 2014 5:36:56 PM (creation date)
@@ -39,13 +39,13 @@ import nl.mpi.flap.model.SerialisableDataNode;
 public class MetadataDetailsPanel extends VerticalPanel {
 
     private static final Logger logger = Logger.getLogger("");
-    private SerialisableDataNode dataNode;
+    private PluginDataNode dataNode;
 
     public MetadataDetailsPanel() {
         this.setVisible(false);
     }
 
-    public void setDataNode(SerialisableDataNode dataNode) {
+    public void setDataNode(PluginDataNode dataNode) {
         //logger.info("MetadataDetailsPanel:setDataNode");
         this.clear();
 //        logger.info("a-MetadataDetailsPanel");
@@ -59,7 +59,7 @@ public class MetadataDetailsPanel extends VerticalPanel {
 //        logger.info("end-MetadataDetailsPanel");
     }
 
-    public Panel addDataNodePanel(SerialisableDataNode dataNode) {
+    public Panel addDataNodePanel(PluginDataNode dataNode) {
         final VerticalPanel simplePanel = new VerticalPanel();
         // logger.info(dataNode.getLabel());
         final Label label = new Label(dataNode.getLabel());
@@ -91,14 +91,14 @@ public class MetadataDetailsPanel extends VerticalPanel {
             }
         }
 //        logger.info("children");
-        final List<? extends SerialisableDataNode> childList = dataNode.getChildList();
+        final List<? extends PluginDataNode> childList = dataNode.getChildList();
         if (childList != null) {
 //            int childIndex = 0;
 //            int maxToLoad = 10;
 //            for (final SerialisableDataNode dataNodeChild : childList.subList(childIndex, childIndex + maxToLoad)) {
 //                verticalPanel.add(addDataNodePanel(dataNodeChild));
 //                childIndex++;
-            for (final SerialisableDataNode dataNodeChild : childList) {
+            for (final PluginDataNode dataNodeChild : childList) {
                 boolean lazyLoad = dataNodeChild.getChildList() != null && dataNodeChild.getChildList().size() > 5;
                 if (lazyLoad) {
                     final DisclosurePanel disclosurePanel = new DisclosurePanel(dataNodeChild.getLabel());

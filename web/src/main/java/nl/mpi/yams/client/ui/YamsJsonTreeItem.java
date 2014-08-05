@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import java.util.logging.Level;
 import nl.mpi.flap.model.ModelException;
-import nl.mpi.flap.model.SerialisableDataNode;
+import nl.mpi.flap.model.PluginDataNode;
 import nl.mpi.yams.client.DataNodeLoader;
 import nl.mpi.yams.client.DataNodeLoaderListener;
 import nl.mpi.yams.client.TreeNodeCheckboxListener;
@@ -38,7 +38,7 @@ public class YamsJsonTreeItem extends YamsTreeItem {
 
     final private YamsTreeItemLoadedListener itemLoadedListener;
 
-    public YamsJsonTreeItem(SerialisableDataNode childDataNode, DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, final YamsTreeItemLoadedListener itemLoadedListener) {
+    public YamsJsonTreeItem(PluginDataNode childDataNode, DataNodeLoader dataNodeLoader, PopupPanel popupPanel, TreeNodeCheckboxListener checkboxListener, TreeNodeClickListener clickListener, final YamsTreeItemLoadedListener itemLoadedListener) {
         super(dataNodeLoader, popupPanel, checkboxListener, clickListener);
 //        logger.info("YamsJsonTreeItem-datanode");
         this.itemLoadedListener = itemLoadedListener;
@@ -71,7 +71,7 @@ public class YamsJsonTreeItem extends YamsTreeItem {
 //            logger.info("requestLoadRoot");
             dataNodeLoader.requestLoadRoot(new DataNodeLoaderListener() {
 //
-                public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
+                public void dataNodeLoaded(List<? extends PluginDataNode> dataNodeList) {
 //                    logger.info("dataNodeLoaded");
                     yamsDataNode = dataNodeList.get(0);
                     setLabel();
@@ -124,11 +124,11 @@ public class YamsJsonTreeItem extends YamsTreeItem {
 //                    logger.log(Level.INFO, "loadedCount: " + loadedCount + ", numberToGet: " + numberToGet + ", firstToGet: " + firstToGet + ", lastToGet: " + lastToGet + ", maxToGet: " + maxToGet);                    
                 dataNodeLoader.requestLoadChildrenOf(new DataNodeId(yamsDataNode.getURI()), firstToGet, lastToGet, new DataNodeLoaderListener() {
 
-                    public void dataNodeLoaded(List<SerialisableDataNode> dataNodeList) {
+                    public void dataNodeLoaded(List<? extends PluginDataNode> dataNodeList) {
 //                        setText("Loaded " + dataNodeList.size() + " child nodes");
                         removeItem(loadingTreeItem);
                         if (dataNodeList != null) {
-                            for (SerialisableDataNode childDataNode : dataNodeList) {
+                            for (PluginDataNode childDataNode : dataNodeList) {
                                 insertLoadedChildNode(childDataNode);
                                 loadedCount++;
                             }
@@ -163,7 +163,7 @@ public class YamsJsonTreeItem extends YamsTreeItem {
     }
 
     @Override
-    void insertLoadedChildNode(SerialisableDataNode childDataNode) {
+    void insertLoadedChildNode(PluginDataNode childDataNode) {
         YamsJsonTreeItem yamsTreeItem = new YamsJsonTreeItem(childDataNode, dataNodeLoader, popupPanel, checkboxListener, clickListener, itemLoadedListener);
         addItem(yamsTreeItem);
     }
