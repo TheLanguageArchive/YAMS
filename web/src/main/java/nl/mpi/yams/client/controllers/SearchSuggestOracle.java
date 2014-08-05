@@ -103,7 +103,7 @@ public abstract class SearchSuggestOracle extends MultiWordSuggestOracle {
                     }
 
                     public String getReplacementString() {
-                        return entry;
+                        return "\"" + entry + "\"";
                     }
                 });
 //                logger.log(Level.INFO, entry);

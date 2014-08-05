@@ -57,9 +57,10 @@ public abstract class SearchHandler implements ClickHandler, KeyUpHandler {
         this.databaseInfo = databaseInfo;
         this.searchOptionsService = searchOptionsService;
         this.resultsPanel = resultsPanel;
+        updateDbName();
     }
 
-    public void updateDbName() {
+    final public void updateDbName() {
         final String databaseName = historyController.getDatabaseName();
         if (searchOptionsService != null) {
             dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, databaseInfo.getDatabaseIcons(databaseName), databaseName);

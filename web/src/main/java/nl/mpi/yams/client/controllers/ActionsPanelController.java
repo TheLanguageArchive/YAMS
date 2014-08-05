@@ -46,7 +46,10 @@ import nl.mpi.yams.client.ServiceLocations;
 import static nl.mpi.yams.client.HistoryData.NodeActionType.citation;
 import static nl.mpi.yams.client.HistoryData.NodeActionType.details;
 import nl.mpi.yams.client.ui.CitationPanel;
+import nl.mpi.yams.client.ui.ConciseSearchBox;
+import nl.mpi.yams.client.ui.DataNodeTable;
 import nl.mpi.yams.client.ui.MetadataDetailsPanel;
+import nl.mpi.yams.client.ui.ResultsPanel;
 import nl.mpi.yams.client.version;
 import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.IconTableBase64;
@@ -82,6 +85,7 @@ public class ActionsPanelController implements HistoryListener {
     final private RootPanel logoutTag;
     final ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
     private String errorMessage = null;
+    private NodeActionType lastActionType = null;
 
     public void historyChange() {
         errorMessage = null;
@@ -93,10 +97,12 @@ public class ActionsPanelController implements HistoryListener {
 //                logger.info(exception.getMessage());
 //            }
 //        }
-        if (dataNode != null && nodeId != null && !branchSelectionList.isEmpty() && nodeId.equals(branchSelectionList.get(0))) {
+        final NodeActionType nodeActionType = historyController.getHistoryData().getNodeActionType();
+        if (dataNode != null && nodeId != null && !branchSelectionList.isEmpty() && nodeId.equals(branchSelectionList.get(0)) && lastActionType == nodeActionType) {
             // todo: if we start supporting multiple selections then this will need to change
             // the current data node is already selected so no change needed.
         } else {
+            lastActionType = nodeActionType;
             final String databaseName = historyController.getDatabaseName();
             if (databaseName != null) {
                 final IconTableBase64 databaseIcons = databaseInfo.getDatabaseIcons(databaseName);
@@ -109,7 +115,7 @@ public class ActionsPanelController implements HistoryListener {
 //                logger.info("branchSelectionList.size():" + branchSelectionList.size());
                 if (branchSelectionList.isEmpty()) {
                     dataNode = null;
-                    doNodeAction(historyController.getHistoryData().getNodeActionType());
+                    doNodeAction(nodeActionType);
                 } else {
                     nodeId = branchSelectionList.get(0);
 //                    logger.info("branchSelectionList.size():" + branchSelectionList.size());
@@ -119,7 +125,7 @@ public class ActionsPanelController implements HistoryListener {
                             if (dataNodeList != null && !dataNodeList.isEmpty()) {
                                 dataNode = dataNodeList.get(0);
 //                                logger.info(dataNode.getLabel());
-                                doNodeAction(historyController.getHistoryData().getNodeActionType());
+                                doNodeAction(nodeActionType);
                             } else {
                                 showError("dataNodeLoaded but the resulting list was empty");
                                 logger.warning(errorMessage);
@@ -177,7 +183,7 @@ public class ActionsPanelController implements HistoryListener {
             addPopupPanelAction(loginAnchor, serviceLocations.logoutUrl());
         }
         if (metadataSearchTag != null) {
-            addNodeAction(metadataSearchTag, NodeActionType.search);
+            addHistoryAction(metadataSearchTag, NodeActionType.search);
         }
         if (annotationContentSearchTag != null) {
             addPageAction(annotationContentSearchTag, serviceLocations.trovaUrl());
@@ -291,8 +297,14 @@ public class ActionsPanelController implements HistoryListener {
                         setDataNode(dataNode);
                         break;
                     case search:
-                        doPanelAction(serviceLocations.yamsUrl(dataNode.getURI()));
-//                actionsTargetPanel.add(new SearchPanel());
+//                        doPanelAction(serviceLocations.yamsUrl(dataNode.getURI()));
+                        setDataNode(dataNode);
+                        final DataNodeTable dataNodeTable = new DataNodeTable();
+                        ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
+                        actionsTargetPanel.add(new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel));
+                        actionsTargetPanel.add(resultsPanel);
+                        detailsPanel.setVisible(false);
+                        actionsTargetPanel.setVisible(true);
                         break;
                     case ams:
                         doPanelAction(serviceLocations.amsUrl(dataNode.getURI()));
@@ -320,6 +332,16 @@ public class ActionsPanelController implements HistoryListener {
         detailsPanel.setVisible(true);
         detailsPanel.clear();
         detailsPanel.add(new Label(errorMessage));
+    }
+
+    private void addHistoryAction(RootPanel rootPanel, final NodeActionType actionType) {
+        final Button button = Button.wrap(rootPanel.getElement());
+        button.addClickHandler(new ClickHandler() {
+
+            public void onClick(ClickEvent event) {
+                historyController.setAction(actionType);
+            }
+        });
     }
 
     private void addNodeAction(RootPanel rootPanel, final NodeActionType actionType) {

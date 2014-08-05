@@ -20,6 +20,7 @@ package nl.mpi.yams.client;
 import nl.mpi.yams.client.controllers.HistoryController;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.MetadataFileType;
 import nl.mpi.yams.common.data.QueryDataStructures;
 import nl.mpi.yams.common.data.SearchParameters;
@@ -46,7 +47,11 @@ public class ConciseSearchParser {
 
     public HistoryData parseConciseSearch(HistoryController historyController, String searchString) {
         // while we would prefer to use StringTokenzier we cannot because this section will be used in javascript via GWT
-        final HistoryData historyData = new HistoryData();
+        final HistoryData historyData = new HistoryData();//historyController.getHistoryData();
+        historyData.setNodeActionType(historyController.getHistoryData().getNodeActionType());
+        for (DataNodeId branchSelection : historyController.getHistoryData().getBranchSelection()) {
+            historyData.addBranchSelection(branchSelection);
+        }
         historyData.setDatabaseName(historyController.getDefaultDatabase());
         MetadataFileType type = new MetadataFileType(null, "", "");
         MetadataFileType path = new MetadataFileType("", null, "");
