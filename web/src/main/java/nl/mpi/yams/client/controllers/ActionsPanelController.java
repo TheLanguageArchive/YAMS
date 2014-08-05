@@ -86,6 +86,7 @@ public class ActionsPanelController implements HistoryListener {
     final ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
     private String errorMessage = null;
     private NodeActionType lastActionType = null;
+    private ConciseSearchBox conciseSearchBox = null;
 
     public void historyChange() {
         errorMessage = null;
@@ -140,6 +141,11 @@ public class ActionsPanelController implements HistoryListener {
                     dataNodeLoader.requestLoad(branchSelectionList, dataNodeLoaderListener);
                 }
             }
+        }
+        if (nodeActionType.equals(NodeActionType.search) && conciseSearchBox != null) {
+            conciseSearchBox.historyChange();
+        } else {
+            conciseSearchBox = null;
         }
     }
 
@@ -301,7 +307,9 @@ public class ActionsPanelController implements HistoryListener {
                         setDataNode(dataNode);
                         final DataNodeTable dataNodeTable = new DataNodeTable();
                         ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
-                        actionsTargetPanel.add(new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel));
+                        conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel);
+                        conciseSearchBox.historyChange(); // preload any history values
+                        actionsTargetPanel.add(conciseSearchBox);
                         actionsTargetPanel.add(resultsPanel);
                         detailsPanel.setVisible(false);
                         actionsTargetPanel.setVisible(true);
