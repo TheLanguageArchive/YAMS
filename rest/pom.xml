@@ -8,8 +8,8 @@
   </parent>
 
     <groupId>nl.mpi</groupId>
-    <artifactId>yams-rest</artifactId>
-    <version>1.0-pretesting-SNAPSHOT</version>
+    <artifactId>yams-basex-connector</artifactId>
+    <version>1.0.22-pretesting</version>
     <packaging>war</packaging>
 
     <name>yams-basex-connector</name>
