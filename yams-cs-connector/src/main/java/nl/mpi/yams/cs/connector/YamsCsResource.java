@@ -45,7 +45,7 @@ import org.springframework.stereotype.Component;
  * @author Peter Withers <peter.withers@mpi.nl>
  */
 @Component
-@Path("yamscs")
+@Path("")
 public class YamsCsResource {
 
     @Autowired
@@ -99,4 +99,14 @@ public class YamsCsResource {
         }
         return Response.ok(nodeWrappers).header("Access-Control-Allow-Origin", "*").build();
     }
+
+//    @GET
+//    @Produces("application/json")
+//    @Path("versions")
+////    @Path("hdl{hdl}")
+//    public Response getDataNodeVersions(@Context HttpServletRequest request, @QueryParam("id") final String nodeUri) throws URISyntaxException {        
+//todo: this will require the archive objects and related spring things to be configured
+//        final CorpusNode corpusNode = this.corpusStructureProvider.getNode(new URI(nodeUri));        
+//        return Response.ok(corpusNode.getFileInfo().).header("Access-Control-Allow-Origin", "*").build();
+//    }
 }

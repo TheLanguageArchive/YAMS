@@ -47,7 +47,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>YAMS CS2 CMDI</servlet-name>
-        <url-pattern>/yams-cs-connector/*</url-pattern>
+        <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
     <!-- start SHHAA config -->
     <context-param>
