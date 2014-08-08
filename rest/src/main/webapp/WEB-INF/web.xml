@@ -36,6 +36,6 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>YAMS REST</servlet-name>
-        <url-pattern>/yams-basex-connector/*</url-pattern>
+        <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
 </web-app>

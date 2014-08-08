@@ -34,3 +34,13 @@ curl -u user:pass -i -X POST -H "Content-Type: application/xml" -d "<command xml
 
 
 todo: add files to set the DB user permissions
+
+yams-basex-connector-1.0-pretesting-SNAPSHOT-r41577-mpi-deploy.tar.gz
+
+sudo su latuser
+cp /lat/tomcat-webuser/conf/Catalina/localhost/ds#yams-basex-connector.xml /lat/tomcat-webuser/conf/Catalina/localhost/backup/ds#yams-basex-connector.xml.back
+cd /lat/webapps/yams-basex-connector; tar -xzvf /lat/webapps/dists/yams-basex-connector-1.0.24-pretesting-r41577-mpi-deploy.tar.gz 
+cd /lat/webapps/yams-basex-connector/yams-basex-connector-1.0.24-pretesting-r41577/war; jar -xfv yams-basex-connector-1.0.24-pretesting.war
+rm /lat/webapps/yams-basex-connector/current
+ln -s /lat/webapps/yams-basex-connector/yams-basex-connector-1.0.24-pretesting-r41577/war /lat/webapps/yams-basex-connector/current
+cp /lat/tomcat-webuser/conf/Catalina/localhost/backup/ds#yams-basex-connector.xml.back /lat/tomcat-webuser/conf/Catalina/localhost/ds#yams-basex-connector.xml
