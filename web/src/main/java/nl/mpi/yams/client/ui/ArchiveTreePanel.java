@@ -20,7 +20,6 @@ package nl.mpi.yams.client.ui;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import java.util.HashMap;
 import java.util.logging.Logger;
-import nl.mpi.flap.model.DataNodeLink;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.model.PluginDataNode;
 import nl.mpi.flap.model.SerialisableDataNode;
@@ -121,10 +120,26 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
                     try {
                         String id = dataNode.getArchiveHandle();
                         if (id == null) {
-                            id = new DataNodeLink(dataNode.getURI(), dataNode.getArchiveHandle()).getIdString();
+                            id = dataNode.getURI();//new DataNodeLink(dataNode.getURI(), dataNode.getArchiveHandle()).getIdString();
+                        }
+                        final HistoryData.NodeActionType nodeAction;
+                        switch (dataNode.getType().getFormat()) {
+                            case cmdi:
+                            case imdi_catalogue:
+                            case imdi_corpus:
+                            case imdi_info:
+                            case imdi_session:
+                                nodeAction = HistoryData.NodeActionType.details;
+                                break;
+                            case resource_audio:
+                            case resource_video:
+                                nodeAction = HistoryData.NodeActionType.view;
+                                break;
+                            default:
+                                nodeAction = HistoryData.NodeActionType.view;
                         }
 //                        logger.info(id);
-                        historyController.setBranchSelection(new DataNodeId(id), HistoryData.NodeActionType.details);
+                        historyController.setBranchSelection(new DataNodeId(id), nodeAction);
                     } catch (ModelException exception) {
                         logger.warning(exception.getMessage());
                     }

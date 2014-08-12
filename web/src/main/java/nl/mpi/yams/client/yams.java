@@ -190,6 +190,7 @@ public class yams implements EntryPoint {
         databaseInfo.getDbInfo();
         ActionsPanelController actionsPanelController = new ActionsPanelController(databaseInfo, searchOptionsService,
                 historyController,
+                RootPanel.get("errorTargetPanel"),
                 RootPanel.get("welcomePanel"),
                 RootPanel.get("actionsTargetPanel"),
                 RootPanel.get("detailsPanel"),

@@ -34,6 +34,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class ResourceViewer extends VerticalPanel {
 
     public ResourceViewer(final String resourceHandle) {
+        // todo: use HandleFormatter here
         final String targetUrl = resourceHandle.replace("hdl:", "http://hdl.handle.net/");
         Anchor openLink = new Anchor("open");
         this.add(openLink);

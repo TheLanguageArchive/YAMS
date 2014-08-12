@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import java.util.List;
 import java.util.logging.Logger;
 import nl.mpi.flap.model.ModelException;
@@ -39,6 +40,7 @@ import nl.mpi.yams.client.DataNodeLoaderJson;
 import nl.mpi.yams.client.DataNodeLoaderListener;
 import nl.mpi.yams.client.DataNodeLoaderRpc;
 import nl.mpi.yams.client.DatabaseInformation;
+import nl.mpi.yams.client.HandleFormatter;
 import nl.mpi.yams.client.HistoryData.NodeActionType;
 import nl.mpi.yams.client.HistoryListener;
 import nl.mpi.yams.client.SearchOptionsServiceAsync;
@@ -67,6 +69,7 @@ public class ActionsPanelController implements HistoryListener {
     private DataNodeId nodeId = null;
     private final HistoryController historyController;
     final private RootPanel actionsTargetPanel;
+    final private RootPanel errorTargetPanel;
     final private RootPanel detailsPanel;
     final private RootPanel homeLinkTag;
     final private RootPanel metadataSearchTag;
@@ -89,7 +92,7 @@ public class ActionsPanelController implements HistoryListener {
     private ConciseSearchBox conciseSearchBox = null;
 
     public void historyChange() {
-        errorMessage = null;
+        clearError();
         final List<DataNodeId> branchSelectionList = historyController.getHistoryData().getBranchSelection();
 //        if (dataNode != null) {
 //            try {
@@ -121,24 +124,31 @@ public class ActionsPanelController implements HistoryListener {
                     nodeId = branchSelectionList.get(0);
 //                    logger.info("branchSelectionList.size():" + branchSelectionList.size());
 //                    logger.info("nodeId.getIdString():" + nodeId.getIdString());
+//                    if (nodeActionType == NodeActionType.view) {
+//                        doNodeAction(nodeActionType);
+//                    } else {
                     final DataNodeLoaderListener dataNodeLoaderListener = new DataNodeLoaderListener() {
                         public void dataNodeLoaded(List<? extends PluginDataNode> dataNodeList) {
                             if (dataNodeList != null && !dataNodeList.isEmpty()) {
                                 dataNode = dataNodeList.get(0);
 //                                logger.info(dataNode.getLabel());
-                                doNodeAction(nodeActionType);
+                                clearError();
                             } else {
-                                showError("dataNodeLoaded but the resulting list was empty");
-                                logger.warning(errorMessage);
+                                showError("dataNodeLoaded but the resulting list was empty", nodeId.getIdString());
                             }
+                            doNodeAction(nodeActionType);
                         }
 
                         public void dataNodeLoadFailed(Throwable caught) {
+                            dataNode = null;
+                            showError(caught.getMessage(), nodeId.getIdString());
+                            doNodeAction(nodeActionType);
                             logger.warning(caught.getMessage());
                         }
                     };
                     // when getting the data from CS2DB we might get the url or handle or id, rather than trying to resolve this here the server tries to resolve this issue during the following request. 
                     dataNodeLoader.requestLoad(branchSelectionList, dataNodeLoaderListener);
+//                    }
                 }
             }
         }
@@ -153,11 +163,12 @@ public class ActionsPanelController implements HistoryListener {
         historyChange();
     }
 
-    public ActionsPanelController(DatabaseInformation databaseInfo, SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag, RootPanel loginTag, RootPanel logoutTag, RootPanel userSpan) {
+    public ActionsPanelController(DatabaseInformation databaseInfo, SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, RootPanel errorTargetPanel, RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag, RootPanel loginTag, RootPanel logoutTag, RootPanel userSpan) {
         this.databaseInfo = databaseInfo;
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.welcomePanelTag = welcomePanelTag;
+        this.errorTargetPanel = errorTargetPanel;
         this.actionsTargetPanel = actionsTargetPanel;
         this.detailsPanel = detailsPanel;
         this.homeLinkTag = homeLinkTag;
@@ -283,63 +294,77 @@ public class ActionsPanelController implements HistoryListener {
         }
         actionsTargetPanel.clear();
         actionsTargetPanel.setVisible(true);
-        if (errorMessage != null) {
-            showError(errorMessage);
-        } else {
-            try {
-                logger.info(actionType.name());
-                switch (actionType) {
-                    case citation:
-                        final CitationPanel citationPanel = new CitationPanel();
-                        citationPanel.setDataNode(dataNode);
-                        actionsTargetPanel.add(citationPanel);
-                        break;
-                    case details:
-                        final MetadataDetailsPanel metadataDetailsPanel = new MetadataDetailsPanel();
+        try {
+            logger.info(actionType.name());
+            switch (actionType) {
+                case citation:
+                    final CitationPanel citationPanel = new CitationPanel();
+                    citationPanel.setDataNode(dataNode);
+                    actionsTargetPanel.add(citationPanel);
+                    break;
+                case details:
+                    final MetadataDetailsPanel metadataDetailsPanel = new MetadataDetailsPanel();
 //                actionsTargetPanel.add(metadataDetailsPanel);
-                        detailsPanel.clear();
-                        detailsPanel.add(metadataDetailsPanel);
-                        metadataDetailsPanel.setDataNode(dataNode);
-                        setDataNode(dataNode);
-                        break;
-                    case search:
+                    detailsPanel.clear();
+                    detailsPanel.add(metadataDetailsPanel);
+                    metadataDetailsPanel.setDataNode(dataNode);
+                    setDataNode(dataNode);
+                    break;
+                case search:
 //                        doPanelAction(serviceLocations.yamsUrl(dataNode.getURI()));
-                        setDataNode(dataNode);
-                        final DataNodeTable dataNodeTable = new DataNodeTable();
-                        ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
-                        conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel);
-                        conciseSearchBox.historyChange(); // preload any history values
-                        actionsTargetPanel.add(conciseSearchBox);
-                        actionsTargetPanel.add(resultsPanel);
-                        detailsPanel.setVisible(false);
-                        actionsTargetPanel.setVisible(true);
-                        break;
-                    case ams:
-                        doPanelAction(serviceLocations.amsUrl(dataNode.getURI()));
-                        break;
-                    case rrs:
-                        doPanelAction(serviceLocations.rrsUrl());
-                        break;
-                    case home:
-                        setDataNode(null);
-                        break;
-                }
-            } catch (ModelException exception) {
-                showError(exception.getMessage());
-                logger.warning(exception.getMessage());
+                    setDataNode(dataNode);
+                    final DataNodeTable dataNodeTable = new DataNodeTable();
+                    ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
+                    conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel);
+                    conciseSearchBox.historyChange(); // preload any history values
+                    actionsTargetPanel.add(conciseSearchBox);
+                    actionsTargetPanel.add(resultsPanel);
+                    detailsPanel.setVisible(false);
+                    actionsTargetPanel.setVisible(true);
+                    break;
+                case ams:
+                    doPanelAction(serviceLocations.amsUrl(dataNode.getURI()));
+                    break;
+                case rrs:
+                    doPanelAction(serviceLocations.rrsUrl());
+                    break;
+                case home:
+                    setDataNode(null);
+                    break;
+                case view:
+                    setDataNode(dataNode);
+//                        actionsTargetPanel.add(new ResourceViewer(nodeId.getIdString()));
+                    doPanelAction(new HandleFormatter().getUrlFromHandle(nodeId.getIdString()));
             }
+        } catch (ModelException exception) {
+            showError(exception.getMessage(), actionType.name());
+            logger.warning(exception.getMessage());
         }
     }
 
-    private void showError(String message) {
+    private void clearError() {
+        errorMessage = null;
+        errorTargetPanel.clear();
+        errorTargetPanel.setVisible(false);
+    }
+
+    private void showError(String message, String details) {
         // show the error to the user
-//        final ErrorDataNode serialisableDataNode = new ErrorDataNode();
-//        serialisableDataNode.setLabel(errorMessage);
-//        dataNode = serialisableDataNode;
         errorMessage = message;
-        detailsPanel.setVisible(true);
-        detailsPanel.clear();
-        detailsPanel.add(new Label(errorMessage));
+        logger.warning(errorMessage);
+        errorTargetPanel.clear();
+        errorTargetPanel.setVisible(true);
+        final VerticalPanel simplePanel = new VerticalPanel();
+        final Label label = new Label("Error");
+        simplePanel.setStyleName("error_group");
+        simplePanel.add(label);
+        label.setStyleName("error_group_header_static");
+        VerticalPanel verticalPanel = new VerticalPanel();
+        verticalPanel.add(new Label(errorMessage));
+        verticalPanel.add(new Label(details));
+        verticalPanel.setStyleName("error_group_static");
+        simplePanel.add(verticalPanel);
+        errorTargetPanel.add(simplePanel);
     }
 
     private void addHistoryAction(RootPanel rootPanel, final NodeActionType actionType) {
@@ -363,6 +388,8 @@ public class ActionsPanelController implements HistoryListener {
     }
 
     private void doPanelAction(final String targetUrl) {
+//        logger.info("doPanelAction");
+//        logger.info(targetUrl);
         if (detailsPanel != null) {
             detailsPanel.setVisible(false);
         }
