@@ -33,7 +33,7 @@ import nl.mpi.flap.model.SerialisableDataNode;
  */
 public class CorpusNodeWrapper extends SerialisableDataNode {
 
-    private final CorpusNode archiveObject;
+    private final CorpusNode corpusNode;
     private final AccessInfoProvider accessInfoProvider;
     private final CorpusStructureProvider corpusStructureProvider;
     private final String userId;
@@ -41,18 +41,18 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
     public CorpusNodeWrapper(CorpusStructureProvider corpusStructureProvider, AccessInfoProvider accessInfoProvider, CorpusNode archiveObject, final String userId) {
         this.corpusStructureProvider = corpusStructureProvider;
         this.accessInfoProvider = accessInfoProvider;
-        this.archiveObject = archiveObject;
+        this.corpusNode = archiveObject;
         this.userId = (userId == null) ? "anonymous" : userId;
     }
 
     @Override
     public String getLabel() {
-        return archiveObject.getName();
+        return corpusNode.getName();
     }
 
     @Override
     public String getArchiveHandle() {
-        final URI pid = archiveObject.getPID();
+        final URI pid = corpusNode.getPID();
         if (pid == null) {
             // for some reason archive objects do not always have persistent identifiers, even foreign archive nodes should have some sort of PID so this is possibly an issue in Corpus Structure
             return null;
@@ -62,13 +62,14 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
 
     @Override
     public String getURI() throws ModelException {
-        return archiveObject.getNodeURI().toString();
+        // apparently for some reason getNodeUri has been designed to return only the identifier used to retrieve this node NOT the uri of the actual node!
+        return corpusNode.getNodeURI().toString();
     }
 
     @Override
     public DataNodeType getType() {
         final DataNodeType dataNodeType = new DataNodeType();
-        switch (archiveObject.getType()) {
+        switch (corpusNode.getType()) {
             case COLLECTION:
                 dataNodeType.setFormat(DataNodeType.FormatType.cmdi);
                 break;
@@ -97,7 +98,7 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
                 dataNodeType.setFormat(DataNodeType.FormatType.resource_video);
                 break;
         }
-        dataNodeType.setMimeType(archiveObject.getFormat());
+        dataNodeType.setMimeType(corpusNode.getFormat());
         return dataNodeType;
     }
 
@@ -105,7 +106,7 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
     public DataNodePermissions getPermissions() {
         final DataNodePermissions permissions = new DataNodePermissions();
 
-        switch (accessInfoProvider.getAccessLevel(archiveObject.getNodeURI())) {
+        switch (accessInfoProvider.getAccessLevel(corpusNode.getNodeURI())) {
             case ACCESS_LEVEL_CLOSED:
                 permissions.setAccessLevel(DataNodePermissions.AccessLevel.closed);
                 break;
@@ -131,6 +132,6 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
     @Override
     public Integer getLinkCount() {
         // todo: it would be nice if corpus structure provides us with a child link count but instead we get a list
-        return corpusStructureProvider.getChildNodeURIs(archiveObject.getNodeURI()).size();
+        return corpusStructureProvider.getChildNodeURIs(corpusNode.getNodeURI()).size();
     }
 }
