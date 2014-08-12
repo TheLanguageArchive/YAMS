@@ -89,7 +89,6 @@ public class YamsCsResource {
     @GET
     @Produces("application/json")
     @Path("linksof")
-//    @Path("hdl{hdl}")
     public Response getChildDataNodes(@Context HttpServletRequest request, @QueryParam("id") final String nodeUri, @QueryParam("start") @DefaultValue("0") final int start, @QueryParam("end") @DefaultValue("30") final int end) throws URISyntaxException {
         final List<SerialisableDataNode> nodeWrappers = new ArrayList<SerialisableDataNode>();
         final List<CorpusNode> childNodes = this.corpusStructureProvider.getChildNodes(new URI(nodeUri));
@@ -100,6 +99,13 @@ public class YamsCsResource {
         return Response.ok(nodeWrappers).header("Access-Control-Allow-Origin", "*").build();
     }
 
+    @GET
+    @Produces("application/json")
+    @Path("node")
+    public Response getDataNode(@Context HttpServletRequest request, @QueryParam("id") final String nodeUri) throws URISyntaxException {
+        final CorpusNode dataNode = this.corpusStructureProvider.getNode(new URI(nodeUri));
+        return Response.ok(new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, dataNode, request.getRemoteUser())).header("Access-Control-Allow-Origin", "*").build();
+    }
 //    @GET
 //    @Produces("application/json")
 //    @Path("versions")
