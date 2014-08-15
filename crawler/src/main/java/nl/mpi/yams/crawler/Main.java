@@ -80,7 +80,7 @@ public class Main {
         options.addOption("n", "number", true, "Number of documents to insert (default: " + defaultNumberToCrawl + ").");
         options.addOption("t", "target", true, "Target URL of the start documents to crawl (default: " + defaultStartUrl + "). This option implies the c option.");
         options.addOption("s", "server", true, "Data base server URL or file path (when a file path is provided it is used as the local basex directory via the java bindings rather than the REST interface), default is to use the un mondified local basex directory");
-        options.addOption("d", "dbname", true, "Name of the database to use (default: " + databaseName + ").");
+        options.addOption("db", "dbname", true, "Name of the database to use (default: " + databaseName + ").");
         options.addOption("u", "user", true, "Data base user name, (default: " + databaseUser + ").");
         options.addOption("p", "password", true, "Data base password, (default: " + databasePassword + ").");
         options.addOption("l", "limit", true, "Limit crawling to URLs which contain the provided string (default: " + crawlFilter + ").");
@@ -107,8 +107,8 @@ public class Main {
             if (line.hasOption("s")) {
                 databaseUrl = line.getOptionValue("s");
             }
-            if (line.hasOption("d")) {
-                databaseName = line.getOptionValue("d");
+            if (line.hasOption("db")) {
+                databaseName = line.getOptionValue("db");
             }
             if (line.hasOption("u")) {
                 databaseUser = line.getOptionValue("u");
