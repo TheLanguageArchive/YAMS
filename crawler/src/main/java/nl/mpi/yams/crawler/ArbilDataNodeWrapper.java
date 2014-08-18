@@ -49,7 +49,8 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
         this.permissionsServiceUri = permissionsServiceUri;
         final URI nodeUri = arbilDataNode.getUri();
         if (nodeUri != null && !nodeUri.toString().isEmpty()) {
-            permissionsWrapper = new PermissionsWrapper(permissionsServiceUri, nodeUri.toString());
+            // for some reason SC2CMDI cant handle the "http://hdl.handle.net/" and needs to have "hdl:" only, even though it is meant to work with the URI (what ever that might be at any given time).
+            permissionsWrapper = new PermissionsWrapper(permissionsServiceUri, nodeUri.toString().replace("http://hdl.handle.net/", "hdl:"));
         } else {
             permissionsWrapper = null;
         }
