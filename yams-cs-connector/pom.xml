@@ -10,7 +10,7 @@
 
     <groupId>nl.mpi</groupId>
     <artifactId>yams-cs-connector</artifactId>
-    <version>1.0.29-pretesting</version>
+    <version>1.0.35-pretesting</version>
     <packaging>war</packaging>
 
     <name>yams-cs-connector</name>
