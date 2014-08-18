@@ -29,7 +29,7 @@ public class PermissionsWrapperTest extends TestCase {
 
     private PermissionsWrapper getPermissionsWrapper() {
 //        return new PermissionsWrapper("http://localhost:8080/yams-cs-connector/rest/node?id=", "hdl:11142/00-75BAA2D4-FBCF-4E0C-94BE-624808AA1959");
-        return new PermissionsWrapper("https://lux16.mpi.nl/ds/yams-cs-connector/rest?id=", "hdl:11142/00-75BAA2D4-FBCF-4E0C-94BE-624808AA1959");
+        return new PermissionsWrapper("https://lux16.mpi.nl/ds/yams-cs-connector/rest/node?id=", "hdl:11142/00-75BAA2D4-FBCF-4E0C-94BE-624808AA1959");
 //00-75BAA2D4-FBCF-4E0C-94BE-624808AA1959        
 //        00-75BAA2D4-FBCF-4E0C-94BE-624808AA1959
     }
@@ -40,7 +40,7 @@ public class PermissionsWrapperTest extends TestCase {
     public void testGetLabel() {
         System.out.println("getLabel");
         PermissionsWrapper instance = getPermissionsWrapper();
-        String expResult = "Root";
+        String expResult = "testCollection";
         String result = instance.getLabel();
         assertEquals(expResult, result);
     }
@@ -65,7 +65,7 @@ public class PermissionsWrapperTest extends TestCase {
         System.out.println("getDataNodePermissions");
         PermissionsWrapper instance = getPermissionsWrapper();
         DataNodePermissions result = instance.getDataNodePermissions();
-        assertEquals("unknown", result.getAccessLevel().toString());
+        assertEquals("permission_needed", result.getAccessLevel().toString());
         assertEquals(null, result.getLabel());
     }
 }

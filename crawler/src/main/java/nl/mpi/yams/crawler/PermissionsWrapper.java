@@ -55,7 +55,7 @@ public class PermissionsWrapper {
 
     public String getLabel() {
         if (jsonNode != null) {
-            return jsonNode.get(0).get("Label").getTextValue();
+            return jsonNode.get("Label").getTextValue();
         } else {
             return "";
         }
@@ -65,10 +65,10 @@ public class PermissionsWrapper {
         final DataNodeType dataNodeType = new DataNodeType();
         if (jsonNode != null) {
             try {
-                dataNodeType.setID(jsonNode.get(0).get("Type").get("ID").getTextValue());
-                dataNodeType.setLabel(jsonNode.get(0).get("Type").get("Label").getTextValue());
-                dataNodeType.setMimeType(jsonNode.get(0).get("Type").get("MimeType").getTextValue());
-                dataNodeType.setFormat(PluginDataNodeType.FormatType.valueOf(jsonNode.get(0).get("Type").get("Format").getTextValue()));
+                dataNodeType.setID(jsonNode.get("Type").get("ID").getTextValue());
+                dataNodeType.setLabel(jsonNode.get("Type").get("Label").getTextValue());
+                dataNodeType.setMimeType(jsonNode.get("Type").get("MimeType").getTextValue());
+                dataNodeType.setFormat(PluginDataNodeType.FormatType.valueOf(jsonNode.get("Type").get("Format").getTextValue()));
             } catch (IllegalArgumentException exception) {
                 logger.info("Invalid FormatType", exception);
             }
@@ -79,10 +79,14 @@ public class PermissionsWrapper {
     public DataNodePermissions getDataNodePermissions() {
         final DataNodePermissions dataNodePermissions = new DataNodePermissions();
         if (jsonNode != null) {
-            dataNodePermissions.setLabel(jsonNode.get(0).get("Permissions").get("Label").getTextValue());
-            final JsonNode accessLevel = jsonNode.get(0).get("Permissions").get("AccessLevel");
+            dataNodePermissions.setLabel(jsonNode.get("Permissions").get("Label").getTextValue());
+            final JsonNode accessLevel = jsonNode.get("Permissions").get("AccessLevel");
             if (accessLevel != null) {
-                dataNodePermissions.setAccessLevel(DataNodePermissions.AccessLevel.valueOf(accessLevel.getTextValue()));
+                try {
+                    dataNodePermissions.setAccessLevel(DataNodePermissions.AccessLevel.valueOf(accessLevel.getTextValue()));
+                } catch (IllegalArgumentException exception) {
+                    logger.info("Invalid AccessLevel", exception);
+                }
             }
         }
         return dataNodePermissions;

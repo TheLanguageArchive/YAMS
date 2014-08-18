@@ -64,8 +64,8 @@ public class Main {
         String databasePassword = "admin";
         // the crawlFilter limits to the domain (string prefix)that can be crawled 
         String crawlFilter = "http://lux16.mpi.nl/";
-//        String permissionsServiceUri = "https://lux17.mpi.nl/lat/yams-cs-connector/rest?id=";
-        String permissionsServiceUri = "https://lux16.mpi.nl/ds/yams-cs-connector/rest?id=";
+//        String permissionsServiceUri = "https://lux17.mpi.nl/lat/yams-cs-connector/rest/node?id=";
+        String permissionsServiceUri = "https://lux16.mpi.nl/ds/yams-cs-connector/rest/node?id=";
 //        String defaultStartUrl = "http://corpus1.mpi.nl/ds/TranslationService/translate?in=1839/00-0000-0000-0001-53A5-2&outFormat=cmdi";
 //        String defaultStartUrl = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi";
 //        String defaultStartUrl = "http://lux16.mpi.nl/cmdi_test/leslla/Discourse/Turkish/Ozlem/Cycle1/d_t_o_1.cmdi";
