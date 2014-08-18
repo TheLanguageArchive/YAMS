@@ -55,6 +55,7 @@ import nl.mpi.yams.common.db.RestDbAdaptor;
 public class RemoteArchiveCrawler {
 
     final PluginArbilDataNodeLoader dataNodeLoader;
+    final private String permissionsServiceUri;
     final DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase;
     final IconTable iconTable;
     final private int numberToInsert;
@@ -63,11 +64,13 @@ public class RemoteArchiveCrawler {
     public static final String HANDLE_SERVER_URI = "http://hdl.handle.net/";
     private String crawlFilter;
 
-    public RemoteArchiveCrawler(int numberToInsert, String crawlFilter, String databaseUrl, String databaseName, String databaseUser, String databasePassword) throws QueryException {
+    public RemoteArchiveCrawler(int numberToInsert, String crawlFilter, String databaseUrl, String databaseName, String databaseUser, String databasePassword, String permissionsServiceUri) throws QueryException {
         System.out.println("numberToInsert:" + numberToInsert);
         System.out.println("numberToInsert:" + databaseUrl);
         System.out.println("numberToInsert:" + databaseName);
         System.out.println("crawlFilter:" + crawlFilter);
+        System.out.println("permissionsServiceUri:" + permissionsServiceUri);
+        this.permissionsServiceUri = permissionsServiceUri;
         this.numberToInsert = numberToInsert;
         if (databaseName == null || databaseName.length() < 5) {
             throw new QueryException("Database name must be more than 5 letters long.");
@@ -312,7 +315,7 @@ public class RemoteArchiveCrawler {
     }
 
     private void insertNodeIcons(ArbilDataNode dataNode) {
-        final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
+        final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode, permissionsServiceUri);
         iconTable.addTypeIcon(arbilDataNodeWrapper.getType(), dataNode.getIcon().getImage());
         for (ArbilDataNode childNode : dataNode.getChildArray()) {
             if (childNode.isChildNode()) {
@@ -336,7 +339,7 @@ public class RemoteArchiveCrawler {
 //        loadChildNodes(dataNode);
         if (/*!dataNode.fileNotFound &&*/!dataNode.isChildNode()) {
 //            System.out.println("Inserting into the database");
-            final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode);
+            final ArbilDataNodeWrapper arbilDataNodeWrapper = new ArbilDataNodeWrapper(dataNode, permissionsServiceUri);
             insertNodeIcons(dataNode);
             databaseLinks.insertLinks(new DataNodeLink(dataNode.getUrlString(), dataNode.archiveHandle), arbilDataNodeWrapper);
             //            arbilDataNodeWrapper.checkChildNodesLoaded();

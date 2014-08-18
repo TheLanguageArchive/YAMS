@@ -18,6 +18,7 @@
  */
 package nl.mpi.yams.crawler;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import nl.mpi.arbil.clarin.profiles.CmdiTemplate;
@@ -39,9 +40,19 @@ import nl.mpi.flap.model.SerialisableDataNode;
 public class ArbilDataNodeWrapper extends SerialisableDataNode {
 
     final private ArbilDataNode arbilDataNode;
+    final PermissionsWrapper permissionsWrapper;
 
-    public ArbilDataNodeWrapper(ArbilDataNode arbilDataNode) {
+    final private String permissionsServiceUri;
+
+    public ArbilDataNodeWrapper(ArbilDataNode arbilDataNode, String permissionsServiceUri) {
         this.arbilDataNode = arbilDataNode;
+        this.permissionsServiceUri = permissionsServiceUri;
+        final URI nodeUri = arbilDataNode.getUri();
+        if (nodeUri != null && !nodeUri.toString().isEmpty()) {
+            permissionsWrapper = new PermissionsWrapper(permissionsServiceUri, nodeUri.toString());
+        } else {
+            permissionsWrapper = null;
+        }
     }
 
     public void checkChildNodesLoaded() throws CrawlerException {
@@ -79,58 +90,66 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
 
     @Override
     public String getLabel() {
-        return arbilDataNode.refreshStringValue();
+        if (arbilDataNode.fileNotFound && permissionsWrapper != null) {
+            return permissionsWrapper.getLabel();
+        } else {
+            return arbilDataNode.refreshStringValue();
+        }
     }
 
     @Override
     public DataNodeType getType() {
-        final DataNodeType dataNodeType = new DataNodeType();
-        dataNodeType.setFormat(DataNodeType.FormatType.unkown);
-        if (arbilDataNode.isCmdiMetaDataNode()) {
-            dataNodeType.setFormat(DataNodeType.FormatType.cmdi);
-            final ArbilTemplate template = arbilDataNode.getNodeTemplate();
-            if (template instanceof CmdiTemplate) {
-                final CmdiTemplate cmdiTemplate = (CmdiTemplate) template;
-                dataNodeType.setLabel(cmdiTemplate.getTemplateName());
-                dataNodeType.setID(cmdiTemplate.getTemplateName()); // todo: modify Arbil so that the ID and Name are available
-            }
+        if (arbilDataNode.fileNotFound && permissionsWrapper != null) {
+            return permissionsWrapper.getType();
         } else {
+            final DataNodeType dataNodeType = new DataNodeType();
             dataNodeType.setFormat(DataNodeType.FormatType.unkown);
-            if (arbilDataNode.isCatalogue()) {
-                dataNodeType.setLabel("Catalogue");
-                dataNodeType.setID("imdi.catalogue");
-                dataNodeType.setFormat(DataNodeType.FormatType.imdi_catalogue);
-            } else if (arbilDataNode.isCorpus()) {
-                dataNodeType.setLabel("Corpus");
-                dataNodeType.setID("imdi.corpus");
-                dataNodeType.setFormat(DataNodeType.FormatType.imdi_corpus);
-            } else if (arbilDataNode.isSession()) {
-                dataNodeType.setLabel("Session");
-                dataNodeType.setID("imdi.session");
-                dataNodeType.setFormat(DataNodeType.FormatType.imdi_session);
-            } else if (arbilDataNode.isContainerNode()) {
-                dataNodeType.setLabel("Container");
-                dataNodeType.setID("container");
-                dataNodeType.setFormat(DataNodeType.FormatType.container);
-            } else if (arbilDataNode.hasResource()) { // a resource node will always be a child node so this would do nothing and is not required
-                String mimeTypeForNode = arbilDataNode.getAnyMimeType();
-                if (mimeTypeForNode != null) {
-                    dataNodeType.setLabel(mimeTypeForNode);
-                    dataNodeType.setID(IMDI_RESOURCE);
-                } else {
-                    dataNodeType.setLabel("Resource");
-                    dataNodeType.setID(IMDI_RESOURCE);
+            if (arbilDataNode.isCmdiMetaDataNode()) {
+                dataNodeType.setFormat(DataNodeType.FormatType.cmdi);
+                final ArbilTemplate template = arbilDataNode.getNodeTemplate();
+                if (template instanceof CmdiTemplate) {
+                    final CmdiTemplate cmdiTemplate = (CmdiTemplate) template;
+                    dataNodeType.setLabel(cmdiTemplate.getTemplateName());
+                    dataNodeType.setID(cmdiTemplate.getTemplateName()); // todo: modify Arbil so that the ID and Name are available
                 }
-            } else if (arbilDataNode.isChildNode()) {
-                dataNodeType.setLabel("Subnode");
-                dataNodeType.setID("subnode");
-                dataNodeType.setFormat(DataNodeType.FormatType.subnode);
-            } else if (arbilDataNode.isDirectory()) {
-                dataNodeType.setLabel("Directory");
-                dataNodeType.setID("directory");
+            } else {
+                dataNodeType.setFormat(DataNodeType.FormatType.unkown);
+                if (arbilDataNode.isCatalogue()) {
+                    dataNodeType.setLabel("Catalogue");
+                    dataNodeType.setID("imdi.catalogue");
+                    dataNodeType.setFormat(DataNodeType.FormatType.imdi_catalogue);
+                } else if (arbilDataNode.isCorpus()) {
+                    dataNodeType.setLabel("Corpus");
+                    dataNodeType.setID("imdi.corpus");
+                    dataNodeType.setFormat(DataNodeType.FormatType.imdi_corpus);
+                } else if (arbilDataNode.isSession()) {
+                    dataNodeType.setLabel("Session");
+                    dataNodeType.setID("imdi.session");
+                    dataNodeType.setFormat(DataNodeType.FormatType.imdi_session);
+                } else if (arbilDataNode.isContainerNode()) {
+                    dataNodeType.setLabel("Container");
+                    dataNodeType.setID("container");
+                    dataNodeType.setFormat(DataNodeType.FormatType.container);
+                } else if (arbilDataNode.hasResource()) { // a resource node will always be a child node so this would do nothing and is not required
+                    String mimeTypeForNode = arbilDataNode.getAnyMimeType();
+                    if (mimeTypeForNode != null) {
+                        dataNodeType.setLabel(mimeTypeForNode);
+                        dataNodeType.setID(IMDI_RESOURCE);
+                    } else {
+                        dataNodeType.setLabel("Resource");
+                        dataNodeType.setID(IMDI_RESOURCE);
+                    }
+                } else if (arbilDataNode.isChildNode()) {
+                    dataNodeType.setLabel("Subnode");
+                    dataNodeType.setID("subnode");
+                    dataNodeType.setFormat(DataNodeType.FormatType.subnode);
+                } else if (arbilDataNode.isDirectory()) {
+                    dataNodeType.setLabel("Directory");
+                    dataNodeType.setID("directory");
+                }
             }
+            return dataNodeType;
         }
-        return dataNodeType;
     }
 
     @Override
@@ -164,7 +183,7 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
         List<SerialisableDataNode> childList = new ArrayList<SerialisableDataNode>();
         for (ArbilDataNode childNode : arbilDataNode.getChildArray()) {
             if (childNode.isChildNode()) {
-                childList.add(new ArbilDataNodeWrapper(childNode));
+                childList.add(new ArbilDataNodeWrapper(childNode, permissionsServiceUri));
             }
         }
         return childList;
@@ -202,9 +221,8 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
 
     @Override
     public DataNodePermissions getPermissions() {
-        final String archiveHandle = getArchiveHandle();
-        if (archiveHandle != null && !archiveHandle.isEmpty()) {
-            return new PermissionsWrapper(archiveHandle).getDataNodePermissions();
+        if (permissionsWrapper != null) {
+            return permissionsWrapper.getDataNodePermissions();
         } else {
             return null;
         }

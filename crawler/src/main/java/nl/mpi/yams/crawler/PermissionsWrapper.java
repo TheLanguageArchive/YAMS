@@ -20,6 +20,8 @@ package nl.mpi.yams.crawler;
 import java.io.IOException;
 import java.net.URL;
 import nl.mpi.flap.model.DataNodePermissions;
+import nl.mpi.flap.model.DataNodeType;
+import nl.mpi.flap.model.PluginDataNodeType;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -33,36 +35,64 @@ public class PermissionsWrapper {
 
     private final static Logger logger = LoggerFactory.getLogger(PermissionsWrapper.class);
     final String archiveHandle;
+    final private JsonNode jsonNode;
 
-    public PermissionsWrapper(String archiveHandle) {
+    public PermissionsWrapper(String permissionsServiceUri, String archiveHandle) {
         this.archiveHandle = archiveHandle;
-    }
-
-    public DataNodePermissions getDataNodePermissions() {
-        final DataNodePermissions dataNodePermissions = new DataNodePermissions();
+        JsonNode jsonNodeInner = null;
         try {
 //            URL url = new URL("https://lux17.mpi.nl/lat/yams-cs-connector/rest?id=" + archiveHandle);
-            URL url = new URL("https://lux16.mpi.nl/ds/yams-cs-connector/rest?id=" + archiveHandle);
+            URL url = new URL(permissionsServiceUri + archiveHandle);
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(url);
-            dataNodePermissions.setLabel(rootNode.get(0).get("Permissions").get("Label").getTextValue());
-            final JsonNode accessLevel = rootNode.get(0).get("Permissions").get("AccessLevel");
-            if (accessLevel != null) {
-                dataNodePermissions.setAccessLevel(DataNodePermissions.AccessLevel.valueOf(accessLevel.getTextValue()));
-            }
+            jsonNodeInner = mapper.readTree(url);
         } catch (IOException exception) {
             logger.error(archiveHandle, exception);
         } catch (IllegalArgumentException exception) {
             logger.error(archiveHandle, exception);
         }
+        jsonNode = jsonNodeInner;
+    }
+
+    public String getLabel() {
+        if (jsonNode != null) {
+            return jsonNode.get(0).get("Label").getTextValue();
+        } else {
+            return "";
+        }
+    }
+
+    public DataNodeType getType() {
+        final DataNodeType dataNodeType = new DataNodeType();
+        if (jsonNode != null) {
+            try {
+                dataNodeType.setID(jsonNode.get(0).get("Type").get("ID").getTextValue());
+                dataNodeType.setLabel(jsonNode.get(0).get("Type").get("Label").getTextValue());
+                dataNodeType.setMimeType(jsonNode.get(0).get("Type").get("MimeType").getTextValue());
+                dataNodeType.setFormat(PluginDataNodeType.FormatType.valueOf(jsonNode.get(0).get("Type").get("Format").getTextValue()));
+            } catch (IllegalArgumentException exception) {
+                logger.info("Invalid FormatType", exception);
+            }
+        }
+        return dataNodeType;
+    }
+
+    public DataNodePermissions getDataNodePermissions() {
+        final DataNodePermissions dataNodePermissions = new DataNodePermissions();
+        if (jsonNode != null) {
+            dataNodePermissions.setLabel(jsonNode.get(0).get("Permissions").get("Label").getTextValue());
+            final JsonNode accessLevel = jsonNode.get(0).get("Permissions").get("AccessLevel");
+            if (accessLevel != null) {
+                dataNodePermissions.setAccessLevel(DataNodePermissions.AccessLevel.valueOf(accessLevel.getTextValue()));
+            }
+        }
         return dataNodePermissions;
     }
 
     public static void main(String[] args) {
-        final DataNodePermissions dataNodePermissions = new PermissionsWrapper("hdl:11142/00-D01D1D74-9EF2-42E2-BF9B-33CF9300A343").getDataNodePermissions();
+        final DataNodePermissions dataNodePermissions = new PermissionsWrapper("https://lux16.mpi.nl/ds/yams-cs-connector/rest?id=", "hdl:11142/00-D01D1D74-9EF2-42E2-BF9B-33CF9300A343").getDataNodePermissions();
         System.out.println(dataNodePermissions.getLabel());
         System.out.println(dataNodePermissions.getAccessLevel());
-        final DataNodePermissions dataNodePermissions1 = new PermissionsWrapper("hdl:11142/00-D01D1D74-9EF2-42E2-BF9B-").getDataNodePermissions();
+        final DataNodePermissions dataNodePermissions1 = new PermissionsWrapper("https://lux16.mpi.nl/ds/yams-cs-connector/rest?id=", "hdl:11142/00-D01D1D74-9EF2-42E2-BF9B-").getDataNodePermissions();
         System.out.println(dataNodePermissions1.getLabel());
         System.out.println(dataNodePermissions1.getAccessLevel());
     }

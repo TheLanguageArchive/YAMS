@@ -64,6 +64,8 @@ public class Main {
         String databasePassword = "admin";
         // the crawlFilter limits to the domain (string prefix)that can be crawled 
         String crawlFilter = "http://lux16.mpi.nl/";
+//        String permissionsServiceUri = "https://lux17.mpi.nl/lat/yams-cs-connector/rest?id=";
+        String permissionsServiceUri = "https://lux16.mpi.nl/ds/yams-cs-connector/rest?id=";
 //        String defaultStartUrl = "http://corpus1.mpi.nl/ds/TranslationService/translate?in=1839/00-0000-0000-0001-53A5-2&outFormat=cmdi";
 //        String defaultStartUrl = "http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/corpora/cgn.imdi";
 //        String defaultStartUrl = "http://lux16.mpi.nl/cmdi_test/leslla/Discourse/Turkish/Ozlem/Cycle1/d_t_o_1.cmdi";
@@ -84,6 +86,7 @@ public class Main {
         options.addOption("u", "user", true, "Data base user name, (default: " + databaseUser + ").");
         options.addOption("p", "password", true, "Data base password, (default: " + databasePassword + ").");
         options.addOption("l", "limit", true, "Limit crawling to URLs which contain the provided string (default: " + crawlFilter + ").");
+        options.addOption("ams", "limit", true, "REST service URL where permissions information from AMS can be obtained (default: " + permissionsServiceUri + ").");
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
@@ -119,8 +122,11 @@ public class Main {
             if (line.hasOption("l")) {
                 crawlFilter = line.getOptionValue("l");
             }
+            if (line.hasOption("ams")) {
+                permissionsServiceUri = line.getOptionValue("ams");
+            }
             try {
-                RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(numberToCrawl, crawlFilter, databaseUrl, databaseName, databaseUser, databasePassword);
+                RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(numberToCrawl, crawlFilter, databaseUrl, databaseName, databaseUser, databasePassword, permissionsServiceUri);
                 URI startURI = new URI(startUrl);
 //            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");                
                 if (line.hasOption("d")) {
