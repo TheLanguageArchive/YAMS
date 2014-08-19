@@ -115,7 +115,7 @@ public class yams implements EntryPoint {
         final DataNodeTable dataNodeTable = new DataNodeTable();
         final RootPanel searchOptionsPanelTag = RootPanel.get("searchOptionsPanel");
         if (searchOptionsPanelTag != null) {
-            ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
+            ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController, null);
             final RootPanel resultsPanelTag = RootPanel.get("resultsPanel");
             if (resultsPanelTag != null) {
                 resultsPanelTag.add(resultsPanel);

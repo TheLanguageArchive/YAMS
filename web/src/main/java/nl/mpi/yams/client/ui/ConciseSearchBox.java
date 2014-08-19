@@ -117,4 +117,8 @@ public class ConciseSearchBox extends HorizontalPanel implements HistoryListener
         // in this case we need to do the same thing on a user selection change as for a history change event
         historyChange();
     }
+
+    public void performSearch() {
+        searchHandler.onClick(null);
+    }
 }

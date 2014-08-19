@@ -52,6 +52,7 @@ import nl.mpi.yams.client.ui.ConciseSearchBox;
 import nl.mpi.yams.client.ui.DataNodeTable;
 import nl.mpi.yams.client.ui.MetadataDetailsPanel;
 import nl.mpi.yams.client.ui.ResultsPanel;
+import nl.mpi.yams.client.ui.TreeActionPanelClickListener;
 import nl.mpi.yams.client.version;
 import nl.mpi.yams.common.data.DataNodeId;
 import nl.mpi.yams.common.data.IconTableBase64;
@@ -294,6 +295,9 @@ public class ActionsPanelController implements HistoryListener {
         }
         actionsTargetPanel.clear();
         actionsTargetPanel.setVisible(true);
+        if (!actionType.equals(NodeActionType.search)) {
+            historyController.getSearchParametersList().clear();
+        }
         try {
             logger.info(actionType.name());
             switch (actionType) {
@@ -314,13 +318,16 @@ public class ActionsPanelController implements HistoryListener {
 //                        doPanelAction(serviceLocations.yamsUrl(dataNode.getURI()));
                     setDataNode(dataNode);
                     final DataNodeTable dataNodeTable = new DataNodeTable();
-                    ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController);
+                    ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController, new TreeActionPanelClickListener(historyController));
                     conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel);
                     conciseSearchBox.historyChange(); // preload any history values
                     actionsTargetPanel.add(conciseSearchBox);
                     actionsTargetPanel.add(resultsPanel);
                     detailsPanel.setVisible(false);
                     actionsTargetPanel.setVisible(true);
+                    if (!historyController.getSearchParametersList().isEmpty()) {
+                        conciseSearchBox.performSearch();
+                    }
                     break;
                 case ams:
                     doPanelAction(serviceLocations.amsUrl(dataNode.getURI()));
@@ -459,7 +466,8 @@ public class ActionsPanelController implements HistoryListener {
         if (citationTag != null) {
             citationTag.setVisible(dataNode != null);
         }
-        boolean showResourceButtons = (dataNode != null && dataNode.getType() != null && dataNode.getType().getFormat() == null);
+        boolean showResourceButtons = (dataNode != null && dataNode.getType() != null && (dataNode.getType().getID() == null || dataNode.getType().getID().isEmpty())); // todo: the crawler will be updated and ID should be replaced with format       
+
         if (viewTag != null) {
             viewTag.setVisible(showResourceButtons);
         }

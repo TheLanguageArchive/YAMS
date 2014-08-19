@@ -9,7 +9,7 @@
     <groupId>nl.mpi</groupId>
     <artifactId>yams-gwt</artifactId>
     <packaging>war</packaging>
-    <version>1.0.218-pretesting</version>
+    <version>1.0.254-pretesting</version>
     <name>YAMS GWT</name>
     <parent>
         <groupId>nl.mpi</groupId>

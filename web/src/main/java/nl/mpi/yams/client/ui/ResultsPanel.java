@@ -50,12 +50,14 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
     private final TreeNodeCheckboxListener checkboxListener;
+    private final TreeActionPanelClickListener treeActionPanelClickListener;
 //    final String lastDatabaseName;
     // todo: replace the variabls dataNodeTreeRootIds and dataNodeTreeDb by updating the web service provide all the required information (db, root nodes, icons, stats) in one connection
 
-    public ResultsPanel(final DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController) {
+    public ResultsPanel(final DataNodeTable dataNodeTable, SearchOptionsServiceAsync searchOptionsService, HistoryController historyController, TreeActionPanelClickListener treeActionPanelClickListener) {
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
+        this.treeActionPanelClickListener = treeActionPanelClickListener;
         this.setVisible(false);
         checkboxListener = new TreeNodeCheckboxListener() {
 
@@ -95,7 +97,7 @@ public class ResultsPanel extends TabPanel implements HistoryListener {
             VerticalPanel verticalPanel = new VerticalPanel();
             final List<DataNodeLink> childIds = dataNode.getChildIds();
             if (childIds != null) {
-                final DataNodeTree dataNodeTree = new DataNodeTree(checkboxListener, null, searchOptionsService, iconTableBase64, false);
+                final DataNodeTree dataNodeTree = new DataNodeTree(checkboxListener, treeActionPanelClickListener, searchOptionsService, iconTableBase64, false);
                 dataNodeTree.addResultsToTree(databaseName, childIds, dataNode, false);
                 // add a label showing the time taken by a search and the result count
                 final Label timeLabel = new Label("found " + childIds.size() + " in " + responseTimeMils + "ms");

@@ -56,7 +56,7 @@ public class ConciseSearchParser {
         MetadataFileType type = new MetadataFileType(null, "", "");
         MetadataFileType path = new MetadataFileType("", null, "");
         QueryDataStructures.SearchNegator searchNegator = DEFAULT_NEGATOR;
-        QueryDataStructures.SearchType searchType = QueryDataStructures.SearchType.equals;
+        QueryDataStructures.SearchType searchType = QueryDataStructures.SearchType.contains;
         final ArrayList<SearchParameters> searchParametersList = historyData.getSearchParametersList();
         boolean withinQuote = false;
         boolean isConsumedCommand = false;
@@ -166,7 +166,7 @@ public class ConciseSearchParser {
                 searchStringBuilder.append(searchParameter.getFieldType().getPath());
                 searchStringBuilder.append(SPLIT_CHAR);
             }
-            if (!searchParameter.getSearchType().equals(QueryDataStructures.SearchType.equals)) {
+            if (!searchParameter.getSearchType().equals(QueryDataStructures.SearchType.contains)) {
                 searchStringBuilder.append(SPLIT_CHAR);
                 searchStringBuilder.append(searchParameter.getSearchType());
                 searchStringBuilder.append(SPLIT_CHAR);

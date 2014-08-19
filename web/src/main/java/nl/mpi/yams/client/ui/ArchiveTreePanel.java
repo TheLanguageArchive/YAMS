@@ -43,7 +43,7 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
     private String dataNodeTreeDb = null;
     private final boolean useCorpusStructureDb;
     private DataNodeTree dataNodeTree = null;
-    private static final Logger logger = Logger.getLogger("");
+    private static final Logger logger = Logger.getLogger(ArchiveTreePanel.class.getName());
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
     private final DatabaseInformation databaseInfo;
@@ -113,38 +113,7 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
     public void addCsDatabaseTree() {
         if (dataNodeTree == null) {
 //            logger.info("addCsDatabaseTree");
-            final TreeNodeClickListener treeNodeClickListener = new TreeNodeClickListener() {
-
-                public void clickEvent(PluginDataNode dataNode) {
-//                    logger.info("TreeNodeClickListener");
-                    try {
-                        String id = dataNode.getArchiveHandle();
-                        if (id == null) {
-                            id = dataNode.getURI();//new DataNodeLink(dataNode.getURI(), dataNode.getArchiveHandle()).getIdString();
-                        }
-                        final HistoryData.NodeActionType nodeAction;
-                        switch (dataNode.getType().getFormat()) {
-                            case cmdi:
-                            case imdi_catalogue:
-                            case imdi_corpus:
-                            case imdi_info:
-                            case imdi_session:
-                                nodeAction = HistoryData.NodeActionType.details;
-                                break;
-                            case resource_audio:
-                            case resource_video:
-                                nodeAction = HistoryData.NodeActionType.view;
-                                break;
-                            default:
-                                nodeAction = HistoryData.NodeActionType.view;
-                        }
-//                        logger.info(id);
-                        historyController.setBranchSelection(new DataNodeId(id), nodeAction);
-                    } catch (ModelException exception) {
-                        logger.warning(exception.getMessage());
-                    }
-                }
-            };
+            final TreeActionPanelClickListener treeNodeClickListener = new TreeActionPanelClickListener(historyController);
             dataNodeTree = new DataNodeTree(null, treeNodeClickListener, searchOptionsService, null, true);
             dataNodeTree.addCsRootToTree();
             ArchiveTreePanel.this.add(dataNodeTree);

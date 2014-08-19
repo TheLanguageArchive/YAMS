@@ -87,7 +87,8 @@ public class YamsRpcTreeItem extends YamsTreeItem {
             addItem(errorTreeItem);
             logger.log(Level.SEVERE, ERROR_GETTING_CHILD_NODES, exception);
         }
-        setNodeIconData(dataNodeLoader.getNodeIcon(yamsDataNode));
+        setNodeIconStye(this.yamsDataNode.getType(), this.yamsDataNode.getPermissions());
+//        setNodeIconData(dataNodeLoader.getNodeIcon(yamsDataNode));
         // todo: add a click handler so that clicking anywhere will open the branch
     }
 
@@ -325,6 +326,7 @@ public class YamsRpcTreeItem extends YamsTreeItem {
                         setText("failed to show node loaded");
                         logger.log(Level.SEVERE, "failed to show node loaded", exception);
                     }
+                    setNodeIconStye(yamsDataNode.getType(), yamsDataNode.getPermissions());
                     setNodeIconData(dataNodeLoader.getNodeIcon(yamsDataNode));
                     hideShowExpandButton();
                     addColumnsForHighlights();
