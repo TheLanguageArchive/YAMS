@@ -40,6 +40,7 @@ public class MetadataDetailsPanel extends VerticalPanel {
 
     private static final Logger logger = Logger.getLogger("");
     private PluginDataNode dataNode;
+    private int hiddenNodeCount = 0;
 
     public MetadataDetailsPanel() {
         this.setVisible(false);
@@ -57,9 +58,13 @@ public class MetadataDetailsPanel extends VerticalPanel {
             this.add(addDataNodePanel(dataNode));
         }
 //        logger.info("end-MetadataDetailsPanel");
+        if (hiddenNodeCount > 0) {
+            this.add(new Label("Hidden " + hiddenNodeCount + " nodes that have no data to show."));
+        }
     }
 
     public Panel addDataNodePanel(PluginDataNode dataNode) {
+        boolean hasFieldData = false;
         final VerticalPanel simplePanel = new VerticalPanel();
         // logger.info(dataNode.getLabel());
         final Label label = new Label(dataNode.getLabel());
@@ -85,6 +90,7 @@ public class MetadataDetailsPanel extends VerticalPanel {
                         HTML valueLabel = new HTML(new SafeHtmlBuilder().appendEscapedLines(fieldValue).toSafeHtml());
                         valueLabel.setStyleName("IMDI_value");
                         horizontalPanel.add(valueLabel);
+                        hasFieldData = true;
                     }
                 }
                 verticalPanel.add(horizontalPanel);
@@ -100,6 +106,7 @@ public class MetadataDetailsPanel extends VerticalPanel {
 //                childIndex++;
             for (final PluginDataNode dataNodeChild : childList) {
                 boolean lazyLoad = dataNodeChild.getChildList() != null && dataNodeChild.getChildList().size() > 5;
+                final Panel dataNodePanel = addDataNodePanel(dataNodeChild);
                 if (lazyLoad) {
                     final DisclosurePanel disclosurePanel = new DisclosurePanel(dataNodeChild.getLabel());
 //                disclosurePanel.getHeader().setStyleName("IMDI_group_header_static");
@@ -107,14 +114,21 @@ public class MetadataDetailsPanel extends VerticalPanel {
                     disclosurePanel.addOpenHandler(new OpenHandler<DisclosurePanel>() {
 
                         public void onOpen(OpenEvent<DisclosurePanel> event) {
-                            disclosurePanel.setContent(addDataNodePanel(dataNodeChild));
+                            disclosurePanel.setContent(dataNodePanel);
                         }
                     });
                 } else {
-                    verticalPanel.add(addDataNodePanel(dataNodeChild));
+                    verticalPanel.add(dataNodePanel);
+                }
+                if (dataNodePanel.isVisible()) {
+                    hasFieldData = true;
                 }
             }
         }
+        if (hasFieldData) {
+            hiddenNodeCount++;
+        }
+        simplePanel.setVisible(hasFieldData);
         return simplePanel;
     }
 }
