@@ -84,6 +84,9 @@ public class service {
             stringBuilder.append("</h3><a href=\"./dbinfo/");
             stringBuilder.append(dbName);
             stringBuilder.append("\">dbinfo</a><br>");
+            stringBuilder.append("<a href=\"./stats/");
+            stringBuilder.append(dbName);
+            stringBuilder.append("\">db stats</a><br>");
             stringBuilder.append("<a href=\"./data/");
             stringBuilder.append(dbName);
             stringBuilder.append("\">root nodes</a><br>");
@@ -242,6 +245,36 @@ public class service {
         }
     }
 
+    @GET
+    @Path("/stats/{dbname}")
+    @Produces({MediaType.TEXT_PLAIN})
+    public Response getStats(@PathParam("dbname") String dbName) throws MalformedURLException, QueryException {
+        DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
+        String jsonDataDetailed = "[[0,0,0,0]]";
+        String queryStringDetailed = " ('[[0,0,0,0,0,0]',\n" //[''timestamp'', ''linkcount'', ''documentcount'', ''queryms'']',\n"
+                + "let $dbName := '" + dbName + "'\n"
+                + "for $crawlerStats in collection($dbName)/CrawlerStats\n"
+                // this order by seems to cause problems which might depend on which basex version is being used: + "order by $crawlerStats/@timestamp/string()\n"
+                + "let $dateTime := if (empty($crawlerStats/@timestamp)) then \n"
+                + " '20130000000000'\n"
+                + "else\n"
+                + " $crawlerStats/@timestamp/string()\n"
+                + "let $maxMemory := if (empty($crawlerStats/@maxMemory)) then \n"
+                + " '0'\n"
+                + "else\n"
+                + " string(($crawlerStats/@maxMemory) div 1048576.0)\n"
+                + "let $jsDateTime := string-join(('new Date(', substring($dateTime, 1, 4), ',', substring($dateTime, 5, 2), ',', substring($dateTime, 7, 2), ',', substring($dateTime, 9, 2), ',', substring($dateTime, 11, 2), ',', substring($dateTime, 13, 2),')'),'')\n"
+                + "let $linkcount := $crawlerStats/@linkcount/string()\n"
+                + "let $documentcount := $crawlerStats/@documentcount/string()\n"
+                + "let $querytime := string($crawlerStats/@queryms)\n"
+                + "let $freebytes := string(($crawlerStats/@freebytes) div 1048576.0)\n"
+                + "let $totalbytes := string(($crawlerStats/@totalbytes) div 1048576.0)\n"
+                + "return (',[',string-join(($jsDateTime,$linkcount,$documentcount,$querytime,$freebytes,$totalbytes,$maxMemory),','),']'),']')\n";
+        final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(getBasexRestUrl()), getBasexUser(), getBasexPass());
+        jsonDataDetailed = dbAdaptor.executeQuery(DataBaseManager.defaultDataBase, queryStringDetailed);
+        return Response.ok(jsonDataDetailed).header("Access-Control-Allow-Origin", "*").build();
+    }
+    
 //    @GET
 //    @Produces({MediaType.APPLICATION_JSON})
 //    @Path("/hdn")
