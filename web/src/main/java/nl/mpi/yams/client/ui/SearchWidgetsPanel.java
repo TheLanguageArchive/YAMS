@@ -74,8 +74,10 @@ public class SearchWidgetsPanel extends VerticalPanel implements HistoryListener
         verticalPanel = new VerticalPanel();
         initSearchHandler();
         final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchWidgetsPanel.this, searchOptionsService);
-        verticalPanel.add(archiveTreePanel);
-        historyController.addHistoryListener(archiveTreePanel);
+        if (archiveTreePanel != null) {
+            verticalPanel.add(archiveTreePanel);
+            historyController.addHistoryListener(archiveTreePanel);
+        }
         verticalPanel.add(searchCriterionPanel);
         criterionPanelList.add(searchCriterionPanel);
         Button addRowButton = new Button(ADD_SEARCH_TERM, new ClickHandler() {

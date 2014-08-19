@@ -52,6 +52,7 @@ import nl.mpi.yams.client.ui.ConciseSearchBox;
 import nl.mpi.yams.client.ui.DataNodeTable;
 import nl.mpi.yams.client.ui.MetadataDetailsPanel;
 import nl.mpi.yams.client.ui.ResultsPanel;
+import nl.mpi.yams.client.ui.SearchPanel;
 import nl.mpi.yams.client.ui.TreeActionPanelClickListener;
 import nl.mpi.yams.client.version;
 import nl.mpi.yams.common.data.DataNodeId;
@@ -322,6 +323,8 @@ public class ActionsPanelController implements HistoryListener {
                     conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel);
                     conciseSearchBox.historyChange(); // preload any history values
                     actionsTargetPanel.add(conciseSearchBox);
+//                    final ArchiveBranchSelectionPanel archiveBranchSelectionPanel = new ArchiveBranchSelectionPanel(searchOptionsService, historyController, databaseInfo, windowParamHdls, windowParamUrls);
+                    actionsTargetPanel.add(new SearchPanel(historyController, databaseInfo, resultsPanel, searchOptionsService, dataNodeTable, null));
                     actionsTargetPanel.add(resultsPanel);
                     detailsPanel.setVisible(false);
                     actionsTargetPanel.setVisible(true);
