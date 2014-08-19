@@ -21,6 +21,7 @@ package nl.mpi.yams.rest;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -117,13 +118,18 @@ public class service {
         return stringBuilder.toString();
     }
 
+    private Date getExpireDate() {
+        int hours = 1;
+        return new Date(System.currentTimeMillis() + (hours * 60 * 60 * 1000));
+    }
+
     @GET
     @Path("/dbinfo")
     @Produces({MediaType.APPLICATION_JSON})
     public Response getDatabaseList() throws QueryException {
         DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase("");
         DatabaseList databaseList = yamsDatabase.getDatabaseStatsList();
-        return Response.ok(databaseList).header("Access-Control-Allow-Origin", "*").build();
+        return Response.ok(databaseList).header("Access-Control-Allow-Origin", "*").expires(getExpireDate()).build();
     }
 
     @GET
@@ -132,7 +138,7 @@ public class service {
     public Response getDatabaseInfo(@PathParam("dbname") String dbName) throws QueryException {
         DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         DatabaseStats databaseStats = yamsDatabase.getDatabaseStats();
-        return Response.ok(databaseStats).header("Access-Control-Allow-Origin", "*").build();
+        return Response.ok(databaseStats).header("Access-Control-Allow-Origin", "*").expires(getExpireDate()).build();
     }
 
     @GET
@@ -141,7 +147,7 @@ public class service {
     public Response getRootNode(@PathParam("dbname") String dbName) throws QueryException {
         DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         final SerialisableDataNode rootNodes = yamsDatabase.getRootNodes();
-        return Response.ok(rootNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
+        return Response.ok(rootNodes.getChildList()).header("Access-Control-Allow-Origin", "*").expires(getExpireDate()).build();
     }
 
     @GET
@@ -158,7 +164,7 @@ public class service {
         } else {
             childNodes = yamsDatabase.getChildNodesOfId(identifier, start, end);
         }
-        return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
+        return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").expires(getExpireDate()).build();
     }
 
     @GET
@@ -167,7 +173,7 @@ public class service {
     public Response getTypeOptions(@PathParam("dbname") String dbName) throws QueryException {
         DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         final MetadataFileType[] metadataTypes = yamsDatabase.getMetadataTypes(null);
-        return Response.ok(metadataTypes).header("Access-Control-Allow-Origin", "*").build();
+        return Response.ok(metadataTypes).header("Access-Control-Allow-Origin", "*").expires(getExpireDate()).build();
     }
 
     @GET
@@ -176,7 +182,7 @@ public class service {
     public Response getPathOptions(@PathParam("dbname") String dbName, @QueryParam("type") final String type) throws QueryException {
         DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         final MetadataFileType[] metadataTypes = yamsDatabase.getMetadataPaths(new MetadataFileType(type, null, null));
-        return Response.ok(metadataTypes).header("Access-Control-Allow-Origin", "*").build();
+        return Response.ok(metadataTypes).header("Access-Control-Allow-Origin", "*").expires(getExpireDate()).build();
     }
 
     @GET
@@ -186,7 +192,7 @@ public class service {
         final MetadataFileType options = new MetadataFileType(type, path, text);
         DataBaseManager<SerialisableDataNode, DataField, MetadataFileType> yamsDatabase = getDatabase(dbName);
         MetadataFileType[] metadataFieldTypes = yamsDatabase.getMetadataFieldValues(options, max);
-        return Response.ok(metadataFieldTypes).header("Access-Control-Allow-Origin", "*").build();
+        return Response.ok(metadataFieldTypes).header("Access-Control-Allow-Origin", "*").expires(getExpireDate()).build();
     }
 
     @GET
@@ -210,7 +216,7 @@ public class service {
             identifierList.add(new DataNodeId(identifier));
             childNodes = yamsDatabase.getNodeDatasByIDs(identifierList);
         }
-        return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").build();
+        return Response.ok(childNodes.getChildList()).header("Access-Control-Allow-Origin", "*").expires(getExpireDate()).build();
     }
 
     @GET
@@ -239,7 +245,7 @@ public class service {
             }
 //            arrayList.add(new SearchParameters(new MetadataFileType(), new MetadataFileType(), QueryDataStructures.SearchNegator.is, QueryDataStructures.SearchType.contains, "Books"));
             final HighlightableDataNode foundNodes = yamsDatabase.getSearchResult(QueryDataStructures.CriterionJoinType.valueOf(joinType), parameters);
-            return Response.ok(foundNodes).header("Access-Control-Allow-Origin", "*").build();
+            return Response.ok(foundNodes).header("Access-Control-Allow-Origin", "*").expires(getExpireDate()).build();
         } catch (MalformedURLException exception) {
             throw new QueryException("Failed to open the database connection at: " + basexRestUrl + " " + exception.getMessage());
         }
@@ -272,9 +278,9 @@ public class service {
                 + "return (',[',string-join(($jsDateTime,$linkcount,$documentcount,$querytime,$freebytes,$totalbytes,$maxMemory),','),']'),']')\n";
         final DbAdaptor dbAdaptor = new RestDbAdaptor(new URL(getBasexRestUrl()), getBasexUser(), getBasexPass());
         jsonDataDetailed = dbAdaptor.executeQuery(DataBaseManager.defaultDataBase, queryStringDetailed);
-        return Response.ok(jsonDataDetailed).header("Access-Control-Allow-Origin", "*").build();
+        return Response.ok(jsonDataDetailed).header("Access-Control-Allow-Origin", "*").expires(getExpireDate()).build();
     }
-    
+
 //    @GET
 //    @Produces({MediaType.APPLICATION_JSON})
 //    @Path("/hdn")
