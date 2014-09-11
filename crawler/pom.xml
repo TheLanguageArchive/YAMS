@@ -10,7 +10,7 @@
         <version>1.0</version>
     </parent>
     <!--<version>${plugin.majorVersion}.${plugin.minorVersion}.0000000-${plugin.branch}</version>-->
-    <version>1.0.71-pretesting</version>
+    <version>1.0-pretesting-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.license>gpl20</netbeans.hint.license>
