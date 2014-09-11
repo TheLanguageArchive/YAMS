@@ -10,7 +10,7 @@
 
     <groupId>nl.mpi</groupId>
     <artifactId>yams-cs-connector</artifactId>
-    <version>1.0.35-pretesting</version>
+    <version>1.0-testing-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>yams-cs-connector</name>
@@ -105,7 +105,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>plugins-core</artifactId>
-            <version>1.3.119-testing</version>
+            <version>1.3-testing-SNAPSHOT</version>
         </dependency>
         <dependency>
       <groupId>com.sun.jersey</groupId>
