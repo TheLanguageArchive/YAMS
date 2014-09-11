@@ -86,7 +86,7 @@ public class Main {
         options.addOption("u", "user", true, "Data base user name, (default: " + databaseUser + ").");
         options.addOption("p", "password", true, "Data base password, (default: " + databasePassword + ").");
         options.addOption("l", "limit", true, "Limit crawling to URLs which contain the provided string (default: " + crawlFilter + ").");
-        options.addOption("ams", "limit", true, "REST service URL where permissions information from AMS can be obtained (default: " + permissionsServiceUri + ").");
+        options.addOption("ams", "amspermissions", true, "REST service URL where permissions information from AMS can be obtained (default: " + permissionsServiceUri + ").");
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
