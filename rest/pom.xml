@@ -9,7 +9,7 @@
 
     <groupId>nl.mpi</groupId>
     <artifactId>yams-basex-connector</artifactId>
-    <version>1.0-testing-SNAPSHOT</version>
+    <version>1.0-pretesting-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>yams-basex-connector</name>
