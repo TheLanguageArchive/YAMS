@@ -327,6 +327,7 @@ public class YamsRpcTreeItem extends YamsTreeItem {
                         logger.log(Level.SEVERE, "failed to show node loaded", exception);
                     }
                     setNodeIconStye(yamsDataNode.getType(), yamsDataNode.getPermissions());
+                    //TODO: verify whether the next step is redundant
                     setNodeIconData(dataNodeLoader.getNodeIcon(yamsDataNode));
                     hideShowExpandButton();
                     addColumnsForHighlights();

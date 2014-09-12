@@ -18,8 +18,7 @@
     </parent>
     <properties>
         <!-- Convenience property to set the GWT version -->
-        <!--<gwtVersion>2.5.1</gwtVersion>-->
-        <gwtVersion>2.6.0-rc3</gwtVersion>
+        <gwtVersion>2.6.1</gwtVersion>
         <!-- GWT needs at least java 1.5 -->
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -172,6 +171,7 @@
                     <runTarget>yams.html</runTarget>
                     <hostedWebapp>${webappDirectory}</hostedWebapp>
                     <i18nMessagesBundle>nl.mpi.yams.client.Messages</i18nMessagesBundle>
+                    <sourceLevel>auto</sourceLevel>
                 </configuration>
             </plugin>
 
