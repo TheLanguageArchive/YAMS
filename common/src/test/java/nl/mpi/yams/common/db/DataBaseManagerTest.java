@@ -74,25 +74,25 @@ public abstract class DataBaseManagerTest {
     abstract DbAdaptor getDbAdaptor() throws IOException, QueryException;
 
     public synchronized static BaseXHTTP startDb(BaseXHTTP baseXHTTP) throws Exception {
-        if (baseXHTTP == null) {
+//        if (baseXHTTP == null) {
             System.out.println(Thread.currentThread().getName() + " - Starting BaseX for test on port " + restPort);
             baseXHTTP = new BaseXHTTP("-l", "-h" + restPort); //start in local mode, on non-standard port to prevent clashes
-        } else {
-            System.err.println(Thread.currentThread().getName() + " - Unexpectedly found BaseX instance when trying to start");
-            throw new RuntimeException("BaseX already running");
-        }
+//        } else {
+//            System.err.println(Thread.currentThread().getName() + " - Unexpectedly found BaseX instance when trying to start");
+//            throw new RuntimeException("BaseX already running");
+//        }
         return baseXHTTP;
     }
 
     public synchronized static BaseXHTTP stopDb(BaseXHTTP baseXHTTP) throws Exception {
-        if (baseXHTTP != null) {
+//        if (baseXHTTP != null) {
             System.out.println(Thread.currentThread().getName() + " - Stopping BaseX running on port " + restPort);
             baseXHTTP.stop();
-            baseXHTTP = null;
-        } else {
-            System.err.println(Thread.currentThread().getName() + " - BaseX expected on " + restPort + " but not found");
-            throw new RuntimeException("BaseX not running");
-        }
+//            baseXHTTP = null;
+//        } else {
+//            System.err.println(Thread.currentThread().getName() + " - BaseX expected on " + restPort + " but not found");
+//            throw new RuntimeException("BaseX not running");
+//        }
         return baseXHTTP;
     }
 
