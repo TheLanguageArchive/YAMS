@@ -77,21 +77,21 @@ public abstract class DataBaseManagerTest {
 
     public synchronized static void startDb() throws Exception {
         if (baseXHTTP == null) {
-            System.out.println("Starting BaseX for test on port " + restPort);
+            System.out.println(Thread.currentThread().getName() + " - Starting BaseX for test on port " + restPort);
             baseXHTTP = new BaseXHTTP("-l", "-h" + restPort); //start in local mode, on non-standard port to prevent clashes
         } else {
-            System.err.println("Unexpectedly found BaseX instance when trying to start");
+            System.err.println(Thread.currentThread().getName() + " - Unexpectedly found BaseX instance when trying to start");
             throw new RuntimeException("BaseX already running");
         }
     }
 
     public synchronized static void stopDb() throws Exception {
         if (baseXHTTP != null) {
-            System.out.println("Stopping BaseX running on port " + restPort);
+            System.out.println(Thread.currentThread().getName() + " - Stopping BaseX running on port " + restPort);
             baseXHTTP.stop();
             baseXHTTP = null;
         } else {
-            System.err.println("BaseX expected on " + restPort + " but not found");
+            System.err.println(Thread.currentThread().getName() + " - BaseX expected on " + restPort + " but not found");
             throw new RuntimeException("BaseX not running");
         }
     }

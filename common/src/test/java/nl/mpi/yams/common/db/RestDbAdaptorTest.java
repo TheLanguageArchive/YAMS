@@ -36,12 +36,12 @@ import org.junit.Ignore;
 public class RestDbAdaptorTest {
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUpClass() throws Exception {
         DataBaseManagerTest.startDb();
     }
 
     @AfterClass
-    public static void cleanUp() throws Exception {
+    public static void cleanUpClass() throws Exception {
         DataBaseManagerTest.stopDb();
     }
 
