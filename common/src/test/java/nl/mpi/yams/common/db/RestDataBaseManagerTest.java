@@ -24,6 +24,7 @@ import javax.xml.bind.JAXBException;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.model.ModelException;
 import nl.mpi.flap.plugin.PluginException;
+import org.basex.BaseXHTTP;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -33,15 +34,17 @@ import org.junit.BeforeClass;
  * @author Peter Withers
  */
 public class RestDataBaseManagerTest extends DataBaseManagerTest {
-    
+
+    private static BaseXHTTP baseXHTTP;
+
     @BeforeClass
     public static void setUpClass() throws Exception {
-        DataBaseManagerTest.startDb();
+        baseXHTTP = DataBaseManagerTest.startDb(baseXHTTP);
     }
 
     @AfterClass
     public static void cleanUpClass() throws Exception {
-        DataBaseManagerTest.stopDb();
+        baseXHTTP = DataBaseManagerTest.stopDb(baseXHTTP);
     }
 
     @Override

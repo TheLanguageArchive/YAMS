@@ -21,6 +21,7 @@ package nl.mpi.yams.common.db;
 import java.net.MalformedURLException;
 import java.net.URL;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
+import org.basex.BaseXHTTP;
 import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -35,14 +36,16 @@ import org.junit.Ignore;
  */
 public class RestDbAdaptorTest {
 
+    private static BaseXHTTP baseXHTTP;
+
     @BeforeClass
     public static void setUpClass() throws Exception {
-        DataBaseManagerTest.startDb();
+        baseXHTTP = DataBaseManagerTest.startDb(baseXHTTP);
     }
 
     @AfterClass
     public static void cleanUpClass() throws Exception {
-        DataBaseManagerTest.stopDb();
+        baseXHTTP = DataBaseManagerTest.stopDb(baseXHTTP);
     }
 
     /**

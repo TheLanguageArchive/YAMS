@@ -71,11 +71,9 @@ public abstract class DataBaseManagerTest {
     static String restUser = "admin";
     static String restPass = "admin";
 
-    private static BaseXHTTP baseXHTTP;
-
     abstract DbAdaptor getDbAdaptor() throws IOException, QueryException;
 
-    public synchronized static void startDb() throws Exception {
+    public synchronized static BaseXHTTP startDb(BaseXHTTP baseXHTTP) throws Exception {
         if (baseXHTTP == null) {
             System.out.println(Thread.currentThread().getName() + " - Starting BaseX for test on port " + restPort);
             baseXHTTP = new BaseXHTTP("-l", "-h" + restPort); //start in local mode, on non-standard port to prevent clashes
@@ -83,9 +81,10 @@ public abstract class DataBaseManagerTest {
             System.err.println(Thread.currentThread().getName() + " - Unexpectedly found BaseX instance when trying to start");
             throw new RuntimeException("BaseX already running");
         }
+        return baseXHTTP;
     }
 
-    public synchronized static void stopDb() throws Exception {
+    public synchronized static BaseXHTTP stopDb(BaseXHTTP baseXHTTP) throws Exception {
         if (baseXHTTP != null) {
             System.out.println(Thread.currentThread().getName() + " - Stopping BaseX running on port " + restPort);
             baseXHTTP.stop();
@@ -94,6 +93,7 @@ public abstract class DataBaseManagerTest {
             System.err.println(Thread.currentThread().getName() + " - BaseX expected on " + restPort + " but not found");
             throw new RuntimeException("BaseX not running");
         }
+        return baseXHTTP;
     }
 
     public DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> getDataBaseManager(boolean insertData) throws IOException, QueryException, JAXBException, PluginException, ModelException {
