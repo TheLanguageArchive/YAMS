@@ -65,7 +65,8 @@ import org.junit.Test;
 public abstract class DataBaseManagerTest {
 
     static String testDatabaseName = "unit-test-database";
-    static String restUrl = "http://localhost:9985/rest/";
+    static String restPort = "9985";
+    static String restUrl = "http://localhost:" + restPort + "/rest/";
 //    static String restUrl = "http://tlatest03:8984/rest";
     static String restUser = "admin";
     static String restPass = "admin";
@@ -76,7 +77,8 @@ public abstract class DataBaseManagerTest {
 
     public synchronized static void startDb() throws Exception {
         if (baseXHTTP == null) {
-            baseXHTTP = new BaseXHTTP("-l","-h9985"); //start in local mode, on non-standard port to prevent clashes
+            System.out.println("Starting BaseX for test on port " + restPort);
+            baseXHTTP = new BaseXHTTP("-l", "-h" + restPort); //start in local mode, on non-standard port to prevent clashes
         } else {
             throw new RuntimeException("BaseX already running");
         }
@@ -84,6 +86,7 @@ public abstract class DataBaseManagerTest {
 
     public synchronized static void stopDb() throws Exception {
         if (baseXHTTP != null) {
+            System.out.println("Stopping BaseX running on port " + restPort);
             baseXHTTP.stop();
             baseXHTTP = null;
         } else {
