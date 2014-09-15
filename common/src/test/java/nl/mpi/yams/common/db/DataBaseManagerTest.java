@@ -80,6 +80,7 @@ public abstract class DataBaseManagerTest {
             System.out.println("Starting BaseX for test on port " + restPort);
             baseXHTTP = new BaseXHTTP("-l", "-h" + restPort); //start in local mode, on non-standard port to prevent clashes
         } else {
+            System.err.println("Unexpectedly found BaseX instance when trying to start");
             throw new RuntimeException("BaseX already running");
         }
     }
@@ -90,6 +91,7 @@ public abstract class DataBaseManagerTest {
             baseXHTTP.stop();
             baseXHTTP = null;
         } else {
+            System.err.println("BaseX expected on " + restPort + " but not found");
             throw new RuntimeException("BaseX not running");
         }
     }
