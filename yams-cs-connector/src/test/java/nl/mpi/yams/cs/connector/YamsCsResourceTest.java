@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import nl.mpi.archiving.corpusstructure.core.CorpusNode;
 import nl.mpi.archiving.corpusstructure.core.CorpusNodeType;
 import nl.mpi.archiving.corpusstructure.core.FileInfo;
+import nl.mpi.archiving.corpusstructure.core.service.NodeResolver;
 import nl.mpi.archiving.corpusstructure.provider.AccessInfoProvider;
 import nl.mpi.archiving.corpusstructure.provider.CorpusStructureProvider;
 import nl.mpi.flap.model.SerialisableDataNode;
@@ -47,12 +48,14 @@ public class YamsCsResourceTest {
     private Mockery context = new JUnit4Mockery();
     private CorpusStructureProvider corpusStructureProvider;
     private AccessInfoProvider accessInfoProvider;
+    private NodeResolver nodeResolver;
     private HttpServletRequest request;
 
     @Before
     public void setUp() {    
         corpusStructureProvider = context.mock(CorpusStructureProvider.class);
         accessInfoProvider = context.mock(AccessInfoProvider.class);
+        nodeResolver = context.mock(NodeResolver.class);
         request = context.mock(HttpServletRequest.class);
     }
 
@@ -69,6 +72,7 @@ public class YamsCsResourceTest {
         YamsCsResource instance = new YamsCsResource();
         instance.setCorpusStructureProvider(corpusStructureProvider);
         instance.setAccessInfoProvider(accessInfoProvider);
+        instance.setNodeResolver(nodeResolver);
         final String expectedUrl = "http://test/node";
         final String expectedHdl = "hdl:1234/5678";
         final String expectedName = "test node";
@@ -119,11 +123,6 @@ public class YamsCsResourceTest {
                 return expectedName;
             }
 
-            @Override
-            public URI getPID() {
-                return hdlUri;
-            }
-
         };
         final List<CorpusNode> corpusNodes = new ArrayList<CorpusNode>();
         corpusNodes.add(corpusNode);
@@ -133,6 +132,8 @@ public class YamsCsResourceTest {
                 will(returnValue(corpusNodes));
                 oneOf(request).getRemoteUser();
                 will(returnValue(userName));
+                oneOf(nodeResolver).getPID(corpusNode);
+                will(returnValue(URI.create(expectedHdl)));
             }
         });
 

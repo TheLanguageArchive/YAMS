@@ -20,6 +20,8 @@ package nl.mpi.yams.cs.connector;
 
 import java.net.URI;
 import nl.mpi.archiving.corpusstructure.core.CorpusNode;
+import nl.mpi.archiving.corpusstructure.core.NodeNotFoundException;
+import nl.mpi.archiving.corpusstructure.core.service.NodeResolver;
 import nl.mpi.archiving.corpusstructure.provider.AccessInfoProvider;
 import nl.mpi.archiving.corpusstructure.provider.CorpusStructureProvider;
 import nl.mpi.flap.model.DataNodePermissions;
@@ -36,12 +38,14 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
     private final CorpusNode corpusNode;
     private final AccessInfoProvider accessInfoProvider;
     private final CorpusStructureProvider corpusStructureProvider;
+    private final NodeResolver nodeResolver;
     private final String userId;
 
-    public CorpusNodeWrapper(CorpusStructureProvider corpusStructureProvider, AccessInfoProvider accessInfoProvider, CorpusNode archiveObject, final String userId) {
+    public CorpusNodeWrapper(CorpusStructureProvider corpusStructureProvider, AccessInfoProvider accessInfoProvider, NodeResolver nodeResolver, CorpusNode archiveObject, final String userId) {
         this.corpusStructureProvider = corpusStructureProvider;
         this.accessInfoProvider = accessInfoProvider;
         this.corpusNode = archiveObject;
+        this.nodeResolver = nodeResolver;
         this.userId = (userId == null) ? "anonymous" : userId;
     }
 
@@ -52,7 +56,7 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
 
     @Override
     public String getArchiveHandle() {
-        final URI pid = corpusNode.getPID();
+        final URI pid = nodeResolver.getPID(corpusNode);
         if (pid == null) {
             // for some reason archive objects do not always have persistent identifiers, even foreign archive nodes should have some sort of PID so this is possibly an issue in Corpus Structure
             return null;
@@ -106,27 +110,31 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
     public DataNodePermissions getPermissions() {
         final DataNodePermissions permissions = new DataNodePermissions();
 
-        switch (accessInfoProvider.getAccessLevel(corpusNode.getNodeURI())) {
-            case ACCESS_LEVEL_CLOSED:
-                permissions.setAccessLevel(DataNodePermissions.AccessLevel.closed);
-                break;
-            case ACCESS_LEVEL_EXTERNAL:
-                permissions.setAccessLevel(DataNodePermissions.AccessLevel.external);
-                break;
-            case ACCESS_LEVEL_OPEN_EVERYBODY:
-                permissions.setAccessLevel(DataNodePermissions.AccessLevel.open_everybody);
-                break;
-            case ACCESS_LEVEL_OPEN_REGISTERED_USERS:
-                permissions.setAccessLevel(DataNodePermissions.AccessLevel.open_registered_users);
-                break;
-            case ACCESS_LEVEL_PERMISSION_NEEDED:
-                permissions.setAccessLevel(DataNodePermissions.AccessLevel.permission_needed);
-                break;
-            case ACCESS_LEVEL_UNKNOWN:
-                permissions.setAccessLevel(DataNodePermissions.AccessLevel.unknown);
-                break;
+        try {
+            switch (accessInfoProvider.getAccessLevel(corpusNode.getNodeURI())) {
+                case ACCESS_LEVEL_CLOSED:
+                    permissions.setAccessLevel(DataNodePermissions.AccessLevel.closed);
+                    break;
+                case ACCESS_LEVEL_EXTERNAL:
+                    permissions.setAccessLevel(DataNodePermissions.AccessLevel.external);
+                    break;
+                case ACCESS_LEVEL_OPEN_EVERYBODY:
+                    permissions.setAccessLevel(DataNodePermissions.AccessLevel.open_everybody);
+                    break;
+                case ACCESS_LEVEL_OPEN_REGISTERED_USERS:
+                    permissions.setAccessLevel(DataNodePermissions.AccessLevel.open_registered_users);
+                    break;
+                case ACCESS_LEVEL_PERMISSION_NEEDED:
+                    permissions.setAccessLevel(DataNodePermissions.AccessLevel.permission_needed);
+                    break;
+                case ACCESS_LEVEL_UNKNOWN:
+                    permissions.setAccessLevel(DataNodePermissions.AccessLevel.unknown);
+                    break;
+            }
+            return permissions;
+        } catch (NodeNotFoundException ex) {
+            throw new RuntimeException(ex);
         }
-        return permissions;
     }
 
     @Override

@@ -31,6 +31,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import nl.mpi.archiving.corpusstructure.core.CorpusNode;
+import nl.mpi.archiving.corpusstructure.core.service.NodeResolver;
 import nl.mpi.archiving.corpusstructure.provider.AccessInfoProvider;
 import nl.mpi.archiving.corpusstructure.provider.CorpusStructureProvider;
 import nl.mpi.flap.model.SerialisableDataNode;
@@ -52,14 +53,21 @@ public class YamsCsResource {
     private CorpusStructureProvider corpusStructureProvider;
     @Autowired
     private AccessInfoProvider accessInfoProvider;
+    @Autowired
+    private NodeResolver nodeResolver;
+    
     private final static Logger logger = LoggerFactory.getLogger(YamsCsResource.class);
 
-    public void setAccessInfoProvider(AccessInfoProvider accessInfoProvider) {
+    protected void setAccessInfoProvider(AccessInfoProvider accessInfoProvider) {
         this.accessInfoProvider = accessInfoProvider;
     }
 
-    public void setCorpusStructureProvider(CorpusStructureProvider corpusStructureProvider) {
+    protected void setCorpusStructureProvider(CorpusStructureProvider corpusStructureProvider) {
         this.corpusStructureProvider = corpusStructureProvider;
+    }
+
+    protected void setNodeResolver(NodeResolver nodeResolver) {
+        this.nodeResolver = nodeResolver;
     }
 
     /**
@@ -80,7 +88,7 @@ public class YamsCsResource {
         if (corpusNode == null) {
             throw new URISyntaxException(rootNodeURI.toString(), "Could not retrieve the corpus root node.");
         }
-        final CorpusNodeWrapper corpusNodeWrapper = new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, corpusNode, request.getRemoteUser());
+        final CorpusNodeWrapper corpusNodeWrapper = new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, nodeResolver, corpusNode, request.getRemoteUser());
         nodeWrappers.add(corpusNodeWrapper);
         return Response.ok(nodeWrappers).header("Access-Control-Allow-Origin", "*").build();
 
@@ -94,7 +102,7 @@ public class YamsCsResource {
         final List<CorpusNode> childNodes = this.corpusStructureProvider.getChildNodes(new URI(nodeUri));
         final int lastToGet = (childNodes.size() > end) ? end : childNodes.size();
         for (CorpusNode corpusNode : childNodes.subList(start, lastToGet)) {
-            nodeWrappers.add(new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, corpusNode, request.getRemoteUser()));
+            nodeWrappers.add(new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, nodeResolver, corpusNode, request.getRemoteUser()));
         }
         return Response.ok(nodeWrappers).header("Access-Control-Allow-Origin", "*").build();
     }
@@ -104,7 +112,7 @@ public class YamsCsResource {
     @Path("node")
     public Response getDataNode(@Context HttpServletRequest request, @QueryParam("id") final String nodeUri) throws URISyntaxException {
         final CorpusNode dataNode = this.corpusStructureProvider.getNode(new URI(nodeUri));
-        return Response.ok(new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, dataNode, request.getRemoteUser())).header("Access-Control-Allow-Origin", "*").build();
+        return Response.ok(new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, nodeResolver, dataNode, request.getRemoteUser())).header("Access-Control-Allow-Origin", "*").build();
     }
 //    @GET
 //    @Produces("application/json")
