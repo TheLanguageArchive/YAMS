@@ -98,7 +98,7 @@
                         <cmdi>XML_STYLE</cmdi>
                     </mapping>
                     <excludes>
-                        <exclude>nbactions.xml</exclude>
+                        <exclude>nbactions*.xml</exclude>
                         <exclude>nb-configuration.xml</exclude>
                         <exclude>**/*.txt</exclude>
                     </excludes>
@@ -173,6 +173,14 @@
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.9.2</version>
         </dependency>
+        
+        <!-- Bind slf4j to JDK logging aka java.util.logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>${mpi.parent.slf4j.version}</version>
+        </dependency>
+
     </dependencies>
     <repositories>
         <repository>

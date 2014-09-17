@@ -18,8 +18,12 @@
  */
 package nl.mpi.yams.crawler;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 import nl.mpi.flap.kinnate.entityindexer.QueryException;
 import nl.mpi.flap.plugin.PluginException;
 import org.apache.commons.cli.BasicParser;
@@ -28,6 +32,8 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on : Feb 6, 2013, 2:02:48 PM
@@ -35,6 +41,8 @@ import org.apache.commons.cli.ParseException;
  * @author Peter Withers <peter.withers@mpi.nl>
  */
 public class Main {
+
+    private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
     static public void main(String[] args) {
 //        if (System.getProperty("java.util.logging.config.file") == null) {
@@ -87,9 +95,12 @@ public class Main {
         options.addOption("p", "password", true, "Data base password, (default: " + databasePassword + ").");
         options.addOption("l", "limit", true, "Limit crawling to URLs which contain the provided string (default: " + crawlFilter + ").");
         options.addOption("ams", "amspermissions", true, "REST service URL where permissions information from AMS can be obtained (default: " + permissionsServiceUri + ").");
+        options.addOption("x", "debug", false, "Display debug output");
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
+
+            configureLogging(line);
             // check for valid actions and show help if none found
             if (!line.hasOption("d") && !line.hasOption("c") && !line.hasOption("a") && !line.hasOption("f")) {
                 HelpFormatter formatter = new HelpFormatter();
@@ -150,19 +161,46 @@ public class Main {
                     archiveCrawler.clearAndCalculateDbStats();
                     archiveCrawler.preloadFacets();
                 }
+                logger.info("Done");
                 System.exit(0); // arbil threads might be requiring this to terminate
             } catch (URISyntaxException exception) {
+                logger.error("Invalid URI", exception);
                 System.out.println(exception.getMessage());
                 System.exit(-1);
             } catch (QueryException exception) {
+                logger.error("Database error", exception);
                 System.out.println(exception.getMessage());
                 System.exit(-1);
             } catch (PluginException exception) {
+                logger.error("Error inserting icons", exception);
                 System.out.println(exception.getMessage());
                 System.exit(-1);
             }
         } catch (ParseException exp) {
             System.out.println("Cannot parse the command line input:" + exp.getMessage());
+        }
+    }
+
+    private static void configureLogging(CommandLine line) throws SecurityException {
+        try {
+            LogManager.getLogManager().readConfiguration(Main.class.getResourceAsStream("/logging.properties"));
+
+            java.util.logging.Logger mpiLogger = java.util.logging.Logger.getLogger("nl.mpi");
+            if (line.hasOption("x")) {
+                java.util.logging.Logger.getGlobal().setLevel(Level.FINEST);
+                mpiLogger.setLevel(Level.FINEST);
+                // also log to console
+                mpiLogger.addHandler(new ConsoleHandler());
+            } else {
+                // use configured handler(s), only log info level
+                java.util.logging.Logger.getGlobal().setLevel(Level.INFO);
+                mpiLogger.setLevel(Level.INFO);
+            }
+
+            logger.info("YAMS crawler running");
+            logger.debug("Outputting debug information");
+        } catch (IOException ex) {
+            System.err.println("Could not configure logging:" + ex.getMessage());
         }
     }
 }
