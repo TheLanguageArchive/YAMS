@@ -22,5 +22,15 @@
                 <activatedProfile>dev</activatedProfile>
             </activatedProfiles>
         </action>
+        <action>
+            <actionName>CUSTOM-mvn gwt:debug -Pdev</actionName>
+            <displayName>mvn gwt:debug -Pdev</displayName>
+            <goals>
+                <goal>gwt:debug</goal>
+            </goals>
+            <activatedProfiles>
+                <activatedProfile>dev</activatedProfile>
+            </activatedProfiles>
+        </action>
         
     </actions>
