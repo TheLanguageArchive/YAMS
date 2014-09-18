@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# adapted from http://cacodaemon.de/index.php?id=11
 URL="$1"
 MAX_RUNS="$2"
 SUM_TIME="0"
