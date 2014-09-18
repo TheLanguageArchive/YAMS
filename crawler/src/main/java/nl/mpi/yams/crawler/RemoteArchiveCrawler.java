@@ -46,6 +46,8 @@ import nl.mpi.yams.common.db.DataBaseManager;
 import nl.mpi.yams.common.db.DbAdaptor;
 import nl.mpi.yams.common.db.LocalDbAdaptor;
 import nl.mpi.yams.common.db.RestDbAdaptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created on : Feb 6, 2013, 2:04:40 PM
@@ -63,6 +65,7 @@ public class RemoteArchiveCrawler {
     private int totalLoaded = 0;
     public static final String HANDLE_SERVER_URI = "http://hdl.handle.net/";
     private String crawlFilter;
+    private final static Logger logger = LoggerFactory.getLogger(RemoteArchiveCrawler.class);
 
     public RemoteArchiveCrawler(int numberToInsert, String crawlFilter, String databaseUrl, String databaseName, String databaseUser, String databasePassword, String permissionsServiceUri) throws QueryException {
         System.out.println("numberToInsert:" + numberToInsert);
@@ -85,8 +88,13 @@ public class RemoteArchiveCrawler {
                 dbAdaptor = new RestDbAdaptor(new URL(databaseUrl), databaseUser, databasePassword);
             } else {
                 if (!databaseUrl.isEmpty()) {
+                    // be Unix friendly and replace ~/ with actual home dir
+                    databaseUrl = databaseUrl.replaceAll("^~/", System.getProperty("user.home") + "/");
                     final File databaseDirectory = new File(databaseUrl);
-                    new File(databaseDirectory, ".basexhome").createNewFile();
+                    final File basexHome = new File(databaseDirectory, ".basexhome");
+                    if(basexHome.createNewFile()) {
+                        logger.info("Created .basexhome in {}", databaseDirectory);
+                    }
                     Properties props = System.getProperties();
                     props.setProperty("org.basex.path", databaseDirectory.getAbsolutePath());
                 }
@@ -103,6 +111,7 @@ public class RemoteArchiveCrawler {
     }
 
     public void clearAndCalculateDbStats() throws QueryException {
+        logger.info("Calculating statistics");
         System.out.println("Removing the old database statistics");
         yamsDatabase.clearDatabaseStats();
         System.out.println("Creating the database indexes");
@@ -120,6 +129,7 @@ public class RemoteArchiveCrawler {
     }
 
     public void preloadFacets() throws QueryException {
+        logger.info("Preloading facets");
         System.out.println("Preloading facets");
         for (MetadataFileType metadataType : yamsDatabase.getMetadataTypes(null)) {
             System.out.println("File type: " + metadataType.getLabel());
@@ -285,7 +295,7 @@ public class RemoteArchiveCrawler {
     }
 
     public void crawl(URI startURI) {
-        System.out.println("crawl");
+        logger.info("Starting to crawl from {}", startURI);
         DatabaseLinks databaseLinks = new DatabaseLinks();
         try {
             ArbilDataNodeContainer nodeContainer = null;

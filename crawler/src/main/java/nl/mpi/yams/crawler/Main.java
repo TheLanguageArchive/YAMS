@@ -163,22 +163,24 @@ public class Main {
                 }
                 logger.info("Done");
                 System.exit(0); // arbil threads might be requiring this to terminate
+                
+                // if any point below this line gets reached, the crawler will
+                // terminate with an error state (-1)
             } catch (URISyntaxException exception) {
                 logger.error("Invalid URI", exception);
-                System.out.println(exception.getMessage());
-                System.exit(-1);
+                System.err.println(exception.getMessage());
             } catch (QueryException exception) {
                 logger.error("Database error", exception);
-                System.out.println(exception.getMessage());
-                System.exit(-1);
+                System.err.println(exception.getMessage());
             } catch (PluginException exception) {
                 logger.error("Error inserting icons", exception);
-                System.out.println(exception.getMessage());
-                System.exit(-1);
+                System.err.println(exception.getMessage());
             }
         } catch (ParseException exp) {
             System.out.println("Cannot parse the command line input:" + exp.getMessage());
         }
+        System.err.println("\nCrawler did not finish as expected. See log  file for details.");
+        System.exit(-1);
     }
 
     private static void configureLogging(CommandLine line) throws SecurityException {
