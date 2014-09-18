@@ -25,3 +25,8 @@ Useful values:
  3. Number of times to query
 	- anything between 2 and 10 (in some cases might take a long time to
 	complete)
+
+E.g.:
+
+./testyams-hint.sh http://lux16.mpi.nl/ds/yams-basex-connector/rest co 5
+./testyams-search.sh https://lux17.mpi.nl/cmdi/lat/yams-basex-connector/rest comic 2
