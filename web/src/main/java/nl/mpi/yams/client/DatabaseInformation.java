@@ -63,7 +63,7 @@ public class DatabaseInformation {
         this.historyController = historyController;
     }
 
-    public void getDbInfo() {
+    public void collectDbInfo() {
         if (searchOptionsService != null) {
             getDbInfoRPC();
         } else {

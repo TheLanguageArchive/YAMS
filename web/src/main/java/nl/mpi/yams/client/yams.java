@@ -86,108 +86,18 @@ public class yams implements EntryPoint {
     }
 
     private void setupPage(final HistoryController historyController) {
-//        final String moduleBaseURL = "http://tlatest03.mpi.nl:8080/yams-gwt-1.0-SNAPSHOT/yams/";
-        final String databaseName = historyController.getDatabaseName();
-        databaseInfo = new DatabaseInformation(searchOptionsService, historyController);
-        final RootPanel linksPanelTag = RootPanel.get("linksPanel");
-        if (linksPanelTag != null) {
-            final StatisticsLink statisticsLink = new StatisticsLink(historyController);
-            linksPanelTag.add(statisticsLink);
-            historyController.addHistoryListener(statisticsLink);
-        }
-        final RootPanel optionsPanelTag = RootPanel.get("optionsPanel");
-        if (optionsPanelTag != null) {
-            CheckBox debugCheckBox = new CheckBox("debug");
-            debugCheckBox.setValue(debugMode);
-            optionsPanelTag.add(debugCheckBox);
-            debugCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-
-                public void onValueChange(ValueChangeEvent<Boolean> event) {
-                    setDebugMode(event.getValue());
-                }
-            });
-        }
+        setupLinksPanel(historyController);
+        setupOptionsPanel();
         setDebugMode(debugMode);
-        final RootPanel databaseStatsTag = RootPanel.get("databaseStats");
-        if (databaseStatsTag != null) {
-            databaseStatsTag.add(new Label(GWT.getModuleBaseURL()));
-        }
-        final DataNodeTable dataNodeTable = new DataNodeTable();
-        final RootPanel searchOptionsPanelTag = RootPanel.get("searchOptionsPanel");
-        if (searchOptionsPanelTag != null) {
-            ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController, null);
-            final RootPanel resultsPanelTag = RootPanel.get("resultsPanel");
-            if (resultsPanelTag != null) {
-                resultsPanelTag.add(resultsPanel);
-            }
-            final ConciseSearchBox conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel);
-            historyController.addHistoryListener(conciseSearchBox);
-            searchOptionsPanelTag.add(conciseSearchBox);
-            final ArchiveBranchSelectionPanel archiveBranchSelectionPanel = new ArchiveBranchSelectionPanel(searchOptionsService, historyController, databaseInfo, windowParamHdls, windowParamUrls);
-            searchOptionsPanelTag.add(new SearchPanel(historyController, databaseInfo, resultsPanel, searchOptionsService, dataNodeTable, archiveBranchSelectionPanel));
-        }
-        if (databaseStatsTag != null) {
-            if (searchOptionsService != null) {
-                final ServiceDefTarget serviceDefTarget = (ServiceDefTarget) searchOptionsService;
-                databaseStatsTag.add(new Label("GWT RPS: " + serviceDefTarget.getServiceEntryPoint()));
-            } else {
-                databaseStatsTag.add(new Label("GWT RPS not available"));
-            }
-            databaseStatsTag.add(new Label("CsAdaptorUrl" + serviceLocations.jsonCsAdaptorUrl()));
-            databaseStatsTag.add(new Label("BasexAdaptorUrl: " + serviceLocations.jsonBasexAdaptorUrl()));
-        }
-//        if (GWT.getHostPageBaseURL().startsWith("file://")) {
-//            RootPanel.get("databaseStats").add(new Label("Changing Service Target"));
-//            final String baseUrl = GWT.getModuleBaseURL().replace("file:///android_asset/www", "http://lux17.mpi.nl/ds/yams2");
-//            serviceDefTarget.setServiceEntryPoint(baseUrl + serviceDefTarget.getServiceEntryPoint().replace(GWT.getModuleBaseURL(), ""));
-//            serviceDefTarget.setRpcRequestBuilder(new RpcRequestBuilder() {
-//                @Override
-//                protected void doFinish(RequestBuilder requestBuilder) {
-//                    super.doFinish(requestBuilder);
-//                    requestBuilder.setHeader(MODULE_BASE_HEADER, baseUrl);
-//                }
-//            });
-//            RootPanel.get("databaseStats").add(new Label(GWT.getModuleBaseURL()));
-//            RootPanel.get("databaseStats").add(new Label(serviceDefTarget.getServiceEntryPoint()));
-//
-//            PhonegapUtil.prepareService(serviceDefTarget, "http://lux17.mpi.nl/", "ds/yams/yams/searchoptions");
-////  HandlerManager eventBus = new HandlerManager(null);
-////  AppController appViewer = new AppController(rpcService, eventBus);
-////  appViewer.go(RootPanel.get());
-//        }
-        //        serviceDefTarget.setServiceEntryPoint("http://tlatest03.mpi.nl:8080/yams-gwt-1.0-SNAPSHOT/yams/searchoptions");
-////        serviceDefTarget.setServiceEntryPoint(moduleUrl + relativeServiceUrl);
-//
-//        serviceDefTarget.setRpcRequestBuilder(new RpcRequestBuilder() {
-//            @Override
-//            protected void doFinish(RequestBuilder rb) {
-//                super.doFinish(rb);
-//
-//                rb.setHeader(MODULE_BASE_HEADER, moduleBaseURL);
-//            }
-//        });
-//        PhonegapUtil.prepareService(serviceDefTarget, moduleBaseURL, "searchoptions");
-        if (databaseStatsTag != null) {
-            IconInfoPanel iconInfoPanel = new IconInfoPanel(historyController, databaseInfo);
-            final DatabaseStatsPanel databaseStatsPanel = new DatabaseStatsPanel(databaseInfo, historyController);
-            historyController.addHistoryListener(databaseStatsPanel);
-            databaseStatsTag.add(databaseStatsPanel);
-            databaseStatsTag.add(iconInfoPanel);
-            historyController.addHistoryListener(iconInfoPanel);
-        }
 
-//                RootPanel.get("databaseStats").add(new QueryStatsPanel());
-//        if (searchOptionsPanelTag != null) {
-//            searchOptionsPanelTag.add(loadingImage);
-//        }
-        final RootPanel facetedTreeTag = RootPanel.get("facetedTree");
-//        RootPanel.get("dataNodeTable").add(dataNodeTable);
-        if (facetedTreeTag != null) {
-            final FacetedTree facetedTree = new FacetedTree(searchOptionsService, historyController);
-            facetedTreeTag.add(facetedTree);
-            historyController.addHistoryListener(facetedTree);
-        }
-        databaseInfo.getDbInfo();
+        final DataNodeTable dataNodeTable = new DataNodeTable();
+        setupStats();
+        setupSearch(dataNodeTable, historyController);
+        setupFacetedTree(historyController);
+
+        databaseInfo = new DatabaseInformation(searchOptionsService, historyController);
+        databaseInfo.collectDbInfo();
+
         ActionsPanelController actionsPanelController = new ActionsPanelController(databaseInfo, searchOptionsService,
                 historyController,
                 RootPanel.get("errorTargetPanel"),
@@ -207,22 +117,100 @@ public class yams implements EntryPoint {
                 RootPanel.get("loginTag"),
                 RootPanel.get("logoutTag"),
                 RootPanel.get("userSpan"));
+
+        setupCorpusTree(dataNodeTable, historyController, actionsPanelController);
+    }
+
+    private void setupLinksPanel(final HistoryController historyController1) {
+        final RootPanel linksPanelTag = RootPanel.get("linksPanel");
+        if (linksPanelTag != null) {
+            final StatisticsLink statisticsLink = new StatisticsLink(historyController1);
+            linksPanelTag.add(statisticsLink);
+            historyController1.addHistoryListener(statisticsLink);
+        }
+    }
+    
+    private void setupOptionsPanel() {
+        final RootPanel optionsPanelTag = RootPanel.get("optionsPanel");
+        if (optionsPanelTag != null) {
+            CheckBox debugCheckBox = new CheckBox("debug");
+            debugCheckBox.setValue(debugMode);
+            optionsPanelTag.add(debugCheckBox);
+            debugCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+                public void onValueChange(ValueChangeEvent<Boolean> event) {
+                    setDebugMode(event.getValue());
+                }
+            });
+        }
+    }
+    
+    private void setupSearch(final DataNodeTable dataNodeTable, final HistoryController histController) {
+        final RootPanel searchOptionsPanelTag = RootPanel.get("searchOptionsPanel");
+        if (searchOptionsPanelTag != null) {
+            ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, histController, null);
+            final RootPanel resultsPanelTag = RootPanel.get("resultsPanel");
+            if (resultsPanelTag != null) {
+                resultsPanelTag.add(resultsPanel);
+            }
+            final ConciseSearchBox conciseSearchBox = new ConciseSearchBox(searchOptionsService, histController, databaseInfo, resultsPanel);
+            histController.addHistoryListener(conciseSearchBox);
+            searchOptionsPanelTag.add(conciseSearchBox);
+            final ArchiveBranchSelectionPanel archiveBranchSelectionPanel = new ArchiveBranchSelectionPanel(searchOptionsService, histController, databaseInfo, windowParamHdls, windowParamUrls);
+            searchOptionsPanelTag.add(new SearchPanel(histController, databaseInfo, resultsPanel, searchOptionsService, dataNodeTable, archiveBranchSelectionPanel));
+        }
+    }
+
+    private void setupStats() {
+        final RootPanel databaseStatsTag = RootPanel.get("databaseStats");
+        if (databaseStatsTag != null) {
+            databaseStatsTag.add(new Label(GWT.getModuleBaseURL()));
+
+            if (searchOptionsService != null) {
+                final ServiceDefTarget serviceDefTarget = (ServiceDefTarget) searchOptionsService;
+                databaseStatsTag.add(new Label("GWT RPS: " + serviceDefTarget.getServiceEntryPoint()));
+            } else {
+                databaseStatsTag.add(new Label("GWT RPS not available"));
+            }
+            databaseStatsTag.add(new Label("CsAdaptorUrl" + serviceLocations.jsonCsAdaptorUrl()));
+            databaseStatsTag.add(new Label("BasexAdaptorUrl: " + serviceLocations.jsonBasexAdaptorUrl()));
+
+            IconInfoPanel iconInfoPanel = new IconInfoPanel(historyController, databaseInfo);
+            final DatabaseStatsPanel databaseStatsPanel = new DatabaseStatsPanel(databaseInfo, historyController);
+            historyController.addHistoryListener(databaseStatsPanel);
+            databaseStatsTag.add(databaseStatsPanel);
+            databaseStatsTag.add(iconInfoPanel);
+            historyController.addHistoryListener(iconInfoPanel);
+        }
+    }
+
+    private void setupFacetedTree(final HistoryController histController) {
+        final RootPanel facetedTreeTag = RootPanel.get("facetedTree");
+//        RootPanel.get("dataNodeTable").add(dataNodeTable);
+        if (facetedTreeTag != null) {
+            final FacetedTree facetedTree = new FacetedTree(searchOptionsService, histController);
+            facetedTreeTag.add(facetedTree);
+            histController.addHistoryListener(facetedTree);
+        }
+    }
+
+    private void setupCorpusTree(final DataNodeTable dataNodeTable, final HistoryController historyController1, ActionsPanelController actionsPanelController) {
         final RootPanel corpusTreePanelTag = RootPanel.get("corpusTreePanel");
         final RootPanel corpusTreeCsDbPanelTag = RootPanel.get("corpusTreeCsDbPanel");
         if (corpusTreePanelTag != null || corpusTreeCsDbPanelTag != null) {
             final RootPanel detailsPanelTag = RootPanel.get("detailsPanel");
             if (detailsPanelTag != null) {
                 if (corpusTreePanelTag != null) {
-                    final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, actionsPanelController, false);
+                    final ArchiveTreePanel archiveTreePanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController1, databaseInfo, actionsPanelController, false);
                     corpusTreePanelTag.add(archiveTreePanel);
-                    historyController.addHistoryListener(archiveTreePanel);
+                    historyController1.addHistoryListener(archiveTreePanel);
                 }
                 if (corpusTreeCsDbPanelTag != null) {
-                    final ArchiveTreePanel archiveTreeCsDbPanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController, databaseInfo, actionsPanelController, true);
+                    final ArchiveTreePanel archiveTreeCsDbPanel = new ArchiveTreePanel(dataNodeTable, searchOptionsService, historyController1, databaseInfo, actionsPanelController, true);
                     corpusTreeCsDbPanelTag.add(archiveTreeCsDbPanel);
-                    historyController.addHistoryListener(archiveTreeCsDbPanel);
+                    historyController1.addHistoryListener(archiveTreeCsDbPanel);
                 }
-                historyController.addHistoryListener(actionsPanelController);
+                historyController1.addHistoryListener(actionsPanelController);
             } else {
                 logger.severe("Found corpusTreePanel but not detailsPanel, cannot not correclty show the tree.");
             }

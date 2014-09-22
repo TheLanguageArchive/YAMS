@@ -77,6 +77,8 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
                 final IconTableBase64 databaseIcons = databaseInfo.getDatabaseIcons(databaseName);
                 if (databaseStats != null && databaseStats.getRootDocumentsIDs() != null) {
                     addDatabaseTree(databaseName, databaseStats.getRootDocumentsIDs(), databaseIcons);
+                } else {
+                    logger.warning("No database statistics and/or no root documents found");
                 }
             }
         } else {

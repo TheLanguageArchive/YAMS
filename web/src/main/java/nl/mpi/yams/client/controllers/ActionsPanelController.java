@@ -73,14 +73,12 @@ public class ActionsPanelController implements HistoryListener {
     final private RootPanel actionsTargetPanel;
     final private RootPanel errorTargetPanel;
     final private RootPanel detailsPanel;
-    final private RootPanel homeLinkTag;
     final private RootPanel metadataSearchTag;
     final private RootPanel annotationContentSearchTag;
     final private RootPanel manageAccessRightsTag;
     final private RootPanel resourceAccessTag;
     final private RootPanel citationTag;
     final private RootPanel welcomePanelTag;
-    final private RootPanel aboutTag;
     final private RootPanel viewTag;
     final private RootPanel downloadTag;
     final private RootPanel versionInfoTag;
@@ -93,78 +91,6 @@ public class ActionsPanelController implements HistoryListener {
     private NodeActionType lastActionType = null;
     private ConciseSearchBox conciseSearchBox = null;
 
-    public void historyChange() {
-        clearError();
-        final List<DataNodeId> branchSelectionList = historyController.getHistoryData().getBranchSelection();
-//        if (dataNode != null) {
-//            try {
-//                nodeId = dataNode.getID();
-//            } catch (ModelException exception) {
-//                logger.info(exception.getMessage());
-//            }
-//        }
-        final NodeActionType nodeActionType = historyController.getHistoryData().getNodeActionType();
-        if (dataNode != null && nodeId != null && !branchSelectionList.isEmpty() && nodeId.equals(branchSelectionList.get(0)) && lastActionType == nodeActionType) {
-            // todo: if we start supporting multiple selections then this will need to change
-            // the current data node is already selected so no change needed.
-        } else {
-            lastActionType = nodeActionType;
-            final String databaseName = historyController.getDatabaseName();
-            if (databaseName != null) {
-                final IconTableBase64 databaseIcons = databaseInfo.getDatabaseIcons(databaseName);
-                final DataNodeLoader dataNodeLoader;
-                if (searchOptionsService != null) {
-                    dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, databaseIcons, databaseName);
-                } else {
-                    dataNodeLoader = new DataNodeLoaderJson(databaseName);
-                }
-//                logger.info("branchSelectionList.size():" + branchSelectionList.size());
-                if (branchSelectionList.isEmpty()) {
-                    dataNode = null;
-                    doNodeAction(nodeActionType);
-                } else {
-                    nodeId = branchSelectionList.get(0);
-//                    logger.info("branchSelectionList.size():" + branchSelectionList.size());
-//                    logger.info("nodeId.getIdString():" + nodeId.getIdString());
-//                    if (nodeActionType == NodeActionType.view) {
-//                        doNodeAction(nodeActionType);
-//                    } else {
-                    final DataNodeLoaderListener dataNodeLoaderListener = new DataNodeLoaderListener() {
-                        public void dataNodeLoaded(List<? extends PluginDataNode> dataNodeList) {
-                            if (dataNodeList != null && !dataNodeList.isEmpty()) {
-                                dataNode = dataNodeList.get(0);
-//                                logger.info(dataNode.getLabel());
-                                clearError();
-                            } else {
-                                showError("dataNodeLoaded but the resulting list was empty", nodeId.getIdString());
-                            }
-                            doNodeAction(nodeActionType);
-                        }
-
-                        public void dataNodeLoadFailed(Throwable caught) {
-                            dataNode = null;
-                            showError(caught.getMessage(), nodeId.getIdString());
-                            doNodeAction(nodeActionType);
-                            logger.warning(caught.getMessage());
-                        }
-                    };
-                    // when getting the data from CS2DB we might get the url or handle or id, rather than trying to resolve this here the server tries to resolve this issue during the following request. 
-                    dataNodeLoader.requestLoad(branchSelectionList, dataNodeLoaderListener);
-//                    }
-                }
-            }
-        }
-        if (nodeActionType.equals(NodeActionType.search) && conciseSearchBox != null) {
-            conciseSearchBox.historyChange();
-        } else {
-            conciseSearchBox = null;
-        }
-    }
-
-    public void userSelectionChange() {
-        historyChange();
-    }
-
     public ActionsPanelController(DatabaseInformation databaseInfo, SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, RootPanel errorTargetPanel, RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag, RootPanel loginTag, RootPanel logoutTag, RootPanel userSpan) {
         this.databaseInfo = databaseInfo;
         this.searchOptionsService = searchOptionsService;
@@ -173,13 +99,11 @@ public class ActionsPanelController implements HistoryListener {
         this.errorTargetPanel = errorTargetPanel;
         this.actionsTargetPanel = actionsTargetPanel;
         this.detailsPanel = detailsPanel;
-        this.homeLinkTag = homeLinkTag;
         this.metadataSearchTag = metadataSearchTag;
         this.annotationContentSearchTag = annotationContentSearchTag;
         this.manageAccessRightsTag = manageAccessRightsTag;
         this.resourceAccessTag = resourceAccessTag;
         this.citationTag = citationTag;
-        this.aboutTag = aboutTag;
         this.viewTag = viewTag;
         this.downloadTag = downloadTag;
         this.versionInfoTag = versionInfoTag;
@@ -218,29 +142,7 @@ public class ActionsPanelController implements HistoryListener {
         }
         if (aboutTag != null) {
             final Anchor aboutAnchor = Anchor.wrap(aboutTag.getElement());
-            aboutAnchor.addClickHandler(new ClickHandler() {
-
-                public void onClick(ClickEvent event) {
-                    final version versionProperties = GWT.create(version.class);
-                    final DialogBox dialogBox = new DialogBox(true, true);
-                    Grid grid = new Grid(5, 2);
-                    dialogBox.setText("About YAMS Browser");
-                    grid.setWidget(0, 0, new Label("Version:"));
-                    grid.setWidget(0, 1, new Label(versionProperties.majorVersion()));
-                    grid.setWidget(1, 0, new Label("Project Version:"));
-                    grid.setWidget(1, 1, new Label(versionProperties.projectVersion()));
-                    grid.setWidget(2, 0, new Label("Build:"));
-                    grid.setWidget(2, 1, new Label(versionProperties.buildVersion()));
-                    grid.setWidget(3, 0, new Label("Compile Date:"));
-                    grid.setWidget(3, 1, new Label(versionProperties.compileDate()));
-                    grid.setWidget(4, 0, new Label("Commit Date:"));
-                    grid.setWidget(4, 1, new Label(versionProperties.lastCommitDate()));
-                    dialogBox.setGlassEnabled(true);
-                    dialogBox.setAnimationEnabled(true);
-                    dialogBox.setWidget(grid);
-                    dialogBox.center();
-                }
-            });
+            aboutAnchor.addClickHandler(new AboutHandler());
         }
         if (homeLinkTag != null) {
             final Anchor homeAnchor = Anchor.wrap(homeLinkTag.getElement());
@@ -253,6 +155,79 @@ public class ActionsPanelController implements HistoryListener {
             });
         }
         setDataNode(null);
+    }
+
+    public void historyChange() {
+        clearError();
+        final List<DataNodeId> branchSelectionList = historyController.getHistoryData().getBranchSelection();
+//        if (dataNode != null) {
+//            try {
+//                nodeId = dataNode.getID();
+//            } catch (ModelException exception) {
+//                logger.info(exception.getMessage());
+//            }
+//        }
+        final NodeActionType nodeActionType = historyController.getHistoryData().getNodeActionType();
+        if (dataNode != null && nodeId != null && !branchSelectionList.isEmpty() && nodeId.equals(branchSelectionList.get(0)) && lastActionType == nodeActionType) {
+            // todo: if we start supporting multiple selections then this will need to change
+            // the current data node is already selected so no change needed.
+            // https://trac.mpi.nl/ticket/3915
+        } else {
+            lastActionType = nodeActionType;
+            final String databaseName = historyController.getDatabaseName();
+            if (databaseName != null) {
+                final IconTableBase64 databaseIcons = databaseInfo.getDatabaseIcons(databaseName);
+                final DataNodeLoader dataNodeLoader;
+                if (searchOptionsService != null) {
+                    dataNodeLoader = new DataNodeLoaderRpc(searchOptionsService, databaseIcons, databaseName);
+                } else {
+                    dataNodeLoader = new DataNodeLoaderJson(databaseName);
+                }
+
+                if (branchSelectionList.isEmpty()) {
+                    dataNode = null;
+                    doNodeAction(nodeActionType);
+                } else {
+                    updateHistoryFromSelection(branchSelectionList, nodeActionType, dataNodeLoader);
+                }
+            }
+        }
+        if (nodeActionType.equals(NodeActionType.search) && conciseSearchBox != null) {
+            conciseSearchBox.historyChange();
+        } else {
+            conciseSearchBox = null;
+        }
+    }
+
+    private void updateHistoryFromSelection(final List<DataNodeId> branchSelectionList, final NodeActionType nodeActionType, final DataNodeLoader dataNodeLoader) {
+        nodeId = branchSelectionList.get(0);
+        final DataNodeLoaderListener dataNodeLoaderListener = new DataNodeLoaderListener() {
+            public void dataNodeLoaded(List<? extends PluginDataNode> dataNodeList) {
+                if (dataNodeList != null && !dataNodeList.isEmpty()) {
+                    dataNode = dataNodeList.get(0);
+                    clearError();
+                } else {
+                    showError("dataNodeLoaded but the resulting list was empty", nodeId.getIdString());
+                }
+                doNodeAction(nodeActionType);
+            }
+
+            public void dataNodeLoadFailed(Throwable caught) {
+                dataNode = null;
+                showError(caught.getMessage(), nodeId.getIdString());
+                doNodeAction(nodeActionType);
+                logger.warning(caught.getMessage());
+            }
+        };
+
+        // when getting the data from CS2DB we might get the url or handle or id, 
+        // rather than trying to resolve this here the server tries to resolve 
+        // this issue during the following request.
+        dataNodeLoader.requestLoad(branchSelectionList, dataNodeLoaderListener);
+    }
+
+    public void userSelectionChange() {
+        historyChange();
     }
 
     private void addPopupPanelAction(final FocusWidget focusWidget, final String targetUrl) {
@@ -303,34 +278,13 @@ public class ActionsPanelController implements HistoryListener {
             logger.info(actionType.name());
             switch (actionType) {
                 case citation:
-                    final CitationPanel citationPanel = new CitationPanel();
-                    citationPanel.setDataNode(dataNode);
-                    actionsTargetPanel.add(citationPanel);
+                    doCitation();
                     break;
                 case details:
-                    final MetadataDetailsPanel metadataDetailsPanel = new MetadataDetailsPanel();
-//                actionsTargetPanel.add(metadataDetailsPanel);
-                    detailsPanel.clear();
-                    detailsPanel.add(metadataDetailsPanel);
-                    metadataDetailsPanel.setDataNode(dataNode);
-                    setDataNode(dataNode);
+                    doDetails();
                     break;
                 case search:
-//                        doPanelAction(serviceLocations.yamsUrl(dataNode.getURI()));
-                    setDataNode(dataNode);
-                    final DataNodeTable dataNodeTable = new DataNodeTable();
-                    ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController, new TreeActionPanelClickListener(historyController));
-                    conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel);
-                    conciseSearchBox.historyChange(); // preload any history values
-                    actionsTargetPanel.add(conciseSearchBox);
-//                    final ArchiveBranchSelectionPanel archiveBranchSelectionPanel = new ArchiveBranchSelectionPanel(searchOptionsService, historyController, databaseInfo, windowParamHdls, windowParamUrls);
-                    actionsTargetPanel.add(new SearchPanel(historyController, databaseInfo, resultsPanel, searchOptionsService, dataNodeTable, null));
-                    actionsTargetPanel.add(resultsPanel);
-                    detailsPanel.setVisible(false);
-                    actionsTargetPanel.setVisible(true);
-                    if (!historyController.getSearchParametersList().isEmpty()) {
-                        conciseSearchBox.performSearch();
-                    }
+                    doSearch();
                     break;
                 case ams:
                     doPanelAction(serviceLocations.amsUrl(dataNode.getURI()));
@@ -349,6 +303,38 @@ public class ActionsPanelController implements HistoryListener {
         } catch (ModelException exception) {
             showError(exception.getMessage(), actionType.name());
             logger.warning(exception.getMessage());
+        }
+    }
+
+    private void doCitation() {
+        final CitationPanel citationPanel = new CitationPanel();
+        citationPanel.setDataNode(dataNode);
+        actionsTargetPanel.add(citationPanel);
+    }
+
+    private void doDetails() {
+        final MetadataDetailsPanel metadataDetailsPanel = new MetadataDetailsPanel();
+//                actionsTargetPanel.add(metadataDetailsPanel);
+        detailsPanel.clear();
+        detailsPanel.add(metadataDetailsPanel);
+        metadataDetailsPanel.setDataNode(dataNode);
+        setDataNode(dataNode);
+    }
+
+    private void doSearch() {
+        setDataNode(dataNode);
+        final DataNodeTable dataNodeTable = new DataNodeTable();
+        ResultsPanel resultsPanel = new ResultsPanel(dataNodeTable, searchOptionsService, historyController, new TreeActionPanelClickListener(historyController));
+        conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel);
+        conciseSearchBox.historyChange(); // preload any history values
+        actionsTargetPanel.add(conciseSearchBox);
+//                    final ArchiveBranchSelectionPanel archiveBranchSelectionPanel = new ArchiveBranchSelectionPanel(searchOptionsService, historyController, databaseInfo, windowParamHdls, windowParamUrls);
+        actionsTargetPanel.add(new SearchPanel(historyController, databaseInfo, resultsPanel, searchOptionsService, dataNodeTable, null));
+        actionsTargetPanel.add(resultsPanel);
+        detailsPanel.setVisible(false);
+        actionsTargetPanel.setVisible(true);
+        if (!historyController.getSearchParametersList().isEmpty()) {
+            conciseSearchBox.performSearch();
         }
     }
 
@@ -489,6 +475,30 @@ public class ActionsPanelController implements HistoryListener {
         }
         if (logoutTag != null) {
             logoutTag.setVisible(!anonymous);
+        }
+    }
+
+    private static class AboutHandler implements ClickHandler {
+
+        public void onClick(ClickEvent event) {
+            final version versionProperties = GWT.create(version.class);
+            final DialogBox dialogBox = new DialogBox(true, true);
+            Grid grid = new Grid(5, 2);
+            dialogBox.setText("About YAMS Browser");
+            grid.setWidget(0, 0, new Label("Version:"));
+            grid.setWidget(0, 1, new Label(versionProperties.majorVersion()));
+            grid.setWidget(1, 0, new Label("Project Version:"));
+            grid.setWidget(1, 1, new Label(versionProperties.projectVersion()));
+            grid.setWidget(2, 0, new Label("Build:"));
+            grid.setWidget(2, 1, new Label(versionProperties.buildVersion()));
+            grid.setWidget(3, 0, new Label("Compile Date:"));
+            grid.setWidget(3, 1, new Label(versionProperties.compileDate()));
+            grid.setWidget(4, 0, new Label("Commit Date:"));
+            grid.setWidget(4, 1, new Label(versionProperties.lastCommitDate()));
+            dialogBox.setGlassEnabled(true);
+            dialogBox.setAnimationEnabled(true);
+            dialogBox.setWidget(grid);
+            dialogBox.center();
         }
     }
 }

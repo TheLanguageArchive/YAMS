@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nl.mpi</groupId>
     <artifactId>yams-gwt</artifactId>
-    <packaging>war</packaging>
+    <packaging>war</packaging> 
     <version>1.0-pretesting-SNAPSHOT</version>
     <name>YAMS GWT</name>
     <parent>
@@ -228,7 +228,7 @@
                         <cmdi>XML_STYLE</cmdi>
                     </mapping>
                     <excludes>
-                        <exclude>nbactions.xml</exclude>
+                        <exclude>nbactions*xml</exclude>
                         <exclude>nb-configuration.xml</exclude>
                         <exclude>**/*.txt</exclude>
                     </excludes>
