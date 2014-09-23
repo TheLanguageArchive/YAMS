@@ -93,6 +93,7 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
 //        logger.info(dataNodeIds[0].getIdString());
         dataNodeTreeDb = databaseName;
         if (databaseName != null) {
+            //TOOD: Unify with CsDatabaseTree, i.e. use TreeActionPanelClickListener?
             final TreeNodeClickListener treeNodeClickListener = new TreeNodeClickListener() {
 
                 public void clickEvent(PluginDataNode dataNode) {
@@ -114,7 +115,6 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
 
     public void addCsDatabaseTree() {
         if (dataNodeTree == null) {
-//            logger.info("addCsDatabaseTree");
             final TreeActionPanelClickListener treeNodeClickListener = new TreeActionPanelClickListener(historyController);
             dataNodeTree = new DataNodeTree(null, treeNodeClickListener, searchOptionsService, null, true);
             dataNodeTree.addCsRootToTree();

@@ -47,6 +47,7 @@ public class TreeActionPanelClickListener implements TreeNodeClickListener {
             }
             final HistoryData.NodeActionType nodeAction;
             switch (dataNode.getType().getFormat()) {
+                //TODO: details for resources, too: <https://trac.mpi.nl/ticket/4202>
                 case cmdi:
                 case imdi_catalogue:
                 case imdi_corpus:
