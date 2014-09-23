@@ -140,6 +140,9 @@ public class ActionsPanelController implements HistoryListener {
         if (citationTag != null) {
             addNodeAction(citationTag, NodeActionType.citation);
         }
+        if (downloadTag != null) {
+            addDownloadAction(downloadTag);
+        }
         if (aboutTag != null) {
             final Anchor aboutAnchor = Anchor.wrap(aboutTag.getElement());
             aboutAnchor.addClickHandler(new AboutHandler());
@@ -298,13 +301,15 @@ public class ActionsPanelController implements HistoryListener {
                 case view:
                     setDataNode(dataNode);
 //                        actionsTargetPanel.add(new ResourceViewer(nodeId.getIdString()));
-                    doPanelAction(new HandleFormatter().getUrlFromHandle(nodeId.getIdString()));
+                    doPanelAction(handleFormatter.getUrlFromHandle(nodeId.getIdString()));
+                    break;
             }
         } catch (ModelException exception) {
             showError(exception.getMessage(), actionType.name());
             logger.warning(exception.getMessage());
         }
     }
+    private HandleFormatter handleFormatter = new HandleFormatter();
 
     private void doCitation() {
         final CitationPanel citationPanel = new CitationPanel();
@@ -425,6 +430,21 @@ public class ActionsPanelController implements HistoryListener {
         } else {
             return targetUrl;
         }
+    }
+
+    private void addDownloadAction(RootPanel downloadTag1) {
+        final Button button = Button.wrap(downloadTag1.getElement());
+        button.addClickHandler(new ClickHandler() {
+            
+            public void onClick(ClickEvent event) {
+                try {
+                    Window.open(handleFormatter.getUrlFromHandle(dataNode.getURI()), "_blank", "");
+                } catch (ModelException exception) {
+                    logger.warning(exception.getMessage());
+                }
+            }
+        }
+        );
     }
 
     public final void setDataNode(PluginDataNode dataNode) {
