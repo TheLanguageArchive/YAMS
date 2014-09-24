@@ -643,9 +643,17 @@ error_group {
     margin: 0 0 1em 1em;
 }
 
-.details-group-header {
+.details-header, .details-group-header {
     font-weight: bold;
     font-size: 15px;
     font-family: Verdana, Arial, Helv, Helvetica, sans-serif;
     margin-bottom: .5em;
+}
+
+.citation-link {
+    display: inline-block;
+    border: 2px dashed;
+    width: auto;
+    margin: 1em;
+    padding: .5em;
 }

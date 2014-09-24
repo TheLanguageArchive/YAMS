@@ -27,10 +27,18 @@ public class HandleFormatter {
     private static final String HDL_PREFIX = "hdl:";
 
     public String getHandleFromUrl(String handleUrl) {
-        return handleUrl.replace(HTTPHDLHANDLENET, HDL_PREFIX);
+        if (handleUrl == null) {
+            return null;
+        } else {
+            return handleUrl.replace(HTTPHDLHANDLENET, HDL_PREFIX);
+        }
     }
 
     public String getUrlFromHandle(String handleUrl) {
-        return handleUrl.replace(HDL_PREFIX, HTTPHDLHANDLENET);
+        if (handleUrl == null) {
+            return null;
+        } else {
+            return handleUrl.replace(HDL_PREFIX, HTTPHDLHANDLENET);
+        }
     }
 }

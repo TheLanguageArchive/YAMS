@@ -63,4 +63,7 @@ public interface CitationStrings extends Messages {
 
     @Key("nl.mpi.citation.url")
     String url();
+    
+    @Key("nl.mpi.citation.error")
+    String citationError();
 }
