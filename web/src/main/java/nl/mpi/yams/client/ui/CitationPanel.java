@@ -63,47 +63,36 @@ public class CitationPanel extends VerticalPanel {
 //        logger.info("end-MetadataDetailsPanel");
     }
 
-    public Panel getLabelPanel(String label, String value, String target) {
-        final HorizontalPanel horizontalPanel = new HorizontalPanel();
-        horizontalPanel.add(new Label(label));
-        if (target == null) {
-            horizontalPanel.add(new Label(value));
-        } else {
-            horizontalPanel.add(new Anchor(value, target));
-        }
-        return horizontalPanel;
-    }
-
     public Panel getPanel(PluginDataNode dataNode) {
         final VerticalPanel simplePanel = new VerticalPanel();
 //        logger.info(dataNode.getLabel());
         simplePanel.add(new Label(citationStrings.panelTitle()));
         try {
             final String archiveHandle = dataNode.getArchiveHandle();
-            simplePanel.add(getLabelPanel(citationStrings.citationLabel(dataNode.getLabel()), archiveHandle, dataNode.getURI()));
+            simplePanel.add(new LabelPanel(citationStrings.citationLabel(dataNode.getLabel()), archiveHandle, dataNode.getURI()));
 
             final Label label = new Label(citationStrings.citationDescription());
             simplePanel.setStyleName("IMDI_group");
             simplePanel.add(label);
             final DisclosurePanel disclosurePanel = new DisclosurePanel(citationStrings.details());
             VerticalPanel verticalPanel = new VerticalPanel();
-            verticalPanel.add(getLabelPanel(citationStrings.internalId(), dataNode.getID(), null));
-            verticalPanel.add(getLabelPanel(citationStrings.title(), dataNode.getLabel(), null));//"Resource \""++"\" from \"\""
+            verticalPanel.add(new LabelPanel(citationStrings.internalId(), dataNode.getID(), null));
+            verticalPanel.add(new LabelPanel(citationStrings.title(), dataNode.getLabel(), null));//"Resource \""++"\" from \"\""
 //            verticalPanel.add(getLabelPanel("Archive Name:", "", null));
             if (dataNode.getType() != null) {
-                verticalPanel.add(getLabelPanel(citationStrings.formatId(), dataNode.getType().getID(), null));
-                verticalPanel.add(getLabelPanel(citationStrings.formatName(), dataNode.getType().getMimeType(), null));
+                verticalPanel.add(new LabelPanel(citationStrings.formatId(), dataNode.getType().getID(), null));
+                verticalPanel.add(new LabelPanel(citationStrings.formatName(), dataNode.getType().getMimeType(), null));
                 if (dataNode.getType().getFormat() != null) {
-                    verticalPanel.add(getLabelPanel(citationStrings.format(), dataNode.getType().getFormat().name(), null));
+                    verticalPanel.add(new LabelPanel(citationStrings.format(), dataNode.getType().getFormat().name(), null));
                 }
             }
-            verticalPanel.add(getLabelPanel(citationStrings.published(), "", null));
-            verticalPanel.add(getLabelPanel(citationStrings.handle(), archiveHandle, null));
+            verticalPanel.add(new LabelPanel(citationStrings.published(), "", null));
+            verticalPanel.add(new LabelPanel(citationStrings.handle(), archiveHandle, null));
             if (archiveHandle != null) {
                 final String urlFromHandle = new HandleFormatter().getUrlFromHandle(archiveHandle);
-                verticalPanel.add(getLabelPanel(citationStrings.link(), urlFromHandle, urlFromHandle));
+                verticalPanel.add(new LabelPanel(citationStrings.link(), urlFromHandle, urlFromHandle));
             }
-            verticalPanel.add(getLabelPanel(citationStrings.url(), dataNode.getURI(), null));
+            verticalPanel.add(new LabelPanel(citationStrings.url(), dataNode.getURI(), null));
             disclosurePanel.add(verticalPanel);
             simplePanel.add(disclosurePanel);
         } catch (ModelException exception) {

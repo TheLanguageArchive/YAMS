@@ -93,20 +93,8 @@ public class ArchiveTreePanel extends HorizontalPanel implements HistoryListener
 //        logger.info(dataNodeIds[0].getIdString());
         dataNodeTreeDb = databaseName;
         if (databaseName != null) {
-            //TOOD: Unify with CsDatabaseTree, i.e. use TreeActionPanelClickListener?
-            final TreeNodeClickListener treeNodeClickListener = new TreeNodeClickListener() {
-
-                public void clickEvent(PluginDataNode dataNode) {
-//                    logger.info("TreeNodeClickListener");
-//                    actionsPanelController.setDataNode(dataNode);
-//                    detailsPanel.setDataNode(dataNode);
-                    try {
-                        historyController.setBranchSelection(new DataNodeId(dataNode.getID()), HistoryData.NodeActionType.details);
-                    } catch (ModelException exception) {
-                        logger.warning(exception.getMessage());
-                    }
-                }
-            };
+            //TOOD: Check if the TreeActionPanelClickListener can indeed be shared with CsDatabaseTree
+            final TreeActionPanelClickListener treeNodeClickListener = new TreeActionPanelClickListener(historyController);
             dataNodeTree = new DataNodeTree(null, treeNodeClickListener, searchOptionsService, databaseIcons, true);
             dataNodeTree.addResultsToTree(databaseName, dataNodeIds, true);
             ArchiveTreePanel.this.add(dataNodeTree);

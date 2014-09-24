@@ -55,9 +55,12 @@ public class TreeActionPanelClickListener implements TreeNodeClickListener {
                 case imdi_session:
                     nodeAction = HistoryData.NodeActionType.details;
                     break;
+                case resource_annotation:
+                case resource_lexical:
                 case resource_audio:
                 case resource_video:
-                    nodeAction = HistoryData.NodeActionType.view;
+                case resource_other:
+                    nodeAction = HistoryData.NodeActionType.resourceDetails;
                     break;
                 default:
                     nodeAction = HistoryData.NodeActionType.view;

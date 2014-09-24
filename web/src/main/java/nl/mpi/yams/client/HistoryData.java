@@ -34,7 +34,7 @@ public class HistoryData {
 
     public enum NodeActionType {
 
-        citation, details, search, view, ams, rrs, home
+        citation, details, resourceDetails, search, view, ams, rrs, home
     }
     private static final Logger logger = Logger.getLogger("");
     private String databaseName = "";

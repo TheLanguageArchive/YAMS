@@ -51,6 +51,7 @@ import nl.mpi.yams.client.ui.CitationPanel;
 import nl.mpi.yams.client.ui.ConciseSearchBox;
 import nl.mpi.yams.client.ui.DataNodeTable;
 import nl.mpi.yams.client.ui.MetadataDetailsPanel;
+import nl.mpi.yams.client.ui.ResourceDetailsPanel;
 import nl.mpi.yams.client.ui.ResultsPanel;
 import nl.mpi.yams.client.ui.SearchPanel;
 import nl.mpi.yams.client.ui.TreeActionPanelClickListener;
@@ -286,6 +287,9 @@ public class ActionsPanelController implements HistoryListener {
                 case details:
                     doDetails();
                     break;
+                case resourceDetails:
+                    doResourceDetails();
+                    break;
                 case search:
                     doSearch();
                     break;
@@ -323,6 +327,14 @@ public class ActionsPanelController implements HistoryListener {
         detailsPanel.clear();
         detailsPanel.add(metadataDetailsPanel);
         metadataDetailsPanel.setDataNode(dataNode);
+        setDataNode(dataNode);
+    }
+
+    private void doResourceDetails() {
+        final ResourceDetailsPanel resourceDetailsPanel = new ResourceDetailsPanel();
+        detailsPanel.clear();
+        detailsPanel.add(resourceDetailsPanel);
+        resourceDetailsPanel.setDataNode(dataNode);
         setDataNode(dataNode);
     }
 
@@ -435,7 +447,7 @@ public class ActionsPanelController implements HistoryListener {
     private void addDownloadAction(RootPanel downloadTag1) {
         final Button button = Button.wrap(downloadTag1.getElement());
         button.addClickHandler(new ClickHandler() {
-            
+
             public void onClick(ClickEvent event) {
                 try {
                     Window.open(handleFormatter.getUrlFromHandle(dataNode.getURI()), "_blank", "");

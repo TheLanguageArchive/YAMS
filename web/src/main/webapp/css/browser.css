@@ -631,3 +631,20 @@ error_group {
     width:120px;
     height: 38px;      
 }
+
+
+.name-label {
+    font-weight: bold;
+    min-width: 8em;
+    margin-right: .5em;
+    font-family: Verdana, Arial, Helv, Helvetica, sans-serif;
+}
+
+.details-group {
+    margin: 0 0 1em 1em;
+}
+
+.details-group-header {
+    font-weight: bold;
+    font-size: 120%;
+}
