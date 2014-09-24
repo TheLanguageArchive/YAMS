@@ -634,7 +634,6 @@ error_group {
 
 
 .name-label {
-    font-weight: bold;
     min-width: 8em;
     margin-right: .5em;
     font-family: Verdana, Arial, Helv, Helvetica, sans-serif;
@@ -646,5 +645,7 @@ error_group {
 
 .details-group-header {
     font-weight: bold;
-    font-size: 120%;
+    font-size: 15px;
+    font-family: Verdana, Arial, Helv, Helvetica, sans-serif;
+    margin-bottom: .5em;
 }

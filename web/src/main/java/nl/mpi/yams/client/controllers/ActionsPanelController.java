@@ -141,6 +141,9 @@ public class ActionsPanelController implements HistoryListener {
         if (citationTag != null) {
             addNodeAction(citationTag, NodeActionType.citation);
         }
+        if (viewTag != null) { 
+            addNodeAction(viewTag, NodeActionType.view);
+        }
         if (downloadTag != null) {
             addDownloadAction(downloadTag);
         }
