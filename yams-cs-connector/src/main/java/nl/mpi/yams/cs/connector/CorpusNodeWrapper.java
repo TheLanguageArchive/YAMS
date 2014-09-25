@@ -56,12 +56,19 @@ public class CorpusNodeWrapper extends SerialisableDataNode {
 
     @Override
     public String getArchiveHandle() {
-        final URI pid = nodeResolver.getPID(corpusNode);
-        if (pid == null) {
-            // for some reason archive objects do not always have persistent identifiers, even foreign archive nodes should have some sort of PID so this is possibly an issue in Corpus Structure
+        try {
+            final URI pid = nodeResolver.getPID(corpusNode);
+            if (pid == null) {
+                // for some reason archive objects do not always have persistent identifiers, even foreign archive nodes should have some sort of PID so this is possibly an issue in Corpus Structure
+                return null;
+            }
+            return pid.toString();
+        } catch (NullPointerException ex) {
+            // This can occur when the archive object in the Corpus Structure database
+            // has no PID. Has been fixed in CS2 trunk.
+            // TODO: Remove this check once patched CS provider has been released
             return null;
         }
-        return pid.toString();
     }
 
     @Override
