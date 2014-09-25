@@ -191,8 +191,11 @@ public class Main {
             if (line.hasOption("x")) {
                 java.util.logging.Logger.getGlobal().setLevel(Level.FINEST);
                 mpiLogger.setLevel(Level.FINEST);
+                
                 // also log to console
-                mpiLogger.addHandler(new ConsoleHandler());
+                final ConsoleHandler consoleHandler = new ConsoleHandler();
+                consoleHandler.setLevel(Level.FINEST);
+                mpiLogger.addHandler(consoleHandler);
             } else {
                 // use configured handler(s), only log info level
                 java.util.logging.Logger.getGlobal().setLevel(Level.INFO);
