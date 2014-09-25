@@ -657,3 +657,11 @@ error_group {
     margin: 1em;
     padding: .5em;
 }
+
+.gwt-TreeItem tr:hover {
+    background: #F2F2F2;
+}
+
+.gwt-TreeItem-selected tr, .gwt-TreeItem-selected tr:hover {
+    background: #D8E0E5;
+}
