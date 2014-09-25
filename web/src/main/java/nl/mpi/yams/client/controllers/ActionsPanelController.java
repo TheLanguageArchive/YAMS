@@ -348,8 +348,9 @@ public class ActionsPanelController implements HistoryListener {
         conciseSearchBox = new ConciseSearchBox(searchOptionsService, historyController, databaseInfo, resultsPanel);
         conciseSearchBox.historyChange(); // preload any history values
         actionsTargetPanel.add(conciseSearchBox);
-//                    final ArchiveBranchSelectionPanel archiveBranchSelectionPanel = new ArchiveBranchSelectionPanel(searchOptionsService, historyController, databaseInfo, windowParamHdls, windowParamUrls);
-        actionsTargetPanel.add(new SearchPanel(historyController, databaseInfo, resultsPanel, searchOptionsService, dataNodeTable, null));
+        final SearchPanel searchPanel = new SearchPanel(historyController, databaseInfo, resultsPanel, searchOptionsService, dataNodeTable, null);
+        searchPanel.refresh();
+        actionsTargetPanel.add(searchPanel);
         actionsTargetPanel.add(resultsPanel);
         detailsPanel.setVisible(false);
         actionsTargetPanel.setVisible(true);

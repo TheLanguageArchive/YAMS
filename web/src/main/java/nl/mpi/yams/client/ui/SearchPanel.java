@@ -32,7 +32,6 @@ import nl.mpi.yams.client.SearchOptionsServiceAsync;
  */
 public class SearchPanel extends VerticalPanel implements HistoryListener {
 
-    private static final String FAILED_TO_CONNECT_TO_THE_SERVER = "Failed to connect to the server.";
     private static final String NO__DATABASE__SELECTED = "No Database Selected";
     private final HistoryController historyController;
     private final DatabaseInformation databaseInfo;
@@ -40,21 +39,14 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
     private String lastUsedDatabase = null;
     final private Image loadingImage = new Image("./loader.gif");
     private final SearchWidgetsPanel searchOptionsPanel;
-    private final ResultsPanel resultsPanel;
-    private final SearchOptionsServiceAsync searchOptionsService;
-    private final DataNodeTable dataNodeTable;
-    private final ArchiveBranchSelectionPanel archiveBranchSelectionPanel;
+    private DatabaseSelect databaseSelectBox;
 
     public SearchPanel(HistoryController historyController, DatabaseInformation databaseInfo, ResultsPanel resultsPanel, SearchOptionsServiceAsync searchOptionsService, DataNodeTable dataNodeTable, ArchiveBranchSelectionPanel archiveBranchSelectionPanel) {
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
-        this.resultsPanel = resultsPanel;
-        this.searchOptionsService = searchOptionsService;
-        this.dataNodeTable = dataNodeTable;
-        this.archiveBranchSelectionPanel = archiveBranchSelectionPanel;
         loadingImage.setVisible(false);
         DisclosurePanel disclosurePanel = new DisclosurePanel("Search Options");
-        final DatabaseSelect databaseSelectBox = new DatabaseSelect(historyController, databaseInfo);
+        databaseSelectBox = new DatabaseSelect(historyController, databaseInfo);
         historyController.addHistoryListener(this);
         historyController.addHistoryListener(databaseSelectBox);
         VerticalPanel verticalPanel = new VerticalPanel();
@@ -77,6 +69,16 @@ public class SearchPanel extends VerticalPanel implements HistoryListener {
             searchOptionsPanel.setVisible(false);
             noDatabaseLabel.setVisible(true);
         }
+    }
+
+    /**
+     * calls {@link #userSelectionChange() } on this object and its
+     * {@link SearchWidgetsPanel} and {@link DatabaseSelect} children
+     */
+    public void refresh() {
+        userSelectionChange();
+        searchOptionsPanel.userSelectionChange();
+        databaseSelectBox.userSelectionChange();
     }
 
     public void userSelectionChange() {

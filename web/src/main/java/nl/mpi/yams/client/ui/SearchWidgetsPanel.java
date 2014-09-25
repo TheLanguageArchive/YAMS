@@ -56,7 +56,6 @@ public class SearchWidgetsPanel extends VerticalPanel implements HistoryListener
     private final SearchOptionsServiceAsync searchOptionsService;
     private final HistoryController historyController;
     private String lastUsedDatabase = "";
-    private final DataNodeTable dataNodeTable;
     private Button searchButton;
     private SearchHandler searchHandler;
     private final ResultsPanel resultsPanel;
@@ -69,10 +68,13 @@ public class SearchWidgetsPanel extends VerticalPanel implements HistoryListener
         this.searchOptionsService = searchOptionsService;
         this.historyController = historyController;
         this.databaseInfo = databaseInfo;
-        this.dataNodeTable = dataNodeTable;
         this.resultsPanel = resultsPanel;
+        
         verticalPanel = new VerticalPanel();
+        this.add(verticalPanel);
+
         initSearchHandler();
+        
         final SearchCriterionPanel searchCriterionPanel = new SearchCriterionPanel(SearchWidgetsPanel.this, searchOptionsService);
         if (archiveTreePanel != null) {
             verticalPanel.add(archiveTreePanel);
@@ -80,19 +82,22 @@ public class SearchWidgetsPanel extends VerticalPanel implements HistoryListener
         }
         verticalPanel.add(searchCriterionPanel);
         criterionPanelList.add(searchCriterionPanel);
+        
         Button addRowButton = new Button(ADD_SEARCH_TERM, new ClickHandler() {
             public void onClick(ClickEvent event) {
                 addSearchCriterionPanel(new SearchCriterionPanel(SearchWidgetsPanel.this, SearchWidgetsPanel.this.searchOptionsService));
             }
         });
-        this.add(verticalPanel);
-        final HorizontalPanel buttonsPanel = new HorizontalPanel();
         this.add(addRowButton);
+        
+        final HorizontalPanel buttonsPanel = new HorizontalPanel();
+        this.add(buttonsPanel);
+        
         joinTypeListBox = getJoinTypeListBox();
         buttonsPanel.add(joinTypeListBox);
         buttonsPanel.add(searchButton);
+
         this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
-        this.add(buttonsPanel);
     }
 
     public void userSelectionChange() {
