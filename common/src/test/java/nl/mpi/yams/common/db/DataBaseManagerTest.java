@@ -77,7 +77,7 @@ public abstract class DataBaseManagerTest {
     public synchronized static BaseXHTTP startDb(BaseXHTTP baseXHTTP) throws Exception {
         if (baseXHTTP == null) {
             System.out.println(Thread.currentThread().getName() + " - Starting BaseX for test on port " + restPort);
-            baseXHTTP = new BaseXHTTP("-d", "-l", "-h" + restPort, "-s" + stopPort); //start in local mode, on non-standard port to prevent clashes
+            baseXHTTP = new BaseXHTTP("-l", "-h" + restPort, "-s" + stopPort); //start in local mode, on non-standard port to prevent clashes
             Thread.sleep(1000);
         } else {
             System.err.println(Thread.currentThread().getName() + " - Unexpectedly found BaseX instance when trying to start");
