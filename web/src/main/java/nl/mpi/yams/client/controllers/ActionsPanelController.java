@@ -126,23 +126,23 @@ public class ActionsPanelController implements HistoryListener {
             final Anchor loginAnchor = Anchor.wrap(logoutTag.getElement());
             addPopupPanelAction(loginAnchor, serviceLocations.logoutUrl());
         }
-        if (metadataSearchTag != null) {
-            addHistoryAction(metadataSearchTag, NodeActionType.search);
-        }
         if (annotationContentSearchTag != null) {
             addPageAction(annotationContentSearchTag, serviceLocations.trovaUrl());
         }
+        if (metadataSearchTag != null) {
+            addHistoryAction(metadataSearchTag, NodeActionType.search);
+        }
         if (manageAccessRightsTag != null) {
-            addNodeAction(manageAccessRightsTag, NodeActionType.ams);
+            addHistoryAction(manageAccessRightsTag, NodeActionType.ams);
         }
         if (resourceAccessTag != null) {
-            addNodeAction(resourceAccessTag, NodeActionType.rrs);
+            addHistoryAction(resourceAccessTag, NodeActionType.rrs);
         }
         if (citationTag != null) {
-            addNodeAction(citationTag, NodeActionType.citation);
+            addHistoryAction(citationTag, NodeActionType.citation);
         }
-        if (viewTag != null) { 
-            addNodeAction(viewTag, NodeActionType.view);
+        if (viewTag != null) {
+            addHistoryAction(viewTag, NodeActionType.view);
         }
         if (downloadTag != null) {
             addDownloadAction(downloadTag);
@@ -384,6 +384,17 @@ public class ActionsPanelController implements HistoryListener {
         errorTargetPanel.add(simplePanel);
     }
 
+    /**
+     * Adds an action button to an element that triggers a change of the current
+     * action in the {@link HistoryController}. This in turn will be picked up
+     * by the {@link HistoryListener} implementations causing the action to be
+     * effectuated
+     *
+     * @param rootPanel element root panel
+     * @param actionType type of action to associate
+     * @see
+     * HistoryController#setAction(nl.mpi.yams.client.HistoryData.NodeActionType)
+     */
     private void addHistoryAction(RootPanel rootPanel, final NodeActionType actionType) {
         final Button button = Button.wrap(rootPanel.getElement());
         button.addClickHandler(new ClickHandler() {
@@ -394,19 +405,7 @@ public class ActionsPanelController implements HistoryListener {
         });
     }
 
-    private void addNodeAction(RootPanel rootPanel, final NodeActionType actionType) {
-        final Button button = Button.wrap(rootPanel.getElement());
-        button.addClickHandler(new ClickHandler() {
-
-            public void onClick(ClickEvent event) {
-                doNodeAction(actionType);
-            }
-        });
-    }
-
     private void doPanelAction(final String targetUrl) {
-//        logger.info("doPanelAction");
-//        logger.info(targetUrl);
         if (detailsPanel != null) {
             detailsPanel.setVisible(false);
         }
