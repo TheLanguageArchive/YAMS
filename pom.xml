@@ -73,7 +73,7 @@
                 </executions>
                 <configuration>
                     <verbose>true</verbose>
-                    <vcsType>svn</vcsType>
+                    <vcsType>git</vcsType>
                     <allowSnapshots>true</allowSnapshots>
                     <majorVersion>1</majorVersion>
                     <minorVersion>0</minorVersion>
