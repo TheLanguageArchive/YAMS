@@ -17,6 +17,7 @@
  */
 package nl.mpi.yams.crawler;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import nl.mpi.flap.model.DataNodePermissions;
@@ -45,6 +46,8 @@ public class PermissionsWrapper {
             URL url = new URL(permissionsServiceUri + archiveHandle);
             ObjectMapper mapper = new ObjectMapper();
             jsonNodeInner = mapper.readTree(url);
+        } catch (FileNotFoundException ex) {
+            logger.warn("File not found: {}", ex.getMessage());
         } catch (IOException exception) {
             logger.error(archiveHandle, exception);
         } catch (IllegalArgumentException exception) {
