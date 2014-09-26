@@ -221,7 +221,8 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>${project.artifactId}-${project.version}-r${buildNumber}</finalName>
+                            <!-- TODO: try to include a revision number derived from git repository in package name-->
+                            <finalName>${project.artifactId}-${project.version}</finalName>
                             <descriptorRefs>
                                 <descriptorRef>mpi-deploy</descriptorRef>
                             </descriptorRefs>
