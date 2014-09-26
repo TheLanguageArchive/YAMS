@@ -338,6 +338,7 @@ public class RemoteArchiveCrawler {
 //        if (dataNode.getUrlString().startsWith("http://hdl.handle.net/") && dataNode.getUrlString().charAt(21) != '/') {
 //            System.out.println("bad link: " + dataNode.getUrlString());
 //        } else {
+        logger.info("Loading: " + numberInserted + " URL: " + dataNode.getUrlString());
         System.out.print("Loading: " + numberInserted + " URL: " + dataNode.getUrlString() + "                                                           \r");
 //        }
         while (dataNode.getLoadingState() != ArbilDataNode.LoadingState.LOADED && dataNode.isMetaDataNode()) {

@@ -47,12 +47,22 @@ public class ArbilDataNodeWrapper extends SerialisableDataNode {
     public ArbilDataNodeWrapper(ArbilDataNode arbilDataNode, String permissionsServiceUri) {
         this.arbilDataNode = arbilDataNode;
         this.permissionsServiceUri = permissionsServiceUri;
-        final URI nodeUri = arbilDataNode.getUri();
-        if (nodeUri != null && !nodeUri.toString().isEmpty()) {
-            // for some reason SC2CMDI cant handle the "http://hdl.handle.net/" and needs to have "hdl:" only, even though it is meant to work with the URI (what ever that might be at any given time).
-            permissionsWrapper = new PermissionsWrapper(permissionsServiceUri, nodeUri.toString().replace("http://hdl.handle.net/", "hdl:"));
-        } else {
+        
+        if (arbilDataNode.isChildNode()) {
+            // permissions are not set on child nodes
+            // TODO: What about resources?
             permissionsWrapper = null;
+        } else {
+            String nodeId = arbilDataNode.getID();
+            if (nodeId == null) {
+                nodeId = arbilDataNode.getUri().toString();
+            }   
+            if (nodeId != null && !nodeId.isEmpty()) {
+                // for some reason SC2CMDI cant handle the "http://hdl.handle.net/" and needs to have "hdl:" only, even though it is meant to work with the URI (what ever that might be at any given time).
+                permissionsWrapper = new PermissionsWrapper(permissionsServiceUri, nodeId.replace("http://hdl.handle.net/", "hdl:"));
+            } else {
+                permissionsWrapper = null;
+            }
         }
     }
 
