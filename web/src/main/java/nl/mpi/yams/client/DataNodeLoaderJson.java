@@ -52,12 +52,26 @@ public class DataNodeLoaderJson implements DataNodeLoader {
 
     private static final Logger logger = Logger.getLogger("");
     final private ServiceLocations serviceLocations = GWT.create(ServiceLocations.class);
-    final String jsonUrl;
+    private final String jsonUrl;
 
+    /**
+     * Constructs a loader that connects to the CS connector
+     *
+     * @see ServiceLocations#jsonCsAdaptorUrl
+     */
     public DataNodeLoaderJson() {
         jsonUrl = serviceLocations.jsonCsAdaptorUrl();
     }
 
+    /**
+     * Constructs a loader that uses the BaseX connector as a data source with
+     * the specified database
+     *
+     * @param databaseName name of the database to connect this loader to
+     *
+     * @see ServiceLocations#jsonBasexAdaptorUrl()
+     * @see ServiceLocations#jsonRootNodeUrl(java.lang.String, java.lang.String)
+     */
     public DataNodeLoaderJson(String databaseName) {
         jsonUrl = serviceLocations.jsonRootNodeUrl(serviceLocations.jsonBasexAdaptorUrl(), databaseName);
     }
@@ -68,7 +82,7 @@ public class DataNodeLoaderJson implements DataNodeLoader {
         // Send request to server and catch any errors.
         final RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, jsonRootUrl);
         try {
-            final Request request = builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener, jsonRootUrl));
+            builder.sendRequest(null, geRequestBuilder(builder, dataNodeLoaderListener, jsonRootUrl));
         } catch (RequestException e) {
             dataNodeLoaderListener.dataNodeLoadFailed(e);
             logger.warning("Couldn't retrieve JSON");
