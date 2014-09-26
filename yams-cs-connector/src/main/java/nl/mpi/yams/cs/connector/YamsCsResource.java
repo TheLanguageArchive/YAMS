@@ -55,7 +55,7 @@ public class YamsCsResource {
     private AccessInfoProvider accessInfoProvider;
     @Autowired
     private NodeResolver nodeResolver;
-    
+
     private final static Logger logger = LoggerFactory.getLogger(YamsCsResource.class);
 
     protected void setAccessInfoProvider(AccessInfoProvider accessInfoProvider) {
@@ -112,7 +112,11 @@ public class YamsCsResource {
     @Path("node")
     public Response getDataNode(@Context HttpServletRequest request, @QueryParam("id") final String nodeUri) throws URISyntaxException {
         final CorpusNode dataNode = this.corpusStructureProvider.getNode(new URI(nodeUri));
-        return Response.ok(new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, nodeResolver, dataNode, request.getRemoteUser())).header("Access-Control-Allow-Origin", "*").build();
+        if (dataNode == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            return Response.ok(new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, nodeResolver, dataNode, request.getRemoteUser())).header("Access-Control-Allow-Origin", "*").build();
+        }
     }
 //    @GET
 //    @Produces("application/json")
