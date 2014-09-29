@@ -91,6 +91,7 @@ public class ActionsPanelController implements HistoryListener {
     private String errorMessage = null;
     private NodeActionType lastActionType = null;
     private ConciseSearchBox conciseSearchBox = null;
+    private final DataNodeLoaderJson corpusStructureLoader = new DataNodeLoaderJson();
 
     public ActionsPanelController(DatabaseInformation databaseInfo, SearchOptionsServiceAsync searchOptionsService, final HistoryController historyController, RootPanel errorTargetPanel, RootPanel welcomePanelTag, RootPanel actionsTargetPanel, RootPanel detailsPanel, RootPanel homeLinkTag, RootPanel metadataSearchTag, RootPanel annotationContentSearchTag, RootPanel manageAccessRightsTag, RootPanel resourceAccessTag, RootPanel citationTag, RootPanel aboutTag, RootPanel viewTag, RootPanel downloadTag, RootPanel versionInfoTag, RootPanel loginTag, RootPanel logoutTag, RootPanel userSpan) {
         this.databaseInfo = databaseInfo;
@@ -334,7 +335,7 @@ public class ActionsPanelController implements HistoryListener {
     }
 
     private void doResourceDetails() {
-        final ResourceDetailsPanel resourceDetailsPanel = new ResourceDetailsPanel();
+        final ResourceDetailsPanel resourceDetailsPanel = new ResourceDetailsPanel(corpusStructureLoader);
         detailsPanel.clear();
         detailsPanel.add(resourceDetailsPanel);
         resourceDetailsPanel.setDataNode(dataNode);
