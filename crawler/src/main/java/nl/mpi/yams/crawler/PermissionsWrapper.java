@@ -42,10 +42,15 @@ public class PermissionsWrapper {
         this.archiveHandle = archiveHandle;
         JsonNode jsonNodeInner = null;
         try {
-//            URL url = new URL("https://lux17.mpi.nl/lat/yams-cs-connector/rest?id=" + archiveHandle);
-            URL url = new URL(permissionsServiceUri + archiveHandle);
-            ObjectMapper mapper = new ObjectMapper();
-            jsonNodeInner = mapper.readTree(url);
+            final URL url = new URL(permissionsServiceUri + archiveHandle);
+            final ObjectMapper mapper = new ObjectMapper();
+            final JsonNode jsonResult = mapper.readTree(url);
+            if (jsonResult.size() != 1) {
+                logger.warn("Unexpected number of nodes returned from permissions service: {}", jsonNodeInner.size());
+                jsonNodeInner = null;
+            } else {
+                jsonNodeInner = jsonResult.get(0);
+            }
         } catch (FileNotFoundException ex) {
             logger.warn("File not found: {}", ex.getMessage());
         } catch (IOException exception) {
