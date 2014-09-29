@@ -476,6 +476,17 @@ public abstract class DataBaseManagerTest {
     }
 
     /**
+     * Test of deleteBranch method, of class DataBaseManager.
+     */
+    @Test
+    public void testDeleteBranch() throws Exception {
+        System.out.println("deleteBranch");
+        final DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        int result = dbManager.deleteBranch("0f4d9cdcd07a1d0c642bb11a0dd1cf2e");
+        assertEquals(3, result);
+    }
+
+    /**
      * Test of getDatabaseList method, of class DataBaseManager.
      */
     @Test

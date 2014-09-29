@@ -1,7 +1,7 @@
 <DataNode ID="0f4d9cdcd07a1d0c642bb11a0dd1cf2e" Label="fn004654" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fn004654.imdi">
   <DataNode Label="WrittenResources (6)" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fn004654.imdi#.METATRANSCRIPT.Session.Resources.WrittenResource">
     <DataNode Label="fn004654.pri" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fn004654.imdi#.METATRANSCRIPT.Session.Resources.WrittenResource(3)">
-      <ChildLink ID="ba4aea07624f0123c7f7bd2a5b79368f" URI="http://corpus1.mpi.nl/CGN/COREX6/data/annot/xml/pri/comp-k/nl/fn004654.pri"/>
+      <ChildLink ID="0a4f1304c0f5d6a5a3c2f0076f68af1d" URI="http://corpus1.mpi.nl/CGN/COREX6/data/annot/xml/pri/comp-k/nl/fn004654.pri"/>
       <FieldGroup Label="Format">
         <FieldData FieldValue="text/x-cgn-pri+xml" Path=".METATRANSCRIPT.Session.Resources.WrittenResource(3).Format"/>
       </FieldGroup>
@@ -543,7 +543,7 @@
   </DataNode>
   <DataNode Label="MediaFiles (2)" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fn004654.imdi#.METATRANSCRIPT.Session.Resources.MediaFile">
     <DataNode Label="fn004654.wav" URI="http://corpus1.mpi.nl/CGN/COREX6/data/meta/imdi_3.0_eaf/sessions/fn004654.imdi#.METATRANSCRIPT.Session.Resources.MediaFile(2)">
-      <ChildLink ID="e860b1528625117f9f326b532ecf3063" URI="http://corpus1.mpi.nl/CGN/COREX6/data/audio/wav/comp-k/nl/fn004654.wav"/>
+      <ChildLink ID="0ec2bc0633f964958527d1bd3e366f3a" URI="http://corpus1.mpi.nl/CGN/COREX6/data/audio/wav/comp-k/nl/fn004654.wav"/>
       <FieldGroup Label="Description">
         <FieldData FieldValue="" Path=".METATRANSCRIPT.Session.Resources.MediaFile(2).Description"/>
       </FieldGroup>
