@@ -21,6 +21,7 @@ package nl.mpi.yams.cs.connector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DefaultValue;
@@ -115,7 +116,10 @@ public class YamsCsResource {
         if (dataNode == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         } else {
-            return Response.ok(new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, nodeResolver, dataNode, request.getRemoteUser())).header("Access-Control-Allow-Origin", "*").build();
+            return Response.ok(
+                    Collections.singletonList(
+                            new CorpusNodeWrapper(corpusStructureProvider, accessInfoProvider, nodeResolver, dataNode, request.getRemoteUser()))
+            ).header("Access-Control-Allow-Origin", "*").build();
         }
     }
 //    @GET
