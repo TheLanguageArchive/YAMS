@@ -471,6 +471,12 @@ public class DataBaseManager<D, F, M> {
                 + "),\n"
                 + "count(collection(\"" + databaseName + "\")/DataNode[@ID eq $nodeId])\n"
                 + "))\n"
+                // todo: the following sections must be completed, unfortunately there is no time today.
+                // update the list of missing documents by moving the relevant IDs to MissingDocumentLinks from RecentDocumentLinks
+                //                + "for $n in collection(\"" + databaseName + "\")/DatabaseLinks/RecentDocumentLinks[@ID eq $nodeId]\n" 
+                //                + "return rename node $n as 'MissingDocumentLinks',\n"
+                // delete the actual documents from the database
+                //                + "delete node collection(\"" + databaseName + "\")/DataNode[@ID eq $nodeId]\n"
                 + "};\n"
                 + "local:branchDelete(\"" + nodeId + "\")";
         System.out.println(deleteBranchQuery);
