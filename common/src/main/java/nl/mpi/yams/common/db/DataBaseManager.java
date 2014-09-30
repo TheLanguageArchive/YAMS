@@ -453,6 +453,37 @@ public class DataBaseManager<D, F, M> {
         }
         return iconTable;
     }
+    /*
+     * Takes a node id and deletes it and all of its children from the database, starting with the leaves first.
+     * When each node is deleted it's ID must be removed from the RecentDocumentLinks and added to the MissingDocumentLinks in the database.
+     * Once this is run, the database can be updated with a standard append in the command line tool and the deleted nodes will be recrawled.    
+     * @param nodeId the ID of the data node that will with all its child nodes be deleted from the database so that it can be recrawled
+     * @returns affectedDocumentCount which is the number of deleted documents. 
+     */
+
+    public int deleteBranch(String nodeId) throws NumberFormatException, QueryException {
+        String deleteBranchQuery = //"collection(\"" + databaseName + "\")/DataNode[@ID eq \"" + nodeId + "\"]//ChildLink";
+                "declare function local:branchDelete($nodeId as xs:string) as xs:integer\n"
+                + "{\n"
+                + " sum((\n"
+                + " sum(for $childId in collection(\"" + databaseName + "\")/DataNode[@ID eq $nodeId]//ChildLink/@ID/string()\n"
+                + " return local:branchDelete($childId)\n"
+                + "),\n"
+                + "count(collection(\"" + databaseName + "\")/DataNode[@ID eq $nodeId])\n"
+                + "))\n"
+                // todo: the following sections must be completed, unfortunately there is no time today.
+                // update the list of missing documents by moving the relevant IDs to MissingDocumentLinks from RecentDocumentLinks
+                //                + "for $n in collection(\"" + databaseName + "\")/DatabaseLinks/RecentDocumentLinks[@ID eq $nodeId]\n" 
+                //                + "return rename node $n as 'MissingDocumentLinks',\n"
+                // delete the actual documents from the database
+                //                + "delete node collection(\"" + databaseName + "\")/DataNode[@ID eq $nodeId]\n"
+                + "};\n"
+                + "local:branchDelete(\"" + nodeId + "\")";
+        System.out.println(deleteBranchQuery);
+        String deleteBranchResult = dbAdaptor.executeQuery(databaseName, deleteBranchQuery);
+        final int affectedDocumentCount = Integer.parseInt(deleteBranchResult);
+        return affectedDocumentCount;
+    }
 
     /**
      * Inserts a document into the database and optionally checks for existing

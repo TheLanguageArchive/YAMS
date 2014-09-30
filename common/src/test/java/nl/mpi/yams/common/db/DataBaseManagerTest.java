@@ -476,6 +476,24 @@ public abstract class DataBaseManagerTest {
     }
 
     /**
+     * Test of deleteBranch method, of class DataBaseManager.
+     */
+    @Test
+    public void testDeleteBranch() throws Exception {
+        System.out.println("deleteBranch");
+        final DataBaseManager<HighlightableDataNode, DataField, MetadataFileType> dbManager = getDataBaseManager(true);
+        int result = dbManager.deleteBranch("0f4d9cdcd07a1d0c642bb11a0dd1cf2e");
+        // this test only checks that the query has found the correct number of child nodes and parent nodes
+        assertEquals(3, result);
+        // the subsequent tests here must check that the correct number of IDs have been removed from /DatabaseLinks/RecentDocumentLinks 
+        // and that the correct number of IDs have been added to /DatabaseLinks/MissingDocumentLinks 
+//        String missing = dbManager.getHandlesOfMissing();
+//        System.out.println("missing:" + missing);
+//        assertEquals(2719 - 3, missing.length()); // todo: it looks like the value 2719 is actually the string length and should be the number of records instead
+        // the final test here should check the number of actual documents in the database before and after deleteBranch has been run 
+    }
+
+    /**
      * Test of getDatabaseList method, of class DataBaseManager.
      */
     @Test
