@@ -453,6 +453,24 @@ public class DataBaseManager<D, F, M> {
         }
         return iconTable;
     }
+
+    /**
+     * Returns a string representing the number of actual documents in the
+     * database, expected documents, missing documents and root documents.
+     *
+     * @return String of counts: missing, crawled, actual document count
+     * @throws PluginException
+     * @throws QueryException
+     */
+    public String getDatabaseLinksCounts() throws PluginException, QueryException {
+        String queryString = "count(collection(\"unit-test-database\")/DatabaseLinks/MissingDocumentLinks),\n"
+                + "count(collection(\"unit-test-database\")/DatabaseLinks/RecentDocumentLinks),\n"
+                + "count(collection(\"unit-test-database\")/DataNode)\n"; // <DataNodeId> </DataNodeId>
+        logger.debug("getHandlesOfMissing: " + queryString);
+        String queryResult = dbAdaptor.executeQuery(databaseName, queryString);
+        return queryResult; // the results here could to be split on " " but a string comparison of the expected will do the job in the unit test for which this is intended
+    }
+
     /*
      * Takes a node id and deletes it and all of its children from the database, starting with the leaves first.
      * When each node is deleted it's ID must be removed from the RecentDocumentLinks and added to the MissingDocumentLinks in the database.
@@ -460,29 +478,25 @@ public class DataBaseManager<D, F, M> {
      * @param nodeId the ID of the data node that will with all its child nodes be deleted from the database so that it can be recrawled
      * @returns affectedDocumentCount which is the number of deleted documents. 
      */
-
-    public int deleteBranch(String nodeId) throws NumberFormatException, QueryException {
+    public void deleteBranch(String nodeId) throws NumberFormatException, QueryException {
         String deleteBranchQuery = //"collection(\"" + databaseName + "\")/DataNode[@ID eq \"" + nodeId + "\"]//ChildLink";
-                "declare function local:branchDelete($nodeId as xs:string) as xs:integer\n"
+                "declare function local:branchDelete($nodeId as xs:string)\n"
                 + "{\n"
-                + " sum((\n"
-                + " sum(for $childId in collection(\"" + databaseName + "\")/DataNode[@ID eq $nodeId]//ChildLink/@ID/string()\n"
+                + " for $childId in collection(\"" + databaseName + "\")/DataNode[@ID eq $nodeId]//ChildLink/@ID/string()\n"
                 + " return local:branchDelete($childId)\n"
-                + "),\n"
-                + "count(collection(\"" + databaseName + "\")/DataNode[@ID eq $nodeId])\n"
-                + "))\n"
-                // todo: the following sections must be completed, unfortunately there is no time today.
-                // update the list of missing documents by moving the relevant IDs to MissingDocumentLinks from RecentDocumentLinks
-                //                + "for $n in collection(\"" + databaseName + "\")/DatabaseLinks/RecentDocumentLinks[@ID eq $nodeId]\n" 
-                //                + "return rename node $n as 'MissingDocumentLinks',\n"
-                // delete the actual documents from the database
-                //                + "delete node collection(\"" + databaseName + "\")/DataNode[@ID eq $nodeId]\n"
+                + ",\n"
+                + "collection(\"" + databaseName + "\")/DataNode[@ID eq $nodeId]/@ID/string()\n"
                 + "};\n"
-                + "local:branchDelete(\"" + nodeId + "\")";
+                + "let $deleteList := local:branchDelete(\"" + nodeId + "\")\n"
+                // update the list of missing documents by moving the relevant IDs to MissingDocumentLinks from RecentDocumentLinks
+                + "return (\n"
+                + "for $n in collection(\"" + databaseName + "\")/DatabaseLinks/RecentDocumentLinks[@ID = $deleteList]\n"
+                + "return rename node $n as 'MissingDocumentLinks',\n"
+                // delete the actual documents from the database
+                + "delete node collection(\"" + databaseName + "\")/DataNode[@ID = $deleteList]\n"
+                + ")\n";
         System.out.println(deleteBranchQuery);
-        String deleteBranchResult = dbAdaptor.executeQuery(databaseName, deleteBranchQuery);
-        final int affectedDocumentCount = Integer.parseInt(deleteBranchResult);
-        return affectedDocumentCount;
+        dbAdaptor.executeQuery(databaseName, deleteBranchQuery);
     }
 
     /**
