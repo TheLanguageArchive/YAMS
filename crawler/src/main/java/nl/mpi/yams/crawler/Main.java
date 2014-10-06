@@ -44,6 +44,7 @@ public class Main {
     private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
     static public void main(String[] args) {
+        // initialize some defaults
         int defaultNumberToCrawl = 90;
         String databaseUrl = "";
         String databaseName = "YAMS-DB";
@@ -53,94 +54,111 @@ public class Main {
         String crawlFilter = "http://lux16.mpi.nl/";
         String permissionsServiceUri = "https://lux16.mpi.nl/ds/yams-cs-connector/rest/node?id=";
         String defaultStartUrl = "http://hdl.handle.net/11142/00-74BB450B-4E5E-4EC7-B043-F444C62DB5C0";
+
+        // parse command line options
         final Options options = getCommandLineOptions(defaultNumberToCrawl, defaultStartUrl, databaseName, databaseUser, databasePassword, crawlFilter, permissionsServiceUri);
         try {
             // parse the command line arguments
             final CommandLine line = new BasicParser().parse(options, args);
-
-            // configure logging with verbosity depending on the parameters
-            configureLogging(line);
-
-            // check for valid actions and show help if none found
-            if (!line.hasOption(OPTION_DROP) && !line.hasOption(OPTION_CRAWL) && !line.hasOption(OPTION_APPEND) && !line.hasOption(OPTION_FACETS)) {
-                HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("yams-crawler", options);
-                System.exit(-1);
-            }
-
-            String startUrl = defaultStartUrl;
-            int numberToCrawl = defaultNumberToCrawl;
-            boolean crawlOption = line.hasOption(OPTION_CRAWL);
-            if (line.hasOption(OPTION_TARGET)) {
-                startUrl = line.getOptionValue(OPTION_TARGET);
-                crawlOption = true;
-            }
-            if (line.hasOption(OPTION_NUMBER)) {
-                numberToCrawl = Integer.parseInt(line.getOptionValue(OPTION_NUMBER));
-            }
-            if (line.hasOption(OPTION_SERVER)) {
-                databaseUrl = line.getOptionValue(OPTION_SERVER);
-            }
-            if (line.hasOption(OPTION_DBNAME)) {
-                databaseName = line.getOptionValue(OPTION_DBNAME);
-            }
-            if (line.hasOption(OPTION_DBUSER)) {
-                databaseUser = line.getOptionValue(OPTION_DBUSER);
-            }
-            if (line.hasOption(OPTION_DBPASSWD)) {
-                databasePassword = line.getOptionValue(OPTION_DBPASSWD);
-            }
-            if (line.hasOption(OPTION_LIMIT)) {
-                crawlFilter = line.getOptionValue(OPTION_LIMIT);
-            }
-            if (line.hasOption(OPTION_AMS)) {
-                permissionsServiceUri = line.getOptionValue(OPTION_AMS);
-            }
-            try {
-                RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(numberToCrawl, crawlFilter, databaseUrl, databaseName, databaseUser, databasePassword, permissionsServiceUri);
-                URI startURI = new URI(startUrl);
-//            URI startURI = new URI("file:///Users/petwit2/.arbil/ArbilWorkingFiles/http/corpus1.mpi.nl/qfs1/media-archive/silang_data/Corpusstructure/1.imdi");                
-                if (line.hasOption(OPTION_DROP)) {
-                    System.out.println("Dropping and crawing from scratch");
-                    archiveCrawler.dropAllRecords();
-                    crawlOption = true;
-                } else {
-                    // make sure the db exists
-                    archiveCrawler.checkDbExists();
-                }
-                if (crawlOption) {
-                    System.out.println("Crawling the start URL: " + startURI);
-                    archiveCrawler.crawl(startURI);
-                }
-                if (line.hasOption(OPTION_APPEND)) {
-                    System.out.println("Looking for and appending missing documents");
-                    archiveCrawler.updateFast();
-                }
-                archiveCrawler.insertKnowIcons();
-                if (line.hasOption(OPTION_FACETS)) {
-                    archiveCrawler.clearAndCalculateDbStats();
-                    archiveCrawler.preloadFacets();
-                }
-                logger.info("Done");
-                System.exit(0); // arbil threads might be requiring this to terminate
-
-                // if any point below this line gets reached, the crawler will
-                // terminate with an error state (-1)
-            } catch (URISyntaxException exception) {
-                logger.error("Invalid URI", exception);
-                System.err.println(exception.getMessage());
-            } catch (QueryException exception) {
-                logger.error("Database error", exception);
-                System.err.println(exception.getMessage());
-            } catch (PluginException exception) {
-                logger.error("Error inserting icons", exception);
-                System.err.println(exception.getMessage());
+            if (processOptions(line, options, defaultStartUrl, defaultNumberToCrawl, databaseUrl, databaseName, databaseUser, databasePassword, crawlFilter, permissionsServiceUri)) {
+                System.exit(0);
             }
         } catch (ParseException exp) {
             System.out.println("Cannot parse the command line input:" + exp.getMessage());
         }
         System.err.println("\nCrawler did not finish as expected. See log  file for details.");
         System.exit(-1);
+    }
+
+    private static boolean processOptions(final CommandLine line, final Options options, String defaultStartUrl, int defaultNumberToCrawl, String databaseUrl, String databaseName, String databaseUser, String databasePassword, String crawlFilter, String permissionsServiceUri) throws SecurityException, NumberFormatException {
+        // configure logging with verbosity depending on the parameters
+        configureLogging(line);
+
+        // check for valid actions and show help if none found
+        if (!line.hasOption(OPTION_DROP) && !line.hasOption(OPTION_CRAWL) && !line.hasOption(OPTION_APPEND) && !line.hasOption(OPTION_FACETS)) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("yams-crawler", options);
+            System.exit(-1);
+        }
+
+        String startUrl = defaultStartUrl;
+        int numberToCrawl = defaultNumberToCrawl;
+        boolean crawlOption = line.hasOption(OPTION_CRAWL);
+        if (line.hasOption(OPTION_TARGET)) {
+            startUrl = line.getOptionValue(OPTION_TARGET);
+            crawlOption = true;
+        }
+        if (line.hasOption(OPTION_NUMBER)) {
+            numberToCrawl = Integer.parseInt(line.getOptionValue(OPTION_NUMBER));
+        }
+        if (line.hasOption(OPTION_SERVER)) {
+            databaseUrl = line.getOptionValue(OPTION_SERVER);
+        }
+        if (line.hasOption(OPTION_DBNAME)) {
+            databaseName = line.getOptionValue(OPTION_DBNAME);
+        }
+        if (line.hasOption(OPTION_DBUSER)) {
+            databaseUser = line.getOptionValue(OPTION_DBUSER);
+        }
+        if (line.hasOption(OPTION_DBPASSWD)) {
+            databasePassword = line.getOptionValue(OPTION_DBPASSWD);
+        }
+        if (line.hasOption(OPTION_LIMIT)) {
+            crawlFilter = line.getOptionValue(OPTION_LIMIT);
+        }
+        if (line.hasOption(OPTION_AMS)) {
+            permissionsServiceUri = line.getOptionValue(OPTION_AMS);
+        }
+
+        try {
+            final RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(numberToCrawl, crawlFilter, databaseUrl, databaseName, databaseUser, databasePassword, permissionsServiceUri);
+            runCrawler(archiveCrawler, crawlOption, startUrl, line);
+            return true; // arbil threads might be requiring this to terminate
+
+            // if any point below this line gets reached, the crawler will
+            // terminate with an error state (-1)
+        } catch (URISyntaxException exception) {
+            logger.error("Invalid URI", exception);
+            System.err.println(exception.getMessage());
+        } catch (QueryException exception) {
+            logger.error("Database error", exception);
+            System.err.println(exception.getMessage());
+        } catch (PluginException exception) {
+            logger.error("Error inserting icons", exception);
+            System.err.println(exception.getMessage());
+        }
+        return false;
+    }
+
+    private static void runCrawler(RemoteArchiveCrawler archiveCrawler, boolean doCrawl, String startUrl, final CommandLine cmdLineOptions) throws URISyntaxException, PluginException, QueryException {
+        if (cmdLineOptions.hasOption(OPTION_DROP)) {
+            System.out.println("Dropping and crawing from scratch");
+            archiveCrawler.dropAllRecords();
+            //drop implies crawl
+            doCrawl = true;
+        } else {
+            // make sure the db exists
+            archiveCrawler.checkDbExists();
+        }
+
+        if (doCrawl) {
+            final URI startURI = new URI(startUrl);
+            System.out.println("Crawling the start URL: " + startURI);
+            archiveCrawler.crawl(startURI);
+        }
+
+        if (cmdLineOptions.hasOption(OPTION_APPEND)) {
+            System.out.println("Looking for and appending missing documents");
+            archiveCrawler.updateFast();
+        }
+
+        archiveCrawler.insertKnowIcons();
+
+        if (cmdLineOptions.hasOption(OPTION_FACETS)) {
+            archiveCrawler.clearAndCalculateDbStats();
+            archiveCrawler.preloadFacets();
+        }
+        logger.info("Done");
     }
 
     private static void configureLogging(CommandLine line) throws SecurityException {
