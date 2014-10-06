@@ -56,14 +56,15 @@ public class Main {
 
     static public void main(String[] args) {
 
-        // parse command line options
-        final Options options = getCommandLineOptions();
         try {
             // parse the command line arguments
-            final CommandLine line = new BasicParser().parse(options, args);
-            if (processOptions(line, options)) {
-                System.exit(0);
+            final CommandLine line = new BasicParser().parse(getCommandLineOptions(), args);
+            if (processOptions(line)) {
+                System.exit(0); // arbil threads might be requiring this to terminate
             }
+
+            // if any point below this line gets reached, the crawler will
+            // terminate with an error state (-1)
         } catch (ParseException exp) {
             System.out.println("Cannot parse the command line input:" + exp.getMessage());
         }
@@ -71,14 +72,22 @@ public class Main {
         System.exit(-1);
     }
 
-    private static boolean processOptions(final CommandLine line, final Options options) throws SecurityException, NumberFormatException {
+    /**
+     *
+     * @param line command line options to be processed
+     * @return whether the crawler terminated successfully without any errors
+     * before that
+     * @throws SecurityException
+     * @throws NumberFormatException
+     */
+    private static boolean processOptions(final CommandLine line) throws SecurityException, NumberFormatException {
         // configure logging with verbosity depending on the parameters
         configureLogging(line);
 
         // check for valid actions and show help if none found
         if (!line.hasOption(OPTION_DROP) && !line.hasOption(OPTION_CRAWL) && !line.hasOption(OPTION_APPEND) && !line.hasOption(OPTION_FACETS)) {
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("yams-crawler", options);
+            formatter.printHelp("yams-crawler", getCommandLineOptions());
             System.exit(-1);
         }
 
@@ -119,13 +128,13 @@ public class Main {
             permissionsServiceUri = line.getOptionValue(OPTION_AMS);
         }
 
+        // options have been analysed, so start execution!
         try {
+            // initalize crawler
             final RemoteArchiveCrawler archiveCrawler = new RemoteArchiveCrawler(numberToCrawl, crawlFilter, databaseUrl, databaseName, databaseUser, databasePassword, permissionsServiceUri);
+            // run the crawler according to the options
             runCrawler(archiveCrawler, crawlOption, startUrl, line);
-            return true; // arbil threads might be requiring this to terminate
-
-            // if any point below this line gets reached, the crawler will
-            // terminate with an error state (-1)
+            return true;
         } catch (URISyntaxException exception) {
             logger.error("Invalid URI", exception);
             System.err.println(exception.getMessage());
