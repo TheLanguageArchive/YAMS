@@ -43,24 +43,25 @@ public class Main {
 
     private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
+    // initialize some defaults
+    private final static int DEFAULT_NUMBER_TO_CRAWL = 90;
+    private final static String DEFAULT_DATABASE_URL = "";
+    private final static String DEFAULT_DATABASE_NAME = "YAMS-DB";
+    private final static String DEFAULT_DATABASE_USER = "admin";
+    private final static String DEFAULT_DATABASE_PASSWORD = "admin";
+    // thestatic  crawlFilter limits to the domain (string prefix)that can be crawled 
+    private final static String DEFAULT_CRAWL_FILTER = "http://lux16.mpi.nl/";
+    private final static String DEFAULT_PERMISSIONS_SERVICE_URI = "https://lux16.mpi.nl/ds/yams-cs-connector/rest/node?id=";
+    private final static String DEFAULT_START_URL = "http://hdl.handle.net/11142/00-74BB450B-4E5E-4EC7-B043-F444C62DB5C0";
+
     static public void main(String[] args) {
-        // initialize some defaults
-        int defaultNumberToCrawl = 90;
-        String databaseUrl = "";
-        String databaseName = "YAMS-DB";
-        String databaseUser = "admin";
-        String databasePassword = "admin";
-        // the crawlFilter limits to the domain (string prefix)that can be crawled 
-        String crawlFilter = "http://lux16.mpi.nl/";
-        String permissionsServiceUri = "https://lux16.mpi.nl/ds/yams-cs-connector/rest/node?id=";
-        String defaultStartUrl = "http://hdl.handle.net/11142/00-74BB450B-4E5E-4EC7-B043-F444C62DB5C0";
 
         // parse command line options
-        final Options options = getCommandLineOptions(defaultNumberToCrawl, defaultStartUrl, databaseName, databaseUser, databasePassword, crawlFilter, permissionsServiceUri);
+        final Options options = getCommandLineOptions();
         try {
             // parse the command line arguments
             final CommandLine line = new BasicParser().parse(options, args);
-            if (processOptions(line, options, defaultStartUrl, defaultNumberToCrawl, databaseUrl, databaseName, databaseUser, databasePassword, crawlFilter, permissionsServiceUri)) {
+            if (processOptions(line, options)) {
                 System.exit(0);
             }
         } catch (ParseException exp) {
@@ -70,7 +71,7 @@ public class Main {
         System.exit(-1);
     }
 
-    private static boolean processOptions(final CommandLine line, final Options options, String defaultStartUrl, int defaultNumberToCrawl, String databaseUrl, String databaseName, String databaseUser, String databasePassword, String crawlFilter, String permissionsServiceUri) throws SecurityException, NumberFormatException {
+    private static boolean processOptions(final CommandLine line, final Options options) throws SecurityException, NumberFormatException {
         // configure logging with verbosity depending on the parameters
         configureLogging(line);
 
@@ -81,8 +82,16 @@ public class Main {
             System.exit(-1);
         }
 
-        String startUrl = defaultStartUrl;
-        int numberToCrawl = defaultNumberToCrawl;
+        // set initial values to defaults
+        String startUrl = DEFAULT_START_URL;
+        int numberToCrawl = DEFAULT_NUMBER_TO_CRAWL;
+        String databaseUrl = DEFAULT_DATABASE_URL;
+        String databaseName = DEFAULT_DATABASE_NAME;
+        String databaseUser = DEFAULT_DATABASE_USER;
+        String databasePassword = DEFAULT_DATABASE_PASSWORD;
+        String crawlFilter = DEFAULT_CRAWL_FILTER;
+        String permissionsServiceUri = DEFAULT_PERMISSIONS_SERVICE_URI;
+
         boolean crawlOption = line.hasOption(OPTION_CRAWL);
         if (line.hasOption(OPTION_TARGET)) {
             startUrl = line.getOptionValue(OPTION_TARGET);
@@ -201,7 +210,7 @@ public class Main {
     private static final String OPTION_FACETS = "f";
     private static final String OPTION_DROP = "d";
 
-    private static Options getCommandLineOptions(int defaultNumberToCrawl, String defaultStartUrl, String defaultDbName, String defaultDbUser, String defaultDbPassword, String defaultCrawlFilter, String defaultPermissionsServiceUri) {
+    private static Options getCommandLineOptions() {
         // create the command line parser
         // create the Options
         Options options = new Options();
@@ -209,14 +218,14 @@ public class Main {
         options.addOption(OPTION_FACETS, "facets", false, "Preload the facets from the existing crawled data.");
         options.addOption(OPTION_CRAWL, "crawl", false, "Crawl the provided url or the default url if not otherwise specified.");
         options.addOption(OPTION_APPEND, "append", false, "Restart crawling adding missing documents.");
-        options.addOption(OPTION_NUMBER, "number", true, "Number of documents to insert (default: " + defaultNumberToCrawl + ").");
-        options.addOption(OPTION_TARGET, "target", true, "Target URL of the start documents to crawl (default: " + defaultStartUrl + "). This option implies the c option.");
+        options.addOption(OPTION_NUMBER, "number", true, "Number of documents to insert (default: " + DEFAULT_NUMBER_TO_CRAWL + ").");
+        options.addOption(OPTION_TARGET, "target", true, "Target URL of the start documents to crawl (default: " + DEFAULT_START_URL + "). This option implies the c option.");
         options.addOption(OPTION_SERVER, "server", true, "Data base server URL or file path (when a file path is provided it is used as the local basex directory via the java bindings rather than the REST interface), default is to use the un mondified local basex directory");
-        options.addOption(OPTION_DBNAME, "dbname", true, "Name of the database to use (default: " + defaultDbName + ").");
-        options.addOption(OPTION_DBUSER, "user", true, "Data base user name, (default: " + defaultDbUser + ").");
-        options.addOption(OPTION_DBPASSWD, "password", true, "Data base password, (default: " + defaultDbPassword + ").");
-        options.addOption(OPTION_LIMIT, "limit", true, "Limit crawling to URLs which contain the provided string (default: " + defaultCrawlFilter + ").");
-        options.addOption(OPTION_AMS, "amspermissions", true, "REST service URL where permissions information from AMS can be obtained (default: " + defaultPermissionsServiceUri + ").");
+        options.addOption(OPTION_DBNAME, "dbname", true, "Name of the database to use (default: " + DEFAULT_DATABASE_NAME + ").");
+        options.addOption(OPTION_DBUSER, "user", true, "Data base user name, (default: " + DEFAULT_DATABASE_USER + ").");
+        options.addOption(OPTION_DBPASSWD, "password", true, "Data base password, (default: " + DEFAULT_DATABASE_PASSWORD + ").");
+        options.addOption(OPTION_LIMIT, "limit", true, "Limit crawling to URLs which contain the provided string (default: " + DEFAULT_CRAWL_FILTER + ").");
+        options.addOption(OPTION_AMS, "amspermissions", true, "REST service URL where permissions information from AMS can be obtained (default: " + DEFAULT_PERMISSIONS_SERVICE_URI + ").");
         options.addOption(OPTION_DEBUG, "debug", false, "Display debug output");
         return options;
     }
