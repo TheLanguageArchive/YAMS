@@ -479,6 +479,7 @@ public class DataBaseManager<D, F, M> {
      * @returns affectedDocumentCount which is the number of deleted documents. 
      */
     public void deleteBranch(String nodeId) throws NumberFormatException, QueryException {
+        logger.debug("Deleting branch {}", nodeId);
         String deleteBranchQuery = //"collection(\"" + databaseName + "\")/DataNode[@ID eq \"" + nodeId + "\"]//ChildLink";
                 "declare function local:branchDelete($nodeId as xs:string)\n"
                 + "{\n"
@@ -495,7 +496,7 @@ public class DataBaseManager<D, F, M> {
                 // delete the actual documents from the database
                 + "delete node collection(\"" + databaseName + "\")/DataNode[@ID = $deleteList]\n"
                 + ")\n";
-        System.out.println(deleteBranchQuery);
+        logger.trace(deleteBranchQuery);
         dbAdaptor.executeQuery(databaseName, deleteBranchQuery);
     }
 
